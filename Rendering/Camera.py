@@ -1,0 +1,106 @@
+import numpy as np
+import pyrr
+
+
+class Camera:
+    """
+    Creates a camera object to visualize the scene.
+    """
+
+    def __init__(self):
+        self.reference_position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
+        self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
+        self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
+        self.distance_from_target = 5.0
+
+        # Watch out HARDCODED ASPECTRATIO
+        self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(45, 100 / 30, 0.1, 200)
+
+        self.current_rotation = pyrr.Quaternion()
+        self.last_rotation = pyrr.Quaternion()
+        self.position *= self.distance_from_target
+
+    def calculate_projection_matrix(self, width, height):
+        """
+        Calculates the projection matrix to get from world to camera space.
+
+        :param width: Width of the opengl widget.
+        :type width: float
+        :param height: Height of the opengl widget.
+        :type height: float
+        """
+        self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(45, width / height, 0.1, 100)
+
+    def reset(self):
+        """
+        Resets the camera.
+        """
+        self.__init__()
+
+    def set_distance_from_target(self, zoom):
+        """
+        Set the distance between the camera and its target.
+
+        :param zoom: Factor that is multiplied with the normalized camera position vector and the current distance
+            between the camera and the target.
+        """
+        self.distance_from_target *= zoom
+        self.position = pyrr.vector3.normalize(self.position) * self.distance_from_target
+
+    def calculate_camera_position(self, old_mouse_position, new_mouse_position, save=False):
+        """
+        Calculates the camera position according to arcball movement using the normalized mouse positions.
+
+        :param old_mouse_position: Old normalized x and y coordinate of the mous position on the opengl widget.
+        :type old_mouse_position: numpy.array of numpy.float32
+        :param new_mouse_position: New normalized x and y coordinate of the mous position on the opengl widget.
+        :type new_mouse_position: numpy.array of numpy.float32
+        :param save: If given the current rotation quaternion is saved.
+        :type save: boolean
+        """
+
+        def calculate_arcball_point(x, y):
+            """
+            Calculates the x, y, and z on the surface of an invisible sphere using only the x and y coordinates and
+            using the positive z solution.
+
+            :param x: Normalized x coordinate.
+            :type x: float
+            :param y: Normalized y coordinate.
+            :type y: float
+            :return numpy.array of numpy.float32: x, y, and z coordinates on the invisible arcball sphere.
+            """
+            z = x
+            squared_sum = z ** 2 + y ** 2
+            if squared_sum <= 1.0:
+                x = np.sqrt(1.0 - squared_sum)
+            else:
+                x = 0.0
+                length = np.sqrt(squared_sum)
+                z /= length
+                y /= length
+            return np.array([x, y, -z], dtype=np.float32)
+
+        self.position = pyrr.vector3.normalize(self.position)
+
+        previous_arcball_point = calculate_arcball_point(old_mouse_position[0], old_mouse_position[1])
+        current_arcball_point = calculate_arcball_point(new_mouse_position[0], new_mouse_position[1])
+
+        if np.linalg.norm(previous_arcball_point - current_arcball_point) < 1e-3:
+            rotation_axis = np.array([1, 0, 0], dtype=np.float32)
+            rotation_angle = 0.0
+        else:
+            rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
+            rotation_angle = np.arccos(np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1))
+
+        rotation_quaternion = pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
+        self.current_rotation = rotation_quaternion
+        rotation = self.last_rotation * self.current_rotation
+
+        self.up_vector = rotation * pyrr.Vector3([0.0, 1.0, 0.0])
+        self.position = pyrr.vector3.normalize(
+            rotation * (self.reference_position - self.target) + self.target) * self.distance_from_target
+
+        if save:
+            self.last_rotation = self.last_rotation * self.current_rotation

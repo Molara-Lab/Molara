@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="MoleculeWidget" name="openGLWidget"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="action_xyz"/>
+    </widget>
+    <addaction name="menuImport"/>
+    <addaction name="quit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuRotate">
+     <property name="title">
+      <string>Rotate</string>
+     </property>
+     <addaction name="actionto_x_axis"/>
+     <addaction name="actionto_y_axis"/>
+     <addaction name="actionto_z_axis"/>
+    </widget>
+    <addaction name="actionCenter_Molecule"/>
+    <addaction name="actionReset_View"/>
+    <addaction name="menuRotate"/>
+    <addaction name="actionDraw_Axes"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="quit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="action_xyz">
+   <property name="text">
+    <string>.xyz</string>
+   </property>
+  </action>
+  <action name="actionCenter_Molecule">
+   <property name="text">
+    <string>Center Molecule</string>
+   </property>
+  </action>
+  <action name="actionReset_View">
+   <property name="text">
+    <string>Reset View</string>
+   </property>
+  </action>
+  <action name="actionto_x_axis">
+   <property name="text">
+    <string>to x axis</string>
+   </property>
+  </action>
+  <action name="actionto_y_axis">
+   <property name="text">
+    <string>to y axis</string>
+   </property>
+  </action>
+  <action name="actionto_z_axis">
+   <property name="text">
+    <string>to z axis</string>
+   </property>
+  </action>
+  <action name="actionDraw_Axes">
+   <property name="text">
+    <string>Draw Axes</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MoleculeWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">MoleculeWidget/MoleculeWidget</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

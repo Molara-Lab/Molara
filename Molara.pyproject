@@ -1,0 +1,3 @@
+{
+    "files": ["molara.py","Gui/form.ui","MoleculeWidget/MoleculeWidget.py","MoleculeWidget/Molecule/Molecule.py"]
+}
