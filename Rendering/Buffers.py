@@ -42,19 +42,13 @@ def setup_vao(vertices, indices, model_matrices):
 
     # Vertex positions
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(
-        0, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(0)
-    )
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(0))
 
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(
-        1, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(12)
-    )
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(12))
 
     glEnableVertexAttribArray(2)
-    glVertexAttribPointer(
-        2, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(24)
-    )
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(24))
 
     if indices is not None:
         ebo = glGenBuffers(1)
@@ -75,9 +69,7 @@ def setup_vao(vertices, indices, model_matrices):
 
         for i in range(4):
             glEnableVertexAttribArray(3 + i)
-            glVertexAttribPointer(
-                3 + i, 4, GL_FLOAT, GL_FALSE, 16 * 4, ctypes.c_void_p(i * 16)
-            )
+            glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, 16 * 4, ctypes.c_void_p(i * 16))
             glVertexAttribDivisor(3 + i, 1)
 
     glBindVertexArray(0)

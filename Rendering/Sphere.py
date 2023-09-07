@@ -69,9 +69,7 @@ def generate_sphere(color, subdivisions):
             normal = [x, y, z]
             normal /= np.linalg.norm(normal)
             normals.extend(normal)
-            vertices.extend(
-                [x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]]
-            )
+            vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
             if j < subdivisions * 2 and i < subdivisions:
                 p1 = i * (subdivisions * 2 + 1) + j
                 p2 = p1 + 1

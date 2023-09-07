@@ -25,9 +25,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
     def show_xyz(self):
-        fileName = QFileDialog.getOpenFileName(
-            self, "Open .xyz file", "/home", "Image Files (*.xyz)"
-        )
+        fileName = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
         mol = read_xyz(fileName[0])
         widget.ui.openGLWidget.set_molecule(mol)
 
@@ -40,8 +38,6 @@ if __name__ == "__main__":
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
-    widget.ui.actionCenter_Molecule.triggered.connect(
-        widget.ui.openGLWidget.center_molecule
-    )
+    widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
     widget.ui.quit.triggered.connect(widget.close)
     sys.exit(app.exec())

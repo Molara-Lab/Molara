@@ -15,9 +15,7 @@ class Camera:
         self.distance_from_target = 5.0
 
         # Watch out HARDCODED ASPECTRATIO
-        self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
-            45, 100 / 30, 0.1, 200
-        )
+        self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(45, 100 / 30, 0.1, 200)
 
         self.current_rotation = pyrr.Quaternion()
         self.last_rotation = pyrr.Quaternion()
@@ -32,9 +30,7 @@ class Camera:
         :param height: Height of the opengl widget.
         :type height: float
         """
-        self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
-            45, width / height, 0.1, 100
-        )
+        self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(45, width / height, 0.1, 100)
 
     def reset(self):
         """
@@ -50,13 +46,9 @@ class Camera:
             between the camera and the target.
         """
         self.distance_from_target *= zoom
-        self.position = (
-            pyrr.vector3.normalize(self.position) * self.distance_from_target
-        )
+        self.position = pyrr.vector3.normalize(self.position) * self.distance_from_target
 
-    def calculate_camera_position(
-        self, old_mouse_position, new_mouse_position, save=False
-    ):
+    def calculate_camera_position(self, old_mouse_position, new_mouse_position, save=False):
         """
         Calculates the camera position according to arcball movement using the normalized mouse positions.
 
@@ -92,33 +84,23 @@ class Camera:
 
         self.position = pyrr.vector3.normalize(self.position)
 
-        previous_arcball_point = calculate_arcball_point(
-            old_mouse_position[0], old_mouse_position[1]
-        )
-        current_arcball_point = calculate_arcball_point(
-            new_mouse_position[0], new_mouse_position[1]
-        )
+        previous_arcball_point = calculate_arcball_point(old_mouse_position[0], old_mouse_position[1])
+        current_arcball_point = calculate_arcball_point(new_mouse_position[0], new_mouse_position[1])
 
         if np.linalg.norm(previous_arcball_point - current_arcball_point) < 1e-3:
             rotation_axis = np.array([1, 0, 0], dtype=np.float32)
             rotation_angle = 0.0
         else:
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
-            rotation_angle = np.arccos(
-                np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1)
-            )
+            rotation_angle = np.arccos(np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1))
 
-        rotation_quaternion = pyrr.Quaternion.from_axis_rotation(
-            rotation_axis, rotation_angle
-        )
+        rotation_quaternion = pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
         self.current_rotation = rotation_quaternion
         rotation = self.last_rotation * self.current_rotation
 
         self.up_vector = rotation * pyrr.Vector3([0.0, 1.0, 0.0])
         self.position = (
-            pyrr.vector3.normalize(
-                rotation * (self.reference_position - self.target) + self.target
-            )
+            pyrr.vector3.normalize(rotation * (self.reference_position - self.target) + self.target)
             * self.distance_from_target
         )
 

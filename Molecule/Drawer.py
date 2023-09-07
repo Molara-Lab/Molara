@@ -25,12 +25,8 @@ class Drawer:
         self.reset_sphere_model_matrices()
         for atom in self.atoms:
             if self.unique_spheres[atom.atomic_number].model_matrices is None:
-                self.unique_spheres[atom.atomic_number] = Spheres(
-                    atom.cpk_color, self.subdivisions_sphere
-                )
-                self.unique_spheres[
-                    atom.atomic_number
-                ].model_matrices = calculate_sphere_model_matrix(atom)
+                self.unique_spheres[atom.atomic_number] = Spheres(atom.cpk_color, self.subdivisions_sphere)
+                self.unique_spheres[atom.atomic_number].model_matrices = calculate_sphere_model_matrix(atom)
             else:
                 self.unique_spheres[atom.atomic_number].model_matrices = np.concatenate(
                     (
@@ -42,12 +38,8 @@ class Drawer:
 
 
 def calculate_sphere_model_matrix(atom):
-    translation_matrix = pyrr.matrix44.create_from_translation(
-        pyrr.Vector3(atom.position)
-    )
-    scale_matrix = pyrr.matrix44.create_from_scale(
-        pyrr.Vector3([atom.vdw_radius / 4] * 3)
-    )
+    translation_matrix = pyrr.matrix44.create_from_translation(pyrr.Vector3(atom.position))
+    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([atom.vdw_radius / 4] * 3))
     return np.array(
         [np.array(scale_matrix @ translation_matrix, dtype=np.float32)],
         dtype=np.float32,
