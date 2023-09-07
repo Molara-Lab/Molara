@@ -39,6 +39,7 @@ out vec3 v_fragment_position;
 void main()
 {
     vec3 fragment_position = vec3(a_model * vec4(a_position, 1.0));
+    v_fragment_position = fragment_position;
     gl_Position = projection * view * vec4(fragment_position, 1.0);
     v_color = a_color;
     v_light_dir = light_direction;

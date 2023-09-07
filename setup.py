@@ -6,7 +6,7 @@ setup(
     packages=[''],
     url='',
     license='GPL v3',
-    author='Michel Heinz',
+    author='Michel Heinz, Gereon Feldmann',
     author_email='',
     description='',
     install_requires=[
