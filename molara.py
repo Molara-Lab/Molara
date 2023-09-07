@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from Gui.ui_form import Ui_MainWindow
-from Molecule.Molecule import read_xyz
+from Molecule.Molecule import read_xyz, read_coord
 
 format = QSurfaceFormat()
 format.setVersion(4, 1)
@@ -29,6 +29,10 @@ class MainWindow(QMainWindow):
         mol = read_xyz(fileName[0])
         widget.ui.openGLWidget.set_molecule(mol)
 
+    def show_coord(self):
+        fileName = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
+        mol = read_coord(fileName[0])
+        widget.ui.openGLWidget.set_molecule(mol)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -36,6 +40,7 @@ if __name__ == "__main__":
     widget.setWindowTitle("Molara")
     widget.show()
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
+    widget.ui.action_coord.triggered.connect(widget.show_coord)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)

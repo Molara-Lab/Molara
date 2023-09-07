@@ -49,16 +49,25 @@ from MoleculeWidget.MoleculeWidget import MoleculeWidget
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
-            MainWindow.setObjectName("MainWindow")
+            MainWindow.setObjectName(u"MainWindow")
+
         MainWindow.resize(800, 600)
+
         self.quit = QAction(MainWindow)
-        self.quit.setObjectName("quit")
+        self.quit.setObjectName(u"quit")
+
         self.action_xyz = QAction(MainWindow)
-        self.action_xyz.setObjectName("action_xyz")
+        self.action_xyz.setObjectName(u"action_xyz")
+
+        self.action_coord = QAction(MainWindow)
+        self.action_coord.setObjectName(u"action_coord")
+
         self.actionCenter_Molecule = QAction(MainWindow)
-        self.actionCenter_Molecule.setObjectName("actionCenter_Molecule")
+        self.actionCenter_Molecule.setObjectName(u"actionCenter_Molecule")
+
         self.actionReset_View = QAction(MainWindow)
-        self.actionReset_View.setObjectName("actionReset_View")
+        self.actionReset_View.setObjectName(u"actionReset_View")
+
         self.actionto_x_axis = QAction(MainWindow)
         self.actionto_x_axis.setObjectName("actionto_x_axis")
         self.actionto_y_axis = QAction(MainWindow)
@@ -98,6 +107,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.menuImport.menuAction())
         self.menuFile.addAction(self.quit)
         self.menuImport.addAction(self.action_xyz)
+        self.menuImport.addAction(self.action_coord)
         self.menuEdit.addAction(self.actionCenter_Molecule)
         self.menuEdit.addAction(self.actionReset_View)
         self.menuEdit.addAction(self.menuRotate.menuAction())
@@ -113,18 +123,20 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
-        self.quit.setText(QCoreApplication.translate("MainWindow", "Quit", None))
-        self.action_xyz.setText(QCoreApplication.translate("MainWindow", ".xyz", None))
-        self.actionCenter_Molecule.setText(QCoreApplication.translate("MainWindow", "Center Molecule", None))
-        self.actionReset_View.setText(QCoreApplication.translate("MainWindow", "Reset View", None))
-        self.actionto_x_axis.setText(QCoreApplication.translate("MainWindow", "to x axis", None))
-        self.actionto_y_axis.setText(QCoreApplication.translate("MainWindow", "to y axis", None))
-        self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", "to z axis", None))
-        self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", "Draw Axes", None))
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
-        self.menuImport.setTitle(QCoreApplication.translate("MainWindow", "Import", None))
-        self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "View", None))
-        self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", "Rotate", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
+        self.action_xyz.setText(QCoreApplication.translate("MainWindow", u".xyz", None))
+        self.action_coord.setText(QCoreApplication.translate("MainWindow", u"coord", None))
+        self.actionCenter_Molecule.setText(QCoreApplication.translate("MainWindow", u"Center Molecule", None))
+        self.actionReset_View.setText(QCoreApplication.translate("MainWindow", u"Reset View", None))
+        self.actionto_x_axis.setText(QCoreApplication.translate("MainWindow", u"to x axis", None))
+        self.actionto_y_axis.setText(QCoreApplication.translate("MainWindow", u"to y axis", None))
+        self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", u"to z axis", None))
+        self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Draw Axes", None))
+        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
+        self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
+        self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
+        self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
+    # retranslateUi
 
     # retranslateUi

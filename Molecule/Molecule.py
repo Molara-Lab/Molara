@@ -59,9 +59,9 @@ class Molecule:
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_sphere_model_matrices()
 
+def read_xyz(file_path : str):
 
-def read_xyz(file_path):
-    with open(file_path, "r") as file:
+    with open(file_path, 'r') as file:
         lines = file.readlines()
 
         num_atoms = int(lines[0])
@@ -76,4 +76,37 @@ def read_xyz(file_path):
                 atomic_numbers.append(element_symbol_to_atomic_number(atom_info[0]))
             coordinates.append([float(coord) for coord in atom_info[1:4]])
 
-        return Molecule(atomic_numbers, coordinates)
+    file.close()
+
+    return Molecule(atomic_numbers, coordinates)
+
+def read_coord(file_path : str):
+
+    """
+    Imports a coord file
+    Returns the Molecule
+    """
+
+    with open(file_path) as file:
+        lines = file.readlines() #To skip first row
+
+    atomic_numbers = []
+    coordinates = []
+
+    for line in lines[1:]:
+
+        if '$' in line:
+
+            break
+
+        else:
+            
+            atom_info = line.split()
+            if atom_info[-1].isnumeric():
+                atomic_numbers.append(int(atom_info[-1]))
+            else:
+                atom_info[-1] = atom_info[-1].capitalize()
+                atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
+            coordinates.append([float(coord)*0.529177249 for coord in atom_info[:3]])
+
+    return Molecule(atomic_numbers,coordinates)
