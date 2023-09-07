@@ -53,21 +53,24 @@ class Molecule:
 
     def center_coordinates(self):
         coordinates = np.array([atom.position for atom in self.atoms])
-        center = np.average(coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0)
+        center = np.average(
+            coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0
+        )
         for i, atom in enumerate(self.atoms):
             atom.position -= center
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_sphere_model_matrices()
 
+
 def read_xyz(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         lines = file.readlines()
 
         num_atoms = int(lines[0])
         atomic_numbers = []
         coordinates = []
 
-        for line in lines[2:2 + num_atoms]:
+        for line in lines[2 : 2 + num_atoms]:
             atom_info = line.split()
             if atom_info[0].isnumeric():
                 atomic_numbers.append(int(atom_info[0]))

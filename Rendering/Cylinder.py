@@ -65,10 +65,24 @@ def generate_cylinder(subdivisions, color):
         normal = [x, 0, z]
         normal /= np.linalg.norm(normal)
         vertices.extend([x, y, z, color[0], color[1], color[2], 0, -1, 0])
-        vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+        vertices.extend(
+            [x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]]
+        )
 
         vertices.extend([x, y + height, z, color[0], color[1], color[2], 0, 1, 0])
-        vertices.extend([x, y + height, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+        vertices.extend(
+            [
+                x,
+                y + height,
+                z,
+                color[0],
+                color[1],
+                color[2],
+                normal[0],
+                normal[1],
+                normal[2],
+            ]
+        )
 
         # indices
         if i == subdivisions - 1:

@@ -57,7 +57,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def initializeGL(self):
-        glClearColor(1, 1, 1, 1.)
+        glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         self.shader = compile_shaders()
 
@@ -67,15 +67,20 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def paintGL(self):
-        draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
+        draw_scene(
+            self.shader, self.camera, self.vertex_attribute_objects, self.molecule
+        )
         return
 
     def set_vertex_attribute_objects(self):
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
-            vao = Vao(self, self.molecule.drawer.unique_spheres[atomic_number].vertices,
-                      self.molecule.drawer.unique_spheres[atomic_number].indices,
-                      self.molecule.drawer.unique_spheres[atomic_number].model_matrices)
+            vao = Vao(
+                self,
+                self.molecule.drawer.unique_spheres[atomic_number].vertices,
+                self.molecule.drawer.unique_spheres[atomic_number].indices,
+                self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
+            )
             self.vertex_attribute_objects.append(vao.vao)
 
     def draw_axes(self):
@@ -85,8 +90,12 @@ class MoleculeWidget(QOpenGLWidget):
         self.zoom_factor = 1
         num_degrees = event.angleDelta().y() / 8
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
-        self.zoom_factor += num_steps * 0.1  # Empirical value to control zoom sensitivity
-        self.zoom_factor = max(0.1, self.zoom_factor)  # Limit zoom factor to avoid zooming too far
+        self.zoom_factor += (
+            num_steps * 0.1
+        )  # Empirical value to control zoom sensitivity
+        self.zoom_factor = max(
+            0.1, self.zoom_factor
+        )  # Limit zoom factor to avoid zooming too far
         self.camera.set_distance_from_target(self.zoom_factor)
         self.update()
 
@@ -117,6 +126,8 @@ class MoleculeWidget(QOpenGLWidget):
             if self.rotate_sphere:
                 self.rotate_sphere = False
                 self.set_normalized_position(event)
-                self.camera.calculate_camera_position(self.click_position, self.position, save=True)
+                self.camera.calculate_camera_position(
+                    self.click_position, self.position, save=True
+                )
                 self.click_position = None
                 # self.update()
