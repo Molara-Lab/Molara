@@ -1,8 +1,22 @@
 import ctypes
 
-from OpenGL.GL import glGenVertexArrays, glGenBuffers, glBindVertexArray, glBindBuffer, glBufferData, GL_ARRAY_BUFFER, \
-    GL_STATIC_DRAW, GL_ELEMENT_ARRAY_BUFFER, glEnableVertexAttribArray, \
-    glVertexAttribPointer, GL_FLOAT, GL_FALSE, GL_DYNAMIC_DRAW, glVertexAttribDivisor, glDeleteVertexArrays
+from OpenGL.GL import (
+    glGenVertexArrays,
+    glGenBuffers,
+    glBindVertexArray,
+    glBindBuffer,
+    glBufferData,
+    GL_ARRAY_BUFFER,
+    GL_STATIC_DRAW,
+    GL_ELEMENT_ARRAY_BUFFER,
+    glEnableVertexAttribArray,
+    glVertexAttribPointer,
+    GL_FLOAT,
+    GL_FALSE,
+    GL_DYNAMIC_DRAW,
+    glVertexAttribDivisor,
+    glDeleteVertexArrays,
+)
 
 
 def setup_vao(vertices, indices, model_matrices):
@@ -46,8 +60,7 @@ def setup_vao(vertices, indices, model_matrices):
         instance_vbo = glGenBuffers(1)
         num_instances = len(model_matrices)
         glBindBuffer(GL_ARRAY_BUFFER, instance_vbo)
-        glBufferData(GL_ARRAY_BUFFER, num_instances * 16 * model_matrices.itemsize, model_matrices,
-                     GL_DYNAMIC_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, num_instances * 16 * model_matrices.itemsize, model_matrices, GL_DYNAMIC_DRAW)
 
         for i in range(4):
             glEnableVertexAttribArray(3 + i)

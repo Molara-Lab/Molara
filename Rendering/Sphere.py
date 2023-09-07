@@ -23,7 +23,6 @@ class Sphere:
             self.indices = None
 
 
-
 class Spheres(Sphere):
     """
     Creates a Spheres object containing multiple spheres of the same color and the model matrices to draw multiple
