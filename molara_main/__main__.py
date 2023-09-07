@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 #     pyside2-uic form.ui -o ui_form.py
 
 from Gui.ui_form import Ui_MainWindow
-from Molecule.Molecule import read_xyz
+from Molecule.Molecule import read_xyz,read_coord
 
 
 
@@ -39,7 +39,11 @@ def main() -> None:
             fileName = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
             mol = read_xyz(fileName[0])
             widget.ui.openGLWidget.set_molecule(mol)
-
+            
+        def show_coord(self):
+            fileName = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
+            mol = read_coord(fileName[0])
+            widget.ui.openGLWidget.set_molecule(mol)
 
     app = QApplication(sys.argv)
     widget = MainWindow()
