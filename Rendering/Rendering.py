@@ -19,8 +19,9 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
     if molecule is None:
         return
     else:
-        view_mat = pyrr.matrix44.create_look_at(pyrr.Vector3(camera.position),
-                                                pyrr.Vector3(camera.target), pyrr.Vector3(camera.up_vector))
+        view_mat = pyrr.matrix44.create_look_at(
+            pyrr.Vector3(camera.position), pyrr.Vector3(camera.target), pyrr.Vector3(camera.up_vector)
+        )
 
         light_direction_loc = glGetUniformLocation(shader, "light_direction")
         proj_loc = glGetUniformLocation(shader, "projection")
@@ -37,7 +38,11 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
 
         for vao, atomic_number in zip(vaos, molecule.unique_atomic_numbers):
             glBindVertexArray(vao)
-            glDrawElementsInstanced(GL_TRIANGLES, len(molecule.drawer.unique_spheres[atomic_number].vertices),
-                                    GL_UNSIGNED_INT, None,
-                                    len(molecule.drawer.unique_spheres[atomic_number].model_matrices))
+            glDrawElementsInstanced(
+                GL_TRIANGLES,
+                len(molecule.drawer.unique_spheres[atomic_number].vertices),
+                GL_UNSIGNED_INT,
+                None,
+                len(molecule.drawer.unique_spheres[atomic_number].model_matrices),
+            )
             glBindVertexArray(0)

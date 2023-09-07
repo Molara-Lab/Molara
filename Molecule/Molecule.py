@@ -14,7 +14,7 @@ class Molecule:
         for i, atomic_number in enumerate(atomic_numbers):
             atom = Atom(atomic_number, coordinates[i])
             self.atoms.append(atom)
-            if not atomic_number in self.unique_atomic_numbers:
+            if atomic_number not in self.unique_atomic_numbers:
                 self.unique_atomic_numbers.append(atomic_number)
 
         self.bonded_pairs = self.calculate_bonds()
@@ -68,7 +68,7 @@ def read_xyz(file_path : str):
         atomic_numbers = []
         coordinates = []
 
-        for line in lines[2:2 + num_atoms]:
+        for line in lines[2 : 2 + num_atoms]:
             atom_info = line.split()
             if atom_info[0].isnumeric():
                 atomic_numbers.append(int(atom_info[0]))
