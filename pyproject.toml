@@ -14,6 +14,7 @@ select = [
   "I",    # isort
   "ICN",  # flake8-import-conventions
   "ISC",  # flake8-implicit-str-concat
+  "PERF", # perflint
   "PT",   # flake8-pytest-style
   "PYI",  # flakes8-pyi
   "Q",    # flake8-quotes
