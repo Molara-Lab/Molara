@@ -6,6 +6,7 @@ target-version = "py39"
 line-length = 120#
 select = [
   "B", # flake8-bugbear
+  "C4", # flake8-comprehensions
   "I", # isort
   ]
 ignore = [
