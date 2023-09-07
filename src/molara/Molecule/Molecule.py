@@ -1,7 +1,7 @@
 import numpy as np
 
-from Molecule.Atom import Atom, element_symbol_to_atomic_number
-from Molecule.Drawer import Drawer
+from .Atom import Atom, element_symbol_to_atomic_number
+from .Drawer import Drawer
 
 
 class Molecule:

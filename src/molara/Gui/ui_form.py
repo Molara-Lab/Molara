@@ -43,7 +43,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QApplication, QGridLayout, QMainWindow, QMenu, QMenuBar, QSizePolicy, QStatusBar, QWidget
 
-from MoleculeWidget.MoleculeWidget import MoleculeWidget
+from ..MoleculeWidget.MoleculeWidget import MoleculeWidget
 
 
 class Ui_MainWindow(object):

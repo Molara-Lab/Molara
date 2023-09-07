@@ -5,10 +5,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from Rendering.Buffers import Vao
-from Rendering.Camera import Camera
-from Rendering.Rendering import draw_scene
-from Rendering.Shaders import compile_shaders
+from ..Rendering.Buffers import Vao
+from ..Rendering.Camera import Camera
+from ..Rendering.Rendering import draw_scene
+from ..Rendering.Shaders import compile_shaders
 
 
 class MoleculeWidget(QOpenGLWidget):

@@ -1,8 +1,8 @@
 import numpy as np
 import pyrr
 
-from Molecule.Atom import Atom
-from Rendering.Sphere import Spheres
+from .Atom import Atom
+from ..Rendering.Sphere import Spheres
 
 
 class Drawer:

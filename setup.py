@@ -1,12 +1,15 @@
 import pathlib
 from setuptools import setup, find_packages
 
+_HERE = pathlib.Path(__file__).parent   # directoy of setup.py
+
 setup(
     name='Molara',
-    version='',
-    packages= find_packages(
-        where=str(pathlib.Path(__file__).parent / 'src'),
-        # install only the chemtrayzer package, not the unit tests
+    version='0.0.1',
+    package_dir={"": "src"},
+    packages=find_packages(
+        # install only the molara package and subpackes, not unit tests,
+        # examples, ...
         include=('molara', 'molara.*')
     ),
     url='',
@@ -23,7 +26,7 @@ setup(
     ],
    entry_points={
         'console_scripts': [
-            'molara=molara_main.__main__:main'
+            'molara=molara.__main__:main'
         ]
     } 
 )
