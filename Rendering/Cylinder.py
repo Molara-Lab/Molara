@@ -2,8 +2,7 @@ import numpy as np
 
 
 class Cylinder:
-    """
-    Creates a Cylinder object, containing its vertices and indices.
+    """Creates a Cylinder object, containing its vertices and indices.
 
     :param color: Color of the cylinder.
     :type color: numpy.array of numpy.float32
@@ -20,8 +19,7 @@ class Cylinder:
 
 
 class Cylinders(Cylinder):
-    """
-    Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw multiple
+    """Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw multiple
     instances.
 
     :param color: Color of the cylinder.
@@ -36,8 +34,7 @@ class Cylinders(Cylinder):
 
 
 def generate_cylinder(subdivisions, color):
-    """
-    Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
+    """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
     :param color: Color of the cylinder.
     :type color: numpy.array of numpy.float32

@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import numpy as np
-from OpenGL.GL import glClearColor, glEnable, GL_DEPTH_TEST, glViewport
+from OpenGL.GL import GL_DEPTH_TEST, glClearColor, glEnable, glViewport
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -94,11 +94,10 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton:
-            if event.x() in range(self.width()) and event.y() in range(self.height()):
-                self.rotate_sphere = True
-                self.set_normalized_position(event)
-                self.click_position = np.copy(self.position)
+        if event.button() == Qt.LeftButton and event.x() in range(self.width()) and event.y() in range(self.height()):
+            self.rotate_sphere = True
+            self.set_normalized_position(event)
+            self.click_position = np.copy(self.position)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.rotate_sphere and self.click_position is not None:
@@ -116,10 +115,9 @@ class MoleculeWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton:
-            if self.rotate_sphere:
-                self.rotate_sphere = False
-                self.set_normalized_position(event)
-                self.camera.calculate_camera_position(self.click_position, self.position, save=True)
-                self.click_position = None
-                # self.update()
+        if event.button() == Qt.LeftButton and self.rotate_sphere:
+            self.rotate_sphere = False
+            self.set_normalized_position(event)
+            self.camera.calculate_camera_position(self.click_position, self.position, save=True)
+            self.click_position = None
+            # self.update()
