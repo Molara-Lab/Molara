@@ -5,6 +5,7 @@ line-length = 120
 target-version = "py39"
 line-length = 120#
 select = [
+  "B", # flake8-bugbear
   "I", # isort
   ]
 ignore = [
