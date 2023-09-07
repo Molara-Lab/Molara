@@ -3,8 +3,7 @@ from OpenGL.GL.shaders import compileShader
 
 
 def compile_shaders():
-    """
-    Compiles the shader program with the given shader source code in glsl.
+    """Compiles the shader program with the given shader source code in glsl.
 
     :return: The compiled shader program from pyopengl.
     """

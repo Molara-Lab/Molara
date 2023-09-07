@@ -20,8 +20,7 @@ from OpenGL.GL import (
 
 
 def setup_vao(vertices, indices, model_matrices):
-    """
-    Sets up a vertex attribute object and binds it to the GPU.
+    """Sets up a vertex attribute object and binds it to the GPU.
 
     :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
         rgb are the color values [0,1], and nxnynz are the components of the normal vector.
@@ -73,8 +72,7 @@ def setup_vao(vertices, indices, model_matrices):
 
 
 class Vao:
-    """
-    Creates a vertex attribute object.
+    """Creates a vertex attribute object.
 
     :param opengl_widget: QOpenGLWidget object in order to set the opengl context to the one used in the
         QT openGL widget.
@@ -97,7 +95,5 @@ class Vao:
         self.vao = setup_vao(self.vertices, self.indices, self.model_matrices)
 
     def destroy(self):
-        """
-        Destroys the vertex attribute object.
-        """
+        """Destroys the vertex attribute object."""
         glDeleteVertexArrays(1, self.vao)

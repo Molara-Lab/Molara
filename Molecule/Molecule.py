@@ -37,10 +37,9 @@ class Molecule:
             bonded_pairs.extend([(i, j) for j in bonded_indices if j > i])
 
         if bonded_pairs:
-            unique_bonds = np.array(bonded_pairs)
-            return unique_bonds
-        else:
-            return np.array([[-1, -1]], dtype=np.int_)
+            return np.array(bonded_pairs)
+
+        return np.array([[-1, -1]], dtype=np.int_)
 
     def add_atom(self, atomic_number, coordinate):
         atom = Atom(atomic_number, coordinate)
