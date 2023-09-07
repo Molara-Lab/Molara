@@ -14,7 +14,7 @@ class Molecule:
         for i, atomic_number in enumerate(atomic_numbers):
             atom = Atom(atomic_number, coordinates[i])
             self.atoms.append(atom)
-            if not atomic_number in self.unique_atomic_numbers:
+            if atomic_number not in self.unique_atomic_numbers:
                 self.unique_atomic_numbers.append(atomic_number)
 
         self.bonded_pairs = self.calculate_bonds()
