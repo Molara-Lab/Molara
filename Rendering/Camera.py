@@ -72,7 +72,7 @@ class Camera:
             :return numpy.array of numpy.float32: x, y, and z coordinates on the invisible arcball sphere.
             """
             z = x
-            squared_sum = z ** 2 + y ** 2
+            squared_sum = z**2 + y**2
             if squared_sum <= 1.0:
                 x = np.sqrt(1.0 - squared_sum)
             else:
@@ -99,8 +99,10 @@ class Camera:
         rotation = self.last_rotation * self.current_rotation
 
         self.up_vector = rotation * pyrr.Vector3([0.0, 1.0, 0.0])
-        self.position = pyrr.vector3.normalize(
-            rotation * (self.reference_position - self.target) + self.target) * self.distance_from_target
+        self.position = (
+            pyrr.vector3.normalize(rotation * (self.reference_position - self.target) + self.target)
+            * self.distance_from_target
+        )
 
         if save:
             self.last_rotation = self.last_rotation * self.current_rotation

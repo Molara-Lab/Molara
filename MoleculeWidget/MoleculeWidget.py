@@ -57,7 +57,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def initializeGL(self):
-        glClearColor(1, 1, 1, 1.)
+        glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         self.shader = compile_shaders()
 
@@ -73,9 +73,12 @@ class MoleculeWidget(QOpenGLWidget):
     def set_vertex_attribute_objects(self):
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
-            vao = Vao(self, self.molecule.drawer.unique_spheres[atomic_number].vertices,
-                      self.molecule.drawer.unique_spheres[atomic_number].indices,
-                      self.molecule.drawer.unique_spheres[atomic_number].model_matrices)
+            vao = Vao(
+                self,
+                self.molecule.drawer.unique_spheres[atomic_number].vertices,
+                self.molecule.drawer.unique_spheres[atomic_number].indices,
+                self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
+            )
             self.vertex_attribute_objects.append(vao.vao)
 
     def draw_axes(self):

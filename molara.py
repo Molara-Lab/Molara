@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     widget = MainWindow()
-    widget.setWindowTitle('Molara')
+    widget.setWindowTitle("Molara")
     widget.show()
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
