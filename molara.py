@@ -3,7 +3,7 @@
 import sys
 
 from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 # Important:
 # You need to run the following command to generate the ui_form.py file

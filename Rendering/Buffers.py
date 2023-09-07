@@ -1,21 +1,21 @@
 import ctypes
 
 from OpenGL.GL import (
-    glGenVertexArrays,
-    glGenBuffers,
-    glBindVertexArray,
-    glBindBuffer,
-    glBufferData,
     GL_ARRAY_BUFFER,
-    GL_STATIC_DRAW,
-    GL_ELEMENT_ARRAY_BUFFER,
-    glEnableVertexAttribArray,
-    glVertexAttribPointer,
-    GL_FLOAT,
-    GL_FALSE,
     GL_DYNAMIC_DRAW,
-    glVertexAttribDivisor,
+    GL_ELEMENT_ARRAY_BUFFER,
+    GL_FALSE,
+    GL_FLOAT,
+    GL_STATIC_DRAW,
+    glBindBuffer,
+    glBindVertexArray,
+    glBufferData,
     glDeleteVertexArrays,
+    glEnableVertexAttribArray,
+    glGenBuffers,
+    glGenVertexArrays,
+    glVertexAttribDivisor,
+    glVertexAttribPointer,
 )
 
 

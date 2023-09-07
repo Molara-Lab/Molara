@@ -1,4 +1,4 @@
-from OpenGL.GL import GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, glUseProgram, glCreateProgram, glAttachShader, glLinkProgram
+from OpenGL.GL import GL_FRAGMENT_SHADER, GL_VERTEX_SHADER, glAttachShader, glCreateProgram, glLinkProgram, glUseProgram
 from OpenGL.GL.shaders import compileShader
 
 
