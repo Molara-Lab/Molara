@@ -1,9 +1,14 @@
-from setuptools import setup
+import pathlib
+from setuptools import setup, find_packages
 
 setup(
     name='Molara',
     version='',
-    packages=[''],
+    packages= find_packages(
+        where=str(pathlib.Path(__file__).parent / 'src'),
+        # install only the chemtrayzer package, not the unit tests
+        include=('molara', 'molara.*')
+    ),
     url='',
     license='GPL v3',
     author='Michel Heinz, Gereon Feldmann',
