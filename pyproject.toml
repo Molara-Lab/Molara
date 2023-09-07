@@ -5,15 +5,19 @@ line-length = 120
 target-version = "py39"
 line-length = 120#
 select = [
+  "AIR",  # airflow
   "B",    # flake8-bugbear
   "C4",   # flake8-comprehensions
   "EXE",  # flake8-executable
   "F",    # pyflakes
   "FA",   # flake8-future-annotations
   "FLY",  # flynt
+  "FURB", # refurb
   "I",    # isort
   "ICN",  # flake8-import-conventions
   "ISC",  # flake8-implicit-str-concat
+#  "N",    # pep8-naming
+  "NPY",  # numpy
   "PERF", # perflint
   "PT",   # flake8-pytest-style
   "PYI",  # flakes8-pyi
