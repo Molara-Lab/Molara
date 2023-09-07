@@ -15,5 +15,10 @@ setup(
         'pyrr',
         'scipy',
         'PyOpenGL'
-    ]
+    ],
+   entry_points={
+        'console_scripts': [
+            'molara=molara_main.__main__:main'
+        ]
+    } 
 )
