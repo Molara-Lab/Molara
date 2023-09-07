@@ -9,6 +9,7 @@ select = [
   "C4",  # flake8-comprehensions
   "FLY", # flynt
   "I",   # isort
+  "W",    # pycodestyle warning
   ]
 ignore = [
   "F401", # {name} imported but unused
