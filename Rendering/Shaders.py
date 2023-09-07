@@ -67,13 +67,13 @@ void main()
     vec3 camera_fragment_direction = normalize(camera_position - v_fragment_position);
     vec3 halfway = normalize(light_fragment_direction + camera_fragment_direction);
 
-    
+
     float diff = max(dot(normal, light_dir), 0.0) * 0.66667 + 0.33334;
-    
+
     float spec = pow(max(dot(normal, halfway), 0.0), 25);
-    
+
     vec3 light_color = vec3(1.0, 1.0, 1.0);    // Light color
-    
+
     vec3 result = v_color * light_color * diff;// + spec;
     out_color = vec4(result, 1.0);
 }

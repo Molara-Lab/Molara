@@ -29,7 +29,8 @@ class Drawer:
                 self.unique_spheres[atom.atomic_number].model_matrices = calculate_sphere_model_matrix(atom)
             else:
                 self.unique_spheres[atom.atomic_number].model_matrices = np.concatenate(
-                    (self.unique_spheres[atom.atomic_number].model_matrices, calculate_sphere_model_matrix(atom)))
+                    (self.unique_spheres[atom.atomic_number].model_matrices, calculate_sphere_model_matrix(atom))
+                )
         # print(self.unique_spheres[1].model_matrices)
 
 
