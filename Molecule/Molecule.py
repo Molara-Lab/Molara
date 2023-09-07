@@ -37,10 +37,9 @@ class Molecule:
             bonded_pairs.extend([(i, j) for j in bonded_indices if j > i])
 
         if bonded_pairs:
-            unique_bonds = np.array(bonded_pairs)
-            return unique_bonds
-        else:
-            return np.array([[-1, -1]], dtype=np.int_)
+            return np.array(bonded_pairs)
+
+        return np.array([[-1, -1]], dtype=np.int_)
 
     def add_atom(self, atomic_number, coordinate):
         atom = Atom(atomic_number, coordinate)
@@ -54,7 +53,7 @@ class Molecule:
     def center_coordinates(self):
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0)
-        for i, atom in enumerate(self.atoms):
+        for _i, atom in enumerate(self.atoms):
             atom.position -= center
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_sphere_model_matrices()
