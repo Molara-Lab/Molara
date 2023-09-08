@@ -1,18 +1,17 @@
 import sys
 
 from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-
 from .Gui.ui_form import Ui_MainWindow
-from .Molecule.Molecule import read_xyz,read_coord
+from .Molecule.Molecule import read_coord, read_xyz
+
 
 def main() -> None:
-
     format = QSurfaceFormat()
     format.setVersion(4, 1)
     format.setProfile(QSurfaceFormat.CoreProfile)
@@ -37,7 +36,7 @@ def main() -> None:
             fileName = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
             mol = read_xyz(fileName[0])
             widget.ui.openGLWidget.set_molecule(mol)
-            
+
         def show_coord(self):
             fileName = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
             mol = read_coord(fileName[0])
@@ -45,7 +44,7 @@ def main() -> None:
 
     app = QApplication(sys.argv)
     widget = MainWindow()
-    widget.setWindowTitle('Molara')
+    widget.setWindowTitle("Molara")
     widget.show()
 
     if len(sys.argv) > 1:
@@ -58,5 +57,6 @@ def main() -> None:
     widget.ui.quit.triggered.connect(widget.close)
     sys.exit(app.exec())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
