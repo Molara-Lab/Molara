@@ -2,7 +2,7 @@ import numpy as np
 import pyrr
 
 from .Atom import Atom
-from ..Rendering.Sphere import Spheres
+from molara.Rendering.Sphere import Spheres
 
 
 class Drawer:
