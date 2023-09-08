@@ -1,8 +1,9 @@
 import numpy as np
 import pyrr
 
-from .Atom import Atom
 from molara.Rendering.Sphere import Spheres
+
+from .Atom import Atom
 
 
 class Drawer:

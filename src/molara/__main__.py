@@ -1,15 +1,14 @@
 import sys
 
 from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-
 from .Gui.ui_form import Ui_MainWindow
-from .Molecule.Molecule import read_xyz, read_coord
+from .Molecule.Molecule import read_coord, read_xyz
 
 
 def main() -> None:
