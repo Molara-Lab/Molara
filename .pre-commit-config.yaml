@@ -23,3 +23,10 @@ repos:
       rev: 23.7.0
       hooks:
       -   id: black
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.5
+    hooks:
+      - id: codespell
+        stages: [commit, commit-msg]
+        additional_dependencies: [tomli] # read pyproject.toml below py3.11

@@ -7,7 +7,7 @@ from molara.Molecule.Molecule import Molecule
 def draw_scene(shader, camera, vaos, molecule: Molecule):
     """Draws the contents of the given vaos from the given camera perspective.
 
-    :param shader: Ths shader program of the opengl widget.
+    :param shader: The shader program of the opengl widget.
     :type shader: pyopengl program
     :param camera: The camera object to capture the scene.
     :type camera: Camera

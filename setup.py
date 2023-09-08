@@ -2,7 +2,7 @@ import pathlib
 
 from setuptools import find_packages, setup
 
-_HERE = pathlib.Path(__file__).parent  # directoy of setup.py
+_HERE = pathlib.Path(__file__).parent  # directory of setup.py
 
 setup(
     name="Molara",
