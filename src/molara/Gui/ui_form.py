@@ -55,19 +55,14 @@ class Ui_MainWindow(object):
 
         self.quit = QAction(MainWindow)
         self.quit.setObjectName(u"quit")
-
         self.action_xyz = QAction(MainWindow)
         self.action_xyz.setObjectName(u"action_xyz")
-
         self.action_coord = QAction(MainWindow)
         self.action_coord.setObjectName(u"action_coord")
-
         self.actionCenter_Molecule = QAction(MainWindow)
         self.actionCenter_Molecule.setObjectName(u"actionCenter_Molecule")
-
         self.actionReset_View = QAction(MainWindow)
         self.actionReset_View.setObjectName(u"actionReset_View")
-
         self.actionto_x_axis = QAction(MainWindow)
         self.actionto_x_axis.setObjectName("actionto_x_axis")
         self.actionto_y_axis = QAction(MainWindow)
@@ -82,9 +77,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
         self.openGLWidget = MoleculeWidget(self.centralwidget)
         self.openGLWidget.setObjectName("openGLWidget")
-
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
-
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
@@ -101,7 +94,6 @@ class Ui_MainWindow(object):
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menuFile.addAction(self.menuImport.menuAction())
