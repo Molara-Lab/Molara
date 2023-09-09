@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -42,6 +42,8 @@ class Ui_MainWindow(object):
         self.actionto_z_axis.setObjectName(u"actionto_z_axis")
         self.actionDraw_Axes = QAction(MainWindow)
         self.actionDraw_Axes.setObjectName(u"actionDraw_Axes")
+        self.actionCreate_Lattice = QAction(MainWindow)
+        self.actionCreate_Lattice.setObjectName(u"actionCreate_Lattice")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -63,6 +65,8 @@ class Ui_MainWindow(object):
         self.menuEdit.setObjectName(u"menuEdit")
         self.menuRotate = QMenu(self.menuEdit)
         self.menuRotate.setObjectName(u"menuRotate")
+        self.menuCrystal = QMenu(self.menubar)
+        self.menuCrystal.setObjectName(u"menuCrystal")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -70,6 +74,7 @@ class Ui_MainWindow(object):
 
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
+        self.menubar.addAction(self.menuCrystal.menuAction())
         self.menuFile.addAction(self.menuImport.menuAction())
         self.menuFile.addAction(self.quit)
         self.menuImport.addAction(self.action_xyz)
@@ -80,6 +85,7 @@ class Ui_MainWindow(object):
         self.menuRotate.addAction(self.actionto_x_axis)
         self.menuRotate.addAction(self.actionto_y_axis)
         self.menuRotate.addAction(self.actionto_z_axis)
+        self.menuCrystal.addAction(self.actionCreate_Lattice)
 
         self.retranslateUi(MainWindow)
 
@@ -96,9 +102,11 @@ class Ui_MainWindow(object):
         self.actionto_y_axis.setText(QCoreApplication.translate("MainWindow", u"to y axis", None))
         self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", u"to z axis", None))
         self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Draw Axes", None))
+        self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", u"Create Lattice", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
+        self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
     # retranslateUi
 
