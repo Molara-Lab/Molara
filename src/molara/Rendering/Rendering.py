@@ -35,7 +35,6 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
     glUniformMatrix4fv(view_loc, 1, GL_FALSE, view_mat)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
     for vao, atomic_number in zip(vaos, molecule.unique_atomic_numbers):
         glBindVertexArray(vao)
         glDrawElementsInstanced(
@@ -46,3 +45,13 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
             len(molecule.drawer.unique_spheres[atomic_number].model_matrices),
         )
         glBindVertexArray(0)
+    vao = vaos[len(molecule.unique_atomic_numbers)]
+    glBindVertexArray(vao)
+    glDrawElementsInstanced(
+        GL_TRIANGLES,
+        len(molecule.drawer.cylinders.vertices),
+        GL_UNSIGNED_INT,
+        None,
+        len(molecule.drawer.cylinders.model_matrices),
+    )
+    glBindVertexArray(0)
