@@ -5,10 +5,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from ..Rendering.Buffers import Vao
-from ..Rendering.Camera import Camera
-from ..Rendering.Rendering import draw_scene
-from ..Rendering.Shaders import compile_shaders
+from molara.Rendering.Buffers import Vao
+from molara.Rendering.Camera import Camera
+from molara.Rendering.Rendering import draw_scene
+from molara.Rendering.Shaders import compile_shaders
 
 
 class MoleculeWidget(QOpenGLWidget):
@@ -80,6 +80,13 @@ class MoleculeWidget(QOpenGLWidget):
                 self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
             )
             self.vertex_attribute_objects.append(vao.vao)
+        cylinder_vao = Vao(
+            self,
+            self.molecule.drawer.cylinders.vertices,
+            self.molecule.drawer.cylinders.indices,
+            self.molecule.drawer.cylinders.model_matrices,
+        )
+        self.vertex_attribute_objects.append(cylinder_vao.vao)
 
     def draw_axes(self):
         return

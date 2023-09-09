@@ -68,3 +68,8 @@ ignore = [
   "F405", # {name} may be undefined, or defined from star imports
   ]
 pydocstyle.convention = "google"
+
+[tool.codespell]
+ignore-words-list = "nd,te"
+skip = "pymatgen/analysis/aflow_prototypes.json"
+check-filenames = true
