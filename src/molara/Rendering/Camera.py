@@ -3,9 +3,7 @@ import pyrr
 
 
 class Camera:
-    """
-    Creates a camera object to visualize the scene.
-    """
+    """Creates a camera object to visualize the scene."""
 
     def __init__(self):
         self.reference_position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
@@ -22,8 +20,7 @@ class Camera:
         self.position *= self.distance_from_target
 
     def calculate_projection_matrix(self, width, height):
-        """
-        Calculates the projection matrix to get from world to camera space.
+        """Calculates the projection matrix to get from world to camera space.
 
         :param width: Width of the opengl widget.
         :type width: float
@@ -33,14 +30,11 @@ class Camera:
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(45, width / height, 0.1, 100)
 
     def reset(self):
-        """
-        Resets the camera.
-        """
+        """Resets the camera."""
         self.__init__()
 
     def set_distance_from_target(self, zoom):
-        """
-        Set the distance between the camera and its target.
+        """Set the distance between the camera and its target.
 
         :param zoom: Factor that is multiplied with the normalized camera position vector and the current distance
             between the camera and the target.
@@ -49,8 +43,7 @@ class Camera:
         self.position = pyrr.vector3.normalize(self.position) * self.distance_from_target
 
     def calculate_camera_position(self, old_mouse_position, new_mouse_position, save=False):
-        """
-        Calculates the camera position according to arcball movement using the normalized mouse positions.
+        """Calculates the camera position according to arcball movement using the normalized mouse positions.
 
         :param old_mouse_position: Old normalized x and y coordinate of the mous position on the opengl widget.
         :type old_mouse_position: numpy.array of numpy.float32
@@ -61,8 +54,7 @@ class Camera:
         """
 
         def calculate_arcball_point(x, y):
-            """
-            Calculates the x, y, and z on the surface of an invisible sphere using only the x and y coordinates and
+            """Calculates the x, y, and z on the surface of an invisible sphere using only the x and y coordinates and
             using the positive z solution.
 
             :param x: Normalized x coordinate.
@@ -72,7 +64,7 @@ class Camera:
             :return numpy.array of numpy.float32: x, y, and z coordinates on the invisible arcball sphere.
             """
             z = x
-            squared_sum = z ** 2 + y ** 2
+            squared_sum = z**2 + y**2
             if squared_sum <= 1.0:
                 x = np.sqrt(1.0 - squared_sum)
             else:
@@ -99,8 +91,10 @@ class Camera:
         rotation = self.last_rotation * self.current_rotation
 
         self.up_vector = rotation * pyrr.Vector3([0.0, 1.0, 0.0])
-        self.position = pyrr.vector3.normalize(
-            rotation * (self.reference_position - self.target) + self.target) * self.distance_from_target
+        self.position = (
+            pyrr.vector3.normalize(rotation * (self.reference_position - self.target) + self.target)
+            * self.distance_from_target
+        )
 
         if save:
             self.last_rotation = self.last_rotation * self.current_rotation

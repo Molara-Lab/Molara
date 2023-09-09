@@ -1,7 +1,7 @@
 import numpy as np
 
-from Molecule.Atom import Atom, element_symbol_to_atomic_number
-from Molecule.Drawer import Drawer
+from .Atom import Atom, element_symbol_to_atomic_number
+from .Drawer import Drawer
 
 
 class Molecule:
@@ -14,7 +14,7 @@ class Molecule:
         for i, atomic_number in enumerate(atomic_numbers):
             atom = Atom(atomic_number, coordinates[i])
             self.atoms.append(atom)
-            if not atomic_number in self.unique_atomic_numbers:
+            if atomic_number not in self.unique_atomic_numbers:
                 self.unique_atomic_numbers.append(atomic_number)
 
         self.bonded_pairs = self.calculate_bonds()
@@ -37,10 +37,9 @@ class Molecule:
             bonded_pairs.extend([(i, j) for j in bonded_indices if j > i])
 
         if bonded_pairs:
-            unique_bonds = np.array(bonded_pairs)
-            return unique_bonds
-        else:
-            return np.array([[-1, -1]], dtype=np.int_)
+            return np.array(bonded_pairs)
+
+        return np.array([[-1, -1]], dtype=np.int_)
 
     def add_atom(self, atomic_number, coordinate):
         atom = Atom(atomic_number, coordinate)
@@ -54,20 +53,22 @@ class Molecule:
     def center_coordinates(self):
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0)
-        for i, atom in enumerate(self.atoms):
+        for _i, atom in enumerate(self.atoms):
             atom.position -= center
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_sphere_model_matrices()
+        self.drawer.set_cylinder_model_matrices()
 
-def read_xyz(file_path):
-    with open(file_path, 'r') as file:
+
+def read_xyz(file_path: str):
+    with open(file_path, "r") as file:
         lines = file.readlines()
 
         num_atoms = int(lines[0])
         atomic_numbers = []
         coordinates = []
 
-        for line in lines[2:2 + num_atoms]:
+        for line in lines[2 : 2 + num_atoms]:
             atom_info = line.split()
             if atom_info[0].isnumeric():
                 atomic_numbers.append(int(atom_info[0]))
@@ -75,4 +76,33 @@ def read_xyz(file_path):
                 atomic_numbers.append(element_symbol_to_atomic_number(atom_info[0]))
             coordinates.append([float(coord) for coord in atom_info[1:4]])
 
-        return Molecule(atomic_numbers, coordinates)
+    file.close()
+
+    return Molecule(atomic_numbers, coordinates)
+
+
+def read_coord(file_path: str):
+    """
+    Imports a coord file
+    Returns the Molecule
+    """
+
+    with open(file_path) as file:
+        lines = file.readlines()  # To skip first row
+
+    atomic_numbers = []
+    coordinates = []
+
+    for line in lines[1:]:
+        if "$" in line:
+            break
+
+        atom_info = line.split()
+        if atom_info[-1].isnumeric():
+            atomic_numbers.append(int(atom_info[-1]))
+        else:
+            atom_info[-1] = atom_info[-1].capitalize()
+            atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
+        coordinates.append([float(coord) * 0.529177249 for coord in atom_info[:3]])
+
+    return Molecule(atomic_numbers, coordinates)

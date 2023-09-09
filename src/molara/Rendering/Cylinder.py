@@ -1,48 +1,47 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import numpy as np
 
 
 class Cylinder:
-    """
-    Creates a Cylinder object, containing its vertices and indices.
+    """Creates a Cylinder object, containing its vertices and indices.
 
     :param color: Color of the cylinder.
-    :type color: numpy.array of numpy.float32
     :param subdivisions: Number of subdivisions of the cylinder.
-    :type subdivisions: integer
     """
 
-    def __init__(self, color, subdivisions):
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         self.color = color
         self.subdivisions = subdivisions
-        vertices, indices = generate_cylinder(self.subdivisions, self.color)
-        self.vertices = vertices
-        self.indices = indices
+        if color is not None and subdivisions is not None:
+            vertices, indices = generate_cylinder(self.color, self.subdivisions)
+            self.vertices = vertices
+            self.indices = indices
+        else:
+            self.vertices = None
+            self.indices = None
 
 
 class Cylinders(Cylinder):
-    """
-    Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw multiple
+    """Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw multiple
     instances.
 
     :param color: Color of the cylinder.
-    :type color: numpy.array of numpy.float32
     :param subdivisions: Number of subdivisions of the cylinder.
-    :type subdivisions: integer
     """
 
-    def __init__(self, color, subdivisions):
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         super().__init__(color, subdivisions)
-        self.model_matrices = []
+        self.model_matrices = None
 
 
-def generate_cylinder(subdivisions, color):
-    """
-    Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
+def generate_cylinder(color: np.ndarray = None, subdivisions: Optional[int] = None) -> (np.ndarray, np.ndarray):
+    """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
     :param color: Color of the cylinder.
-    :type color: numpy.array of numpy.float32
     :param subdivisions: Number of subdivisions of the cylinder.
-    :type subdivisions: integer
     :returns:
         - **vertices** (numpy.array of numpy.float32) - Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where\
          xyz are the cartesian coordinates,rgb are the color values [0,1], and nxnynz are the components of the normal\
@@ -52,7 +51,7 @@ def generate_cylinder(subdivisions, color):
     vertices = []
     indices = []
 
-    height = 2.0
+    height = 1.0
     radius = 0.5
     vertices.extend([0.0, -height / 2, 0.0, color[0], color[1], color[2], 0.0, -1, 0.0])
     vertices.extend([0.0, height / 2, 0.0, color[0], color[1], color[2], 0.0, 1, 0.0])

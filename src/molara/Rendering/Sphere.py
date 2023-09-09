@@ -1,17 +1,18 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import numpy as np
 
 
 class Sphere:
-    """
-    Creates a Sphere object, containing its vertices and indices.
+    """Creates a Sphere object, containing its vertices and indices.
 
     :param color: Color of the sphere.
-    :type color: numpy.array of numpy.float32
     :param subdivisions: Number of subdivisions of the sphere.
-    :type subdivisions: integer
     """
 
-    def __init__(self, color, subdivisions):
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         self.color = color
         self.subdivisions = subdivisions
         if color is not None and subdivisions is not None:
@@ -23,31 +24,24 @@ class Sphere:
             self.indices = None
 
 
-
 class Spheres(Sphere):
-    """
-    Creates a Spheres object containing multiple spheres of the same color and the model matrices to draw multiple
+    """Creates a Spheres object containing multiple spheres of the same color and the model matrices to draw multiple
     instances.
 
     :param color: Color of the sphere.
-    :type color: numpy.array of numpy.float32
     :param subdivisions: Number of subdivisions of the sphere.
-    :type subdivisions: integer
     """
 
-    def __init__(self, color=None, subdivisions=None):
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         super().__init__(color, subdivisions)
         self.model_matrices = None
 
 
-def generate_sphere(color, subdivisions):
-    """
-    Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
+def generate_sphere(color: np.ndarray = None, subdivisions: Optional[int] = None) -> (np.ndarray, np.ndarray):
+    """Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
 
     :param color: Color of the sphere.
-    :type color: numpy.array of numpy.float32
     :param subdivisions: Number of subdivisions of the sphere.
-    :type subdivisions: integer
     :returns:
         - **vertices** (numpy.array of numpy.float32) - Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where\
          xyz are the cartesian coordinates,rgb are the color values [0,1], and nxnynz are the components of the normal\

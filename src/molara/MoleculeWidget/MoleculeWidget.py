@@ -1,14 +1,14 @@
 # This Python file uses the following encoding: utf-8
 import numpy as np
-from OpenGL.GL import glClearColor, glEnable, GL_DEPTH_TEST, glViewport
+from OpenGL.GL import GL_DEPTH_TEST, glClearColor, glEnable, glViewport
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from Rendering.Buffers import Vao
-from Rendering.Camera import Camera
-from Rendering.Rendering import draw_scene
-from Rendering.Shaders import compile_shaders
+from molara.Rendering.Buffers import Vao
+from molara.Rendering.Camera import Camera
+from molara.Rendering.Rendering import draw_scene
+from molara.Rendering.Shaders import compile_shaders
 
 
 class MoleculeWidget(QOpenGLWidget):
@@ -57,7 +57,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def initializeGL(self):
-        glClearColor(1, 1, 1, 1.)
+        glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         self.shader = compile_shaders()
 
@@ -73,10 +73,20 @@ class MoleculeWidget(QOpenGLWidget):
     def set_vertex_attribute_objects(self):
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
-            vao = Vao(self, self.molecule.drawer.unique_spheres[atomic_number].vertices,
-                      self.molecule.drawer.unique_spheres[atomic_number].indices,
-                      self.molecule.drawer.unique_spheres[atomic_number].model_matrices)
+            vao = Vao(
+                self,
+                self.molecule.drawer.unique_spheres[atomic_number].vertices,
+                self.molecule.drawer.unique_spheres[atomic_number].indices,
+                self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
+            )
             self.vertex_attribute_objects.append(vao.vao)
+        cylinder_vao = Vao(
+            self,
+            self.molecule.drawer.cylinders.vertices,
+            self.molecule.drawer.cylinders.indices,
+            self.molecule.drawer.cylinders.model_matrices,
+        )
+        self.vertex_attribute_objects.append(cylinder_vao.vao)
 
     def draw_axes(self):
         return
@@ -91,11 +101,10 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton:
-            if event.x() in range(self.width()) and event.y() in range(self.height()):
-                self.rotate_sphere = True
-                self.set_normalized_position(event)
-                self.click_position = np.copy(self.position)
+        if event.button() == Qt.LeftButton and event.x() in range(self.width()) and event.y() in range(self.height()):
+            self.rotate_sphere = True
+            self.set_normalized_position(event)
+            self.click_position = np.copy(self.position)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.rotate_sphere and self.click_position is not None:
@@ -113,10 +122,9 @@ class MoleculeWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton:
-            if self.rotate_sphere:
-                self.rotate_sphere = False
-                self.set_normalized_position(event)
-                self.camera.calculate_camera_position(self.click_position, self.position, save=True)
-                self.click_position = None
-                # self.update()
+        if event.button() == Qt.LeftButton and self.rotate_sphere:
+            self.rotate_sphere = False
+            self.set_normalized_position(event)
+            self.camera.calculate_camera_position(self.click_position, self.position, save=True)
+            self.click_position = None
+            # self.update()

@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QDialog
-from Gui.ui_crystalstructure_dialog import Ui_Dialog
+from molara.Gui.ui_crystalstructure_dialog import Ui_Dialog
 
 class CrystalDialog(QDialog):
   def __init__(self, parent=None):
