@@ -80,6 +80,13 @@ class MoleculeWidget(QOpenGLWidget):
                 self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
             )
             self.vertex_attribute_objects.append(vao.vao)
+        cylinder_vao = Vao(
+            self,
+            self.molecule.drawer.cylinders.vertices,
+            self.molecule.drawer.cylinders.indices,
+            self.molecule.drawer.cylinders.model_matrices,
+        )
+        self.vertex_attribute_objects.append(cylinder_vao.vao)
 
     def draw_axes(self):
         return
