@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import numpy as np
 
 
@@ -8,7 +12,7 @@ class Cylinder:
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = None) -> None:
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         self.color = color
         self.subdivisions = subdivisions
         if color is not None and subdivisions is not None:
@@ -28,12 +32,12 @@ class Cylinders(Cylinder):
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = None) -> None:
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         super().__init__(color, subdivisions)
         self.model_matrices = None
 
 
-def generate_cylinder(color: np.ndarray = None, subdivisions: int = None) -> (np.ndarray, np.ndarray):
+def generate_cylinder(color: np.ndarray = None, subdivisions: Optional[int] = None) -> (np.ndarray, np.ndarray):
     """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
     :param color: Color of the cylinder.

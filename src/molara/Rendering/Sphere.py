@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import numpy as np
 
 
@@ -8,7 +12,7 @@ class Sphere:
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = None) -> None:
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         self.color = color
         self.subdivisions = subdivisions
         if color is not None and subdivisions is not None:
@@ -28,12 +32,12 @@ class Spheres(Sphere):
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = None) -> None:
+    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
         super().__init__(color, subdivisions)
         self.model_matrices = None
 
 
-def generate_sphere( color: np.ndarray = None, subdivisions: int = None) -> (np.ndarray, np.ndarray):
+def generate_sphere(color: np.ndarray = None, subdivisions: Optional[int] = None) -> (np.ndarray, np.ndarray):
     """Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
 
     :param color: Color of the sphere.
