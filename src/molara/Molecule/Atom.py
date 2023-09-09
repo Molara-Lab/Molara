@@ -9,7 +9,7 @@ class Atom:
         self.electronegativity = elements[atomic_number]["electronegativity"]
         self.cpk_color = np.array(list(elements[atomic_number]["cpk_color"])) / 255
         self.vdw_radius = elements[atomic_number]["vdw_radius"]
-        self.position = position
+        self.position = np.array(position, dtype=np.float64)
 
 
 def element_symbol_to_atomic_number(symbol):
