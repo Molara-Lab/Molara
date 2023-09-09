@@ -57,6 +57,7 @@ class Molecule:
             atom.position -= center
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_sphere_model_matrices()
+        self.drawer.set_cylinder_model_matrices()
 
 
 def read_xyz(file_path: str):
