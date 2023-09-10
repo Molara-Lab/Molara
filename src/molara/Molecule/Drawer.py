@@ -9,9 +9,9 @@ from molara.Rendering.Sphere import Spheres
 class Drawer:
     def __init__(self, atoms: [Atom], bonds: np.ndarray) -> None:
         self.subdivisions_sphere = 15
-        self.subdivisions_cylinder = 15
+        self.subdivisions_cylinder = 20
         self.unique_spheres = [Spheres() for _ in range(119)]
-        self.cylinders = Cylinders()
+        self.unique_cylinders = [Cylinders() for _ in range(119)]
         self.atoms = atoms
         self.bonds = bonds
         self.set_sphere_model_matrices()
@@ -38,7 +38,8 @@ class Drawer:
         Resets the model matrices for the cylinders.
         :return:
         """
-        self.cylinders.model_matrices = None
+        for cylinder in self.unique_cylinders:
+            cylinder.model_matrices = None
 
     def set_cylinder_model_matrices(self) -> None:
         """
@@ -46,18 +47,22 @@ class Drawer:
         :return:
         """
         self.reset_Cylinders_model_matrices()
+        for atom in self.atoms:
+            if self.unique_cylinders[atom.atomic_number].model_matrices is None:
+                self.unique_cylinders[atom.atomic_number] = Cylinders(atom.cpk_color, self.subdivisions_cylinder)
         for bond in self.bonds:
-            if self.cylinders.model_matrices is None:
-                self.cylinders = Cylinders(np.array([1.0, 1.0, 1.0], dtype=np.float32), self.subdivisions_cylinder)
-                self.cylinders.model_matrices = calculate_cylinder_model_matrix(
-                    self.atoms[bond[0]], self.atoms[bond[1]]
-                )
+            model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
+            if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
+                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
             else:
-                self.cylinders.model_matrices = np.concatenate(
-                    (
-                        self.cylinders.model_matrices,
-                        calculate_cylinder_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]]),
-                    )
+                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
+                    (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0])
+                )
+            if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
+                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
+            else:
+                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
+                    (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1])
                 )
 
     def set_sphere_model_matrices(self) -> None:
@@ -85,23 +90,26 @@ def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
     # Calculate the translation matrix to translate the sphere to the correct position.
     translation_matrix = pyrr.matrix44.create_from_translation(pyrr.Vector3(atom.position))
     # Calculate the scale matrix to scale the sphere to the correct size.
-    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([atom.vdw_radius / 8] * 3))
+    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([atom.vdw_radius / 6] * 3))
     # Return the model matrix for the sphere.
     return np.array([np.array(scale_matrix @ translation_matrix, dtype=np.float32)], dtype=np.float32)
 
 
-def calculate_cylinder_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
+def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
     """
     Calculates the model matrix for a cylinder between two atoms.
     :param atom1: Atom1
     :param atom2: Atom2
     :return: Model matrix for the cylinder between atom1 and atom2.
     """
-    # Calculate the position of the cylinder in the center of the two atoms.
-    position = (atom1.position + atom2.position) / 2
     difference = atom1.position - atom2.position
     # Calculate the length of the cylinder.
     length = np.linalg.norm(difference)
+    mid_point = (atom1.position + atom2.position) / 2
+    # calculate the point 1 quarter between the 2 atoms
+    position_1 = mid_point - difference / 4
+    # calculate the point 3 quarter between the 2 atoms
+    position_2 = mid_point + difference / 4
     # Calculate the rotation axis to rotate the cylinder to the correct orientation.
     y_axis = np.array([0, 1, 0], dtype=np.float32)
     if y_axis @ difference != 1:
@@ -117,11 +125,20 @@ def calculate_cylinder_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
     else:
         rotation_axis = np.array([0, 0, 1], dtype=np.float32)
         rotation_angle = 0
-    # Calculate the translation matrix to translate the cylinder to the correct position.
-    translation_matrix = pyrr.matrix44.create_from_translation(pyrr.Vector3(position))
+    translation_matrix_1 = pyrr.matrix44.create_from_translation(pyrr.Vector3(position_1))
+    translation_matrix_2 = pyrr.matrix44.create_from_translation(pyrr.Vector3(position_2))
     # Calculate the rotation matrix to rotate the cylinder to the correct orientation.
     rotation_matrix = pyrr.matrix44.create_from_axis_rotation(rotation_axis, rotation_angle)
     # Calculate the scale matrix to scale the cylinder to the correct length.
-    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([0.15, length, 0.15]))
+    scale = pyrr.Vector3([0.15] * 3)
+    scale[1] = length / 2
+    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3(scale))
     # Return the model matrix for the cylinder.
-    return np.array([np.array(scale_matrix @ rotation_matrix @ translation_matrix, dtype=np.float32)], dtype=np.float32)
+    rotation_scale_matrix = scale_matrix @ rotation_matrix
+    return np.array(
+        [
+            np.array([rotation_scale_matrix @ translation_matrix_2], dtype=np.float32),
+            np.array([rotation_scale_matrix @ translation_matrix_1], dtype=np.float32),
+        ],
+        dtype=np.float32,
+    )
