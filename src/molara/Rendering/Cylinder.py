@@ -76,8 +76,9 @@ def generate_cylinder(color: np.ndarray = None, subdivisions: Optional[int] = No
             # bottom
             indices.extend([1, 4 + 4 * i, 4])
             # side
-            indices.extend([3 + 4 * i, 7, 5 + 4 * i])
-            indices.extend([5 + 4 * i, 7, 9])
+            indices.extend([3 + 4 * i, 3, 5])
+            indices.extend([5 + 4 * i, 3 + 4 * i, 5])
+
         else:
             # top
             indices.extend([0, 2 + 4 * i, 6 + 4 * i])
