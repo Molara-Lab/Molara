@@ -53,15 +53,13 @@ class Drawer:
         for bond in self.bonds:
             model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
             if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
-                self.unique_cylinders[
-                    self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
+                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
             else:
                 self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
                     (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0])
                 )
             if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
-                self.unique_cylinders[
-                    self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
+                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
             else:
                 self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
                     (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1])
@@ -92,7 +90,7 @@ def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
     # Calculate the translation matrix to translate the sphere to the correct position.
     translation_matrix = pyrr.matrix44.create_from_translation(pyrr.Vector3(atom.position))
     # Calculate the scale matrix to scale the sphere to the correct size.
-    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([atom.vdw_radius/6] * 3))
+    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([atom.vdw_radius / 6] * 3))
     # Return the model matrix for the sphere.
     return np.array([np.array(scale_matrix @ translation_matrix, dtype=np.float32)], dtype=np.float32)
 
@@ -132,13 +130,15 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     # Calculate the rotation matrix to rotate the cylinder to the correct orientation.
     rotation_matrix = pyrr.matrix44.create_from_axis_rotation(rotation_axis, rotation_angle)
     # Calculate the scale matrix to scale the cylinder to the correct length.
-    scale = pyrr.Vector3([0.15]*3)
+    scale = pyrr.Vector3([0.15] * 3)
     scale[1] = length / 2
     scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3(scale))
     # Return the model matrix for the cylinder.
     rotation_scale_matrix = scale_matrix @ rotation_matrix
     return np.array(
-        [np.array([rotation_scale_matrix @ translation_matrix_2],
-                  dtype=np.float32), np.array([rotation_scale_matrix @ translation_matrix_1],
-                                              dtype=np.float32)],
-        dtype=np.float32)
+        [
+            np.array([rotation_scale_matrix @ translation_matrix_2], dtype=np.float32),
+            np.array([rotation_scale_matrix @ translation_matrix_1], dtype=np.float32),
+        ],
+        dtype=np.float32,
+    )
