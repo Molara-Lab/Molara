@@ -28,11 +28,11 @@ class MoleculeWidget(QOpenGLWidget):
         self.zoom_factor = 1.0
         self.contour = False
         self.bonds = True
-        self.camera = Camera()
+        self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
 
     def reset_view(self):
-        self.camera.reset()
+        self.camera.reset(self.width(), self.height())
         self.update()
 
     def set_molecule(self, molecule):
