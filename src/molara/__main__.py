@@ -14,6 +14,7 @@ from molara.Molecule.Molecule import read_coord, read_xyz
 def main() -> None:
     format = QSurfaceFormat()
     format.setVersion(4, 1)
+    format.setSamples(4)
     format.setProfile(QSurfaceFormat.CoreProfile)
     QSurfaceFormat.setDefaultFormat(format)
 
