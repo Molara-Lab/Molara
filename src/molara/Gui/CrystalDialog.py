@@ -1,24 +1,26 @@
-from PySide6.QtWidgets import QDialog
-from molara.Gui.ui_crystalstructure_dialog import Ui_Dialog
-from molara.Molecule.Crystal import Crystal
-from molara.Molecule.Atom import element_symbol_to_atomic_number
-import numpy as np
+from contextlib import suppress
 
-from PySide6.QtWidgets import QTableWidgetItem
+import numpy as np
+from PySide6.QtWidgets import QDialog, QTableWidgetItem
+
+from molara.Gui.ui_crystalstructure_dialog import Ui_Dialog
+from molara.Molecule.Atom import element_symbol_to_atomic_number
+from molara.Molecule.Crystal import Crystal
+
 
 class CrystalDialog(QDialog):
-  '''
+  """
   Dialog for specifying a crystal structure.
   Element symbols, coordinates, lattice constants, supercell size given by user,
-  object of type Crystal is instantiated and passed to main window's OpenGL widget for rendering.
-  '''
+  object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
+  """
   def __init__(self, parent=None):
     super().__init__(parent)# main window widget is passed as a parent, so dialog is closed if main window is closed.
     self.ui = Ui_Dialog()
     self.ui.setupUi(self)
     self.list_of_coordinates = []
     self.list_of_atomic_numbers = []
-    self.change_crystal_system('Cubic')
+    self.change_crystal_system("Cubic")
     self.ui.selectCrystalSystem.currentTextChanged.connect(self.change_crystal_system)
     self.ui.buttonAddAtom.clicked.connect(self.add_atom)
     self.ui.pushButton.clicked.connect(self.reset)
@@ -60,7 +62,7 @@ class CrystalDialog(QDialog):
     self.crystal_system = value
     selectSpaceGroup = self.ui.selectSpaceGroup
     view = selectSpaceGroup.view()
-    if value == 'Cubic':
+    if value == "Cubic":
       view.setRowHidden(0, False)
       view.setRowHidden(1, True)
       view.setRowHidden(2, True)
@@ -71,11 +73,11 @@ class CrystalDialog(QDialog):
       def bc_equals_a(value):
         self.ui.inputLatConst_b.setValue(value)
         self.ui.inputLatConst_c.setValue(value)
-      try: self.ui.inputLatConst_a.valueChanged.disconnect()
-      except Exception: pass
+      with suppress(Exception):
+        self.ui.inputLatConst_a.valueChanged.disconnect()
       self.ui.inputLatConst_a.valueChanged.connect(bc_equals_a)
       bc_equals_a(self.ui.inputLatConst_a.value())
-    elif value=='Tetragonal':
+    elif value=="Tetragonal":
       view.setRowHidden(0, True)
       view.setRowHidden(1, False)
       view.setRowHidden(2, True)
@@ -85,11 +87,11 @@ class CrystalDialog(QDialog):
       self.ui.inputLatConst_c.setEnabled(True)
       def b_equals_a(value):
         self.ui.inputLatConst_b.setValue(value)
-      try: self.ui.inputLatConst_a.valueChanged.disconnect()
-      except Exception: pass
+      with suppress(Exception):
+        self.ui.inputLatConst_a.valueChanged.disconnect()
       self.ui.inputLatConst_a.valueChanged.connect(b_equals_a)
       b_equals_a(self.ui.inputLatConst_a.value())
-    elif value=='Orthorhombic':
+    elif value=="Orthorhombic":
       view.setRowHidden(0, True)
       view.setRowHidden(1, True)
       view.setRowHidden(2, False)
@@ -97,6 +99,5 @@ class CrystalDialog(QDialog):
       self.ui.inputLatConst_a.setEnabled(True)
       self.ui.inputLatConst_b.setEnabled(True)
       self.ui.inputLatConst_c.setEnabled(True)
-      try: self.ui.inputLatConst_a.valueChanged.disconnect()
-      except Exception: pass
-  
+      with suppress(Exception):
+        self.ui.inputLatConst_a.valueChanged.disconnect()

@@ -1,4 +1,5 @@
 import numpy as np
+
 from molara.Molecule.Molecule import *
 
 standard_supercell = np.array([1, 1, 1], dtype=int)
