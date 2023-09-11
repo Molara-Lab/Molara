@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'cystalstructure_dialog.ui'
+## Form generated from reading UI file 'crystalstructure_dialog.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.2
 ##
@@ -93,7 +93,7 @@ class Ui_Dialog(object):
         self.inputAtomCoord_c.setSingleStep(0.010000000000000)
         self.inputElementSymbol = QLineEdit(Dialog)
         self.inputElementSymbol.setObjectName(u"inputElementSymbol")
-        self.inputElementSymbol.setEnabled(False)
+        self.inputElementSymbol.setEnabled(True)
         self.inputElementSymbol.setGeometry(QRect(130, 50, 51, 28))
         self.labelElementSymbol = QLabel(Dialog)
         self.labelElementSymbol.setObjectName(u"labelElementSymbol")
