@@ -47,7 +47,7 @@ def main() -> None:
 
     app = QApplication(sys.argv)
     widget = MainWindow()
-    crystal_dialog = CrystalDialog(widget)# pass widget as parent
+    crystal_dialog = CrystalDialog(widget)  # pass widget as parent
     widget.setWindowTitle("Molara")
     widget.show()
 
@@ -61,6 +61,7 @@ def main() -> None:
     widget.ui.quit.triggered.connect(widget.close)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
