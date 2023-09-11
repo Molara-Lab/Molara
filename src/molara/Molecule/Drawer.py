@@ -112,7 +112,7 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     position_2 = mid_point + difference / 4
     # Calculate the rotation axis to rotate the cylinder to the correct orientation.
     y_axis = np.array([0, 1, 0], dtype=np.float32)
-    if y_axis @ difference != 1:
+    if abs(y_axis @ difference) != 1:
         rotation_axis = np.cross(y_axis, difference)
         # Calculate the angle to rotate the cylinder to the correct orientation.
         rotation_angle = np.arccos(
