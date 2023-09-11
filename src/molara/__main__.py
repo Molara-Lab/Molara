@@ -46,7 +46,7 @@ def main() -> None:
 
     app = QApplication(sys.argv)
     widget = MainWindow()
-    crystal_dialog = CrystalDialog()
+    crystal_dialog = CrystalDialog(widget)# pass widget as parent
     widget.setWindowTitle("Molara")
     widget.show()
 
