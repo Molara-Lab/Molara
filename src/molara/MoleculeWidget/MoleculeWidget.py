@@ -1,14 +1,14 @@
 # This Python file uses the following encoding: utf-8
 import numpy as np
-from OpenGL.GL import GL_DEPTH_TEST, glClearColor, glEnable, glViewport
+from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from ..Rendering.Buffers import Vao
-from ..Rendering.Camera import Camera
-from ..Rendering.Rendering import draw_scene
-from ..Rendering.Shaders import compile_shaders
+from molara.Rendering.Buffers import Vao
+from molara.Rendering.Camera import Camera
+from molara.Rendering.Rendering import draw_scene
+from molara.Rendering.Shaders import compile_shaders
 
 
 class MoleculeWidget(QOpenGLWidget):
@@ -28,11 +28,11 @@ class MoleculeWidget(QOpenGLWidget):
         self.zoom_factor = 1.0
         self.contour = False
         self.bonds = True
-        self.camera = Camera()
+        self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
 
     def reset_view(self):
-        self.camera.reset()
+        self.camera.reset(self.width(), self.height())
         self.update()
 
     def set_molecule(self, molecule):
@@ -58,7 +58,7 @@ class MoleculeWidget(QOpenGLWidget):
 
     def initializeGL(self):
         glClearColor(1, 1, 1, 1.0)
-        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_DEPTH_TEST, GL_MULTISAMPLE)
         self.shader = compile_shaders()
 
     def resizeGL(self, width, height):
@@ -78,6 +78,14 @@ class MoleculeWidget(QOpenGLWidget):
                 self.molecule.drawer.unique_spheres[atomic_number].vertices,
                 self.molecule.drawer.unique_spheres[atomic_number].indices,
                 self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
+            )
+            self.vertex_attribute_objects.append(vao.vao)
+        for atomic_number in self.molecule.unique_atomic_numbers:
+            vao = Vao(
+                self,
+                self.molecule.drawer.unique_cylinders[atomic_number].vertices,
+                self.molecule.drawer.unique_cylinders[atomic_number].indices,
+                self.molecule.drawer.unique_cylinders[atomic_number].model_matrices,
             )
             self.vertex_attribute_objects.append(vao.vao)
 

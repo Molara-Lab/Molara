@@ -3,6 +3,6 @@
 ```
 git clone <this repo>
 cd Molara
-pip install .
-./molara.py
+pip install -e .
+molara
 ```
