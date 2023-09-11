@@ -24,6 +24,10 @@ setup(
         'scipy',
         'PyOpenGL'
     ],
+    # optional dependencies:
+    extras_require = {
+        'reading_qm_output': ['cclib'],
+    },
    entry_points={
         'console_scripts': [
             'molara=molara.__main__:main'

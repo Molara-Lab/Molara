@@ -8,8 +8,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 
-from .Gui.ui_form import Ui_MainWindow
-from .Molecule.Molecule import read_xyz,read_coord
+from molara.Gui.ui_form import Ui_MainWindow
+from molara.Molecule.io import read_xyz,read_coord
 
 def main() -> None:
 
