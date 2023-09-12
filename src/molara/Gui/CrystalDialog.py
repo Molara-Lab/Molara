@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 import numpy as np
-from PySide6.QtWidgets import QDialog, QTableWidgetItem, QMainWindow
+from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 
 from molara.Gui.ui_crystalstructure_dialog import Ui_Dialog
 from molara.Molecule.Atom import element_symbol_to_atomic_number
