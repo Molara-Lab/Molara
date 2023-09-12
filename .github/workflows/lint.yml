@@ -29,3 +29,9 @@ jobs:
       run: |
         black --version
         black --check --diff --color $(find . -name "*.py" | xargs)
+
+    - name: mypy
+      run: |
+        mypy --version
+        rm -rf .mypy_cache
+        mypy ${{ github.event.repository.name }}
