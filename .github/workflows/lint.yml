@@ -35,5 +35,4 @@ jobs:
       run: |
         mypy --version
         rm -rf .mypy_cache
-        #mypy . #  ${{ github.event.repository.name }}
-        mypy -v src/molara/Molecule/Crystal.py
+        mypy . #  ${{ github.event.repository.name }}
