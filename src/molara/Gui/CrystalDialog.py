@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 import numpy as np
-from PySide6.QtWidgets import QDialog, QTableWidgetItem
+from PySide6.QtWidgets import QDialog, QTableWidgetItem, QMainWindow
 
 from molara.Gui.ui_crystalstructure_dialog import Ui_Dialog
 from molara.Molecule.Atom import element_symbol_to_atomic_number
@@ -15,7 +15,7 @@ class CrystalDialog(QDialog):
     object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QMainWindow = None):
         super().__init__(
             parent
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
@@ -72,7 +72,7 @@ class CrystalDialog(QDialog):
         )
         self.parent().ui.openGLWidget.set_molecule(mycrystal)
 
-    def change_crystal_system(self, value):
+    def change_crystal_system(self, value: str):
         self.crystal_system = value
         selectSpaceGroup = self.ui.selectSpaceGroup
         view = selectSpaceGroup.view()

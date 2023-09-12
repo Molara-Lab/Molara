@@ -1,6 +1,7 @@
 import numpy as np
+import numpy.typing as npt
 
-from molara.Molecule.Molecule import *
+from .Molecule import *
 
 standard_supercell = np.array([1, 1, 1], dtype=int)
 
@@ -21,7 +22,13 @@ class Crystal(Molecule):
     :type supercell_dimensions: numpy.array of int
     """
 
-    def __init__(self, atomic_numbers, coordinates, basis_vectors, supercell_dimensions=standard_supercell):
+    def __init__(
+        self,
+        atomic_numbers: npt.ArrayLike,
+        coordinates: npt.ArrayLike,
+        basis_vectors: npt.ArrayLike,
+        supercell_dimensions: npt.ArrayLike = standard_supercell,
+    ):
         coordinates_translation = []
         atomic_numbers_translation = []
         dim0, dim1, dim2 = supercell_dimensions

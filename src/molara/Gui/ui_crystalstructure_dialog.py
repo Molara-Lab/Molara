@@ -62,7 +62,7 @@ from PySide6.QtWidgets import (
 
 
 class Ui_Dialog(object):
-    def setupUi(self, Dialog):
+    def setupUi(self, Dialog: QDialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
         Dialog.resize(400, 350)
@@ -203,7 +203,7 @@ class Ui_Dialog(object):
 
     # setupUi
 
-    def retranslateUi(self, Dialog):
+    def retranslateUi(self, Dialog: QDialog):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Dialog", None))
         self.buttonAddAtom.setText(QCoreApplication.translate("Dialog", "Add Atom", None))
         self.checkBoxPreview.setText(QCoreApplication.translate("Dialog", "Show Preview", None))
