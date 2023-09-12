@@ -63,6 +63,7 @@
     <property name="title">
      <string>Crystal</string>
     </property>
+    <addaction name="actionRead_POSCAR"/>
     <addaction name="actionCreate_Lattice"/>
    </widget>
    <addaction name="menuFile"/>
@@ -113,6 +114,11 @@
   <action name="actionCreate_Lattice">
    <property name="text">
     <string>Create Lattice</string>
+   </property>
+  </action>
+  <action name="actionRead_POSCAR">
+   <property name="text">
+    <string>Read POSCAR</string>
    </property>
   </action>
  </widget>

@@ -1,16 +1,17 @@
 import sys
 
 from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 
-from molara.Gui.CrystalDialog import CrystalDialog
+from .Gui.CrystalDialog import CrystalDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-from molara.Gui.ui_form import Ui_MainWindow
-from molara.Molecule.Molecule import read_coord, read_xyz
+from .Gui.ui_form import Ui_MainWindow
+from .Molecule.Crystal import Crystal, read_POSCAR
+from .Molecule.Molecule import read_coord, read_xyz
 
 
 def main() -> None:
@@ -45,6 +46,18 @@ def main() -> None:
             mol = read_coord(fileName[0])
             widget.ui.openGLWidget.set_molecule(mol)
 
+        def show_POSCAR(self):
+            filename = QFileDialog.getOpenFileName(self, "Open POSCAR file", "/home", "POSCAR Files (*)")
+            crystal = read_POSCAR(filename[0])
+            if not isinstance(crystal, Crystal):
+                error_message = crystal[1]
+                msgBox = QMessageBox()
+                msgBox.setText(error_message)
+                msgBox.exec()
+                return False
+            widget.ui.openGLWidget.set_molecule(crystal)
+            return True
+
     app = QApplication(sys.argv)
     widget = MainWindow()
     crystal_dialog = CrystalDialog(widget)  # pass widget as parent
@@ -59,6 +72,7 @@ def main() -> None:
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
     widget.ui.quit.triggered.connect(widget.close)
+    widget.ui.actionRead_POSCAR.triggered.connect(widget.show_POSCAR)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     sys.exit(app.exec())
 
