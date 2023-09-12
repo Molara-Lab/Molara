@@ -36,4 +36,4 @@ jobs:
         rm -rf .mypy_cache
         #mypy . #  ${{ github.event.repository.name }}
         ls -ltr
-        mypy src/molara/Molecule/Crystal.py
+        mypy -v src/molara/Molecule/Crystal.py
