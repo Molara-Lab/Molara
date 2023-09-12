@@ -18,7 +18,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install ruff black --upgrade
+        pip install ruff black mypy --upgrade
 
     - name: ruff
       run: |
