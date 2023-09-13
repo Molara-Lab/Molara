@@ -1,5 +1,5 @@
 PySide6~=6.5.0
-Cython~=0.29.32
+Cython~=3.0.2
 numpy~=1.22.4
 pyrr~=0.10.3
 scipy~=1.8.1
