@@ -10,7 +10,7 @@ from .Gui.CrystalDialog import CrystalDialog
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from .Gui.ui_form import Ui_MainWindow
-from .Molecule.Crystal import Crystal, read_POSCAR
+from .Molecule.Crystal import Crystal
 from .Molecule.Molecule import read_coord, read_xyz
 
 
@@ -48,7 +48,7 @@ def main() -> None:
 
         def show_POSCAR(self):
             filename = QFileDialog.getOpenFileName(self, "Open POSCAR file", "/home", "POSCAR Files (*)")
-            crystal = read_POSCAR(filename[0])
+            crystal = Crystal.from_POSCAR(filename[0])
             if not isinstance(crystal, Crystal):
                 error_message = crystal[1]
                 msgBox = QMessageBox()
