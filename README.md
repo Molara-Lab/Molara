@@ -1,4 +1,4 @@
-[![tests](https://img.shields.io/github/actions/workflow/status/Thursday-Evening-Hackathon/Molara/test.yml?branch=main&label=tests)](https://github.com/Thursday-Evening-Hackathon/Molara/actions?query=workflow%3ATests)
+[![CI Status](https://github.com/Thursday-Evening-Hackathon/Molara/actions/workflows/test.yml/badge.svg)](https://github.com/Thursday-Evening-Hackathon/Molara/actions/workflows/test.yml)
 # Molara
 
 ```
