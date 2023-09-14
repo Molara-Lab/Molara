@@ -1,8 +1,9 @@
-import numpy as np
-from numpy.testing import assert_array_equal
 from unittest import TestCase
 
+import numpy as np
 from molara.Molecule.Crystal import Crystal
+from numpy.testing import assert_array_equal
+
 
 class TestCrystal(TestCase):
     def setUp(self):
@@ -24,7 +25,7 @@ class TestCrystal(TestCase):
         assert_array_equal(self.crystal_from_POSCAR.atomic_numbers, self.crystal.atomic_numbers)
         assert_array_equal(self.crystal_from_POSCAR.coordinates, self.crystal.coordinates)
         #assert self.crystal_from_POSCAR == self.crystal
-    
+
     # def test_make_supercell(self):
     #     self.crystal.make_supercell([2, 2, 2])
     #     assert len(self.crystal.atoms) == 16

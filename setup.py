@@ -19,5 +19,16 @@ setup(
     author_email="",
     description="",
     install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL"],
+    extras_require={
+        "dev": [
+            "black",
+            "mypy",
+            "pre-commit",
+            "pytest-cov",
+            "pytest-split",
+            "pytest",
+            "ruff",
+        ],
+    },
     entry_points={"console_scripts": ["molara=molara.__main__:main"]},
 )
