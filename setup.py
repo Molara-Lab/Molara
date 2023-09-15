@@ -19,6 +19,7 @@ setup(
     author_email="",
     description="",
     install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL"],
+    entry_points={"console_scripts": ["molara=molara.__main__:main"]},
     extras_require={
         "dev": [
             "black",
@@ -30,6 +31,4 @@ setup(
             "ruff",
         ],
     },
-    python_requires=">=3.8",
-    entry_points={"console_scripts": ["molara=molara.__main__:main"]},
 )
