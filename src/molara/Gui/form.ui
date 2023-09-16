@@ -45,6 +45,7 @@
       <string>Import</string>
      </property>
      <addaction name="action_xyz"/>
+     <addaction name="actioncoord"/>
     </widget>
     <addaction name="menuImport"/>
     <addaction name="quit"/>
@@ -108,6 +109,11 @@
   <action name="actionDraw_Axes">
    <property name="text">
     <string>Draw Axes</string>
+   </property>
+  </action>
+  <action name="actioncoord">
+   <property name="text">
+    <string>coord</string>
    </property>
   </action>
  </widget>

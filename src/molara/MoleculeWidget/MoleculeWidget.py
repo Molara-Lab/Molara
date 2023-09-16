@@ -48,7 +48,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.molecule.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
-
+    
     def toggle_axes(self):
         if self.axes:
             self.axes = False

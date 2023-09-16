@@ -8,7 +8,6 @@ from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from molara.Gui.ui_form import Ui_MainWindow
-from molara.Molecule.Molecule import read_coord, read_xyz
 
 from .Gui.ui_form import Ui_MainWindow
 from .Molecule.importer import read_coord, read_xyz
@@ -25,7 +24,7 @@ def main() -> None:
             super().__init__(parent)
             self.ui = Ui_MainWindow()
             self.ui.setupUi(self)
-            self.index = 0 
+            self.index = 0
             self.mols = None
 
         def show_init_xyz(self):
@@ -38,6 +37,8 @@ def main() -> None:
             self.mols = read_xyz(fileName)
 
             widget.ui.openGLWidget.set_molecule(self.mols.molecules[self.index])
+            widget.index += 1 
+
 
         def show_xyz(self):
 
@@ -46,21 +47,18 @@ def main() -> None:
             self.mols = read_xyz(fileName[0])
 
             widget.ui.openGLWidget.set_molecule(self.mols.molecules[self.index])
+            widget.index += 1 
+
+
 
         def show_trajectory(self):
 
-            iteration = 0 
 
-            while True and iteration < 4:
-
+            while widget.index < widget.mols.num_mols:
+                
                 widget.ui.openGLWidget.set_molecule(widget.mols.molecules[widget.index])
 
-                time.sleep(0.5)
-
                 widget.index +=1
-                widget.index = widget.index%widget.mols.num_mols
-                iteration += 1 
-
 
 
         def show_coord(self):
@@ -70,6 +68,7 @@ def main() -> None:
             mol = read_coord(fileName[0])
             
             widget.ui.openGLWidget.set_molecule(mol)
+
 
     app = QApplication(sys.argv)
     widget = MainWindow()
@@ -84,13 +83,10 @@ def main() -> None:
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
-
-    if widget.mols.num_mols > 1:
-        widget.show_trajectory()
+    widget.ui.pushButton.clicked.connect(widget.show_trajectory)
 
     widget.ui.quit.triggered.connect(widget.close)
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()
