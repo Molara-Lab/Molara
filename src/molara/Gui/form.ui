@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -38,6 +38,7 @@
       <string>Import</string>
      </property>
      <addaction name="action_xyz"/>
+     <addaction name="actioncoord"/>
     </widget>
     <addaction name="menuImport"/>
     <addaction name="quit"/>
@@ -113,6 +114,11 @@
   <action name="actionCreate_Lattice">
    <property name="text">
     <string>Create Lattice</string>
+   </property>
+  </action>
+  <action name="actioncoord">
+   <property name="text">
+    <string>coord</string>
    </property>
   </action>
  </widget>
