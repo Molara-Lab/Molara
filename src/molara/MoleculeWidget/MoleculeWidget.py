@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import numpy as np
-from OpenGL.GL import GL_DEPTH_TEST, glClearColor, glEnable, glViewport
+from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -28,11 +28,11 @@ class MoleculeWidget(QOpenGLWidget):
         self.zoom_factor = 1.0
         self.contour = False
         self.bonds = True
-        self.camera = Camera()
+        self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
 
     def reset_view(self):
-        self.camera.reset()
+        self.camera.reset(self.width(), self.height())
         self.update()
 
     def set_molecule(self, molecule):
@@ -58,7 +58,7 @@ class MoleculeWidget(QOpenGLWidget):
 
     def initializeGL(self):
         glClearColor(1, 1, 1, 1.0)
-        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_DEPTH_TEST, GL_MULTISAMPLE)
         self.shader = compile_shaders()
 
     def resizeGL(self, width, height):
@@ -80,13 +80,14 @@ class MoleculeWidget(QOpenGLWidget):
                 self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
             )
             self.vertex_attribute_objects.append(vao.vao)
-        cylinder_vao = Vao(
-            self,
-            self.molecule.drawer.cylinders.vertices,
-            self.molecule.drawer.cylinders.indices,
-            self.molecule.drawer.cylinders.model_matrices,
-        )
-        self.vertex_attribute_objects.append(cylinder_vao.vao)
+        for atomic_number in self.molecule.unique_atomic_numbers:
+            vao = Vao(
+                self,
+                self.molecule.drawer.unique_cylinders[atomic_number].vertices,
+                self.molecule.drawer.unique_cylinders[atomic_number].indices,
+                self.molecule.drawer.unique_cylinders[atomic_number].model_matrices,
+            )
+            self.vertex_attribute_objects.append(vao.vao)
 
     def draw_axes(self):
         return

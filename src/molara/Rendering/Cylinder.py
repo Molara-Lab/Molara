@@ -12,10 +12,10 @@ class Cylinder:
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
+    def __init__(self, color: np.ndarray = None, subdivisions: int = -1) -> None:
         self.color = color
         self.subdivisions = subdivisions
-        if color is not None and subdivisions is not None:
+        if subdivisions != -1 and color is not None:
             vertices, indices = generate_cylinder(self.color, self.subdivisions)
             self.vertices = vertices
             self.indices = indices
@@ -32,12 +32,12 @@ class Cylinders(Cylinder):
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: Optional[int] = None) -> None:
+    def __init__(self, color: np.ndarray = None, subdivisions: int = -1) -> None:
         super().__init__(color, subdivisions)
         self.model_matrices = None
 
 
-def generate_cylinder(color: np.ndarray = None, subdivisions: Optional[int] = None) -> (np.ndarray, np.ndarray):
+def generate_cylinder(color: np.ndarray, subdivisions: int) -> (np.ndarray, np.ndarray):
     """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
     :param color: Color of the cylinder.
@@ -76,8 +76,9 @@ def generate_cylinder(color: np.ndarray = None, subdivisions: Optional[int] = No
             # bottom
             indices.extend([1, 4 + 4 * i, 4])
             # side
-            indices.extend([3 + 4 * i, 7, 5 + 4 * i])
-            indices.extend([5 + 4 * i, 7, 9])
+            indices.extend([3 + 4 * i, 3, 5])
+            indices.extend([5 + 4 * i, 3 + 4 * i, 5])
+
         else:
             # top
             indices.extend([0, 2 + 4 * i, 6 + 4 * i])

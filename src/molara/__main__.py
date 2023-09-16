@@ -3,6 +3,8 @@ import time as time
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
+from molara.Gui.CrystalDialog import CrystalDialog
+
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
@@ -15,6 +17,7 @@ from .Molecule.importer import read_coord, read_xyz
 def main() -> None:
     format = QSurfaceFormat()
     format.setVersion(4, 1)
+    format.setSamples(4)
     format.setProfile(QSurfaceFormat.CoreProfile)
     QSurfaceFormat.setDefaultFormat(format)
 
@@ -72,6 +75,7 @@ def main() -> None:
 
     app = QApplication(sys.argv)
     widget = MainWindow()
+    crystal_dialog = CrystalDialog(widget)  # pass widget as parent
     widget.setWindowTitle("Molara")
     widget.show()
 
@@ -86,6 +90,7 @@ def main() -> None:
     widget.ui.pushButton.clicked.connect(widget.show_trajectory)
 
     widget.ui.quit.triggered.connect(widget.close)
+    widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     sys.exit(app.exec())
 
 if __name__ == "__main__":

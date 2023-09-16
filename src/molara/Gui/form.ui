@@ -67,8 +67,15 @@
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
    </widget>
+   <widget class="QMenu" name="menuCrystal">
+    <property name="title">
+     <string>Crystal</string>
+    </property>
+    <addaction name="actionCreate_Lattice"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuCrystal"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="quit">
@@ -111,9 +118,9 @@
     <string>Draw Axes</string>
    </property>
   </action>
-  <action name="actioncoord">
+  <action name="actionCreate_Lattice">
    <property name="text">
-    <string>coord</string>
+    <string>Create Lattice</string>
    </property>
   </action>
  </widget>
@@ -121,7 +128,7 @@
   <customwidget>
    <class>MoleculeWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">MoleculeWidget/MoleculeWidget</header>
+   <header location="global">molara/MoleculeWidget/MoleculeWidget</header>
   </customwidget>
  </customwidgets>
  <resources/>
