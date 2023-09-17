@@ -3,6 +3,8 @@ import sys
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
+from molara.Gui.CrystalDialog import CrystalDialog
+
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
@@ -44,6 +46,7 @@ def main() -> None:
 
     app = QApplication(sys.argv)
     widget = MainWindow()
+    crystal_dialog = CrystalDialog(widget)  # pass widget as parent
     widget.setWindowTitle("Molara")
     widget.show()
 
@@ -55,6 +58,7 @@ def main() -> None:
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
     widget.ui.quit.triggered.connect(widget.close)
+    widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     sys.exit(app.exec())
 
 

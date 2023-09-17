@@ -59,8 +59,15 @@
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
    </widget>
+   <widget class="QMenu" name="menuCrystal">
+    <property name="title">
+     <string>Crystal</string>
+    </property>
+    <addaction name="actionCreate_Lattice"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuCrystal"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="quit">
@@ -101,6 +108,11 @@
   <action name="actionDraw_Axes">
    <property name="text">
     <string>Draw Axes</string>
+   </property>
+  </action>
+  <action name="actionCreate_Lattice">
+   <property name="text">
+    <string>Create Lattice</string>
    </property>
   </action>
  </widget>
