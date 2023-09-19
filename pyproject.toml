@@ -66,6 +66,7 @@ ignore = [
   "F401", # {name} imported but unused
   "F403", # {name} used but not defined
   "F405", # {name} may be undefined, or defined from star imports
+  "S101", # Use of assert detected
   ]
 pydocstyle.convention = "google"
 
