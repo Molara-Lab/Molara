@@ -68,6 +68,7 @@ def main() -> None:
         widget.show_init_xyz()
 
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
+    widget.ui.action_coord.triggered.connect(widget.show_coord)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
