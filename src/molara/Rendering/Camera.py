@@ -21,6 +21,7 @@ class Camera:
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.distance_from_target = 5.0
+        self.zoom_factor = 0.05
 
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
@@ -41,13 +42,21 @@ class Camera:
         """Resets the camera."""
         self.__init__(width, height)
 
-    def set_distance_from_target(self, zoom: float) -> None:
+    def calc_distance_from_target(self, zoom: float) -> None:
         """Set the distance between the camera and its target.
 
         :param zoom: Factor that is multiplied with the normalized camera position vector and the current distance
             between the camera and the target.
         """
-        self.distance_from_target *= zoom
+        self.distance_from_target += self.zoom_factor * zoom * (np.sign(zoom-1))
+        if self.distance_from_target < 1.0:
+            self.distance_from_target = 1.0
+        self.set_distance_from_target()
+    def set_distance_from_target(self) -> None:
+        """Set the distance between the camera and its target.
+
+        :param distance: Distance between the camera and its target.
+        """
         self.position = pyrr.vector3.normalize(self.position) * self.distance_from_target
 
     def calculate_camera_translation(self, old_mouse_position: float, mouse_position: float, save: bool = False) -> None:
@@ -98,15 +107,15 @@ class Camera:
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
             rotation_angle = np.arccos(np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1))
 
-        rotation_quaternion = pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
-        self.current_rotation = rotation_quaternion
+        self.current_rotation = pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
         rotation = self.last_rotation * self.current_rotation
 
-        self.up_vector = rotation * pyrr.Vector3([0.0, 1.0, 0.0])
+        self.up_vector = rotation * pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.position = (
             pyrr.vector3.normalize(rotation * (self.reference_position - self.target) + self.target)
-            * self.distance_from_target
         )
 
+        self.set_distance_from_target()
+
         if save:
-            self.last_rotation = self.last_rotation * self.current_rotation
+            self.last_rotation = rotation
