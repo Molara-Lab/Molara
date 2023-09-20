@@ -142,7 +142,6 @@ class MoleculeWidget(QOpenGLWidget):
         if event.button() == Qt.RightButton and self.translate:
             self.stop_translate(event)
 
-
     def stop_translate(self, event: QMouseEvent) -> None:
         """
         Stops the translation of the molecule.
