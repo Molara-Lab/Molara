@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 import pyrr
 
@@ -30,10 +28,9 @@ class Camera:
         self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.last_translation = self.translation
         self.position *= self.distance_from_target
-        self.last_position = self.position
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
-        self.last_target = self.target
-        self.initial_position = self.position
+        self.initial_target = self.target
+        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position))
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
 
@@ -49,7 +46,7 @@ class Camera:
         """Resets the camera."""
         self.__init__(width, height)
 
-    def calc_distance_from_target(self, zoom: float) -> None:
+    def set_distance_from_target(self, zoom: float) -> None:
         """Set the distance between the camera and its target.
 
         :param zoom: Factor that is multiplied with the normalized camera position vector and the current distance
@@ -58,15 +55,16 @@ class Camera:
         self.distance_from_target += self.zoom_factor * zoom * (np.sign(zoom - 1))
         if self.distance_from_target < 1.0:
             self.distance_from_target = 1.0
-        self.set_distance_from_target()
-        self.last_position = self.reference_position = self.position
 
-    def set_distance_from_target(self) -> None:
-        """Set the distance between the camera and its target.
-
-        :param distance: Distance between the camera and its target.
-        """
-        self.position = pyrr.vector3.normalize(self.position - self.target) * self.distance_from_target + self.target
+    def update(self, save: bool = False) -> None:
+        """Updates the camera position and orientation."""
+        self.up_vector = self.rotation * self.initial_up_vector
+        self.right_vector = self.rotation * self.initial_right_vector
+        self.position = self.rotation * self.initial_position * self.distance_from_target + self.translation
+        self.target = self.initial_target + self.translation
+        if save:
+            self.last_rotation = self.rotation
+            self.last_translation = self.translation
 
     def set_translation_vector(self, old_mouse_position: np.ndarray, mouse_position: np.ndarray) -> None:
         """Calculates the translation matrix using the normalized mouse positions.
@@ -76,28 +74,9 @@ class Camera:
         """
         x_translation = mouse_position[0] - old_mouse_position[0]
         y_translation = -(mouse_position[1] - old_mouse_position[1])
-        self.translation = self.right_vector * x_translation + self.up_vector * y_translation
+        self.translation = self.right_vector * x_translation + self.up_vector * y_translation + self.last_translation
 
-    def calculate_camera_translation(
-        self, old_mouse_position: np.ndarray, mouse_position: np.ndarray, save: bool = False
-    ) -> None:
-        """
-        Calculates the camera position according to arcball movement using the normalized mouse positions.
-        :param old_mouse_position: Old normalized x and y coordinate of the mous position on the opengl widget.
-        :param new_mouse_position: New normalized x and y coordinate of the mous position on the opengl widget.
-        :param save: If given the current rotation quaternion is saved.
-        """
-        self.set_translation_vector(old_mouse_position, mouse_position)
-        self.position = self.last_position + self.translation
-        self.target = self.last_target + self.translation
-        if save:
-            self.last_translation += self.translation
-            self.last_position = self.position
-            self.last_target = self.target
-
-    def set_rotation_quaternion(
-        self, old_mouse_position: np.ndarray, new_mouse_position: np.ndarray
-    ) -> None:
+    def set_rotation_quaternion(self, old_mouse_position: np.ndarray, new_mouse_position: np.ndarray) -> None:
         """Calculates the rotation quaternion using the normalized mouse positions.
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
         :param new_mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
@@ -133,21 +112,3 @@ class Camera:
             self.rotation = self.last_rotation * pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
         else:
             self.rotation = self.last_rotation
-
-    def calculate_camera_orientation(
-        self, old_mouse_position: np.ndarray, new_mouse_position: np.ndarray, save: Optional[bool] = False
-    ) -> None:
-        """Calculates the camera position according to arcball movement using the normalized mouse positions.
-
-        :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
-        :param new_mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
-        :param save: If given the current rotation quaternion is saved.
-        """
-        self.set_rotation_quaternion(old_mouse_position, new_mouse_position)
-        self.up_vector = self.rotation * self.initial_up_vector
-        self.right_vector = self.rotation * self.initial_right_vector
-        self.position = self.rotation * self.initial_position + self.last_translation
-
-        if save:
-            self.last_rotation = self.rotation
-            self.last_position = self.position

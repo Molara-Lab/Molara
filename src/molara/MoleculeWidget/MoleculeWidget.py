@@ -100,7 +100,8 @@ class MoleculeWidget(QOpenGLWidget):
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
         self.zoom_factor += num_steps * 0.1  # Empirical value to control zoom sensitivity
         self.zoom_factor = max(0.1, self.zoom_factor)  # Limit zoom factor to avoid zooming too far
-        self.camera.calc_distance_from_target(self.zoom_factor)
+        self.camera.set_distance_from_target(self.zoom_factor)
+        self.camera.update()
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -120,11 +121,13 @@ class MoleculeWidget(QOpenGLWidget):
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.rotate and self.click_position is not None:
             self.set_normalized_position(event)
-            self.camera.calculate_camera_orientation(self.click_position, self.position)
+            self.camera.set_rotation_quaternion(self.click_position, self.position)
+            self.camera.update()
             self.update()
         if self.translate and self.click_position is not None:
             self.set_normalized_position(event)
-            self.camera.calculate_camera_translation(self.click_position, self.position)
+            self.camera.set_translation_vector(self.click_position, self.position)
+            self.camera.update()
             self.update()
 
     def set_normalized_position(self, event):
@@ -149,7 +152,7 @@ class MoleculeWidget(QOpenGLWidget):
         """
         self.translate = False
         self.set_normalized_position(event)
-        self.camera.calculate_camera_translation(self.click_position, self.position, save=True)
+        self.camera.update(save=True)
         self.click_position = None
 
     def stop_rotation(self, event: QMouseEvent) -> None:
@@ -159,5 +162,5 @@ class MoleculeWidget(QOpenGLWidget):
         """
         self.rotate = False
         self.set_normalized_position(event)
-        self.camera.calculate_camera_orientation(self.click_position, self.position, save=True)
+        self.camera.update(save=True)
         self.click_position = None
