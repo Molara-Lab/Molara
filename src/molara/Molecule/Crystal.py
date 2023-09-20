@@ -1,9 +1,11 @@
+import re
+from typing import Sequence
+
 import numpy as np
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
+from .Atom import element_symbol_to_atomic_number
 from .Molecule import *
-
-standard_supercell = np.array([1, 1, 1], dtype=int)
 
 
 class Crystal(Molecule):
@@ -24,27 +26,67 @@ class Crystal(Molecule):
 
     def __init__(
         self,
-        atomic_numbers: npt.ArrayLike,
-        coordinates: npt.ArrayLike,
-        basis_vectors: npt.ArrayLike,
-        supercell_dimensions: npt.ArrayLike = standard_supercell,
+        atomic_numbers: Sequence[int],
+        coordinates: Sequence[Sequence[float]],
+        basis_vectors: Sequence[Sequence[float]],
     ):
-        coordinates_translation = []
-        atomic_numbers_translation = []
-        dim0, dim1, dim2 = supercell_dimensions
-        for atomic_number_i, coordinates_i in zip(atomic_numbers, coordinates):
-            coordinates_cartesian = np.dot(basis_vectors.T, coordinates_i)
-            for i in range(dim0 + 1):
-                for j in range(dim1 + 1):
-                    for k in range(dim2 + 1):
-                        if coordinates_i[0] + i > dim0 or coordinates_i[1] + j > dim1 or coordinates_i[2] + k > dim2:
-                            continue
-                        new_coordinates = (
-                            coordinates_cartesian + i * basis_vectors[0] + j * basis_vectors[1] + k * basis_vectors[2]
-                        )
-                        coordinates_translation += [new_coordinates]
-                        atomic_numbers_translation += [atomic_number_i]
+        self.atomic_numbers = atomic_numbers
+        self.coordinates = coordinates
+        self.basis_vectors = basis_vectors
 
-        coordinates_translation = np.array(coordinates_translation)
-        atomic_numbers_translation = np.array(atomic_numbers_translation, dtype=int)
-        super().__init__(atomic_numbers_translation, coordinates_translation)
+        super().__init__(atomic_numbers, coordinates)
+
+    # def make_supercell(self, supercell_dimensions: ArrayLike):
+    #    coordinates_translation = []
+    #    atomic_numbers_translation = []
+    #    dim0, dim1, dim2 = supercell_dimensions
+    #    for atomic_number_i, coordinates_i in zip(self.atomic_numbers, self.coordinates):
+    #        coordinates_cartesian = np.dot(np.array(self.basis_vectors).T, coordinates_i)
+    #        for i in range(dim0):
+    #            for j in range(dim1):
+    #                for k in range(dim2):
+    #                    if (
+    #                        coordinates_i[0] + i > dim0
+    #                        or coordinates_i[1] + j > dim1
+    #                        or coordinates_i[2] + k > dim2
+    #                    ):
+    #                        continue
+    #                    new_coordinates = (
+    #                        coordinates_cartesian
+    #                        + i * self.basis_vectors[0]
+    #                        + j * self.basis_vectors[1]
+    #                        + k * self.basis_vectors[2]
+    #                    )
+    #                    coordinates_translation += [new_coordinates]
+    #                    atomic_numbers_translation += [atomic_number_i]
+    #    coordinates_translation = np.array(coordinates_translation)
+    #    atomic_numbers_translation = np.array(atomic_numbers_translation, dtype=int)
+    #    self.crystal = self.__init__(atomic_numbers_translation, coordinates_translation, self.basis_vectors)
+
+    @classmethod
+    def from_POSCAR(cls, file_path: str):
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+        if not len(lines) >= 9:
+            return False
+        lines[0]
+        scale, latvec_a, latvec_b, latvec_c = lines[1:5]
+        species, numbers = lines[5].strip(), lines[6]
+        mode, positions = lines[7].strip(), lines[8:]
+        try:
+            scale = float(scale)
+            latvec_a = np.fromstring(latvec_a, sep=" ")
+            latvec_b = np.fromstring(latvec_b, sep=" ")
+            latvec_c = np.fromstring(latvec_c, sep=" ")
+            species = re.split(r"\s+", species)
+            numbers = np.fromstring(numbers, sep=" ", dtype=int)
+            positions = np.array([np.fromstring(pos, sep=" ") for pos in positions])
+            basis_vectors = np.array([latvec_a, latvec_b, latvec_c])
+        except ValueError:
+            return False, "Error: faulty formatting of the POSCAR file."
+        if len(numbers) != len(species) or len(positions) != len(species):
+            return False, "Error: faulty formatting of the POSCAR file."
+        if mode.lower() != "direct":
+            return False, "Currently, Molara can only process direct mode in POSCAR files."
+        atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
+        return cls(atomic_numbers, positions, scale * basis_vectors)
