@@ -50,7 +50,14 @@ class Camera:
         self.distance_from_target *= zoom
         self.position = pyrr.vector3.normalize(self.position) * self.distance_from_target
 
-    def calculate_camera_position(
+    def calculate_camera_translation(self, old_mouse_position: float, mouse_position: float, save: bool = False) -> None:
+        """
+        Calculates the camera position according to arcball movement using the normalized mouse positions.
+        :param old_mouse_position: Old normalized x and y coordinate of the mous position on the opengl widget.
+        :param new_mouse_position: New normalized x and y coordinate of the mous position on the opengl widget.
+        :param save: If given the current rotation quaternion is saved.
+        """
+    def calculate_camera_orientation(
         self, old_mouse_position: float, new_mouse_position: float, save: Optional[bool] = False
     ) -> None:
         """Calculates the camera position according to arcball movement using the normalized mouse positions.
