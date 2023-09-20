@@ -20,11 +20,13 @@ class MoleculeWidget(QOpenGLWidget):
         self.molecule = None
         self.vertex_attribute_objects = None
         self.axes = False
-        self.rotate_sphere = False
+        self.rotate = False
+        self.translate = False
         self.click_position = None
         self.rotation_angle_x = 0.0
         self.rotation_angle_y = 0.0
         self.position = np.zeros(2)
+        self.old_position = np.zeros(2)
         self.zoom_factor = 1.0
         self.contour = False
         self.bonds = True
@@ -103,14 +105,26 @@ class MoleculeWidget(QOpenGLWidget):
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton and event.x() in range(self.width()) and event.y() in range(self.height()):
-            self.rotate_sphere = True
+            self.rotate = True
+            if self.translate == True:
+                self.stop_translate(event)
+            self.set_normalized_position(event)
+            self.click_position = np.copy(self.position)
+        if event.button() == Qt.RightButton and event.x() in range(self.width()) and event.y() in range(self.height()):
+            self.translate = True
+            if self.rotate == True:
+                self.stop_rotation(event)
             self.set_normalized_position(event)
             self.click_position = np.copy(self.position)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        if self.rotate_sphere and self.click_position is not None:
+        if self.rotate and self.click_position is not None:
             self.set_normalized_position(event)
-            self.camera.calculate_camera_position(self.click_position, self.position)
+            self.camera.calculate_camera_orientation(self.click_position, self.position)
+            self.update()
+        if self.translate and self.click_position is not None:
+            self.set_normalized_position(event)
+            self.camera.calculate_camera_translation(self.click_position, self.position)
             self.update()
 
     def set_normalized_position(self, event):
@@ -123,9 +137,28 @@ class MoleculeWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton and self.rotate_sphere:
-            self.rotate_sphere = False
-            self.set_normalized_position(event)
-            self.camera.calculate_camera_position(self.click_position, self.position, save=True)
-            self.click_position = None
-            # self.update()
+        if event.button() == Qt.LeftButton and self.rotate:
+            self.stop_rotation(event)
+        if event.button() == Qt.RightButton and self.translate:
+            self.stop_translate(event)
+
+
+    def stop_translate(self, event: QMouseEvent) -> None:
+        """
+        Stops the translation of the molecule.
+        :return:
+        """
+        self.translate = False
+        self.set_normalized_position(event)
+        self.camera.calculate_camera_translation(self.click_position, self.position, save=True)
+        self.click_position = None
+
+    def stop_rotation(self, event: QMouseEvent) -> None:
+        """
+        Stops the rotation of the molecule.
+        :return:
+        """
+        self.rotate = False
+        self.set_normalized_position(event)
+        self.camera.calculate_camera_orientation(self.click_position, self.position, save=True)
+        self.click_position = None
