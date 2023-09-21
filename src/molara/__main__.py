@@ -2,7 +2,7 @@ import sys
 import time as time
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
-
+from PySide6.QtCore import QTime,QTimer
 from molara.Gui.CrystalDialog import CrystalDialog
 
 # Important:
@@ -39,8 +39,7 @@ def main() -> None:
 
             self.mols = read_xyz(fileName)
 
-            widget.ui.openGLWidget.set_molecule(self.mols.molecules[self.index])
-            widget.index += 1 
+            widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
 
 
         def show_xyz(self):
@@ -49,20 +48,15 @@ def main() -> None:
 
             self.mols = read_xyz(fileName[0])
 
-            widget.ui.openGLWidget.set_molecule(self.mols.molecules[self.index])
-            widget.index += 1 
+            widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
 
+        def update_molecule(self):
+            widget.ui.openGLWidget.delete_molecule()
+            widget.ui.openGLWidget.set_molecule(widget.mols.get_next_mol())
 
-
-        def show_trajectory(self):
-
-
-            while widget.index < widget.mols.num_mols:
-                
-                widget.ui.openGLWidget.set_molecule(widget.mols.molecules[widget.index])
-
-                widget.index +=1
-
+        def show_previous_molecule(self):
+            widget.ui.openGLWidget.delete_molecule()
+            widget.ui.openGLWidget.set_molecule(widget.mols.get_previous_mol())
 
         def show_coord(self):
 
@@ -72,9 +66,21 @@ def main() -> None:
             
             widget.ui.openGLWidget.set_molecule(mol)
 
+        def show_trajectory(self):
+            
+            if widget.ui.checkBox.isChecked():
+                timer.start(25)
+                timer.timeout.connect(widget.update_molecule)
+
+            else:
+                timer.stop()
+                
 
     app = QApplication(sys.argv)
     widget = MainWindow()
+    timer = QTimer(widget)
+
+
     crystal_dialog = CrystalDialog(widget)  # pass widget as parent
     widget.setWindowTitle("Molara")
     widget.show()
@@ -83,14 +89,17 @@ def main() -> None:
         widget.show_init_xyz()
 
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
-    widget.ui.action_coord.triggered.connect(widget.show_coord)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
-    widget.ui.pushButton.clicked.connect(widget.show_trajectory)
+
+    widget.ui.checkBox.stateChanged.connect(widget.show_trajectory)
+    widget.ui.PreviousButton.clicked.connect(widget.show_previous_molecule)
+    widget.ui.NextButton.clicked.connect(widget.update_molecule)
 
     widget.ui.quit.triggered.connect(widget.close)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
+
     sys.exit(app.exec())
 
 if __name__ == "__main__":

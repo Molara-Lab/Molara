@@ -34,6 +34,7 @@ def read_xyz(file_path : str):
 
     if (len(lines)> 2+num_atoms) and lines[2 + num_atoms].replace("\n", "").isdigit():
 
+
         not_finished = True 
 
         max_mols =  10000
@@ -41,6 +42,9 @@ def read_xyz(file_path : str):
         xyz_len = 0
 
         while not_finished and max_mols > molecules.num_mols:
+            
+            atomic_numbers = []
+            coordinates = []
 
             xyz_len += 2 + num_atoms
 
