@@ -3,10 +3,41 @@ import numpy as np
 from .Molecule import Molecule
 
 class Molecules():
+    """
+    A class to store and manipulate a list of Molecules
+    """
    
     def __init__(self):
         self.molecules = []
         self.num_mols = 0
+        self.mol_index = 0
+
+    def update_index(self):
+        self.mol_index +=1 
+        self.mol_index %=self.num_mols
+
+    def get_next_mol(self):
+
+        molecule = self.molecules[self.mol_index]
+
+        self.mol_index += 1 
+        self.mol_index %= self.num_mols
+
+        return molecule
+
+    def get_previous_mol(self):
+    
+        self.mol_index -= 1 
+
+        if self.mol_index < 0:
+            self.mol_index = self.num_mols-1
+
+        molecule = self.molecules[self.mol_index]
+
+        return molecule        
+
+    def get_mol(self,index):
+        return self.molecules[index]
 
     def add_molecule(self,mol : Molecule) -> None:
         """

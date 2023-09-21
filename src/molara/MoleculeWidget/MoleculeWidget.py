@@ -43,6 +43,11 @@ class MoleculeWidget(QOpenGLWidget):
             self.bonds = True
         self.center_molecule()
 
+    def delete_molecule(self):
+
+        self.vertex_attribute_objects = []
+        self.update()
+
     def center_molecule(self):
         if self.molecule is not None:
             self.molecule.center_coordinates()
