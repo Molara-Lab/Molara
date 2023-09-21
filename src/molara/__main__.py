@@ -1,17 +1,19 @@
+import signal
 import sys
 
+from PySide6.QtCore import QTimer
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 
-from .Gui.CrystalDialog import CrystalDialog
+from molara.Gui.CrystalDialog import CrystalDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-from .Gui.ui_form import Ui_MainWindow
-from .Molecule.Crystal import Crystal
-from .Molecule.Molecule import read_coord, read_xyz
+from molara.Gui.ui_form import Ui_MainWindow
+from molara.Molecule.Crystal import Crystal
+from molara.Molecule.Molecule import read_coord, read_xyz
 
 
 def main() -> None:
@@ -20,6 +22,9 @@ def main() -> None:
     format.setSamples(4)
     format.setProfile(QSurfaceFormat.CoreProfile)
     QSurfaceFormat.setDefaultFormat(format)
+
+    def sigint_handler(*args):
+        app.quit()
 
     class MainWindow(QMainWindow):
         def __init__(self, parent=None):
@@ -58,7 +63,11 @@ def main() -> None:
             widget.ui.openGLWidget.set_molecule(crystal)
             return True
 
+    signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
+    timer = QTimer()
+    timer.start(500)  # You may change this if you wish.
+    timer.timeout.connect(lambda: None)
     widget = MainWindow()
     crystal_dialog = CrystalDialog(widget)  # pass widget as parent
     widget.setWindowTitle("Molara")
@@ -68,6 +77,7 @@ def main() -> None:
         widget.show_init_xyz()
 
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
+    widget.ui.action_coord.triggered.connect(widget.show_coord)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
