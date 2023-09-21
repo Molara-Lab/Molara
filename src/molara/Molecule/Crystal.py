@@ -63,13 +63,16 @@ class Crystal(Molecule):
     #    atomic_numbers_translation = np.array(atomic_numbers_translation, dtype=int)
     #    self.crystal = self.__init__(atomic_numbers_translation, coordinates_translation, self.basis_vectors)
 
+    @staticmethod
+    def fractional_to_cartesian_coords(fractional_coords, basis_vectors):
+        return np.dot(fractional_coords, basis_vectors)
+
     @classmethod
     def from_POSCAR(cls, file_path: str):
         with open(file_path, "r") as file:
             lines = file.readlines()
         if not len(lines) >= 9:
             return False
-        lines[0]
         scale, latvec_a, latvec_b, latvec_c = lines[1:5]
         species, numbers = lines[5].strip(), lines[6]
         mode, positions = lines[7].strip(), lines[8:]
@@ -81,12 +84,13 @@ class Crystal(Molecule):
             species = re.split(r"\s+", species)
             numbers = np.fromstring(numbers, sep=" ", dtype=int)
             positions = np.array([np.fromstring(pos, sep=" ") for pos in positions])
-            basis_vectors = np.array([latvec_a, latvec_b, latvec_c])
+            basis_vectors = scale * np.array([latvec_a, latvec_b, latvec_c])
         except ValueError:
             return False, "Error: faulty formatting of the POSCAR file."
         if len(numbers) != len(species) or len(positions) != len(species):
             return False, "Error: faulty formatting of the POSCAR file."
         if mode.lower() != "direct":
             return False, "Currently, Molara can only process direct mode in POSCAR files."
+        positions_cartesian = fractional_to_cartesian_coords(positions, basis_vectors)
         atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
-        return cls(atomic_numbers, positions, scale * basis_vectors)
+        return cls(atomic_numbers, positions_cartesian, basis_vectors)
