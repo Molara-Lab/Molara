@@ -60,7 +60,8 @@ class MoleculeWidget(QOpenGLWidget):
 
     def initializeGL(self):
         glClearColor(1, 1, 1, 1.0)
-        glEnable(GL_DEPTH_TEST, GL_MULTISAMPLE)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_MULTISAMPLE)
         self.shader = compile_shaders()
 
     def resizeGL(self, width, height):
