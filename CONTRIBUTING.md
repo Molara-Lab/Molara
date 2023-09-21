@@ -10,7 +10,7 @@ Thank you for considering contributing to our project! We value your effort and 
    
 3. **Docstrings**: Adopt the [google-style](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html) for docstrings. Every public class and method should have a descriptive docstring.
    
-4. **Line Length**: Be mindful of the line length. The maximum permissible line length is 79 characters.
+4. **Line Length**: Be mindful of the line length. The maximum permissible line length is 120 characters.
 
 ## Commit Messages:
 
@@ -23,7 +23,7 @@ Thank you for considering contributing to our project! We value your effort and 
 ## Branch Names:
 
 1. **Naming Convention**:
-   - For features: `feature/<issue-number>-<description>`. Example: `feature/123-user-authentication`.
-   - For bug fixes: `bug/<issue-number>-<description>`. Example: `bug/456-payment-gateway-error`.
+   - For features: `feature-<issue-number>-<description>`. Example: `feature-123-user-authentication`.
+   - For bug fixes: `bug-<issue-number>-<description>`. Example: `bug-456-payment-gateway-error`.
 
 By following these guidelines, you're helping us keep the project's quality high and ensuring your contributions can be smoothly integrated. We appreciate your commitment and look forward to collaborating!
