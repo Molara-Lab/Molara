@@ -15,36 +15,13 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="4" column="0">
+    <item row="1" column="0" rowspan="2">
      <widget class="MoleculeWidget" name="openGLWidget"/>
     </item>
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QPushButton" name="PreviousButton">
       <property name="text">
        <string>Previous</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QCheckBox" name="checkBox">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Show Trajectory</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="NextButton">
-      <property name="text">
-       <string>Next</string>
       </property>
      </widget>
     </item>

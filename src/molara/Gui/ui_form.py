@@ -16,9 +16,9 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QGridLayout, QMainWindow,
-    QMenu, QMenuBar, QPushButton, QSizePolicy,
-    QStatusBar, QWidget)
+from PySide6.QtWidgets import (QApplication, QGridLayout, QMainWindow, QMenu,
+    QMenuBar, QPushButton, QSizePolicy, QStatusBar,
+    QWidget)
 
 from molara.MoleculeWidget.MoleculeWidget import MoleculeWidget
 
@@ -52,28 +52,12 @@ class Ui_MainWindow(object):
         self.openGLWidget = MoleculeWidget(self.centralwidget)
         self.openGLWidget.setObjectName(u"openGLWidget")
 
-        self.gridLayout.addWidget(self.openGLWidget, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.openGLWidget, 1, 0, 2, 1)
 
         self.PreviousButton = QPushButton(self.centralwidget)
         self.PreviousButton.setObjectName(u"PreviousButton")
 
-        self.gridLayout.addWidget(self.PreviousButton, 1, 0, 1, 1)
-
-        self.checkBox = QCheckBox(self.centralwidget)
-        self.checkBox.setObjectName(u"checkBox")
-        self.checkBox.setEnabled(True)
-        sizePolicy = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.checkBox.sizePolicy().hasHeightForWidth())
-        self.checkBox.setSizePolicy(sizePolicy)
-
-        self.gridLayout.addWidget(self.checkBox, 0, 0, 1, 1)
-
-        self.NextButton = QPushButton(self.centralwidget)
-        self.NextButton.setObjectName(u"NextButton")
-
-        self.gridLayout.addWidget(self.NextButton, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.PreviousButton, 0, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -126,8 +110,6 @@ class Ui_MainWindow(object):
         self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Draw Axes", None))
         self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", u"Create Lattice", None))
         self.PreviousButton.setText(QCoreApplication.translate("MainWindow", u"Previous", None))
-        self.checkBox.setText(QCoreApplication.translate("MainWindow", u"Show Trajectory", None))
-        self.NextButton.setText(QCoreApplication.translate("MainWindow", u"Next", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
