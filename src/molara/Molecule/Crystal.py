@@ -36,6 +36,7 @@ class Crystal(Molecule):
         self.make_supercell([1, 1, 1])
 
     def make_supercell(self, supercell_dimensions):
+        self.supercell_dimensions = supercell_dimensions
         steps_a = np.arange(supercell_dimensions[0] + 1)
         steps_b = np.arange(supercell_dimensions[1] + 1)
         steps_c = np.arange(supercell_dimensions[2] + 1)
@@ -94,3 +95,21 @@ class Crystal(Molecule):
             return False, "Currently, Molara can only process direct mode in POSCAR files."
         atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
         return cls(atomic_numbers, positions, scale * basis_vectors)
+
+    def copy(self):
+        # supercell dimensions not included yet!
+        return Crystal(self.atomic_numbers_unitcell, self.coordinates_unitcell, self.basis_vectors)
+
+    """ overloading operators """
+
+    def __mul__(self, supercell_dimensions: Sequence[int]):
+        """
+        current implementation: multiply Crystal by a sequence of three integers [M, N, K]
+        to create MxNxK supercell
+        """
+        crystal_copy = self.copy()
+        crystal_copy.make_supercell(supercell_dimensions)
+        return crystal_copy
+
+    def __rmul__(self, supercell_dimensions: Sequence[int]):
+        return self.__mul__(supercell_dimensions)
