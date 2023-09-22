@@ -20,7 +20,7 @@ class TestCrystal(TestCase):
     def test_from_POSCAR(self):
         self.crystal_from_POSCAR = Crystal.from_POSCAR("examples/POSCAR/boron_nitride")
 
-        assert len(self.crystal_from_POSCAR.atoms) == 2
+        assert len(self.crystal_from_POSCAR.atoms) == 2**3 + 1
         assert_array_equal(self.crystal_from_POSCAR.basis_vectors, self.crystal.basis_vectors)
         assert_array_equal(self.crystal_from_POSCAR.atomic_numbers, self.crystal.atomic_numbers)
         assert_array_equal(self.crystal_from_POSCAR.coordinates, self.crystal.coordinates)

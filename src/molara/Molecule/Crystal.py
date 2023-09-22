@@ -33,7 +33,7 @@ class Crystal(Molecule):
         self.atomic_numbers_unitcell = atomic_numbers
         self.coordinates_unitcell = coordinates
         self.basis_vectors = basis_vectors
-        self.make_supercell([2, 2, 2])
+        self.make_supercell([1, 1, 1])
 
     def make_supercell(self, supercell_dimensions):
         steps_a = np.arange(supercell_dimensions[0] + 1)
