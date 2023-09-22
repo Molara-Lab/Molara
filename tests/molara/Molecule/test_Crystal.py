@@ -28,4 +28,4 @@ class TestCrystal(TestCase):
 
     def test_make_supercell(self):
         self.crystal.make_supercell([3, 3, 3])
-        assert len(self.crystal.atoms) == 3**3 + 4**4
+        assert len(self.crystal.atoms) == 3**3 + 4**3
