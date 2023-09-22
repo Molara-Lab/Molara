@@ -39,7 +39,7 @@ class Crystal(Molecule):
         steps_a = np.arange(supercell_dimensions[0] + 1)
         steps_b = np.arange(supercell_dimensions[1] + 1)
         steps_c = np.arange(supercell_dimensions[2] + 1)
-        steps_a.shape = (1, 1, *steps_a.shape)
+        steps_a.shape = (*steps_a.shape, 1, 1)
         steps_b.shape = (1, *steps_b.shape, 1)
         steps_c.shape = (1, 1, *steps_c.shape)
         translations_a = 1.0 * steps_a + 0.0 * steps_b + 0.0 * steps_c
