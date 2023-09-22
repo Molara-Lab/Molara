@@ -26,6 +26,6 @@ class TestCrystal(TestCase):
         assert_array_equal(self.crystal_from_POSCAR.coordinates, self.crystal.coordinates)
         # assert self.crystal_from_POSCAR == self.crystal
 
-    # def test_make_supercell(self):
-    #     self.crystal.make_supercell([2, 2, 2])
-    #     assert len(self.crystal.atoms) == 16
+    def test_make_supercell(self):
+        self.crystal.make_supercell([3, 3, 3])
+        assert len(self.crystal.atoms) == 3**3 + 4**4
