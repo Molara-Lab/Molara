@@ -60,7 +60,7 @@
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
     <addaction name="separator"/>
-    <addaction name="actionDisable_bonds"/>
+    <addaction name="actionDisable_Bonds"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -129,9 +129,9 @@
     <string>coord</string>
    </property>
   </action>
-  <action name="actionDisable_bonds">
+  <action name="actionDisable_Bonds">
    <property name="text">
-    <string>Disable bonds</string>
+    <string>Disable Bonds</string>
    </property>
   </action>
  </widget>

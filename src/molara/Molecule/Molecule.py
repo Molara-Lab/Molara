@@ -6,7 +6,7 @@ from .Drawer import Drawer
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike):
+    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike, draw_bonds: bool = True):
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads = []
@@ -20,6 +20,7 @@ class Molecule:
 
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
+        self.draw_bonds = draw_bonds
 
     def calculate_bonds(self):
         bonded_pairs = []
@@ -41,6 +42,9 @@ class Molecule:
             return np.array(bonded_pairs)
 
         return np.array([[-1, -1]], dtype=np.int_)
+    
+    def toggle_bonds(self):
+        self.draw_bonds = not self.draw_bonds
 
     def add_atom(self, atomic_number: int, coordinate: npt.ArrayLike):
         atom = Atom(atomic_number, coordinate)

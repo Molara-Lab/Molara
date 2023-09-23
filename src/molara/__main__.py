@@ -63,10 +63,11 @@ def main() -> None:
             widget.ui.openGLWidget.set_molecule(crystal)
             return True
 
-        def hide_bonds(self):
-            msgBox = QMessageBox()
-            msgBox.setText("This does not work yet.")
-            msgBox.exec()
+        def disable_bonds(self):
+            if self.ui.openGLWidget.molecule:
+                self.ui.openGLWidget.molecule.draw_bonds = not self.ui.openGLWidget.molecule.draw_bonds
+                self.ui.openGLWidget.update()
+
 
     signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
@@ -89,7 +90,7 @@ def main() -> None:
     widget.ui.quit.triggered.connect(widget.close)
     widget.ui.actionRead_POSCAR.triggered.connect(widget.show_POSCAR)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
-    widget.ui.actionDisable_bonds.triggered.connect(widget.hide_bonds)
+    widget.ui.actionDisable_Bonds.triggered.connect(widget.disable_bonds)
     sys.exit(app.exec())
 
 
