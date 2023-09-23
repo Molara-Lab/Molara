@@ -42,7 +42,7 @@ class Molecule:
             return np.array(bonded_pairs)
 
         return np.array([[-1, -1]], dtype=np.int_)
-    
+
     def toggle_bonds(self):
         self.draw_bonds = not self.draw_bonds
 
