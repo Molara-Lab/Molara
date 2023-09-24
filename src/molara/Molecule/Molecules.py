@@ -12,10 +12,6 @@ class Molecules():
         self.num_mols = 0
         self.mol_index = 0
 
-    def update_index(self):
-        self.mol_index +=1 
-        self.mol_index %=self.num_mols
-
     def get_next_mol(self):
 
         molecule = self.molecules[self.mol_index]

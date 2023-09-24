@@ -17,8 +17,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QMainWindow, QMenu,
-    QMenuBar, QPushButton, QSizePolicy, QStatusBar,
-    QWidget)
+    QMenuBar, QSizePolicy, QStatusBar, QWidget)
 
 from molara.MoleculeWidget.MoleculeWidget import MoleculeWidget
 
@@ -45,6 +44,8 @@ class Ui_MainWindow(object):
         self.actionDraw_Axes.setObjectName(u"actionDraw_Axes")
         self.actionCreate_Lattice = QAction(MainWindow)
         self.actionCreate_Lattice.setObjectName(u"actionCreate_Lattice")
+        self.actionOpen_Trajectory_Dialog = QAction(MainWindow)
+        self.actionOpen_Trajectory_Dialog.setObjectName(u"actionOpen_Trajectory_Dialog")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -52,12 +53,7 @@ class Ui_MainWindow(object):
         self.openGLWidget = MoleculeWidget(self.centralwidget)
         self.openGLWidget.setObjectName(u"openGLWidget")
 
-        self.gridLayout.addWidget(self.openGLWidget, 1, 0, 2, 1)
-
-        self.PreviousButton = QPushButton(self.centralwidget)
-        self.PreviousButton.setObjectName(u"PreviousButton")
-
-        self.gridLayout.addWidget(self.PreviousButton, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.openGLWidget, 0, 0, 2, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -88,6 +84,7 @@ class Ui_MainWindow(object):
         self.menuEdit.addAction(self.actionReset_View)
         self.menuEdit.addAction(self.menuRotate.menuAction())
         self.menuEdit.addAction(self.actionDraw_Axes)
+        self.menuEdit.addAction(self.actionOpen_Trajectory_Dialog)
         self.menuRotate.addAction(self.actionto_x_axis)
         self.menuRotate.addAction(self.actionto_y_axis)
         self.menuRotate.addAction(self.actionto_z_axis)
@@ -109,7 +106,7 @@ class Ui_MainWindow(object):
         self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", u"to z axis", None))
         self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Draw Axes", None))
         self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", u"Create Lattice", None))
-        self.PreviousButton.setText(QCoreApplication.translate("MainWindow", u"Previous", None))
+        self.actionOpen_Trajectory_Dialog.setText(QCoreApplication.translate("MainWindow", u"Open Trajectory Dialog", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))

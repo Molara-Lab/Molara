@@ -9,10 +9,23 @@ from molara.Molecule.Atom import element_symbol_to_atomic_number
 from molara.Molecule.Molecules import Molecules
 from molara.Molecule.Molecule import Molecule
 
+import matplotlib
+
+matplotlib.use('Qt5Agg')
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+
+class MplCanvas(FigureCanvasQTAgg):
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
 
 class TrajectoryDialog(QDialog):
     """
-    Dialog for trajectories.
+    Dialog for manipulating appearance of trajectories. 
     """
 
     def __init__(self, parent: QMainWindow = None):
@@ -22,18 +35,23 @@ class TrajectoryDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         self.timer = QTimer(self)
+
         self.ui.checkBox.stateChanged.connect(self.show_trajectory)
         self.ui.pushButton.clicked.connect(self.get_prev_mol)
-        self.ui.pushButton_2.clicked.connect(self.get_prev_mol)
+        self.ui.pushButton_2.clicked.connect(self.get_next_mol)
+        self.ui.pushButton.clicked.connect(self.plot_energy)
+
 
     def show_trajectory(self):
         
         if self.ui.checkBox.isChecked():
-            self.timer.start(25)
+
+            self.timer.start(50)
+
             self.timer.timeout.connect(self.update_molecule)
 
         else:
-            
+
             self.timer.stop()
                 
         return 
@@ -48,6 +66,12 @@ class TrajectoryDialog(QDialog):
         self.update_molecule()
         return
     
+    def set_slider_range(self):
+
+        self.ui.verticalSlider.setRange(0,int(self.parent().mols.num_mols))
+
+        return 
+
     def update_molecule(self):
 
         self.parent().ui.openGLWidget.delete_molecule()
@@ -55,3 +79,10 @@ class TrajectoryDialog(QDialog):
         self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_next_mol())
 
         return 
+    
+    def plot_energy(self):
+
+        sc = MplCanvas(self, width=5, height=4, dpi=100)
+        sc.axes.plot([0,1,2,3,4], [10,1,20,3,40])
+
+        return

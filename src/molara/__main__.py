@@ -42,6 +42,9 @@ def main() -> None:
 
             widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
 
+            if self.mols.num_mols > 1:
+
+                trajectory_dialog.show()
 
 
         def show_xyz(self):
@@ -52,6 +55,10 @@ def main() -> None:
 
             widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
 
+            if self.mols.num_mols > 1:
+
+                trajectory_dialog.show()
+
             return  
 
             
@@ -60,7 +67,6 @@ def main() -> None:
             widget.ui.openGLWidget.delete_molecule()
 
             widget.ui.openGLWidget.set_molecule(widget.mols.get_previous_mol())
-
 
         def show_coord(self):
 
@@ -84,7 +90,6 @@ def main() -> None:
     widget.show()
 
     if len(sys.argv) > 1:
-        
         widget.show_init_xyz()
 
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
@@ -92,11 +97,11 @@ def main() -> None:
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
 
-    widget.ui.PreviousButton.clicked.connect(trajectory_dialog.show)
-
-    widget.ui.quit.triggered.connect(widget.close)
 
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
+    widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(trajectory_dialog.show)
+
+    widget.ui.quit.triggered.connect(widget.close)
 
     sys.exit(app.exec())
 

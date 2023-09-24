@@ -65,20 +65,14 @@
     <enum>Qt::Vertical</enum>
    </property>
   </widget>
-  <widget class="QFrame" name="frame">
+  <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
-     <x>29</x>
+     <x>39</x>
      <y>29</y>
-     <width>321</width>
-     <height>221</height>
+     <width>301</width>
+     <height>201</height>
     </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
    </property>
   </widget>
  </widget>

@@ -15,8 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QFrame,
-    QPushButton, QSizePolicy, QSlider, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QPushButton,
+    QSizePolicy, QSlider, QWidget)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -36,11 +36,9 @@ class Ui_Dialog(object):
         self.verticalSlider.setObjectName(u"verticalSlider")
         self.verticalSlider.setGeometry(QRect(370, 60, 22, 160))
         self.verticalSlider.setOrientation(Qt.Vertical)
-        self.frame = QFrame(Dialog)
-        self.frame.setObjectName(u"frame")
-        self.frame.setGeometry(QRect(29, 29, 321, 221))
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
+        self.widget = QWidget(Dialog)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(39, 29, 301, 201))
 
         self.retranslateUi(Dialog)
 

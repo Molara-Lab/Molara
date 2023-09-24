@@ -15,15 +15,8 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0" rowspan="2">
+    <item row="0" column="0" rowspan="2">
      <widget class="MoleculeWidget" name="openGLWidget"/>
-    </item>
-    <item row="0" column="0">
-     <widget class="QPushButton" name="PreviousButton">
-      <property name="text">
-       <string>Previous</string>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>
@@ -65,6 +58,7 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
+    <addaction name="actionOpen_Trajectory_Dialog"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -120,6 +114,11 @@
   <action name="actionCreate_Lattice">
    <property name="text">
     <string>Create Lattice</string>
+   </property>
+  </action>
+  <action name="actionOpen_Trajectory_Dialog">
+   <property name="text">
+    <string>Open Trajectory Dialog</string>
    </property>
   </action>
  </widget>

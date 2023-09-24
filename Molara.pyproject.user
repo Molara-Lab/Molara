@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 11.0.2, 2023-09-08T17:53:32. -->
+<!-- Written by QtCreator 11.0.2, 2023-09-21T22:06:36. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -143,13 +143,13 @@
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">/Users/gfeldmann/GitHub/Molara/molara.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration./Users/gfeldmann/GitHub/Molara/molara.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Users/gfeldmann/GitHub/Molara/molara.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">/Users/gfeldmann/GitHub/Molara/molara.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">src/molara/__main__.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration./Users/gfeldmann/GitHub/Molara/src/molara/__main__.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Users/gfeldmann/GitHub/Molara/src/molara/__main__.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">/Users/gfeldmann/GitHub/Molara/src/molara/__main__.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/gfeldmann/GitHub/Molara</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/gfeldmann/GitHub/Molara/src/molara</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.1">
     <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
@@ -159,13 +159,13 @@
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">/Users/gfeldmann/GitHub/Molara/MoleculeWidget/MoleculeWidget.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration./Users/gfeldmann/GitHub/Molara/MoleculeWidget/MoleculeWidget.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Users/gfeldmann/GitHub/Molara/MoleculeWidget/MoleculeWidget.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">/Users/gfeldmann/GitHub/Molara/MoleculeWidget/MoleculeWidget.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">src/molara/MoleculeWidget/MoleculeWidget.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration./Users/gfeldmann/GitHub/Molara/src/molara/MoleculeWidget/MoleculeWidget.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Users/gfeldmann/GitHub/Molara/src/molara/MoleculeWidget/MoleculeWidget.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">/Users/gfeldmann/GitHub/Molara/src/molara/MoleculeWidget/MoleculeWidget.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/gfeldmann/GitHub/Molara/MoleculeWidget</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/gfeldmann/GitHub/Molara/src/molara/MoleculeWidget</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.2">
     <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
@@ -175,13 +175,13 @@
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">/Users/gfeldmann/GitHub/Molara/MoleculeWidget/Molecule/Molecule.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration./Users/gfeldmann/GitHub/Molara/MoleculeWidget/Molecule/Molecule.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Users/gfeldmann/GitHub/Molara/MoleculeWidget/Molecule/Molecule.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">/Users/gfeldmann/GitHub/Molara/MoleculeWidget/Molecule/Molecule.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">src/molara/Molecule/Molecule.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration./Users/gfeldmann/GitHub/Molara/src/molara/Molecule/Molecule.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Users/gfeldmann/GitHub/Molara/src/molara/Molecule/Molecule.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">/Users/gfeldmann/GitHub/Molara/src/molara/Molecule/Molecule.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/gfeldmann/GitHub/Molara/MoleculeWidget/Molecule</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/gfeldmann/GitHub/Molara/src/molara/Molecule</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">3</value>
   </valuemap>
