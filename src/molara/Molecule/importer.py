@@ -38,6 +38,7 @@ def read_xyz(file_path : str):
     #Goes on if file has more than one structure stored
     if (len(lines)> 2+num_atoms) and lines[2 + num_atoms].replace("\n", "").isdigit():
 
+
         not_finished = True 
 
         max_mols =  10000

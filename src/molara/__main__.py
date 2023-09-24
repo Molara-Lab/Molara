@@ -3,7 +3,6 @@ import time as time
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 from PySide6.QtCore import QTime,QTimer
-
 from molara.Gui.CrystalDialog import CrystalDialog
 from molara.Gui.TrajectoryDialog import TrajectoryDialog
 
@@ -77,6 +76,15 @@ def main() -> None:
             
             widget.ui.openGLWidget.set_molecule(mol)
 
+        def show_trajectory(self):
+            
+            if widget.ui.checkBox.isChecked():
+                timer.start(25)
+                timer.timeout.connect(widget.update_molecule)
+
+            else:
+                timer.stop()
+                
 
     app = QApplication(sys.argv)
 
