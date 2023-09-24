@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 import numpy as np
-from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
+from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem,QVBoxLayout, QWidget,QGraphicsScene
 from PySide6.QtCore import QTime,QTimer
 
 from molara.Gui.ui_trajectory import Ui_Dialog
@@ -13,7 +13,7 @@ import matplotlib
 
 matplotlib.use('Qt5Agg')
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg,NavigationToolbar2QT 
 from matplotlib.figure import Figure
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -37,10 +37,8 @@ class TrajectoryDialog(QDialog):
         self.timer = QTimer(self)
 
         self.ui.checkBox.stateChanged.connect(self.show_trajectory)
-        self.ui.pushButton.clicked.connect(self.get_prev_mol)
-        self.ui.pushButton_2.clicked.connect(self.get_next_mol)
-        self.ui.pushButton.clicked.connect(self.plot_energy)
-
+        self.ui.PrevButton.clicked.connect(self.get_prev_mol)
+        self.ui.NextButton.clicked.connect(self.get_next_mol)
 
     def show_trajectory(self):
         
@@ -80,9 +78,13 @@ class TrajectoryDialog(QDialog):
 
         return 
     
-    def plot_energy(self):
+    def plot_energies(self):
 
         sc = MplCanvas(self, width=5, height=4, dpi=100)
-        sc.axes.plot([0,1,2,3,4], [10,1,20,3,40])
+        sc.axes.plot(np.arange(self.parent().mols.num_mols),self.parent().mols.energies,'x-')
+        layout = QVBoxLayout()
+        layout.addWidget(sc)
+
+        self.ui.widget.setLayout(layout)
 
         return

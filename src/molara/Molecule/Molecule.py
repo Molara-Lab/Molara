@@ -6,7 +6,7 @@ from .Drawer import Drawer
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike):
+    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike,header: str = None):
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads = []
@@ -20,6 +20,9 @@ class Molecule:
 
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
+
+        if type(header) == str:
+            self.gen_energy_information(header)
 
     def calculate_bonds(self):
         bonded_pairs = []
@@ -59,3 +62,9 @@ class Molecule:
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_sphere_model_matrices()
         self.drawer.set_cylinder_model_matrices()
+
+    def gen_energy_information(self,string : str):
+
+        self.energy = float(string.split()[1])
+        
+        return 

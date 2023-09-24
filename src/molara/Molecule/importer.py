@@ -4,6 +4,9 @@ from .Atom import element_symbol_to_atomic_number
 
 def read_xyz(file_path : str):
 
+    """
+    Read-in function for .xyz files 
+    """
     molecules = Molecules() 
 
     with open(file_path, 'r') as file:
@@ -30,10 +33,10 @@ def read_xyz(file_path : str):
 
             coordinates.append([float(coord) for coord in atom_info[1:4]])
 
-    molecules.add_molecule(Molecule(atomic_numbers, coordinates))
-
+    molecules.add_molecule(Molecule(atomic_numbers, coordinates,lines[1]))
+    #Read in for a single xyz file
+    #Goes on if file has more than one structure stored
     if (len(lines)> 2+num_atoms) and lines[2 + num_atoms].replace("\n", "").isdigit():
-
 
         not_finished = True 
 
@@ -66,7 +69,7 @@ def read_xyz(file_path : str):
 
                 not_finished = False
 
-            molecules.add_molecule(Molecule(atomic_numbers, coordinates))
+            molecules.add_molecule(Molecule(atomic_numbers, coordinates,lines[1+xyz_len]))
 
     file.close()
 

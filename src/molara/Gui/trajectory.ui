@@ -10,6 +10,9 @@
     <height>300</height>
    </rect>
   </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -26,7 +29,7 @@
     <string>Trajectory</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="PrevButton">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -39,7 +42,7 @@
     <string>Previous</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="NextButton">
    <property name="geometry">
     <rect>
      <x>140</x>
@@ -68,10 +71,10 @@
   <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
-     <x>39</x>
-     <y>29</y>
-     <width>301</width>
-     <height>201</height>
+     <x>19</x>
+     <y>19</y>
+     <width>351</width>
+     <height>231</height>
     </rect>
    </property>
   </widget>

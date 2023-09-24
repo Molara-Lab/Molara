@@ -11,6 +11,7 @@ class Molecules():
         self.molecules = []
         self.num_mols = 0
         self.mol_index = 0
+        self.energies = []
 
     def get_next_mol(self):
 
@@ -46,6 +47,8 @@ class Molecules():
             self.molecules.append(mol)
 
             self.num_mols += 1
+
+            self.energies.append(mol.energy)
 
         else:
 

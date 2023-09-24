@@ -45,7 +45,7 @@ def main() -> None:
             if self.mols.num_mols > 1:
 
                 trajectory_dialog.show()
-
+                trajectory_dialog.plot_energies()
 
         def show_xyz(self):
 
@@ -58,6 +58,7 @@ def main() -> None:
             if self.mols.num_mols > 1:
 
                 trajectory_dialog.show()
+                trajectory_dialog.plot_energies()
 
             return  
 
@@ -88,6 +89,7 @@ def main() -> None:
     widget.setWindowTitle("Molara")
 
     widget.show()
+    
 
     if len(sys.argv) > 1:
         widget.show_init_xyz()
@@ -100,7 +102,6 @@ def main() -> None:
 
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(trajectory_dialog.show)
-
     widget.ui.quit.triggered.connect(widget.close)
 
     sys.exit(app.exec())
