@@ -76,15 +76,6 @@ def main() -> None:
             
             widget.ui.openGLWidget.set_molecule(mol)
 
-        def show_trajectory(self):
-            
-            if widget.ui.checkBox.isChecked():
-                timer.start(25)
-                timer.timeout.connect(widget.update_molecule)
-
-            else:
-                timer.stop()
-                
 
     app = QApplication(sys.argv)
 
