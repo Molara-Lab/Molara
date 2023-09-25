@@ -10,8 +10,10 @@ class Drawer:
     def __init__(self, atoms: [Atom], bonds: np.ndarray) -> None:
         self.subdivisions_sphere = 15
         self.subdivisions_cylinder = 20
-        self.unique_spheres = [Spheres() for _ in range(119)]
-        self.unique_cylinders = [Cylinders() for _ in range(119)]
+        self.unique_spheres = []
+        self.unique_spheres_mapping = [None for _ in range(119)]
+        self.unique_cylinders = []
+        self.unique_cylinders_mapping = [None for _ in range(119)]
         self.atoms = atoms
         self.bonds = bonds
         self.set_sphere_model_matrices()
@@ -28,15 +30,15 @@ class Drawer:
         """Resets the model matrices for the spheres.
         :return:
         """
-        for sphere in self.unique_spheres:
-            sphere.model_matrices = None
+        self.unique_spheres = []
+        self.unique_spheres_mapping = [None for _ in range(119)]
 
     def reset_cylinders_model_matrices(self) -> None:
         """Resets the model matrices for the cylinders.
         :return:
         """
-        for cylinder in self.unique_cylinders:
-            cylinder.model_matrices = None
+        self.unique_cylinders = []
+        self.unique_cylinders_mapping = [None for _ in range(119)]
 
     def set_cylinder_model_matrices(self) -> None:
         """Sets the model matrices for the cylinders.
@@ -44,22 +46,26 @@ class Drawer:
         """
         self.reset_cylinders_model_matrices()
         for atom in self.atoms:
-            if self.unique_cylinders[atom.atomic_number].model_matrices is None:
-                self.unique_cylinders[atom.atomic_number] = Cylinders(atom.cpk_color, self.subdivisions_cylinder)
+            idx = self.unique_cylinders_mapping[atom.atomic_number]
+            if idx is None:
+                self.unique_cylinders.append(Cylinders(atom.cpk_color, self.subdivisions_cylinder))
+                self.unique_cylinders_mapping[atom.atomic_number] = len(self.unique_cylinders) - 1
         for bond in self.bonds:
+            idx1 = self.unique_cylinders_mapping[self.atoms[bond[0]].atomic_number]
+            idx2 = self.unique_cylinders_mapping[self.atoms[bond[1]].atomic_number]
             if bond[0] != -1:
                 model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
-                if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
-                    self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
+                if self.unique_cylinders[idx1].model_matrices is None:
+                    self.unique_cylinders[idx1].model_matrices = model_matrices[0]
                 else:
-                    self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
-                        (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0]),
+                    self.unique_cylinders[idx1].model_matrices = np.concatenate(
+                        (self.unique_cylinders[idx1].model_matrices, model_matrices[0]),
                     )
-                if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
-                    self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
+                if self.unique_cylinders[idx2].model_matrices is None:
+                    self.unique_cylinders[idx2].model_matrices = model_matrices[1]
                 else:
-                    self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
-                        (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1]),
+                    self.unique_cylinders[idx2].model_matrices = np.concatenate(
+                        (self.unique_cylinders[idx2].model_matrices, model_matrices[1]),
                     )
 
     def set_sphere_model_matrices(self) -> None:
@@ -68,12 +74,14 @@ class Drawer:
         """
         self.reset_spheres_model_matrices()
         for atom in self.atoms:
-            if self.unique_spheres[atom.atomic_number].model_matrices is None:
-                self.unique_spheres[atom.atomic_number] = Spheres(atom.cpk_color, self.subdivisions_sphere)
-                self.unique_spheres[atom.atomic_number].model_matrices = calculate_sphere_model_matrix(atom)
+            idx = self.unique_spheres_mapping[atom.atomic_number]
+            if idx is None:
+                self.unique_spheres.append(Spheres(atom.cpk_color, self.subdivisions_sphere))
+                self.unique_spheres[-1].model_matrices = calculate_sphere_model_matrix(atom)
+                self.unique_spheres_mapping[atom.atomic_number] = len(self.unique_spheres) - 1
             else:
-                self.unique_spheres[atom.atomic_number].model_matrices = np.concatenate(
-                    (self.unique_spheres[atom.atomic_number].model_matrices, calculate_sphere_model_matrix(atom)),
+                self.unique_spheres[idx].model_matrices = np.concatenate(
+                    (self.unique_spheres[idx].model_matrices, calculate_sphere_model_matrix(atom)),
                 )
 
 
