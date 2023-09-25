@@ -1,8 +1,8 @@
 import numpy as np
 import numpy.typing as npt
 
-from .Atom import Atom, element_symbol_to_atomic_number
-from .Drawer import Drawer
+from .atom import Atom, element_symbol_to_atomic_number
+from .drawer import Drawer
 
 
 class Molecule:

@@ -1,9 +1,9 @@
 import numpy as np
 import pyrr
 
-from molara.Molecule.Atom import Atom
-from molara.Rendering.Cylinder import Cylinders
-from molara.Rendering.Sphere import Spheres
+from molara.Molecule.atom import Atom
+from molara.Rendering.cylinder import Cylinders
+from molara.Rendering.sphere import Spheres
 
 
 class Drawer:
@@ -25,7 +25,7 @@ class Drawer:
         """
         self.atoms = atoms
 
-    def reset_Spheres_model_matrices(self) -> None:
+    def reset_spheres_model_matrices(self) -> None:
         """
         Resets the model matrices for the spheres.
         :return:
@@ -33,7 +33,7 @@ class Drawer:
         for sphere in self.unique_spheres:
             sphere.model_matrices = None
 
-    def reset_Cylinders_model_matrices(self) -> None:
+    def reset_cylinders_model_matrices(self) -> None:
         """
         Resets the model matrices for the cylinders.
         :return:
@@ -46,7 +46,7 @@ class Drawer:
         Sets the model matrices for the cylinders.
         :return:
         """
-        self.reset_Cylinders_model_matrices()
+        self.reset_cylinders_model_matrices()
         for atom in self.atoms:
             if self.unique_cylinders[atom.atomic_number].model_matrices is None:
                 self.unique_cylinders[atom.atomic_number] = Cylinders(atom.cpk_color, self.subdivisions_cylinder)
@@ -70,7 +70,7 @@ class Drawer:
         Sets the model matrices for the spheres.
         :return:
         """
-        self.reset_Spheres_model_matrices()
+        self.reset_spheres_model_matrices()
         for atom in self.atoms:
             if self.unique_spheres[atom.atomic_number].model_matrices is None:
                 self.unique_spheres[atom.atomic_number] = Spheres(atom.cpk_color, self.subdivisions_sphere)
