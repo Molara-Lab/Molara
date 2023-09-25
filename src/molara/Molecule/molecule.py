@@ -62,7 +62,7 @@ class Molecule:
 
 
 def read_xyz(file_path: str):
-    with open(file_path, "r") as file:
+    with open(file_path) as file:
         lines = file.readlines()
 
         num_atoms = int(lines[0])

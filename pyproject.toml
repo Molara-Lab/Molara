@@ -2,6 +2,7 @@
 line-length = 120
 
 [tool.ruff]
+exclude = ["ui_*",]
 target-version = "py39"
 line-length = 120#
 select = [
@@ -58,7 +59,7 @@ select = [
   "TD",   # flake8-todos
   "TID",  # flake8-tidy-imports
   "TRY",  # tryceratops
-#  "UP",   # pyupgrade
+  "UP",   # pyupgrade
   "W",    # pycodestyle warning
   "YTT",  # flake8-2020
   ]
