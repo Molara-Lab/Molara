@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 
@@ -12,16 +10,12 @@ class Cylinder:
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = -1) -> None:
+    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
         self.color = color
         self.subdivisions = subdivisions
-        if subdivisions != -1 and color is not None:
-            vertices, indices = generate_cylinder(self.color, self.subdivisions)
-            self.vertices = vertices
-            self.indices = indices
-        else:
-            self.vertices = None
-            self.indices = None
+        vertices, indices = generate_cylinder(self.color, self.subdivisions)
+        self.vertices = vertices
+        self.indices = indices
 
 
 class Cylinders(Cylinder):
@@ -32,12 +26,12 @@ class Cylinders(Cylinder):
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = -1) -> None:
+    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
         super().__init__(color, subdivisions)
-        self.model_matrices = None
+        self.model_matrices = np.array([], dtype=np.float32)
 
 
-def generate_cylinder(color: np.ndarray, subdivisions: int) -> (np.ndarray, np.ndarray):
+def generate_cylinder(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
     :param color: Color of the cylinder.
@@ -61,7 +55,7 @@ def generate_cylinder(color: np.ndarray, subdivisions: int) -> (np.ndarray, np.n
         x = radius * np.cos(theta)
         y = -height / 2
         z = radius * np.sin(theta)
-        normal = [x, 0, z]
+        normal = np.array([x, 0, z])
         normal /= np.linalg.norm(normal)
         vertices.extend([x, y, z, color[0], color[1], color[2], 0, -1, 0])
         vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])

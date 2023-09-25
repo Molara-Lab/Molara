@@ -1,3 +1,4 @@
+# mypy: disable-error-code="name-defined"
 import pyrr
 from OpenGL.GL import *
 

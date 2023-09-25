@@ -20,15 +20,15 @@ class CrystalDialog(QDialog):
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = Ui_CrystalDialog()
         self.ui.setupUi(self)
-        self.list_of_coordinates = []
-        self.list_of_atomic_numbers = []
+        self.list_of_coordinates: list[float] = []
+        self.list_of_atomic_numbers: list[int] = []
         self.change_crystal_system("Cubic")
         self.ui.selectCrystalSystem.currentTextChanged.connect(self.change_crystal_system)
         self.ui.buttonAddAtom.clicked.connect(self.add_atom)
         self.ui.pushButton.clicked.connect(self.reset)
         self.ui.listAtoms.setColumnCount(4)
 
-    def reset(self):
+    def reset(self) -> None:
         self.list_of_atomic_numbers = []
         self.list_of_coordinates = []
         self.ui.listAtoms.setRowCount(0)
@@ -64,7 +64,7 @@ class CrystalDialog(QDialog):
         a, b, c = self.ui.inputLatConst_a.value(), self.ui.inputLatConst_b.value(), self.ui.inputLatConst_c.value()
         list_of_coordinates = np.array(self.list_of_coordinates)
         mycrystal = Crystal(
-            self.list_of_atomic_numbers,
+            np.array(self.list_of_atomic_numbers),
             list_of_coordinates,
             np.diag([a, b, c]),
             #     supercell_dimensions=supercell_dimensions,

@@ -20,7 +20,7 @@ def main() -> None:
     format = QSurfaceFormat()
     format.setVersion(4, 1)
     format.setSamples(4)
-    format.setProfile(QSurfaceFormat.CoreProfile)
+    format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
     QSurfaceFormat.setDefaultFormat(format)
 
     def sigint_handler(*args):
@@ -32,23 +32,23 @@ def main() -> None:
             self.ui = Ui_MainWindow()
             self.ui.setupUi(self)
 
-        def show_init_xyz(self):
+        def show_init_xyz(self) -> None:
             """Read the file from terminal arguments."""
             file_name = sys.argv[1]
             mol = read_xyz(file_name)
             widget.ui.openGLWidget.set_molecule(mol)
 
-        def show_xyz(self):
+        def show_xyz(self) -> None:
             file_name = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
             mol = read_xyz(file_name[0])
             widget.ui.openGLWidget.set_molecule(mol)
 
-        def show_coord(self):
+        def show_coord(self) -> None:
             file_name = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
             mol = read_coord(file_name[0])
             widget.ui.openGLWidget.set_molecule(mol)
 
-        def show_poscar(self):
+        def show_poscar(self) -> bool:
             filename = QFileDialog.getOpenFileName(self, "Open POSCAR file", "/home", "POSCAR Files (*)")
             crystal = Crystal.from_poscar(filename[0])
             if not isinstance(crystal, Crystal):
