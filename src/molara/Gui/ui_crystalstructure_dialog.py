@@ -59,7 +59,7 @@ from PySide6.QtWidgets import (
 )
 
 
-class UiCrystalDialog(object):
+class UiCrystalDialog:
     def setup_ui(self, crystal_dialog):
         if not crystal_dialog.objectName():
             crystal_dialog.setObjectName("CrystalDialog")

@@ -44,7 +44,7 @@ from PySide6.QtWidgets import QApplication, QGridLayout, QMainWindow, QMenu, QMe
 from molara.MoleculeWidget.molecule_widget import MoleculeWidget
 
 
-class UiMainwindow(object):
+class UiMainwindow:
     def setup_ui(self, main_window):
         if not main_window.objectName():
             main_window.setObjectName("MainWindow")
