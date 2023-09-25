@@ -228,17 +228,23 @@ class Ui_CrystalDialog(object):
         self.labelTitleSupercell.setText(QCoreApplication.translate("CrystalDialog", "Supercell", None))
         self.labelSupercell_a.setText(
             QCoreApplication.translate(
-                "CrystalDialog", "<html><head/><body><p>N<sub>a</sub><br/></p></body></html>", None,
+                "CrystalDialog",
+                "<html><head/><body><p>N<sub>a</sub><br/></p></body></html>",
+                None,
             ),
         )
         self.labelSupercell_b.setText(
             QCoreApplication.translate(
-                "CrystalDialog", "<html><head/><body><p>N<sub>b</sub><br/></p></body></html>", None,
+                "CrystalDialog",
+                "<html><head/><body><p>N<sub>b</sub><br/></p></body></html>",
+                None,
             ),
         )
         self.labelSupercell_c.setText(
             QCoreApplication.translate(
-                "CrystalDialog", "<html><head/><body><p>N<sub>c</sub><br/></p></body></html>", None,
+                "CrystalDialog",
+                "<html><head/><body><p>N<sub>c</sub><br/></p></body></html>",
+                None,
             ),
         )
         self.pushButton.setText(QCoreApplication.translate("CrystalDialog", "Clear Atoms", None))
