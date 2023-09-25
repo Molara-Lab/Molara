@@ -25,10 +25,12 @@ class TestCrystal(TestCase):
         assert_array_equal(self.crystal_from_POSCAR.atomic_numbers_supercell, self.crystal.atomic_numbers_supercell)
         assert_array_equal(self.crystal_from_POSCAR.atomic_numbers_unitcell, self.crystal.atomic_numbers_unitcell)
         assert_array_equal(
-            self.crystal_from_POSCAR.fractional_coordinates_supercell, self.crystal.fractional_coordinates_supercell
+            self.crystal_from_POSCAR.fractional_coordinates_supercell,
+            self.crystal.fractional_coordinates_supercell,
         )
         assert_array_equal(
-            self.crystal_from_POSCAR.cartesian_coordinates_supercell, self.crystal.cartesian_coordinates_supercell
+            self.crystal_from_POSCAR.cartesian_coordinates_supercell,
+            self.crystal.cartesian_coordinates_supercell,
         )
         assert_array_equal(self.crystal_from_POSCAR.coordinates_unitcell, self.crystal.coordinates_unitcell)
         # assert self.crystal_from_POSCAR == self.crystal

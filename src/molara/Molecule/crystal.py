@@ -53,7 +53,9 @@ class Crystal(Molecule):
         for atomic_number_i, position_i in zip(self.atomic_numbers_unitcell, self.coordinates_unitcell):
             self.atomic_numbers_supercell = np.append(self.atomic_numbers_supercell, [atomic_number_i] * num_unit_cells)
             self.fractional_coordinates_supercell = np.append(
-                self.fractional_coordinates_supercell, position_i + translation_vectors, axis=0
+                self.fractional_coordinates_supercell,
+                position_i + translation_vectors,
+                axis=0,
             )
 
         # remove positions outside of the supercell box
