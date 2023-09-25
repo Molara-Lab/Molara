@@ -18,7 +18,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install ruff black --upgrade
+        pip install ruff black mypy --upgrade
+        pip install -e .
 
     - name: ruff
       run: |
@@ -29,3 +30,9 @@ jobs:
       run: |
         black --version
         black --check --diff --color $(find . -name "*.py" | xargs)
+
+    - name: mypy
+      run: |
+        mypy --version
+        rm -rf .mypy_cache
+        mypy . #  ${{ github.event.repository.name }}

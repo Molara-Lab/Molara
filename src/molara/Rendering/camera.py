@@ -44,7 +44,27 @@ class Camera:
 
     def reset(self, width: float, height: float) -> None:
         """Resets the camera."""
-        self.__init__(width, height)
+        self.width = width
+        self.height = height
+        self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
+        self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
+        self.right_vector = pyrr.Vector3([0.0, 0.0, 1.0], dtype=np.float32)
+        self.distance_from_target = 5.0
+        self.zoom_factor = 0.05
+
+        self.projection_matrix = None
+        self.calculate_projection_matrix(self.width, self.height)
+
+        self.rotation = pyrr.Quaternion()
+        self.last_rotation = self.rotation
+        self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.last_translation = self.translation
+        self.position *= self.distance_from_target
+        self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.initial_target = self.target
+        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position))
+        self.initial_up_vector = self.up_vector
+        self.initial_right_vector = self.right_vector
 
     def set_distance_from_target(self, zoom: float) -> None:
         """Set the distance between the camera and its target.

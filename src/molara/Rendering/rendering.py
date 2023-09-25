@@ -1,7 +1,8 @@
+# mypy: disable-error-code="name-defined"
 import pyrr
 from OpenGL.GL import *
 
-from molara.Molecule.Molecule import Molecule
+from molara.Molecule.molecule import Molecule
 
 
 def draw_scene(shader, camera, vaos, molecule: Molecule):
@@ -20,7 +21,9 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
         return
 
     view_mat = pyrr.matrix44.create_look_at(
-        pyrr.Vector3(camera.position), pyrr.Vector3(camera.target), pyrr.Vector3(camera.up_vector)
+        pyrr.Vector3(camera.position),
+        pyrr.Vector3(camera.target),
+        pyrr.Vector3(camera.up_vector),
     )
 
     light_direction_loc = glGetUniformLocation(shader, "light_direction")
@@ -36,23 +39,25 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     for vao, atomic_number in zip(vaos, molecule.unique_atomic_numbers):
+        idx = molecule.drawer.unique_spheres_mapping[atomic_number]
         glBindVertexArray(vao)
         glDrawElementsInstanced(
             GL_TRIANGLES,
-            len(molecule.drawer.unique_spheres[atomic_number].vertices),
+            len(molecule.drawer.unique_spheres[idx].vertices),
             GL_UNSIGNED_INT,
             None,
-            len(molecule.drawer.unique_spheres[atomic_number].model_matrices),
+            len(molecule.drawer.unique_spheres[idx].model_matrices),
         )
         glBindVertexArray(0)
     for vao, atomic_number in zip(vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers):
-        if molecule.drawer.unique_cylinders[atomic_number].model_matrices is not None:
+        idx = molecule.drawer.unique_cylinders_mapping[atomic_number]
+        if molecule.drawer.unique_cylinders[idx].model_matrices is not None:
             glBindVertexArray(vao)
             glDrawElementsInstanced(
                 GL_TRIANGLES,
-                len(molecule.drawer.unique_cylinders[atomic_number].vertices),
+                len(molecule.drawer.unique_cylinders[idx].vertices),
                 GL_UNSIGNED_INT,
                 None,
-                len(molecule.drawer.unique_cylinders[atomic_number].model_matrices),
+                len(molecule.drawer.unique_cylinders[idx].model_matrices),
             )
             glBindVertexArray(0)
