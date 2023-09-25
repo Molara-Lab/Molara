@@ -6,6 +6,7 @@ from .Molecules import Molecules
 def read_xyz(file_path: str):
     """
     Read-in function for .xyz files
+    param: file_path: str
     """
     molecules = Molecules()
 
@@ -72,6 +73,7 @@ def read_coord(file_path: str):
     """
     Imports a coord file
     Returns the Molecule
+    param: file_path: str
     """
 
     molecules = Molecules()

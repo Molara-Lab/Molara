@@ -33,7 +33,6 @@ def main() -> None:
         def show_init_xyz(self):
             """
             read the file from terminal arguments
-
             """
             fileName = sys.argv[1]
 
@@ -44,6 +43,7 @@ def main() -> None:
             if self.mols.num_mols > 1:
                 trajectory_dialog.show()
                 trajectory_dialog.plot_energies()
+                trajectory_dialog.set_slider_range()
 
         def show_xyz(self):
             fileName = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
@@ -89,7 +89,6 @@ def main() -> None:
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
-
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(trajectory_dialog.show)
     widget.ui.quit.triggered.connect(widget.close)

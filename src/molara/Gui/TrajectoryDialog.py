@@ -38,6 +38,7 @@ class TrajectoryDialog(QDialog):
         self.ui.checkBox.stateChanged.connect(self.show_trajectory)
         self.ui.PrevButton.clicked.connect(self.get_prev_mol)
         self.ui.NextButton.clicked.connect(self.get_next_mol)
+        self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
 
     def show_trajectory(self):
         if self.ui.checkBox.isChecked():
@@ -50,21 +51,41 @@ class TrajectoryDialog(QDialog):
         return
 
     def get_next_mol(self):
+        """
+        Calls molecules object to get the next molecule and update it in the GUI.
+        """
         self.parent().mols.get_next_mol()
         self.update_molecule()
         return
 
     def get_prev_mol(self):
+        """
+        Calls molecules object to get the previous molecule and update it in the GUI.
+        """
         self.parent().mols.get_previous_mol()
         self.update_molecule()
         return
 
     def set_slider_range(self):
-        self.ui.verticalSlider.setRange(0, int(self.parent().mols.num_mols))
+        """
+        Set the slider range to the max number of molecules.
+        """
+        self.ui.verticalSlider.setRange(0, int(self.parent().mols.num_mols) - 1)
+
+        return
+
+    def slide_molecule(self):
+        index = self.ui.verticalSlider.sliderPosition()
+        self.parent().ui.openGLWidget.delete_molecule()
+        self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_index_mol(index))
 
         return
 
     def update_molecule(self):
+        """
+        Update molecule in the ui widget by deleting the
+        current molecule and calling the next molecule in the molecules object.
+        """
         self.parent().ui.openGLWidget.delete_molecule()
 
         self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_next_mol())
@@ -75,6 +96,9 @@ class TrajectoryDialog(QDialog):
         return
 
     def plot_energies(self):
+        """
+        Plot the energies of the molecules in the molecules object.
+        """
         sc = MplCanvas(self, width=5, height=4, dpi=100)
         sc.axes.plot(np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-")
         layout = QVBoxLayout()

@@ -1,6 +1,6 @@
 import numpy as np
 
-from molara.Molecule import Molecule
+from .Molecule import Molecule
 
 
 class Molecules:
@@ -9,29 +9,43 @@ class Molecules:
     """
 
     def __init__(self):
-        self.molecules = []
+        self.mols = []
         self.num_mols = 0
         self.mol_index = 0
         self.energies = []
 
     def get_next_mol(self):
-        molecule = self.molecules[self.mol_index]
+        """
+        Returns the next molecule in the list of molecules
+        """
+        molecule = self.mols[self.mol_index]
 
         self.mol_index += 1
         self.mol_index %= self.num_mols
 
         return molecule
 
+    def get_index_mol(self, index: int):
+        """
+        Return a molecule of the list of molecules by a given index
+        param: index: int
+        """
+        self.mol_index = index
+        return self.mols[self.mol_index]
+
     def get_previous_mol(self):
+        """
+        Returns the previous molecule of the list of molecules
+        """
         self.mol_index -= 1
 
         if self.mol_index < 0:
             self.mol_index = self.num_mols - 1
 
-        return self.molecules[self.mol_index]
+        return self.mols[self.mol_index]
 
     def get_mol(self, index):
-        return self.molecules[index]
+        return self.mols[index]
 
     def add_molecule(self, mol: Molecule) -> None:
         """
@@ -40,7 +54,7 @@ class Molecules:
         """
 
         if type(mol) == Molecule:
-            self.molecules.append(mol)
+            self.mols.append(mol)
 
             self.num_mols += 1
 
@@ -54,7 +68,7 @@ class Molecules:
         param: index: int
         """
 
-        self.molecules.pop(index)
+        self.mols.pop(index)
         self.num_mols -= 1
 
         return
