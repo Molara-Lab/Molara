@@ -47,19 +47,20 @@ class Drawer:
             if self.unique_cylinders[atom.atomic_number].model_matrices is None:
                 self.unique_cylinders[atom.atomic_number] = Cylinders(atom.cpk_color, self.subdivisions_cylinder)
         for bond in self.bonds:
-            model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
-            if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
-                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
-            else:
-                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
-                    (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0]),
-                )
-            if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
-                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
-            else:
-                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
-                    (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1]),
-                )
+            if bond[0] != -1:
+                model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
+                if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
+                    self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
+                else:
+                    self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
+                        (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0])
+                    )
+                if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
+                    self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
+                else:
+                    self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
+                        (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1])
+                    )
 
     def set_sphere_model_matrices(self) -> None:
         """Sets the model matrices for the spheres.
@@ -105,6 +106,7 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     position_2 = mid_point + difference / 4
     # Calculate the rotation axis to rotate the cylinder to the correct orientation.
     y_axis = np.array([0, 1, 0], dtype=np.float32)
+    difference = difference / np.linalg.norm(difference)
     if abs(y_axis @ difference) != 1:
         rotation_axis = np.cross(y_axis, difference)
         # Calculate the angle to rotate the cylinder to the correct orientation.
