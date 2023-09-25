@@ -1,8 +1,8 @@
 import numpy as np
 import numpy.typing as npt
 
-from .Atom import Atom, element_symbol_to_atomic_number
-from .Drawer import Drawer
+from .atom import Atom, element_symbol_to_atomic_number
+from .drawer import Drawer
 
 
 class Molecule:
@@ -62,7 +62,7 @@ class Molecule:
 
 
 def read_xyz(file_path: str):
-    with open(file_path, "r") as file:
+    with open(file_path) as file:
         lines = file.readlines()
 
         num_atoms = int(lines[0])
@@ -83,11 +83,9 @@ def read_xyz(file_path: str):
 
 
 def read_coord(file_path: str):
+    """Imports a coord file
+    Returns the Molecule.
     """
-    Imports a coord file
-    Returns the Molecule
-    """
-
     with open(file_path) as file:
         lines = file.readlines()  # To skip first row
 

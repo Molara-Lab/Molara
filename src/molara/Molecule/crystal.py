@@ -1,16 +1,15 @@
 import re
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 from numpy.typing import ArrayLike
 
-from .Atom import element_symbol_to_atomic_number
-from .Molecule import *
+from .atom import element_symbol_to_atomic_number
+from .molecule import *
 
 
 class Crystal(Molecule):
-    """
-    Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
+    """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
     Particle positions are given in terms of the basis vectors:
     E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
 
@@ -64,8 +63,8 @@ class Crystal(Molecule):
     #    self.crystal = self.__init__(atomic_numbers_translation, coordinates_translation, self.basis_vectors)
 
     @classmethod
-    def from_POSCAR(cls, file_path: str):
-        with open(file_path, "r") as file:
+    def from_poscar(cls, file_path: str):
+        with open(file_path) as file:
             lines = file.readlines()
         if not len(lines) >= 9:
             return False

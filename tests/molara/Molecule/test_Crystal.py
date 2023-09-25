@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 import numpy as np
-from molara.Molecule.Crystal import Crystal
+from molara.Molecule.crystal import Crystal
 from numpy.testing import assert_array_equal
 
 
@@ -17,8 +17,8 @@ class TestCrystal(TestCase):
         assert_array_equal(self.crystal.atomic_numbers, atomic_numbers)
         assert_array_equal(self.crystal.coordinates, coordinates)
 
-    def test_from_POSCAR(self):
-        self.crystal_from_POSCAR = Crystal.from_POSCAR("examples/POSCAR/boron_nitride")
+    def test_from_poscar(self):
+        self.crystal_from_POSCAR = Crystal.from_poscar("examples/POSCAR/boron_nitride")
 
         assert len(self.crystal_from_POSCAR.atoms) == 2
         assert_array_equal(self.crystal_from_POSCAR.basis_vectors, self.crystal.basis_vectors)

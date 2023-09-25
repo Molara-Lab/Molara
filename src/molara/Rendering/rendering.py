@@ -1,7 +1,7 @@
 import pyrr
 from OpenGL.GL import *
 
-from molara.Molecule.Molecule import Molecule
+from molara.Molecule.molecule import Molecule
 
 
 def draw_scene(shader, camera, vaos, molecule: Molecule):
@@ -20,7 +20,9 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
         return
 
     view_mat = pyrr.matrix44.create_look_at(
-        pyrr.Vector3(camera.position), pyrr.Vector3(camera.target), pyrr.Vector3(camera.up_vector)
+        pyrr.Vector3(camera.position),
+        pyrr.Vector3(camera.target),
+        pyrr.Vector3(camera.up_vector),
     )
 
     light_direction_loc = glGetUniformLocation(shader, "light_direction")
@@ -46,12 +48,13 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
         )
         glBindVertexArray(0)
     for vao, atomic_number in zip(vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers):
-        glBindVertexArray(vao)
-        glDrawElementsInstanced(
-            GL_TRIANGLES,
-            len(molecule.drawer.unique_cylinders[atomic_number].vertices),
-            GL_UNSIGNED_INT,
-            None,
-            len(molecule.drawer.unique_cylinders[atomic_number].model_matrices),
-        )
-        glBindVertexArray(0)
+        if molecule.drawer.unique_cylinders[atomic_number].model_matrices is not None:
+            glBindVertexArray(vao)
+            glDrawElementsInstanced(
+                GL_TRIANGLES,
+                len(molecule.drawer.unique_cylinders[atomic_number].vertices),
+                GL_UNSIGNED_INT,
+                None,
+                len(molecule.drawer.unique_cylinders[atomic_number].model_matrices),
+            )
+            glBindVertexArray(0)

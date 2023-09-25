@@ -25,8 +25,8 @@ class Cylinder:
 
 
 class Cylinders(Cylinder):
-    """Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw multiple
-    instances.
+    """Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw
+    multiple instances.
 
     :param color: Color of the cylinder.
     :param subdivisions: Number of subdivisions of the cylinder.
