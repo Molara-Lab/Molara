@@ -58,7 +58,7 @@ select = [
   "TD",   # flake8-todos
   "TID",  # flake8-tidy-imports
   "TRY",  # tryceratops
-#  "UP",   # pyupgrade
+  "UP",   # pyupgrade
   "W",    # pycodestyle warning
   "YTT",  # flake8-2020
   ]

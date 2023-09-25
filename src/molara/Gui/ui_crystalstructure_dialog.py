@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 ################################################################################
 ## Form generated from reading UI file 'crystalstructure_dialog.ui'
@@ -61,7 +60,7 @@ from PySide6.QtWidgets import (
 )
 
 
-class Ui_CrystalDialog(object):
+class Ui_CrystalDialog:
     def setupUi(self, CrystalDialog):
         if not CrystalDialog.objectName():
             CrystalDialog.setObjectName("CrystalDialog")
