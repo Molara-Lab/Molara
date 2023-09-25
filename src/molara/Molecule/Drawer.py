@@ -51,19 +51,20 @@ class Drawer:
             if self.unique_cylinders[atom.atomic_number].model_matrices is None:
                 self.unique_cylinders[atom.atomic_number] = Cylinders(atom.cpk_color, self.subdivisions_cylinder)
         for bond in self.bonds:
-            model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
-            if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
-                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
-            else:
-                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
-                    (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0])
-                )
-            if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
-                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
-            else:
-                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
-                    (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1])
-                )
+            if bond[0] != -1:
+                model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
+                if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
+                    self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
+                else:
+                    self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
+                        (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0])
+                    )
+                if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
+                    self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
+                else:
+                    self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
+                        (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1])
+                    )
 
     def set_sphere_model_matrices(self) -> None:
         """
