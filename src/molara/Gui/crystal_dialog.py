@@ -9,15 +9,14 @@ from molara.Molecule.crystal import Crystal
 
 
 class CrystalDialog(QDialog):
-    """
-    Dialog for specifying a crystal structure.
+    """Dialog for specifying a crystal structure.
     Element symbols, coordinates, lattice constants, supercell size given by user,
     object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
     """
 
     def __init__(self, parent: QMainWindow = None):
         super().__init__(
-            parent
+            parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = Ui_CrystalDialog()
         self.ui.setupUi(self)

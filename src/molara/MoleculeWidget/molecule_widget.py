@@ -107,13 +107,13 @@ class MoleculeWidget(QOpenGLWidget):
     def mousePressEvent(self, event: QMouseEvent):  # noqa: N802
         if event.button() == Qt.LeftButton and event.x() in range(self.width()) and event.y() in range(self.height()):
             self.rotate = True
-            if self.translate == True:
+            if self.translate is True:
                 self.stop_translate(event)
             self.set_normalized_position(event)
             self.click_position = np.copy(self.position)
         if event.button() == Qt.RightButton and event.x() in range(self.width()) and event.y() in range(self.height()):
             self.translate = True
-            if self.rotate == True:
+            if self.rotate is True:
                 self.stop_rotation(event)
             self.set_normalized_position(event)
             self.click_position = np.copy(self.position)
@@ -146,8 +146,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.stop_translate(event)
 
     def stop_translate(self, event: QMouseEvent) -> None:
-        """
-        Stops the translation of the molecule.
+        """Stops the translation of the molecule.
         :return:
         """
         self.translate = False
@@ -156,8 +155,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.click_position = None
 
     def stop_rotation(self, event: QMouseEvent) -> None:
-        """
-        Stops the rotation of the molecule.
+        """Stops the rotation of the molecule.
         :return:
         """
         self.rotate = False
