@@ -53,13 +53,13 @@ class Drawer:
                     self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
                 else:
                     self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
-                        (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0])
+                        (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0]),
                     )
                 if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
                     self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
                 else:
                     self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
-                        (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1])
+                        (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1]),
                     )
 
     def set_sphere_model_matrices(self) -> None:
