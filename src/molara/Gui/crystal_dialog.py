@@ -3,9 +3,9 @@ from contextlib import suppress
 import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 
-from molara.Gui.ui_crystalstructure_dialog import Ui_CrystalDialog
-from molara.Molecule.Atom import element_symbol_to_atomic_number
-from molara.Molecule.Crystal import Crystal
+from molara.Gui.ui_crystalstructure_dialog import UiCrystalDialog
+from molara.Molecule.atom import element_symbol_to_atomic_number
+from molara.Molecule.crystal import Crystal
 
 
 class CrystalDialog(QDialog):
@@ -19,8 +19,8 @@ class CrystalDialog(QDialog):
         super().__init__(
             parent
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
-        self.ui = Ui_CrystalDialog()
-        self.ui.setupUi(self)
+        self.ui = UiCrystalDialog()
+        self.ui.setup_ui(self)
         self.list_of_coordinates = []
         self.list_of_atomic_numbers = []
         self.change_crystal_system("Cubic")
@@ -74,13 +74,13 @@ class CrystalDialog(QDialog):
 
     def change_crystal_system(self, value: str):
         self.crystal_system = value
-        selectSpaceGroup = self.ui.selectSpaceGroup
-        view = selectSpaceGroup.view()
+        select_space_group = self.ui.selectSpaceGroup
+        view = select_space_group.view()
         if value == "Cubic":
             view.setRowHidden(0, False)
             view.setRowHidden(1, True)
             view.setRowHidden(2, True)
-            selectSpaceGroup.setCurrentIndex(0)
+            select_space_group.setCurrentIndex(0)
             self.ui.inputLatConst_a.setEnabled(True)
             self.ui.inputLatConst_b.setEnabled(False)
             self.ui.inputLatConst_c.setEnabled(False)
@@ -97,7 +97,7 @@ class CrystalDialog(QDialog):
             view.setRowHidden(0, True)
             view.setRowHidden(1, False)
             view.setRowHidden(2, True)
-            selectSpaceGroup.setCurrentIndex(1)
+            select_space_group.setCurrentIndex(1)
             self.ui.inputLatConst_a.setEnabled(True)
             self.ui.inputLatConst_b.setEnabled(False)
             self.ui.inputLatConst_c.setEnabled(True)
@@ -113,7 +113,7 @@ class CrystalDialog(QDialog):
             view.setRowHidden(0, True)
             view.setRowHidden(1, True)
             view.setRowHidden(2, False)
-            selectSpaceGroup.setCurrentIndex(2)
+            select_space_group.setCurrentIndex(2)
             self.ui.inputLatConst_a.setEnabled(True)
             self.ui.inputLatConst_b.setEnabled(True)
             self.ui.inputLatConst_c.setEnabled(True)
