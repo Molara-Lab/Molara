@@ -20,7 +20,7 @@ def main() -> None:
     format = QSurfaceFormat()
     format.setVersion(4, 1)
     format.setSamples(4)
-    format.setProfile(QSurfaceFormat.CoreProfile)
+    format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
     QSurfaceFormat.setDefaultFormat(format)
 
     def sigint_handler(*args):

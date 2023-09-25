@@ -107,13 +107,21 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent):  # noqa: N802
-        if event.button() == Qt.LeftButton and event.x() in range(self.width()) and event.y() in range(self.height()):
+        if (
+            event.button() == Qt.MouseButton.LeftButton
+            and event.x() in range(self.width())
+            and event.y() in range(self.height())
+        ):
             self.rotate = True
             if self.translate is True:
                 self.stop_translate(event)
             self.set_normalized_position(event)
             self.click_position = np.copy(self.position)
-        if event.button() == Qt.RightButton and event.x() in range(self.width()) and event.y() in range(self.height()):
+        if (
+            event.button() == Qt.MouseButton.RightButton
+            and event.x() in range(self.width())
+            and event.y() in range(self.height())
+        ):
             self.translate = True
             if self.rotate is True:
                 self.stop_rotation(event)
@@ -142,9 +150,9 @@ class MoleculeWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent):  # noqa: N802
-        if event.button() == Qt.LeftButton and self.rotate:
+        if event.button() == Qt.MouseButton.LeftButton and self.rotate:
             self.stop_rotation(event)
-        if event.button() == Qt.RightButton and self.translate:
+        if event.button() == Qt.MouseButton.RightButton and self.translate:
             self.stop_translate(event)
 
     def stop_translate(self, event: QMouseEvent) -> None:

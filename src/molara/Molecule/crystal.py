@@ -25,9 +25,9 @@ class Crystal(Molecule):
 
     def __init__(
         self,
-        atomic_numbers: Sequence[int],
-        coordinates: Sequence[Sequence[float]],
-        basis_vectors: Sequence[Sequence[float]],
+        atomic_numbers: np.ndarray,
+        coordinates: np.ndarray,
+        basis_vectors: np.ndarray,
     ):
         self.atomic_numbers = atomic_numbers
         self.coordinates = coordinates
@@ -69,17 +69,17 @@ class Crystal(Molecule):
         if not len(lines) >= 9:
             return False
         lines[0]
-        scale, latvec_a, latvec_b, latvec_c = lines[1:5]
-        species, numbers = lines[5].strip(), lines[6]
-        mode, positions = lines[7].strip(), lines[8:]
+        scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
+        species_, numbers_ = lines[5].strip(), lines[6]
+        mode, positions_ = lines[7].strip(), lines[8:]
         try:
-            scale = float(scale)
-            latvec_a = np.fromstring(latvec_a, sep=" ")
-            latvec_b = np.fromstring(latvec_b, sep=" ")
-            latvec_c = np.fromstring(latvec_c, sep=" ")
-            species = re.split(r"\s+", species)
-            numbers = np.fromstring(numbers, sep=" ", dtype=int)
-            positions = np.array([np.fromstring(pos, sep=" ") for pos in positions])
+            scale = float(scale_)
+            latvec_a = np.fromstring(latvec_a_, sep=" ")
+            latvec_b = np.fromstring(latvec_b_, sep=" ")
+            latvec_c = np.fromstring(latvec_c_, sep=" ")
+            species = re.split(r"\s+", species_)
+            numbers = np.fromstring(numbers_, sep=" ", dtype=int)
+            positions = np.array([np.fromstring(pos, sep=" ") for pos in positions_])
             basis_vectors = np.array([latvec_a, latvec_b, latvec_c])
         except ValueError:
             return False, "Error: faulty formatting of the POSCAR file."

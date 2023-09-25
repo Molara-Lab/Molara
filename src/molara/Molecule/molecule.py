@@ -6,12 +6,12 @@ from .drawer import Drawer
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike):
+    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray):
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
-        self.vdw_rads = []
+        self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
-        self.unique_atomic_numbers = []
+        self.unique_atomic_numbers: list[int] = []
         for i, atomic_number in enumerate(atomic_numbers):
             atom = Atom(atomic_number, coordinates[i])
             self.atoms.append(atom)
@@ -79,7 +79,7 @@ def read_xyz(file_path: str):
 
     file.close()
 
-    return Molecule(atomic_numbers, coordinates)
+    return Molecule(np.array(atomic_numbers), np.array(coordinates))
 
 
 def read_coord(file_path: str):
@@ -104,4 +104,4 @@ def read_coord(file_path: str):
             atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
         coordinates.append([float(coord) * 0.529177249 for coord in atom_info[:3]])
 
-    return Molecule(atomic_numbers, coordinates)
+    return Molecule(np.array(atomic_numbers), np.array(coordinates))
