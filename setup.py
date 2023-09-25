@@ -33,7 +33,7 @@ setup(
     packages=find_packages(
         # install only the molara package and subpackes, not unit tests,
         # examples, ...
-        include=("molara", "molara.*")
+        include=("molara", "molara.*"),
     ),
     package_dir={"": "src"},
     install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL"],

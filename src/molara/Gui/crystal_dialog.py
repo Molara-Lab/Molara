@@ -16,7 +16,7 @@ class CrystalDialog(QDialog):
 
     def __init__(self, parent: QMainWindow = None):
         super().__init__(
-            parent
+            parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = UiCrystalDialog()
         self.ui.setup_ui(self)

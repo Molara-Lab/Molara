@@ -20,7 +20,7 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
         return
 
     view_mat = pyrr.matrix44.create_look_at(
-        pyrr.Vector3(camera.position), pyrr.Vector3(camera.target), pyrr.Vector3(camera.up_vector)
+        pyrr.Vector3(camera.position), pyrr.Vector3(camera.target), pyrr.Vector3(camera.up_vector),
     )
 
     light_direction_loc = glGetUniformLocation(shader, "light_direction")
