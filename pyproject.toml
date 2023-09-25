@@ -2,6 +2,7 @@
 line-length = 120
 
 [tool.ruff]
+exclude = ["ui_*",]
 target-version = "py39"
 line-length = 120#
 select = [
@@ -14,12 +15,12 @@ select = [
   "BLE",  # flake8-blind-except
   "C4",   # flake8-comprehensions
   "C90",  # mccabe
-#  "COM",  # flake8-commas
+  "COM",  # flake8-commas
   "CPY",  # flake8-copyright
 #  "D",    # pydocstyle
   "DJ",   # flake8-django
   "DTZ",  # flake8-daytime
-#  "E",    # pycodestyle error
+  "E",    # pycodestyle error
   "EM",   # flake8-errormessage
 #  "ERA",  # eradicate
   "EXE",  # flake8-executable
@@ -35,7 +36,7 @@ select = [
 #  "INP",  # flake8-no-pep420
   "INT",  # flake8-gettext
   "ISC",  # flake8-implicit-str-concat
-#  "N",    # pep8-naming
+  "N",    # pep8-naming
   "NPY",  # numpy
   "PERF", # perflint
   "PGH",  # pygrep-hooks
@@ -58,7 +59,7 @@ select = [
   "TD",   # flake8-todos
   "TID",  # flake8-tidy-imports
   "TRY",  # tryceratops
-#  "UP",   # pyupgrade
+  "UP",   # pyupgrade
   "W",    # pycodestyle warning
   "YTT",  # flake8-2020
   ]

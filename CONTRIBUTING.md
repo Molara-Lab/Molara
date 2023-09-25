@@ -5,11 +5,11 @@ Thank you for considering contributing to our project! We value your effort and 
 ## Coding Style:
 
 1. **PEP8 Compliance**: Make sure your code strictly adheres to the [PEP8 Style Guide](https://peps.python.org/pep-0008/).
-   
+
 2. **Type Hints**: Always provide [type hints](https://docs.python.org/3/library/typing.html) in your function and method definitions. This helps in understanding the expected data types and ensures type safety.
-   
+
 3. **Docstrings**: Adopt the [google-style](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html) for docstrings. Every public class and method should have a descriptive docstring.
-   
+
 4. **Line Length**: Be mindful of the line length. The maximum permissible line length is 120 characters.
 
 ## Commit Messages:
