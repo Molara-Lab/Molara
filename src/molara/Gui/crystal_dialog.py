@@ -54,7 +54,7 @@ class CrystalDialog(QDialog):
         self.ui.listAtoms.setItem(row_id, 2, item_coord_b)
         self.ui.listAtoms.setItem(row_id, 3, item_coord_c)
 
-    def accept(self) -> None:
+    def accept(self):
         # dim_a, dim_b, dim_c = (
         #     self.ui.inputSupercell_a.value(),
         #     self.ui.inputSupercell_b.value(),
@@ -64,7 +64,7 @@ class CrystalDialog(QDialog):
         a, b, c = self.ui.inputLatConst_a.value(), self.ui.inputLatConst_b.value(), self.ui.inputLatConst_c.value()
         list_of_coordinates = np.array(self.list_of_coordinates)
         mycrystal = Crystal(
-            self.list_of_atomic_numbers,
+            np.array(self.list_of_atomic_numbers),
             list_of_coordinates,
             np.diag([a, b, c]),
             #     supercell_dimensions=supercell_dimensions,
