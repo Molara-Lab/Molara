@@ -1,5 +1,5 @@
 import re
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -64,7 +64,7 @@ class Crystal(Molecule):
 
     @classmethod
     def from_poscar(cls, file_path: str):
-        with open(file_path, "r") as file:
+        with open(file_path) as file:
             lines = file.readlines()
         if not len(lines) >= 9:
             return False

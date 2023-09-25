@@ -18,9 +18,9 @@ from PySide6.QtCore import (
     QPoint,
     QRect,
     QSize,
-    Qt,
     QTime,
     QUrl,
+    Qt,
 )
 from PySide6.QtGui import (
     QAction,
@@ -46,36 +46,34 @@ from PySide6.QtWidgets import QApplication, QGridLayout, QMainWindow, QMenu, QMe
 from molara.MoleculeWidget.molecule_widget import MoleculeWidget
 
 
-class UiMainwindow(object):
-    def setup_ui(self, main_window):
-        if not main_window.objectName():
-            main_window.setObjectName("MainWindow")
-        main_window.resize(800, 600)
-        self.quit = QAction(main_window)
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        if not MainWindow.objectName():
+            MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
+        self.quit = QAction(MainWindow)
         self.quit.setObjectName("quit")
-        self.action_xyz = QAction(main_window)
+        self.action_xyz = QAction(MainWindow)
         self.action_xyz.setObjectName("action_xyz")
-        self.action_coord = QAction(main_window)
-        self.action_coord.setObjectName("action_coord")
-        self.actionCenter_Molecule = QAction(main_window)
+        self.actionCenter_Molecule = QAction(MainWindow)
         self.actionCenter_Molecule.setObjectName("actionCenter_Molecule")
-        self.actionReset_View = QAction(main_window)
+        self.actionReset_View = QAction(MainWindow)
         self.actionReset_View.setObjectName("actionReset_View")
-        self.actionto_x_axis = QAction(main_window)
+        self.actionto_x_axis = QAction(MainWindow)
         self.actionto_x_axis.setObjectName("actionto_x_axis")
-        self.actionto_y_axis = QAction(main_window)
+        self.actionto_y_axis = QAction(MainWindow)
         self.actionto_y_axis.setObjectName("actionto_y_axis")
-        self.actionto_z_axis = QAction(main_window)
+        self.actionto_z_axis = QAction(MainWindow)
         self.actionto_z_axis.setObjectName("actionto_z_axis")
-        self.actionDraw_Axes = QAction(main_window)
+        self.actionDraw_Axes = QAction(MainWindow)
         self.actionDraw_Axes.setObjectName("actionDraw_Axes")
-        self.actionCreate_Lattice = QAction(main_window)
+        self.actionCreate_Lattice = QAction(MainWindow)
         self.actionCreate_Lattice.setObjectName("actionCreate_Lattice")
-        self.actioncoord = QAction(main_window)
-        self.actioncoord.setObjectName("actioncoord")
-        self.actionRead_POSCAR = QAction(main_window)
+        self.actionRead_POSCAR = QAction(MainWindow)
         self.actionRead_POSCAR.setObjectName("actionRead_POSCAR")
-        self.centralwidget = QWidget(main_window)
+        self.actioncoord = QAction(MainWindow)
+        self.actioncoord.setObjectName("actioncoord")
+        self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
@@ -84,8 +82,8 @@ class UiMainwindow(object):
 
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
 
-        main_window.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(main_window)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
         self.menubar.setGeometry(QRect(0, 0, 800, 37))
         self.menuFile = QMenu(self.menubar)
@@ -98,10 +96,10 @@ class UiMainwindow(object):
         self.menuRotate.setObjectName("menuRotate")
         self.menuCrystal = QMenu(self.menubar)
         self.menuCrystal.setObjectName("menuCrystal")
-        main_window.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(main_window)
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
-        main_window.setStatusBar(self.statusbar)
+        MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
@@ -109,7 +107,7 @@ class UiMainwindow(object):
         self.menuFile.addAction(self.menuImport.menuAction())
         self.menuFile.addAction(self.quit)
         self.menuImport.addAction(self.action_xyz)
-        self.menuImport.addAction(self.action_coord)
+        self.menuImport.addAction(self.actioncoord)
         self.menuEdit.addAction(self.actionCenter_Molecule)
         self.menuEdit.addAction(self.actionReset_View)
         self.menuEdit.addAction(self.menuRotate.menuAction())
@@ -120,17 +118,16 @@ class UiMainwindow(object):
         self.menuCrystal.addAction(self.actionRead_POSCAR)
         self.menuCrystal.addAction(self.actionCreate_Lattice)
 
-        self.retranslate_ui(main_window)
+        self.retranslateUi(MainWindow)
 
-        QMetaObject.connectSlotsByName(main_window)
+        QMetaObject.connectSlotsByName(MainWindow)
 
     # setupUi
 
-    def retranslate_ui(self, main_window):
-        main_window.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
         self.quit.setText(QCoreApplication.translate("MainWindow", "Quit", None))
         self.action_xyz.setText(QCoreApplication.translate("MainWindow", ".xyz", None))
-        self.action_coord.setText(QCoreApplication.translate("MainWindow", "coord", None))
         self.actionCenter_Molecule.setText(QCoreApplication.translate("MainWindow", "Center Molecule", None))
         self.actionReset_View.setText(QCoreApplication.translate("MainWindow", "Reset View", None))
         self.actionto_x_axis.setText(QCoreApplication.translate("MainWindow", "to x axis", None))
@@ -138,8 +135,8 @@ class UiMainwindow(object):
         self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", "to z axis", None))
         self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", "Draw Axes", None))
         self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", "Create Lattice", None))
-        self.actioncoord.setText(QCoreApplication.translate("MainWindow", "coord", None))
         self.actionRead_POSCAR.setText(QCoreApplication.translate("MainWindow", "Read POSCAR", None))
+        self.actioncoord.setText(QCoreApplication.translate("MainWindow", "coord", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", "Import", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "View", None))

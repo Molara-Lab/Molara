@@ -11,7 +11,7 @@ from molara.Gui.crystal_dialog import CrystalDialog
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-from molara.Gui.ui_form import UiMainwindow
+from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
 from molara.Molecule.molecule import read_coord, read_xyz
 
@@ -29,8 +29,8 @@ def main() -> None:
     class MainWindow(QMainWindow):
         def __init__(self, parent=None):
             super().__init__(parent)
-            self.ui = UiMainwindow()
-            self.ui.setup_ui(self)
+            self.ui = Ui_MainWindow()
+            self.ui.setupUi(self)
 
         def show_init_xyz(self):
             """Read the file from terminal arguments."""
@@ -74,7 +74,7 @@ def main() -> None:
         widget.show_init_xyz()
 
     widget.ui.action_xyz.triggered.connect(widget.show_xyz)
-    widget.ui.action_coord.triggered.connect(widget.show_coord)
+    widget.ui.actioncoord.triggered.connect(widget.show_coord)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)

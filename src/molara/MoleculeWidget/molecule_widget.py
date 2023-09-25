@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
 from PySide6.QtCore import Qt
