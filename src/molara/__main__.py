@@ -25,12 +25,10 @@ def main() -> None:
     QSurfaceFormat.setDefaultFormat(format)
 
     class MainWindow(QMainWindow):
-
         def __init__(self, parent=None):
             super().__init__(parent)
             self.ui = Ui_MainWindow()
             self.ui.setupUi(self)
-
 
         def show_init_xyz(self):
             """
@@ -44,12 +42,10 @@ def main() -> None:
             widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
 
             if self.mols.num_mols > 1:
-
                 trajectory_dialog.show()
                 trajectory_dialog.plot_energies()
 
         def show_xyz(self):
-
             fileName = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
 
             self.mols = read_xyz(fileName[0])
@@ -57,27 +53,22 @@ def main() -> None:
             widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
 
             if self.mols.num_mols > 1:
-
                 trajectory_dialog.show()
                 trajectory_dialog.plot_energies()
 
             return
 
-
         def show_previous_molecule(self):
-
             widget.ui.openGLWidget.delete_molecule()
 
             widget.ui.openGLWidget.set_molecule(widget.mols.get_previous_mol())
 
         def show_coord(self):
-
             fileName = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
 
             mol = read_coord(fileName[0])
 
             widget.ui.openGLWidget.set_molecule(mol)
-
 
     app = QApplication(sys.argv)
 
@@ -85,12 +76,11 @@ def main() -> None:
 
     crystal_dialog = CrystalDialog(widget)  # pass widget as parent
 
-    trajectory_dialog = TrajectoryDialog(widget) # pass widget as parent
+    trajectory_dialog = TrajectoryDialog(widget)  # pass widget as parent
 
     widget.setWindowTitle("Molara")
 
     widget.show()
-
 
     if len(sys.argv) > 1:
         widget.show_init_xyz()
@@ -100,13 +90,12 @@ def main() -> None:
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
 
-
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(trajectory_dialog.show)
     widget.ui.quit.triggered.connect(widget.close)
 
     sys.exit(app.exec())
 
+
 if __name__ == "__main__":
     main()
-

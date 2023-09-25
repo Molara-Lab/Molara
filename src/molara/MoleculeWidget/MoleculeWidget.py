@@ -44,7 +44,6 @@ class MoleculeWidget(QOpenGLWidget):
         self.center_molecule()
 
     def delete_molecule(self):
-
         self.vertex_attribute_objects = []
         self.update()
 

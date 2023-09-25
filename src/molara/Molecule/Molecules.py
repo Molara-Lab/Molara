@@ -3,7 +3,7 @@ import numpy as np
 from molara.Molecule import Molecule
 
 
-class Molecules():
+class Molecules:
     """
     A class to store and manipulate a list of Molecules
     """
@@ -15,7 +15,6 @@ class Molecules():
         self.energies = []
 
     def get_next_mol(self):
-
         molecule = self.molecules[self.mol_index]
 
         self.mol_index += 1
@@ -24,26 +23,23 @@ class Molecules():
         return molecule
 
     def get_previous_mol(self):
-
         self.mol_index -= 1
 
         if self.mol_index < 0:
-            self.mol_index = self.num_mols-1
+            self.mol_index = self.num_mols - 1
 
         return self.molecules[self.mol_index]
 
-
-    def get_mol(self,index):
+    def get_mol(self, index):
         return self.molecules[index]
 
-    def add_molecule(self,mol : Molecule) -> None:
+    def add_molecule(self, mol: Molecule) -> None:
         """
         Adds a molecule to the list of molecules
         param: mol: Molecule
         """
 
         if type(mol) == Molecule:
-
             self.molecules.append(mol)
 
             self.num_mols += 1
@@ -52,7 +48,7 @@ class Molecules():
 
         return
 
-    def remove_molecule(self,index : int) -> None:
+    def remove_molecule(self, index: int) -> None:
         """
         Removes a molecule from the list of molecules
         param: index: int
