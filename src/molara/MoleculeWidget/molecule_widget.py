@@ -147,8 +147,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.stop_translate(event)
 
     def stop_translate(self, event: QMouseEvent) -> None:
-        """
-        Stops the translation of the molecule.
+        """Stops the translation of the molecule.
         :return:
         """
         self.translate = False
@@ -157,8 +156,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.click_position = None
 
     def stop_rotation(self, event: QMouseEvent) -> None:
-        """
-        Stops the rotation of the molecule.
+        """Stops the rotation of the molecule.
         :return:
         """
         self.rotate = False

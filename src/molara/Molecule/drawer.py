@@ -18,32 +18,28 @@ class Drawer:
         self.set_cylinder_model_matrices()
 
     def set_atoms(self, atoms: [Atom]) -> None:
-        """
-        Sets the atoms to be displayed.
+        """Sets the atoms to be displayed.
         :param atoms: List of atoms to be displayed.
         :return:
         """
         self.atoms = atoms
 
     def reset_spheres_model_matrices(self) -> None:
-        """
-        Resets the model matrices for the spheres.
+        """Resets the model matrices for the spheres.
         :return:
         """
         for sphere in self.unique_spheres:
             sphere.model_matrices = None
 
     def reset_cylinders_model_matrices(self) -> None:
-        """
-        Resets the model matrices for the cylinders.
+        """Resets the model matrices for the cylinders.
         :return:
         """
         for cylinder in self.unique_cylinders:
             cylinder.model_matrices = None
 
     def set_cylinder_model_matrices(self) -> None:
-        """
-        Sets the model matrices for the cylinders.
+        """Sets the model matrices for the cylinders.
         :return:
         """
         self.reset_cylinders_model_matrices()
@@ -66,8 +62,7 @@ class Drawer:
                 )
 
     def set_sphere_model_matrices(self) -> None:
-        """
-        Sets the model matrices for the spheres.
+        """Sets the model matrices for the spheres.
         :return:
         """
         self.reset_spheres_model_matrices()
@@ -82,8 +77,7 @@ class Drawer:
 
 
 def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
-    """
-    Calculates the model matrix for an atom displayed as a sphere.
+    """Calculates the model matrix for an atom displayed as a sphere.
     :param atom: Atom
     :return: Model matrix for the sphere.
     """
@@ -96,8 +90,7 @@ def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
 
 
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
-    """
-    Calculates the model matrix for a cylinder between two atoms.
+    """Calculates the model matrix for a cylinder between two atoms.
     :param atom1: Atom1
     :param atom2: Atom2
     :return: Model matrix for the cylinder between atom1 and atom2.

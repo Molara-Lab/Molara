@@ -9,8 +9,7 @@ from .molecule import *
 
 
 class Crystal(Molecule):
-    """
-    Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
+    """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
     Particle positions are given in terms of the basis vectors:
     E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
 

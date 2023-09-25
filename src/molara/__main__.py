@@ -33,10 +33,7 @@ def main() -> None:
             self.ui.setup_ui(self)
 
         def show_init_xyz(self):
-            """
-            read the file from terminal arguments
-
-            """
+            """Read the file from terminal arguments."""
             file_name = sys.argv[1]
             mol = read_xyz(file_name)
             widget.ui.openGLWidget.set_molecule(mol)

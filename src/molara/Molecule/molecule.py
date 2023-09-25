@@ -83,11 +83,9 @@ def read_xyz(file_path: str):
 
 
 def read_coord(file_path: str):
+    """Imports a coord file
+    Returns the Molecule.
     """
-    Imports a coord file
-    Returns the Molecule
-    """
-
     with open(file_path) as file:
         lines = file.readlines()  # To skip first row
 

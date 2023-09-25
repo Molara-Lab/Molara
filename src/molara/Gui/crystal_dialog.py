@@ -9,8 +9,7 @@ from molara.Molecule.crystal import Crystal
 
 
 class CrystalDialog(QDialog):
-    """
-    Dialog for specifying a crystal structure.
+    """Dialog for specifying a crystal structure.
     Element symbols, coordinates, lattice constants, supercell size given by user,
     object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
     """
