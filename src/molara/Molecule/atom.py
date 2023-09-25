@@ -12,7 +12,7 @@ class Atom:
         self.position = np.array(position, dtype=np.float64)
 
 
-def element_symbol_to_atomic_number(symbol):
+def element_symbol_to_atomic_number(symbol) -> int:
     # Define a dictionary mapping element symbols to atomic numbers
     symbol_to_atomic_number = {
         "H": 1,

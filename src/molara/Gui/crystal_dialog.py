@@ -28,7 +28,7 @@ class CrystalDialog(QDialog):
         self.ui.pushButton.clicked.connect(self.reset)
         self.ui.listAtoms.setColumnCount(4)
 
-    def reset(self):
+    def reset(self) -> None:
         self.list_of_atomic_numbers = []
         self.list_of_coordinates = []
         self.ui.listAtoms.setRowCount(0)
@@ -54,7 +54,7 @@ class CrystalDialog(QDialog):
         self.ui.listAtoms.setItem(row_id, 2, item_coord_b)
         self.ui.listAtoms.setItem(row_id, 3, item_coord_c)
 
-    def accept(self):
+    def accept(self) -> None:
         # dim_a, dim_b, dim_c = (
         #     self.ui.inputSupercell_a.value(),
         #     self.ui.inputSupercell_b.value(),

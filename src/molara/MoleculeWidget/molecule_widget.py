@@ -32,7 +32,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
 
-    def reset_view(self):
+    def reset_view(self) -> None:
         self.camera.reset(self.width(), self.height())
         self.update()
 
@@ -44,20 +44,20 @@ class MoleculeWidget(QOpenGLWidget):
             self.bonds = True
         self.center_molecule()
 
-    def center_molecule(self):
+    def center_molecule(self) -> None:
         if self.molecule is not None:
             self.molecule.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
 
-    def toggle_axes(self):
+    def toggle_axes(self) -> None:
         if self.axes:
             self.axes = False
         else:
             self.axes = True
         self.update()
 
-    def initializeGL(self):  # noqa: N802
+    def initializeGL(self) -> None:  # noqa: N802
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
@@ -68,11 +68,11 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera.calculate_projection_matrix(self.width(), self.height())
         self.update()
 
-    def paintGL(self):  # noqa: N802
+    def paintGL(self) -> None:  # noqa: N802
         draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
         return
 
-    def set_vertex_attribute_objects(self):
+    def set_vertex_attribute_objects(self) -> None:
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
             idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
@@ -93,7 +93,7 @@ class MoleculeWidget(QOpenGLWidget):
             )
             self.vertex_attribute_objects.append(vao.vao)
 
-    def draw_axes(self):
+    def draw_axes(self) -> None:
         return
 
     def wheelEvent(self, event):  # noqa: N802

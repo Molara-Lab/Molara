@@ -51,7 +51,7 @@ class Molecule:
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
 
-    def center_coordinates(self):
+    def center_coordinates(self) -> None:
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0)
         for _i, atom in enumerate(self.atoms):
@@ -61,7 +61,7 @@ class Molecule:
         self.drawer.set_cylinder_model_matrices()
 
 
-def read_xyz(file_path: str):
+def read_xyz(file_path: str) -> Molecule:
     with open(file_path) as file:
         lines = file.readlines()
 
