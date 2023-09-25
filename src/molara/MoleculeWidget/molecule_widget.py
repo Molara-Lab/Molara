@@ -75,19 +75,21 @@ class MoleculeWidget(QOpenGLWidget):
     def set_vertex_attribute_objects(self):
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
+            idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
             vao = Vao(
                 self,
-                self.molecule.drawer.unique_spheres[atomic_number].vertices,
-                self.molecule.drawer.unique_spheres[atomic_number].indices,
-                self.molecule.drawer.unique_spheres[atomic_number].model_matrices,
+                self.molecule.drawer.unique_spheres[idx].vertices,
+                self.molecule.drawer.unique_spheres[idx].indices,
+                self.molecule.drawer.unique_spheres[idx].model_matrices,
             )
             self.vertex_attribute_objects.append(vao.vao)
         for atomic_number in self.molecule.unique_atomic_numbers:
+            idx = self.molecule.drawer.unique_cylinders_mapping[atomic_number]
             vao = Vao(
                 self,
-                self.molecule.drawer.unique_cylinders[atomic_number].vertices,
-                self.molecule.drawer.unique_cylinders[atomic_number].indices,
-                self.molecule.drawer.unique_cylinders[atomic_number].model_matrices,
+                self.molecule.drawer.unique_cylinders[idx].vertices,
+                self.molecule.drawer.unique_cylinders[idx].indices,
+                self.molecule.drawer.unique_cylinders[idx].model_matrices,
             )
             self.vertex_attribute_objects.append(vao.vao)
 
