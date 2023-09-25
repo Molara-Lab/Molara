@@ -1,7 +1,7 @@
 import pyrr
 from OpenGL.GL import *
 
-from molara.Molecule.Molecule import Molecule
+from molara.Molecule.molecule import Molecule
 
 
 def draw_scene(shader, camera, vaos, molecule: Molecule):

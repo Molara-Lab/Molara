@@ -4,8 +4,8 @@ from typing import Sequence
 import numpy as np
 from numpy.typing import ArrayLike
 
-from .Atom import element_symbol_to_atomic_number
-from .Molecule import *
+from .atom import element_symbol_to_atomic_number
+from .molecule import *
 
 
 class Crystal(Molecule):
@@ -64,7 +64,7 @@ class Crystal(Molecule):
     #    self.crystal = self.__init__(atomic_numbers_translation, coordinates_translation, self.basis_vectors)
 
     @classmethod
-    def from_POSCAR(cls, file_path: str):
+    def from_poscar(cls, file_path: str):
         with open(file_path, "r") as file:
             lines = file.readlines()
         if not len(lines) >= 9:
