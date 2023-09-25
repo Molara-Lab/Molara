@@ -1,15 +1,16 @@
+from .Atom import element_symbol_to_atomic_number
 from .Molecule import Molecule
 from .Molecules import Molecules
-from .Atom import element_symbol_to_atomic_number
+
 
 def read_xyz(file_path : str):
 
     """
-    Read-in function for .xyz files 
+    Read-in function for .xyz files
     """
-    molecules = Molecules() 
+    molecules = Molecules()
 
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
 
         lines = file.readlines()
 
@@ -39,14 +40,14 @@ def read_xyz(file_path : str):
     if (len(lines)> 2+num_atoms) and lines[2 + num_atoms].replace("\n", "").isdigit():
 
 
-        not_finished = True 
+        not_finished = True
 
         max_mols =  10000
 
         xyz_len = 0
 
         while not_finished and max_mols > molecules.num_mols:
-            
+
             atomic_numbers = []
             coordinates = []
 
@@ -84,7 +85,7 @@ def read_coord(file_path : str):
     Returns the Molecule
     """
 
-    molecules = Molecules() 
+    molecules = Molecules()
 
     with open(file_path) as file:
         lines = file.readlines() #To skip first row
@@ -95,19 +96,17 @@ def read_coord(file_path : str):
 
     for line in lines[1:]:
 
-        if '$' in line:
+        if "$" in line:
 
             break
 
+        atom_info = line.split()
+        if atom_info[-1].isnumeric():
+            atomic_numbers.append(int(atom_info[-1]))
         else:
-            
-            atom_info = line.split()
-            if atom_info[-1].isnumeric():
-                atomic_numbers.append(int(atom_info[-1]))
-            else:
-                atom_info[-1] = atom_info[-1].capitalize()
-                atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
-            coordinates.append([float(coord)*0.529177249 for coord in atom_info[:3]])
+            atom_info[-1] = atom_info[-1].capitalize()
+            atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
+        coordinates.append([float(coord)*0.529177249 for coord in atom_info[:3]])
 
     molecules.add_molecule(Molecule(atomic_numbers,coordinates))
 

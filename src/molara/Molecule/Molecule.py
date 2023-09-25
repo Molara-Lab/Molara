@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import numpy.typing as npt
 
@@ -6,7 +8,7 @@ from .Drawer import Drawer
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike,header: str = None):
+    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike,header: Optional[str] = None):
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads = []
@@ -66,5 +68,5 @@ class Molecule:
     def gen_energy_information(self,string : str):
 
         self.energy = float(string.split()[1])
-        
-        return 
+
+        return

@@ -1,20 +1,18 @@
 from contextlib import suppress
 
+import matplotlib as mpl
 import numpy as np
-from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem,QVBoxLayout, QWidget,QGraphicsScene
-from PySide6.QtCore import QTime,QTimer
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.figure import Figure
+from PySide6.QtCore import QTime, QTimer
+from PySide6.QtWidgets import QDialog, QGraphicsScene, QMainWindow, QTableWidgetItem, QVBoxLayout, QWidget
 
 from molara.Gui.ui_trajectory import Ui_Dialog
 from molara.Molecule.Atom import element_symbol_to_atomic_number
-from molara.Molecule.Molecules import Molecules
 from molara.Molecule.Molecule import Molecule
+from molara.Molecule.Molecules import Molecules
 
-import matplotlib
-
-matplotlib.use('Qt5Agg')
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg,NavigationToolbar2QT 
-from matplotlib.figure import Figure
+mpl.use("Qt5Agg")
 
 class MplCanvas(FigureCanvasQTAgg):
 
@@ -25,7 +23,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
 class TrajectoryDialog(QDialog):
     """
-    Dialog for manipulating appearance of trajectories. 
+    Dialog for manipulating appearance of trajectories.
     """
 
     def __init__(self, parent: QMainWindow = None):
@@ -41,34 +39,33 @@ class TrajectoryDialog(QDialog):
         self.ui.NextButton.clicked.connect(self.get_next_mol)
 
     def show_trajectory(self):
-        
+
         if self.ui.checkBox.isChecked():
 
-            self.timer.start(50)
-
+            self.timer.start()
             self.timer.timeout.connect(self.update_molecule)
 
         else:
 
             self.timer.stop()
-                
-        return 
-    
+
+        return
+
     def get_next_mol(self):
-        self.parent().mols.get_next_mol
+        self.parent().mols.get_next_mol()
         self.update_molecule()
         return
-    
+
     def get_prev_mol(self):
-        self.parent().mols.get_previous_mol
+        self.parent().mols.get_previous_mol()
         self.update_molecule()
         return
-    
+
     def set_slider_range(self):
 
         self.ui.verticalSlider.setRange(0,int(self.parent().mols.num_mols))
 
-        return 
+        return
 
     def update_molecule(self):
 
@@ -76,12 +73,15 @@ class TrajectoryDialog(QDialog):
 
         self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_next_mol())
 
-        return 
-    
+        if self.parent().mols.mol_index+1 == self.parent().mols.num_mols:
+            self.timer.stop()
+
+        return
+
     def plot_energies(self):
 
         sc = MplCanvas(self, width=5, height=4, dpi=100)
-        sc.axes.plot(np.arange(self.parent().mols.num_mols),self.parent().mols.energies,'x-')
+        sc.axes.plot(np.arange(self.parent().mols.num_mols),self.parent().mols.energies,"x-")
         layout = QVBoxLayout()
         layout.addWidget(sc)
 

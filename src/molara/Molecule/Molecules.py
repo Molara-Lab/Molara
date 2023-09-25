@@ -1,12 +1,13 @@
-import numpy as np 
+import numpy as np
 
-from .Molecule import Molecule
+from molara.Molecule import Molecule
+
 
 class Molecules():
     """
     A class to store and manipulate a list of Molecules
     """
-   
+
     def __init__(self):
         self.molecules = []
         self.num_mols = 0
@@ -17,21 +18,20 @@ class Molecules():
 
         molecule = self.molecules[self.mol_index]
 
-        self.mol_index += 1 
+        self.mol_index += 1
         self.mol_index %= self.num_mols
 
         return molecule
 
     def get_previous_mol(self):
-    
-        self.mol_index -= 1 
+
+        self.mol_index -= 1
 
         if self.mol_index < 0:
             self.mol_index = self.num_mols-1
 
-        molecule = self.molecules[self.mol_index]
+        return self.molecules[self.mol_index]
 
-        return molecule        
 
     def get_mol(self,index):
         return self.molecules[index]
@@ -50,10 +50,6 @@ class Molecules():
 
             self.energies.append(mol.energy)
 
-        else:
-
-            print('Input not of type mol.')
-            
         return
 
     def remove_molecule(self,index : int) -> None:

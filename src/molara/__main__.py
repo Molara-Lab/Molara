@@ -1,8 +1,10 @@
 import sys
 import time as time
+
+from PySide6.QtCore import QTime, QTimer
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
-from PySide6.QtCore import QTime,QTimer
+
 from molara.Gui.CrystalDialog import CrystalDialog
 from molara.Gui.TrajectoryDialog import TrajectoryDialog
 
@@ -12,8 +14,8 @@ from molara.Gui.TrajectoryDialog import TrajectoryDialog
 #     pyside2-uic form.ui -o ui_form.py
 from molara.Gui.ui_form import Ui_MainWindow
 
-from .Gui.ui_form import Ui_MainWindow
 from .Molecule.importer import read_coord, read_xyz
+
 
 def main() -> None:
     format = QSurfaceFormat()
@@ -59,9 +61,9 @@ def main() -> None:
                 trajectory_dialog.show()
                 trajectory_dialog.plot_energies()
 
-            return  
+            return
 
-            
+
         def show_previous_molecule(self):
 
             widget.ui.openGLWidget.delete_molecule()
@@ -73,7 +75,7 @@ def main() -> None:
             fileName = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
 
             mol = read_coord(fileName[0])
-            
+
             widget.ui.openGLWidget.set_molecule(mol)
 
 
@@ -83,12 +85,12 @@ def main() -> None:
 
     crystal_dialog = CrystalDialog(widget)  # pass widget as parent
 
-    trajectory_dialog = TrajectoryDialog(widget) # pass widget as parent 
+    trajectory_dialog = TrajectoryDialog(widget) # pass widget as parent
 
     widget.setWindowTitle("Molara")
 
     widget.show()
-    
+
 
     if len(sys.argv) > 1:
         widget.show_init_xyz()
