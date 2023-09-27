@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Atom:
-    def __init__(self, atomic_number, position) -> None:
+    def __init__(self, atomic_number: int, position) -> None:
         self.symbol = elements[atomic_number]["symbol"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]
@@ -12,7 +12,7 @@ class Atom:
         self.position = np.array(position, dtype=np.float64)
 
 
-def element_symbol_to_atomic_number(symbol) -> int:
+def element_symbol_to_atomic_number(symbol: str) -> int:
     # Define a dictionary mapping element symbols to atomic numbers
     symbol_to_atomic_number = {
         "H": 1,
