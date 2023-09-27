@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Atom:
-    def __init__(self, atomic_number, position):
+    def __init__(self, atomic_number, position) -> None:
         self.symbol = elements[atomic_number]["symbol"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]

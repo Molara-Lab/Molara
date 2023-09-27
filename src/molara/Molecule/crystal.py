@@ -1,5 +1,6 @@
 import re
 from collections.abc import Sequence
+from typing import Self
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -28,7 +29,7 @@ class Crystal(Molecule):
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
         basis_vectors: np.ndarray,
-    ):
+    ) -> None:
         self.atomic_numbers_unitcell = atomic_numbers
         self.coordinates_unitcell = coordinates
         self.basis_vectors = basis_vectors
@@ -97,13 +98,13 @@ class Crystal(Molecule):
         atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
         return cls(atomic_numbers, positions, scale * basis_vectors)
 
-    def copy(self):
+    def copy(self) -> Self:
         # supercell dimensions not included yet!
         return Crystal(self.atomic_numbers_unitcell, self.coordinates_unitcell, self.basis_vectors)
 
     """ overloading operators """
 
-    def __mul__(self, supercell_dimensions: Sequence[int]):
+    def __mul__(self, supercell_dimensions: Sequence[int]) -> Self:
         """
         current implementation: multiply Crystal by a sequence of three integers [M, N, K]
         to create MxNxK supercell
@@ -112,5 +113,5 @@ class Crystal(Molecule):
         crystal_copy.make_supercell(supercell_dimensions)
         return crystal_copy
 
-    def __rmul__(self, supercell_dimensions: Sequence[int]):
+    def __rmul__(self, supercell_dimensions: Sequence[int]) -> Self:
         return self.__mul__(supercell_dimensions)

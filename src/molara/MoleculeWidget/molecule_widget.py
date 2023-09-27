@@ -11,7 +11,7 @@ from molara.Rendering.shaders import compile_shaders
 
 
 class MoleculeWidget(QOpenGLWidget):
-    def __init__(self, parent):
+    def __init__(self, parent) -> None:
         self.shader = None
         self.parent = parent
         QOpenGLWidget.__init__(self, parent)

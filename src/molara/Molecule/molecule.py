@@ -6,7 +6,7 @@ from .drawer import Drawer
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray):
+    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray) -> None:
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
@@ -82,7 +82,7 @@ def read_xyz(file_path: str) -> Molecule:
     return Molecule(np.array(atomic_numbers), np.array(coordinates))
 
 
-def read_coord(file_path: str):
+def read_coord(file_path: str) -> Molecule:
     """Imports a coord file
     Returns the Molecule.
     """

@@ -86,7 +86,7 @@ class Vao:
     :type model_matrices: numpy.array of numpy.float32, optional
     """
 
-    def __init__(self, opengl_widget, vertices, indices=None, model_matrices=None):
+    def __init__(self, opengl_widget, vertices, indices=None, model_matrices=None) -> None:
         opengl_widget.makeCurrent()
 
         self.vertices = vertices
