@@ -70,7 +70,6 @@ class MoleculeWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:  # noqa: N802
         draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
-        return
 
     def set_vertex_attribute_objects(self) -> None:
         self.vertex_attribute_objects = []

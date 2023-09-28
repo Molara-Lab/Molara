@@ -74,7 +74,8 @@ class Crystal(Molecule):
     def from_poscar(cls, file_path: str):
         with open(file_path) as file:
             lines = file.readlines()
-        if not len(lines) >= 9:
+        header_length = 9
+        if not len(lines) >= header_length:
             return False
         scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
         species_, numbers_ = lines[5].strip(), lines[6]

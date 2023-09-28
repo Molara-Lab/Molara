@@ -73,8 +73,7 @@ class Camera:
             between the camera and the target.
         """
         self.distance_from_target += self.zoom_factor * zoom * (np.sign(zoom - 1))
-        if self.distance_from_target < 1.0:
-            self.distance_from_target = 1.0
+        self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def update(self, save: bool = False) -> None:
         """Updates the camera position and orientation."""
@@ -112,8 +111,8 @@ class Camera:
             """
             z = x
             squared_sum = z**2 + y**2
-            if squared_sum <= 1.0:
-                x = np.sqrt(1.0 - squared_sum)
+            if squared_sum <= 1:
+                x = np.sqrt(1 - squared_sum)
             else:
                 x = 0.0
                 length = np.sqrt(squared_sum)
