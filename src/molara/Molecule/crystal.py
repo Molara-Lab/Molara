@@ -10,9 +10,9 @@ from .molecule import *
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from typing import Self
 
     from numpy.typing import ArrayLike
+    from typing_extensions import Self
 
 
 class Crystal(Molecule):
