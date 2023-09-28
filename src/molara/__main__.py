@@ -89,7 +89,7 @@ def main() -> None:
     widget.ui.quit.triggered.connect(widget.close)
     widget.ui.actionRead_POSCAR.triggered.connect(widget.show_POSCAR)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
-    widget.ui.actionDisable_Bonds.triggered.connect(widget.disable_bonds)
+    widget.ui.actionToggle_Bonds.triggered.connect(widget.toggle_bonds)
     sys.exit(app.exec())
 
 
