@@ -63,11 +63,10 @@ def main() -> None:
             widget.ui.openGLWidget.set_molecule(crystal)
             return True
 
-        def disable_bonds(self):
+        def toggle_bonds(self):
             if self.ui.openGLWidget.molecule:
                 self.ui.openGLWidget.molecule.draw_bonds = not self.ui.openGLWidget.molecule.draw_bonds
                 self.ui.openGLWidget.update()
-
 
     signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
