@@ -1,12 +1,18 @@
+from __future__ import annotations
+
 import re
-from collections.abc import Sequence
-from typing import Self
+from typing import TYPE_CHECKING
 
 import numpy as np
-from numpy.typing import ArrayLike
 
 from .atom import element_symbol_to_atomic_number
 from .molecule import *
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from typing import Self
+
+    from numpy.typing import ArrayLike
 
 
 class Crystal(Molecule):
