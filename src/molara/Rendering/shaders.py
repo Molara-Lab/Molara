@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from OpenGL.GL import GL_FRAGMENT_SHADER, GL_VERTEX_SHADER, glAttachShader, glCreateProgram, glLinkProgram, glUseProgram
 from OpenGL.GL.shaders import compileShader
 

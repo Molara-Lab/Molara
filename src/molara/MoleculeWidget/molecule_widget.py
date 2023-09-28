@@ -1,13 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QMouseEvent
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 from molara.Rendering.buffers import Vao
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import draw_scene
 from molara.Rendering.shaders import compile_shaders
+
+if TYPE_CHECKING:
+    from PySide6.QtGui import QMouseEvent
 
 
 class MoleculeWidget(QOpenGLWidget):

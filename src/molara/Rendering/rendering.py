@@ -1,8 +1,13 @@
 # mypy: disable-error-code="name-defined"
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pyrr
 from OpenGL.GL import *
 
-from molara.Molecule.molecule import Molecule
+if TYPE_CHECKING:
+    from molara.Molecule.molecule import Molecule
 
 
 def draw_scene(shader, camera, vaos, molecule: Molecule):

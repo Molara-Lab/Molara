@@ -71,6 +71,7 @@ ignore = [
   "S101",   # Use of assert detected
   ]
 pydocstyle.convention = "google"
+isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
 ignore_missing_imports = true
