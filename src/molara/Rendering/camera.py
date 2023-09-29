@@ -123,7 +123,8 @@ class Camera:
         previous_arcball_point = calculate_arcball_point(old_mouse_position[0], old_mouse_position[1])
         current_arcball_point = calculate_arcball_point(new_mouse_position[0], new_mouse_position[1])
 
-        if np.linalg.norm(previous_arcball_point - current_arcball_point) > 1.0e-5:
+        tolerance_parallel = 1e-5
+        if np.linalg.norm(previous_arcball_point - current_arcball_point) > tolerance_parallel:
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
             rotation_axis = pyrr.vector3.normalize(rotation_axis)
             rotation_angle = np.arccos(np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1))
