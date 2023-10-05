@@ -15,6 +15,8 @@ from molara.Rendering.shaders import compile_shaders
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
 
+    from molara.Molecule.molecule import Molecule
+
 
 class MoleculeWidget(QOpenGLWidget):
     def __init__(self, parent) -> None:
@@ -42,7 +44,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera.reset(self.width(), self.height())
         self.update()
 
-    def set_molecule(self, molecule) -> None:
+    def set_molecule(self, molecule: Molecule) -> None:
         self.molecule = molecule
         if self.molecule.bonded_pairs[0, 0] == -1:
             self.bonds = False

@@ -8,7 +8,7 @@ from numpy.testing import assert_array_equal
 
 
 class TestCrystal(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         atomic_numbers = [5, 7]
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
@@ -19,7 +19,7 @@ class TestCrystal(TestCase):
         assert_array_equal(self.crystal.atomic_numbers_unitcell, atomic_numbers)
         assert_array_equal(self.crystal.coordinates_unitcell, coordinates)
 
-    def test_from_poscar(self):
+    def test_from_poscar(self) -> None:
         self.crystal_from_POSCAR = Crystal.from_poscar("examples/POSCAR/boron_nitride")
 
         assert len(self.crystal_from_POSCAR.atoms) == 2**3 + 1
@@ -37,6 +37,6 @@ class TestCrystal(TestCase):
         assert_array_equal(self.crystal_from_POSCAR.coordinates_unitcell, self.crystal.coordinates_unitcell)
         # assert self.crystal_from_POSCAR == self.crystal
 
-    def test_make_supercell(self):
+    def test_make_supercell(self) -> None:
         self.crystal.make_supercell([3, 3, 3])
         assert len(self.crystal.atoms) == 4**3 + 3**3
