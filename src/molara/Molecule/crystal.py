@@ -10,7 +10,7 @@ from .molecule import *
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from typing import Self
+    from typing import Annotated, Self
 
     from numpy.typing import ArrayLike
 
@@ -41,7 +41,7 @@ class Crystal(Molecule):
         self.basis_vectors = basis_vectors
         self.make_supercell([1, 1, 1])
 
-    def make_supercell(self, supercell_dimensions) -> None:
+    def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
         self.supercell_dimensions = supercell_dimensions
         steps_a = np.arange(supercell_dimensions[0] + 1)
         steps_b = np.arange(supercell_dimensions[1] + 1)
