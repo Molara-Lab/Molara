@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-import numpy.typing as npt
 
 from .atom import Atom, element_symbol_to_atomic_number
 from .drawer import Drawer
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 
 class Molecule:
@@ -23,7 +27,7 @@ class Molecule:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
 
-    def calculate_bonds(self):
+    def calculate_bonds(self) -> ArrayLike:
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
@@ -44,12 +48,12 @@ class Molecule:
 
         return np.array([[-1, -1]], dtype=np.int_)
 
-    def add_atom(self, atomic_number: int, coordinate: npt.ArrayLike):
+    def add_atom(self, atomic_number: int, coordinate: ArrayLike) -> None:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
 
-    def remove_atom(self, index: int):
+    def remove_atom(self, index: int) -> None:
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
 

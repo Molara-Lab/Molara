@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 
 class Atom:
-    def __init__(self, atomic_number: int, position) -> None:
+    def __init__(self, atomic_number: int, position: ArrayLike) -> None:
         self.symbol = elements[atomic_number]["symbol"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]

@@ -35,7 +35,7 @@ class CrystalDialog(QDialog):
         self.list_of_coordinates = []
         self.ui.listAtoms.setRowCount(0)
 
-    def add_atom(self):
+    def add_atom(self) -> None:
         element_symbol = self.ui.inputElementSymbol.text()
         atomic_number = element_symbol_to_atomic_number(element_symbol)
         coord_a, coord_b, coord_c = (
@@ -56,7 +56,7 @@ class CrystalDialog(QDialog):
         self.ui.listAtoms.setItem(row_id, 2, item_coord_b)
         self.ui.listAtoms.setItem(row_id, 3, item_coord_c)
 
-    def accept(self):
+    def accept(self) -> None:
         # dim_a, dim_b, dim_c = (
         #     self.ui.inputSupercell_a.value(),
         #     self.ui.inputSupercell_b.value(),
@@ -73,7 +73,7 @@ class CrystalDialog(QDialog):
         )
         self.parent().ui.openGLWidget.set_molecule(mycrystal)
 
-    def change_crystal_system(self, value: str):
+    def change_crystal_system(self, value: str) -> None:
         self.crystal_system = value
         select_space_group = self.ui.selectSpaceGroup
         view = select_space_group.view()
@@ -86,7 +86,7 @@ class CrystalDialog(QDialog):
             self.ui.inputLatConst_b.setEnabled(False)
             self.ui.inputLatConst_c.setEnabled(False)
 
-            def bc_equals_a(value):
+            def bc_equals_a(value: float) -> None:
                 self.ui.inputLatConst_b.setValue(value)
                 self.ui.inputLatConst_c.setValue(value)
 
@@ -103,7 +103,7 @@ class CrystalDialog(QDialog):
             self.ui.inputLatConst_b.setEnabled(False)
             self.ui.inputLatConst_c.setEnabled(True)
 
-            def b_equals_a(value):
+            def b_equals_a(value: float) -> None:
                 self.ui.inputLatConst_b.setValue(value)
 
             with suppress(Exception):

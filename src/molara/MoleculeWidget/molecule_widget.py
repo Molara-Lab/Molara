@@ -42,7 +42,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera.reset(self.width(), self.height())
         self.update()
 
-    def set_molecule(self, molecule):
+    def set_molecule(self, molecule) -> None:
         self.molecule = molecule
         if self.molecule.bonded_pairs[0, 0] == -1:
             self.bonds = False
@@ -102,7 +102,7 @@ class MoleculeWidget(QOpenGLWidget):
     def draw_axes(self) -> None:
         return
 
-    def wheelEvent(self, event):  # noqa: N802
+    def wheelEvent(self, event) -> None:  # noqa: N802
         self.zoom_factor = 1
         num_degrees = event.angleDelta().y() / 8
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
@@ -112,7 +112,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera.update()
         self.update()
 
-    def mousePressEvent(self, event: QMouseEvent):  # noqa: N802
+    def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if (
             event.button() == Qt.MouseButton.LeftButton
             and event.x() in range(self.width())
@@ -146,7 +146,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.camera.update()
             self.update()
 
-    def set_normalized_position(self, event):
+    def set_normalized_position(self, event) -> None:
         if self.width() >= self.height():
             self.position[0] = (event.x() * 2 - self.width()) / self.width()
             self.position[1] = -(event.y() * 2 - self.height()) / self.width()
@@ -155,7 +155,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.position[1] = -(event.y() * 2 - self.height()) / self.height()
         self.position = np.array(self.position, dtype=np.float32)
 
-    def mouseReleaseEvent(self, event: QMouseEvent):  # noqa: N802
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if event.button() == Qt.MouseButton.LeftButton and self.rotate:
             self.stop_rotation(event)
         if event.button() == Qt.MouseButton.RightButton and self.translate:

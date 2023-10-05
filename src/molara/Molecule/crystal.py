@@ -41,7 +41,7 @@ class Crystal(Molecule):
         self.basis_vectors = basis_vectors
         self.make_supercell([1, 1, 1])
 
-    def make_supercell(self, supercell_dimensions):
+    def make_supercell(self, supercell_dimensions) -> None:
         self.supercell_dimensions = supercell_dimensions
         steps_a = np.arange(supercell_dimensions[0] + 1)
         steps_b = np.arange(supercell_dimensions[1] + 1)
@@ -78,11 +78,12 @@ class Crystal(Molecule):
         super().__init__(self.atomic_numbers_supercell, self.cartesian_coordinates_supercell)
 
     @classmethod
-    def from_poscar(cls, file_path: str):
+    def from_poscar(cls, file_path: str) -> Self:
         with open(file_path) as file:
             lines = file.readlines()
         if not len(lines) >= 9:
-            return False
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg)
         scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
         species_, numbers_ = lines[5].strip(), lines[6]
         mode, positions_ = lines[7].strip(), lines[8:]
