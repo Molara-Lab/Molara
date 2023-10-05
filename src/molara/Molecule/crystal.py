@@ -32,9 +32,9 @@ class Crystal(Molecule):
 
     def __init__(
         self,
-        atomic_numbers: np.ndarray,
-        coordinates: np.ndarray,
-        basis_vectors: np.ndarray,
+        atomic_numbers: Sequence[int],
+        coordinates: Sequence[Sequence[float]],
+        basis_vectors: Sequence[Sequence[float]],
     ) -> None:
         self.atomic_numbers_unitcell = atomic_numbers
         self.coordinates_unitcell = coordinates
