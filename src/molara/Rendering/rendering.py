@@ -1,7 +1,7 @@
 # mypy: disable-error-code="name-defined"
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import pyrr
 from OpenGL.GL import *
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from molara.Rendering.camera import Camera
 
 
-def draw_scene(shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecule) -> None:
+def draw_scene(shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecule | None = None) -> None:
     """Draws the contents of the given vaos from the given camera perspective.
 
     :param shader: The shader program of the opengl widget.

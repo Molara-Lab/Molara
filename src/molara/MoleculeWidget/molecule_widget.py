@@ -24,8 +24,8 @@ class MoleculeWidget(QOpenGLWidget):
         self.parent = parent
         QOpenGLWidget.__init__(self, parent)
 
-        self.molecule = None
-        self.vertex_attribute_objects = None
+        self.molecule_is_set = False
+        self.vertex_attribute_objects = [-1]
         self.axes = False
         self.rotate = False
         self.translate = False
@@ -50,10 +50,11 @@ class MoleculeWidget(QOpenGLWidget):
             self.bonds = False
         else:
             self.bonds = True
+        self.molecule_is_set = True
         self.center_molecule()
 
     def center_molecule(self) -> None:
-        if self.molecule is not None:
+        if self.molecule_is_set:
             self.molecule.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
@@ -77,7 +78,10 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802
-        draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
+        if self.molecule_is_set:
+            draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
+        else:
+            draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
         return
 
     def set_vertex_attribute_objects(self) -> None:
@@ -85,7 +89,6 @@ class MoleculeWidget(QOpenGLWidget):
         for atomic_number in self.molecule.unique_atomic_numbers:
             idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
             vao = Vao(
-                self,
                 self.molecule.drawer.unique_spheres[idx].vertices,
                 self.molecule.drawer.unique_spheres[idx].indices,
                 self.molecule.drawer.unique_spheres[idx].model_matrices,
@@ -94,7 +97,6 @@ class MoleculeWidget(QOpenGLWidget):
         for atomic_number in self.molecule.unique_atomic_numbers:
             idx = self.molecule.drawer.unique_cylinders_mapping[atomic_number]
             vao = Vao(
-                self,
                 self.molecule.drawer.unique_cylinders[idx].vertices,
                 self.molecule.drawer.unique_cylinders[idx].indices,
                 self.molecule.drawer.unique_cylinders[idx].model_matrices,

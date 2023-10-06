@@ -78,7 +78,7 @@ class Crystal(Molecule):
         super().__init__(self.atomic_numbers_supercell, self.cartesian_coordinates_supercell)
 
     @classmethod
-    def from_poscar(cls: Self, file_path: str) -> Self:
+    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
         with open(file_path) as file:
             lines = file.readlines()
         header_length = 9
@@ -106,13 +106,13 @@ class Crystal(Molecule):
         atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
         return cls(atomic_numbers, positions, scale * basis_vectors)
 
-    def copy(self) -> Self:
+    def copy(self) -> Crystal:
         # supercell dimensions not included yet!
         return Crystal(self.atomic_numbers_unitcell, self.coordinates_unitcell, self.basis_vectors)
 
     """ overloading operators """
 
-    def __mul__(self, supercell_dimensions: Sequence[int]) -> Self:
+    def __mul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
         """
         current implementation: multiply Crystal by a sequence of three integers [M, N, K]
         to create MxNxK supercell
@@ -121,5 +121,5 @@ class Crystal(Molecule):
         crystal_copy.make_supercell(supercell_dimensions)
         return crystal_copy
 
-    def __rmul__(self, supercell_dimensions: Sequence[int]) -> Self:
+    def __rmul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
         return self.__mul__(supercell_dimensions)

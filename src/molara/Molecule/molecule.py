@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray) -> None:
+    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray, dummy: bool = False) -> None:
+        if dummy:
+            self.dummy = True
+            pass
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
