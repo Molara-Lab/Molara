@@ -1,6 +1,6 @@
 import numpy as np
 
-from .Molecule import Molecule
+from molara.Molecule import Molecule
 
 
 class Molecules:

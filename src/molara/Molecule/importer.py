@@ -3,7 +3,7 @@ from .Molecule import Molecule
 from .Molecules import Molecules
 
 
-def read_xyz(file_path: str):
+def read_xyz(file_path: str) -> Molecules:
     """
     Read-in function for .xyz files
     param: file_path: str
@@ -69,7 +69,7 @@ def read_xyz(file_path: str):
     return molecules
 
 
-def read_coord(file_path: str):
+def read_coord(file_path: str) -> Molecules:
     """
     Imports a coord file
     Returns the Molecule

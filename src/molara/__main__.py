@@ -13,7 +13,6 @@ from molara.Gui.TrajectoryDialog import TrajectoryDialog
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from molara.Gui.ui_form import Ui_MainWindow
-
 from molara.Molecule.importer import read_coord, read_xyz
 
 

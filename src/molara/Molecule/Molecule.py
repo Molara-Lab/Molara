@@ -6,8 +6,8 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-from .Atom import Atom, element_symbol_to_atomic_number
-from .Drawer import Drawer
+from molara.Molecule.Atom import Atom, element_symbol_to_atomic_number
+from molara.Molecule.Drawer import Drawer
 
 
 class Molecule:
