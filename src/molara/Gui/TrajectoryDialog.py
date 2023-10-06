@@ -33,7 +33,6 @@ class TrajectoryDialog(QDialog):
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        self.timer = QTimer(self)
 
         self.ui.checkBox.stateChanged.connect(self.show_trajectory)
         self.ui.PrevButton.clicked.connect(self.get_prev_mol)
@@ -42,6 +41,7 @@ class TrajectoryDialog(QDialog):
 
     def show_trajectory(self) -> None:
         if self.ui.checkBox.isChecked():
+            self.timer = QTimer(self)
             self.timer.start()
             self.timer.timeout.connect(self.get_next_mol)
 
