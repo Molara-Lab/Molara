@@ -44,7 +44,27 @@ class Camera:
 
     def reset(self, width: float, height: float) -> None:
         """Resets the camera."""
-        self.__init__(width, height)
+        self.width = width
+        self.height = height
+        self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
+        self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
+        self.right_vector = pyrr.Vector3([0.0, 0.0, 1.0], dtype=np.float32)
+        self.distance_from_target = 5.0
+        self.zoom_factor = 0.05
+
+        self.projection_matrix = None
+        self.calculate_projection_matrix(self.width, self.height)
+
+        self.rotation = pyrr.Quaternion()
+        self.last_rotation = self.rotation
+        self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.last_translation = self.translation
+        self.position *= self.distance_from_target
+        self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.initial_target = self.target
+        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position))
+        self.initial_up_vector = self.up_vector
+        self.initial_right_vector = self.right_vector
 
     def set_distance_from_target(self, zoom: float) -> None:
         """Set the distance between the camera and its target.
@@ -53,8 +73,7 @@ class Camera:
             between the camera and the target.
         """
         self.distance_from_target += self.zoom_factor * zoom * (np.sign(zoom - 1))
-        if self.distance_from_target < 1.0:
-            self.distance_from_target = 1.0
+        self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def update(self, save: bool = False) -> None:
         """Updates the camera position and orientation."""
@@ -92,8 +111,8 @@ class Camera:
             """
             z = x
             squared_sum = z**2 + y**2
-            if squared_sum <= 1.0:
-                x = np.sqrt(1.0 - squared_sum)
+            if squared_sum <= 1:
+                x = np.sqrt(1 - squared_sum)
             else:
                 x = 0.0
                 length = np.sqrt(squared_sum)
@@ -104,7 +123,8 @@ class Camera:
         previous_arcball_point = calculate_arcball_point(old_mouse_position[0], old_mouse_position[1])
         current_arcball_point = calculate_arcball_point(new_mouse_position[0], new_mouse_position[1])
 
-        if np.linalg.norm(previous_arcball_point - current_arcball_point) > 1.0e-5:
+        tolerance_parallel = 1e-5
+        if np.linalg.norm(previous_arcball_point - current_arcball_point) > tolerance_parallel:
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
             rotation_axis = pyrr.vector3.normalize(rotation_axis)
             rotation_angle = np.arccos(np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1))

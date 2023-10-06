@@ -139,7 +139,7 @@
   <customwidget>
    <class>MoleculeWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">molara/MoleculeWidget/MoleculeWidget</header>
+   <header location="global">molara/MoleculeWidget/molecule_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>
