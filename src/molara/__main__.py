@@ -25,11 +25,11 @@ def main() -> None:
     format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
     QSurfaceFormat.setDefaultFormat(format)
 
-    def sigint_handler(*args):
+    def sigint_handler() -> None:
         app.quit()
 
     class MainWindow(QMainWindow):
-        def __init__(self, parent=None) -> None:
+        def __init__(self, parent: QMainWindow = None) -> None:
             super().__init__(parent)
             self.ui = Ui_MainWindow()
             self.ui.setupUi(self)

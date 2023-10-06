@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, Qt
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 from molara.Rendering.buffers import Vao
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class MoleculeWidget(QOpenGLWidget):
-    def __init__(self, parent) -> None:
+    def __init__(self, parent: QOpenGLWidget) -> None:
         self.shader = None
         self.parent = parent
         QOpenGLWidget.__init__(self, parent)
@@ -71,7 +71,7 @@ class MoleculeWidget(QOpenGLWidget):
         glEnable(GL_MULTISAMPLE)
         self.shader = compile_shaders()
 
-    def resizeGL(self, width, height):  # noqa: N802
+    def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         glViewport(0, 0, self.width(), self.height())
         self.camera.calculate_projection_matrix(self.width(), self.height())
         self.update()
@@ -104,7 +104,7 @@ class MoleculeWidget(QOpenGLWidget):
     def draw_axes(self) -> None:
         return
 
-    def wheelEvent(self, event) -> None:  # noqa: N802
+    def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         self.zoom_factor = 1
         num_degrees = event.angleDelta().y() / 8
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
@@ -136,7 +136,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.set_normalized_position(event)
             self.click_position = np.copy(self.position)
 
-    def mouseMoveEvent(self, event: QMouseEvent):  # noqa: N802
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if self.rotate and self.click_position is not None:
             self.set_normalized_position(event)
             self.camera.set_rotation_quaternion(self.click_position, self.position)
@@ -148,7 +148,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.camera.update()
             self.update()
 
-    def set_normalized_position(self, event) -> None:
+    def set_normalized_position(self, event: QMouseEvent) -> None:
         if self.width() >= self.height():
             self.position[0] = (event.x() * 2 - self.width()) / self.width()
             self.position[1] = -(event.y() * 2 - self.height()) / self.width()

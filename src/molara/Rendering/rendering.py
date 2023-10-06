@@ -8,9 +8,10 @@ from OpenGL.GL import *
 
 if TYPE_CHECKING:
     from molara.Molecule.molecule import Molecule
+    from molara.Rendering.camera import Camera
 
 
-def draw_scene(shader, camera, vaos, molecule: Molecule) -> None:
+def draw_scene(shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecule) -> None:
     """Draws the contents of the given vaos from the given camera perspective.
 
     :param shader: The shader program of the opengl widget.
