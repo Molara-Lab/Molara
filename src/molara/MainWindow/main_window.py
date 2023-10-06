@@ -1,8 +1,10 @@
 import sys
-from molara.Molecule.molecule import read_coord, read_xyz
+
+from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
-from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from molara.Molecule.molecule import read_coord, read_xyz
 
 
 class MainWindow(QMainWindow):
