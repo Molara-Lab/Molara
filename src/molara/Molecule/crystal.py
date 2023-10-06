@@ -78,7 +78,7 @@ class Crystal(Molecule):
         super().__init__(self.atomic_numbers_supercell, self.cartesian_coordinates_supercell)
 
     @classmethod
-    def from_poscar(cls: type[Crystal], file_path: str) -> Self:
+    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
         with open(file_path) as file:
             lines = file.readlines()
         header_length = 9
