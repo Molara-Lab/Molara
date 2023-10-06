@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import Optional
 
 import numpy as np
@@ -71,9 +72,7 @@ class Molecule:
         """
         Reads the energy from the second line
         """
-        try:
+        with contextlib.suppress(Exception):
             self.energy = float(string.split()[1])
-        except:
-            pass 
 
         return
