@@ -82,7 +82,6 @@ class MoleculeWidget(QOpenGLWidget):
             draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
         else:
             draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
-        return
 
     def set_vertex_attribute_objects(self) -> None:
         self.vertex_attribute_objects = []
