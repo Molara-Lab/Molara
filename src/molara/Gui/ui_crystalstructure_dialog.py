@@ -18,9 +18,9 @@ from PySide6.QtCore import (
     QPoint,
     QRect,
     QSize,
-    Qt,
     QTime,
     QUrl,
+    Qt,
 )
 from PySide6.QtGui import (
     QBrush,
@@ -203,13 +203,15 @@ class Ui_Dialog(object):
 
     # setupUi
 
-    def retranslateUi(self, Dialog: QDialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Dialog", None))
-        self.buttonAddAtom.setText(QCoreApplication.translate("Dialog", "Add Atom", None))
-        self.checkBoxPreview.setText(QCoreApplication.translate("Dialog", "Show Preview", None))
-        self.selectCrystalSystem.setItemText(0, QCoreApplication.translate("Dialog", "Cubic", None))
-        self.selectCrystalSystem.setItemText(1, QCoreApplication.translate("Dialog", "Tetragonal", None))
-        self.selectCrystalSystem.setItemText(2, QCoreApplication.translate("Dialog", "Orthorhombic", None))
+    def retranslateUi(self, CrystalDialog):
+        CrystalDialog.setWindowTitle(
+            QCoreApplication.translate("CrystalDialog", "Create custom crystal structure", None),
+        )
+        self.buttonAddAtom.setText(QCoreApplication.translate("CrystalDialog", "Add Atom", None))
+        self.checkBoxPreview.setText(QCoreApplication.translate("CrystalDialog", "Show Preview", None))
+        self.selectCrystalSystem.setItemText(0, QCoreApplication.translate("CrystalDialog", "Cubic", None))
+        self.selectCrystalSystem.setItemText(1, QCoreApplication.translate("CrystalDialog", "Tetragonal", None))
+        self.selectCrystalSystem.setItemText(2, QCoreApplication.translate("CrystalDialog", "Orthorhombic", None))
 
         self.selectSpaceGroup.setItemText(0, QCoreApplication.translate("Dialog", "m3m", None))
         self.selectSpaceGroup.setItemText(1, QCoreApplication.translate("Dialog", "4/mmm", None))
@@ -225,13 +227,25 @@ class Ui_Dialog(object):
         self.labelTitleLatConst.setText(QCoreApplication.translate("Dialog", "Lattice constants", None))
         self.labelTitleSupercell.setText(QCoreApplication.translate("Dialog", "Supercell", None))
         self.labelSupercell_a.setText(
-            QCoreApplication.translate("Dialog", "<html><head/><body><p>N<sub>a</sub><br/></p></body></html>", None)
+            QCoreApplication.translate(
+                "CrystalDialog",
+                "<html><head/><body><p>N<sub>a</sub><br/></p></body></html>",
+                None,
+            ),
         )
         self.labelSupercell_b.setText(
-            QCoreApplication.translate("Dialog", "<html><head/><body><p>N<sub>b</sub><br/></p></body></html>", None)
+            QCoreApplication.translate(
+                "CrystalDialog",
+                "<html><head/><body><p>N<sub>b</sub><br/></p></body></html>",
+                None,
+            ),
         )
         self.labelSupercell_c.setText(
-            QCoreApplication.translate("Dialog", "<html><head/><body><p>N<sub>c</sub><br/></p></body></html>", None)
+            QCoreApplication.translate(
+                "CrystalDialog",
+                "<html><head/><body><p>N<sub>c</sub><br/></p></body></html>",
+                None,
+            ),
         )
         self.pushButton.setText(QCoreApplication.translate("Dialog", "Clear Atoms", None))
 

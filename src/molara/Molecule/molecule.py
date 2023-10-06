@@ -14,9 +14,9 @@ class Molecule:
     def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike, header: Optional[str] = None):
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
-        self.vdw_rads = []
+        self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
-        self.unique_atomic_numbers = []
+        self.unique_atomic_numbers: list[int] = []
         for i, atomic_number in enumerate(atomic_numbers):
             atom = Atom(atomic_number, coordinates[i])
             self.atoms.append(atom)
@@ -59,7 +59,7 @@ class Molecule:
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
 
-    def center_coordinates(self):
+    def center_coordinates(self) -> None:
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0)
         for _i, atom in enumerate(self.atoms):

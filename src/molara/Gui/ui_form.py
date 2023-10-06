@@ -18,9 +18,9 @@ from PySide6.QtCore import (
     QPoint,
     QRect,
     QSize,
-    Qt,
     QTime,
     QUrl,
+    Qt,
 )
 from PySide6.QtGui import (
     QAction,
@@ -43,7 +43,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QApplication, QGridLayout, QMainWindow, QMenu, QMenuBar, QSizePolicy, QStatusBar, QWidget
 
-from molara.MoleculeWidget.MoleculeWidget import MoleculeWidget
+from molara.MoleculeWidget.molecule_widget import MoleculeWidget
 
 
 class Ui_MainWindow(object):
@@ -71,6 +71,10 @@ class Ui_MainWindow(object):
         self.actionCreate_Lattice.setObjectName("actionCreate_Lattice")
         self.actionOpen_Trajectory_Dialog = QAction(MainWindow)
         self.actionOpen_Trajectory_Dialog.setObjectName("actionOpen_Trajectory_Dialog")
+        self.actionRead_POSCAR = QAction(MainWindow)
+        self.actionRead_POSCAR.setObjectName("actionRead_POSCAR")
+        self.actioncoord = QAction(MainWindow)
+        self.actioncoord.setObjectName("actioncoord")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -105,6 +109,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.menuImport.menuAction())
         self.menuFile.addAction(self.quit)
         self.menuImport.addAction(self.action_xyz)
+        self.menuImport.addAction(self.actioncoord)
         self.menuEdit.addAction(self.actionCenter_Molecule)
         self.menuEdit.addAction(self.actionReset_View)
         self.menuEdit.addAction(self.menuRotate.menuAction())
@@ -135,6 +140,8 @@ class Ui_MainWindow(object):
         self.actionOpen_Trajectory_Dialog.setText(
             QCoreApplication.translate("MainWindow", "Open Trajectory Dialog", None)
         )
+        self.actionRead_POSCAR.setText(QCoreApplication.translate("MainWindow", "Read POSCAR", None))
+        self.actioncoord.setText(QCoreApplication.translate("MainWindow", "coord", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", "Import", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "View", None))
