@@ -2,7 +2,7 @@ from contextlib import suppress
 
 import matplotlib as mpl
 import numpy as np
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PySide6.QtCore import QTime, QTimer
 from PySide6.QtWidgets import QDialog, QGraphicsScene, QMainWindow, QTableWidgetItem, QVBoxLayout, QWidget
@@ -40,33 +40,33 @@ class TrajectoryDialog(QDialog):
         self.ui.NextButton.clicked.connect(self.get_next_mol)
         self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
 
-    def show_trajectory(self):
+    def show_trajectory(self) -> None:
         if self.ui.checkBox.isChecked():
             self.timer.start()
-            self.timer.timeout.connect(self.update_molecule)
+            self.timer.timeout.connect(self.get_next_mol)
 
         else:
             self.timer.stop()
 
         return
 
-    def get_next_mol(self):
+    def get_next_mol(self) -> None:
         """
         Calls molecules object to get the next molecule and update it in the GUI.
         """
-        self.parent().mols.get_next_mol()
+        self.parent().mols.set_next_mol()
         self.update_molecule()
         return
 
-    def get_prev_mol(self):
+    def get_prev_mol(self) -> None:
         """
         Calls molecules object to get the previous molecule and update it in the GUI.
         """
-        self.parent().mols.get_previous_mol()
+        self.parent().mols.set_previous_mol()
         self.update_molecule()
         return
 
-    def set_slider_range(self):
+    def set_slider_range(self) -> None:
         """
         Set the slider range to the max number of molecules.
         """
@@ -74,36 +74,55 @@ class TrajectoryDialog(QDialog):
 
         return
 
-    def slide_molecule(self):
+    def slide_molecule(self) -> None:
+        """
+        Updates the molecule and energy plot in dependence of the slider position.
+        """
         index = self.ui.verticalSlider.sliderPosition()
         self.parent().ui.openGLWidget.delete_molecule()
         self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_index_mol(index))
+        self.UpdateEnergyPlot()
 
         return
 
-    def update_molecule(self):
+    def update_molecule(self) -> None:
         """
         Update molecule in the ui widget by deleting the
         current molecule and calling the next molecule in the molecules object.
         """
+
         self.parent().ui.openGLWidget.delete_molecule()
 
-        self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_next_mol())
+        self.UpdateEnergyPlot()
+
+        self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_current_mol())
 
         if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
             self.timer.stop()
 
         return
 
-    def plot_energies(self):
+    def InitialEnergyPlot(self) -> None:
         """
         Plot the energies of the molecules in the molecules object.
         """
-        sc = MplCanvas(self, width=5, height=4, dpi=100)
-        sc.axes.plot(np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-")
+
+        self.sc = MplCanvas(self, width=5, height=4, dpi=100)
+
+        self.sc.axes.plot(np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-")
+        self.sc.axes.plot(self.parent().mols.mol_index, self.parent().mols.energies[self.parent().mols.mol_index], "o")
+
         layout = QVBoxLayout()
-        layout.addWidget(sc)
+        layout.addWidget(self.sc)
 
         self.ui.widget.setLayout(layout)
+
+        return
+
+    def UpdateEnergyPlot(self) -> None:
+        self.sc.axes.cla()
+        self.sc.axes.plot(np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-")
+        self.sc.axes.plot(self.parent().mols.mol_index, self.parent().mols.energies[self.parent().mols.mol_index], "o")
+        self.sc.draw()
 
         return

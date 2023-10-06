@@ -14,18 +14,21 @@ class Molecules:
         self.mol_index = 0
         self.energies = []
 
-    def get_next_mol(self):
+    def get_current_mol(self):
+        return self.mols[self.mol_index]
+
+    def set_next_mol(self):
         """
         Returns the next molecule in the list of molecules
         """
-        molecule = self.mols[self.mol_index]
 
         self.mol_index += 1
+
         self.mol_index %= self.num_mols
 
-        return molecule
+        return
 
-    def get_index_mol(self, index: int):
+    def get_index_mol(self, index: int) -> Molecule:
         """
         Return a molecule of the list of molecules by a given index
         param: index: int
@@ -33,7 +36,7 @@ class Molecules:
         self.mol_index = index
         return self.mols[self.mol_index]
 
-    def get_previous_mol(self):
+    def set_previous_mol(self) -> Molecule:
         """
         Returns the previous molecule of the list of molecules
         """
@@ -42,10 +45,7 @@ class Molecules:
         if self.mol_index < 0:
             self.mol_index = self.num_mols - 1
 
-        return self.mols[self.mol_index]
-
-    def get_mol(self, index):
-        return self.mols[index]
+        return
 
     def add_molecule(self, mol: Molecule) -> None:
         """

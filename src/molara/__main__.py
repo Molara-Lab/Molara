@@ -38,11 +38,11 @@ def main() -> None:
 
             self.mols = read_xyz(fileName)
 
-            widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
+            widget.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
 
             if self.mols.num_mols > 1:
                 trajectory_dialog.show()
-                trajectory_dialog.plot_energies()
+                trajectory_dialog.InitialEnergyPlot()
                 trajectory_dialog.set_slider_range()
 
         def show_xyz(self):
@@ -50,18 +50,13 @@ def main() -> None:
 
             self.mols = read_xyz(fileName[0])
 
-            widget.ui.openGLWidget.set_molecule(self.mols.get_next_mol())
+            widget.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
 
             if self.mols.num_mols > 1:
                 trajectory_dialog.show()
-                trajectory_dialog.plot_energies()
+                trajectory_dialog.InitialEnergyPlot()
 
             return
-
-        def show_previous_molecule(self):
-            widget.ui.openGLWidget.delete_molecule()
-
-            widget.ui.openGLWidget.set_molecule(widget.mols.get_previous_mol())
 
         def show_coord(self):
             fileName = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")

@@ -68,6 +68,12 @@ class Molecule:
         self.drawer.set_cylinder_model_matrices()
 
     def gen_energy_information(self, string: str):
-        self.energy = float(string.split()[1])
+        """
+        Reads the energy from the second line
+        """
+        try:
+            self.energy = float(string.split()[1])
+        except:
+            pass 
 
         return
