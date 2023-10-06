@@ -3,7 +3,7 @@ import sys
 
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
+from PySide6.QtWidgets import QApplication
 
 from molara.Gui.crystal_dialog import CrystalDialog
 
@@ -11,9 +11,7 @@ from molara.Gui.crystal_dialog import CrystalDialog
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-from molara.Gui.ui_form import Ui_MainWindow
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.molecule import read_coord, read_xyz
+from molara.MainWindow.main_window import MainWindow
 
 
 def main() -> None:
@@ -25,40 +23,6 @@ def main() -> None:
 
     def sigint_handler(*args):
         app.quit()
-
-    class MainWindow(QMainWindow):
-        def __init__(self, parent=None):
-            super().__init__(parent)
-            self.ui = Ui_MainWindow()
-            self.ui.setupUi(self)
-
-        def show_init_xyz(self) -> None:
-            """Read the file from terminal arguments."""
-            file_name = sys.argv[1]
-            mol = read_xyz(file_name)
-            widget.ui.openGLWidget.set_molecule(mol)
-
-        def show_xyz(self) -> None:
-            file_name = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
-            mol = read_xyz(file_name[0])
-            widget.ui.openGLWidget.set_molecule(mol)
-
-        def show_coord(self) -> None:
-            file_name = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
-            mol = read_coord(file_name[0])
-            widget.ui.openGLWidget.set_molecule(mol)
-
-        def show_poscar(self) -> bool:
-            filename = QFileDialog.getOpenFileName(self, "Open POSCAR file", "/home", "POSCAR Files (*)")
-            crystal = Crystal.from_poscar(filename[0])
-            if not isinstance(crystal, Crystal):
-                error_message = crystal[1]
-                msg_box = QMessageBox()
-                msg_box.setText(error_message)
-                msg_box.exec()
-                return False
-            widget.ui.openGLWidget.set_molecule(crystal)
-            return True
 
     signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
