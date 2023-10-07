@@ -65,14 +65,13 @@ class CrystalDialog(QDialog):
         # )
         # supercell_dimensions = np.array([dim_a, dim_b, dim_c])
         a, b, c = self.ui.inputLatConst_a.value(), self.ui.inputLatConst_b.value(), self.ui.inputLatConst_c.value()
-        list_of_coordinates = np.array(self.list_of_coordinates)
         mycrystal = Crystal(
-            np.array(self.list_of_atomic_numbers),
-            list_of_coordinates,
-            np.diag([a, b, c]),
+            self.list_of_atomic_numbers,
+            self.list_of_coordinates,
+            np.diag([a, b, c]).tolist(),
             #     supercell_dimensions=supercell_dimensions,
         )
-        self.parent().ui.openGLWidget.set_molecule(mycrystal)
+        self.parent().ui.openGLWidget.set_molecule(mycrystal)  # type: ignore[attr-defined]
 
     def change_crystal_system(self, value: str) -> None:
         self.crystal_system = value
