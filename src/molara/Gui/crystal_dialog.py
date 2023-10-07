@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
@@ -22,7 +23,7 @@ class CrystalDialog(QDialog):
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = Ui_CrystalDialog()
         self.ui.setupUi(self)
-        self.list_of_coordinates: list[float] = []
+        self.list_of_coordinates: list = []
         self.list_of_atomic_numbers: list[int] = []
         self.change_crystal_system("Cubic")
         self.ui.selectCrystalSystem.currentTextChanged.connect(self.change_crystal_system)

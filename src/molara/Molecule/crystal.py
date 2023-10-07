@@ -78,7 +78,7 @@ class Crystal(Molecule):
         super().__init__(self.atomic_numbers_supercell, self.cartesian_coordinates_supercell)
 
     @classmethod
-    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal | tuple[bool, str]:
+    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
         with open(file_path) as file:
             lines = file.readlines()
         header_length = 9
@@ -97,12 +97,15 @@ class Crystal(Molecule):
             numbers = np.fromstring(numbers_, sep=" ", dtype=int)
             positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
             basis_vectors = [latvec_a, latvec_b, latvec_c]
-        except ValueError:
-            return False, "Error: faulty formatting of the POSCAR file."
+        except ValueError as err:
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg) from err
         if len(numbers) != len(species) or len(positions) != len(species):
-            return False, "Error: faulty formatting of the POSCAR file."
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg)
         if mode.lower() != "direct":
-            return False, "Currently, Molara can only process direct mode in POSCAR files."
+            msg = "Currently, Molara can only process direct mode in POSCAR files."
+            raise NotImplementedError(msg)
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
         return cls(atomic_numbers, positions, [scale * bv for bv in basis_vectors])
 
