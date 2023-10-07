@@ -90,21 +90,21 @@ class Crystal(Molecule):
         mode, positions_ = lines[7].strip(), lines[8:]
         try:
             scale = float(scale_)
-            latvec_a = np.fromstring(latvec_a_, sep=" ")
-            latvec_b = np.fromstring(latvec_b_, sep=" ")
-            latvec_c = np.fromstring(latvec_c_, sep=" ")
+            latvec_a = np.fromstring(latvec_a_, sep=" ").tolist()
+            latvec_b = np.fromstring(latvec_b_, sep=" ").tolist()
+            latvec_c = np.fromstring(latvec_c_, sep=" ").tolist()
             species = re.split(r"\s+", species_)
             numbers = np.fromstring(numbers_, sep=" ", dtype=int)
-            positions = np.array([np.fromstring(pos, sep=" ") for pos in positions_])
-            basis_vectors = np.array([latvec_a, latvec_b, latvec_c])
+            positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
+            basis_vectors = [latvec_a, latvec_b, latvec_c]
         except ValueError:
             return False, "Error: faulty formatting of the POSCAR file."
         if len(numbers) != len(species) or len(positions) != len(species):
             return False, "Error: faulty formatting of the POSCAR file."
         if mode.lower() != "direct":
             return False, "Currently, Molara can only process direct mode in POSCAR files."
-        atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
-        return cls(atomic_numbers, positions, scale * basis_vectors)
+        atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
+        return cls(atomic_numbers, positions, [scale * bv for bv in basis_vectors])
 
     def copy(self) -> Crystal:
         # supercell dimensions not included yet!
