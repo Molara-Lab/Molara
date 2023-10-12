@@ -22,7 +22,6 @@ class TestCrystal(TestCase):
     def test_from_poscar(self) -> None:
         self.crystal_from_POSCAR = Crystal.from_poscar("examples/POSCAR/boron_nitride")
 
-        assert self.crystal_from_POSCAR is Crystal, "Error: Crystal.from_poscar() did not return a Crystal object."
         assert len(self.crystal_from_POSCAR.atoms) == 2**3 + 1
         assert_array_equal(self.crystal_from_POSCAR.basis_vectors, self.crystal.basis_vectors)
         assert_array_equal(self.crystal_from_POSCAR.atomic_numbers_supercell, self.crystal.atomic_numbers_supercell)

@@ -34,7 +34,7 @@ class Crystal(Molecule):
         self,
         atomic_numbers: Sequence[int],
         coordinates: Sequence[Sequence[float]],
-        basis_vectors: Sequence[Sequence[float]],
+        basis_vectors: Sequence[Sequence[float]] | ArrayLike,
     ) -> None:
         self.atomic_numbers_unitcell = atomic_numbers
         self.coordinates_unitcell = coordinates
@@ -107,7 +107,7 @@ class Crystal(Molecule):
             msg = "Currently, Molara can only process direct mode in POSCAR files."
             raise NotImplementedError(msg)
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-        return cls(atomic_numbers, positions, [scale * bv for bv in basis_vectors])
+        return cls(atomic_numbers, positions, [scale * np.array(bv, dtype=float) for bv in basis_vectors])
 
     def copy(self) -> Crystal:
         # supercell dimensions not included yet!
