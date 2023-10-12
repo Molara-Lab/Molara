@@ -10,7 +10,7 @@ from .molecule import *
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from typing import Annotated, Self
+    from typing import Annotated
 
     from numpy.typing import ArrayLike
 

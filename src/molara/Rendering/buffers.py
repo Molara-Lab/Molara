@@ -92,7 +92,7 @@ class Vao:
     :type model_matrices: numpy.array of numpy.float32, optional
     """
 
-    def __init__(self, vertices: np.ndarray, indices: np.ndarray = None, model_matrices: np.ndarray = None) -> None:
+    def __init__(self, vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndarray) -> None:
         self.vertices = vertices
         self.indices = indices
         self.model_matrices = model_matrices

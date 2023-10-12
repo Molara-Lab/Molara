@@ -29,7 +29,7 @@ class Molecule:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
 
-    def calculate_bonds(self) -> ArrayLike:
+    def calculate_bonds(self) -> np.ndarray:
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
