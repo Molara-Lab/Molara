@@ -1,6 +1,6 @@
-from .Atom import element_symbol_to_atomic_number
-from .Molecule import Molecule
-from .Molecules import Molecules
+from molara.Molecule.atom import element_symbol_to_atomic_number
+from molara.Molecule.molecule import Molecule
+from molara.Molecule.molecules import Molecules
 
 
 def read_xyz(file_path: str) -> Molecules:
@@ -10,7 +10,7 @@ def read_xyz(file_path: str) -> Molecules:
     """
     molecules = Molecules()
 
-    with open(file_path, "r") as file:
+    with open(file_path) as file:
         lines = file.readlines()
 
         num_atoms = int(lines[0])

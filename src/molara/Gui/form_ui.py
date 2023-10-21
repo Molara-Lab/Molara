@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
@@ -43,10 +41,10 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QApplication, QGridLayout, QMainWindow, QMenu, QMenuBar, QSizePolicy, QStatusBar, QWidget
 
-from molara.MoleculeWidget.MoleculeWidget import MoleculeWidget
+from molara.MoleculeWidget.molecule_widget import MoleculeWidget
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
@@ -133,7 +131,7 @@ class Ui_MainWindow(object):
         self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", "Draw Axes", None))
         self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", "Create Lattice", None))
         self.actionOpen_Trajectory_Dialog.setText(
-            QCoreApplication.translate("MainWindow", "Open Trajectory Dialog", None)
+            QCoreApplication.translate("MainWindow", "Open Trajectory Dialog", None),
         )
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", "Import", None))

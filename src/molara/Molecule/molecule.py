@@ -6,12 +6,12 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-from molara.Molecule.Atom import Atom, element_symbol_to_atomic_number
-from molara.Molecule.Drawer import Drawer
+from molara.Molecule.atom import Atom, element_symbol_to_atomic_number
+from molara.Molecule.drawer import Drawer
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike, header: Optional[str] = None):
+    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike, header: str | None = None):
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
@@ -72,7 +72,7 @@ class Molecule:
         """
         Reads the energy from the second line
         """
-        with contextlib.suppress(Exception):
+        try:
             self.energy = float(string.split()[1])
-
-        return
+        except:
+            self.energy = 0.0

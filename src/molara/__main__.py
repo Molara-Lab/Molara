@@ -1,22 +1,21 @@
+import signal
 import sys
-import time as time
+import time
 
 from PySide6.QtCore import QTime, QTimer
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
-from molara.Gui.TrajectoryDialog import TrajectoryDialog
-from PySide6.QtWidgets import QApplication
-
 from molara.Gui.crystal_dialog import CrystalDialog
+from molara.Gui.TrajectoryDialog import TrajectoryDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from molara.Gui.ui_form import Ui_MainWindow
-from molara.Molecule.importer import read_coord, read_xyz
 from molara.MainWindow.main_window import MainWindow
+from molara.Molecule.importer import read_coord, read_xyz
 
 
 def main() -> None:
@@ -36,8 +35,6 @@ def main() -> None:
 
     crystal_dialog = CrystalDialog(widget)  # pass widget as parent
 
-    trajectory_dialog = TrajectoryDialog(widget)  # pass widget as parent
-
     widget.setWindowTitle("Molara")
 
     widget.show()
@@ -53,7 +50,7 @@ def main() -> None:
     widget.ui.quit.triggered.connect(widget.close)
     widget.ui.actionRead_POSCAR.triggered.connect(widget.show_poscar)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
-    widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(trajectory_dialog.show)
+    widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(widget.trajectory_dialog.show)
     widget.ui.quit.triggered.connect(widget.close)
 
     sys.exit(app.exec())

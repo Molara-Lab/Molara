@@ -2,9 +2,10 @@ import sys
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
+from molara.Gui.TrajectoryDialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
-from molara.Molecule.molecule import read_coord, read_xyz
+from molara.Molecule.importer import read_coord, read_xyz
 
 
 class MainWindow(QMainWindow):
@@ -12,17 +13,35 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
 
-    def show_init_xyz(self) -> None:
-        """Read the file from terminal arguments."""
-        file_name = sys.argv[1]
-        mol = read_xyz(file_name)
-        self.ui.openGLWidget.set_molecule(mol)
+    def show_init_xyz(self):
+        """
+        read the file from terminal arguments
+        """
+        fileName = sys.argv[1]
 
-    def show_xyz(self) -> None:
-        file_name = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
-        mol = read_xyz(file_name[0])
-        self.ui.openGLWidget.set_molecule(mol)
+        self.mols = read_xyz(fileName)
+
+        self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
+
+        if self.mols.num_mols > 1:
+            self.trajectory_dialog.show()
+            self.trajectory_dialog.InitialEnergyPlot()
+            self.trajectory_dialog.set_slider_range()
+
+    def show_xyz(self):
+        fileName = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
+
+        self.mols = read_xyz(fileName[0])
+
+        self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
+
+        if self.mols.num_mols > 1:
+            self.trajectory_dialog.show()
+            self.trajectory_dialog.InitialEnergyPlot()
+
+            return
 
     def show_coord(self) -> None:
         file_name = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")

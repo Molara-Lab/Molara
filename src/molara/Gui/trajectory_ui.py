@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ################################################################################
 ## Form generated from reading UI file 'trajectory.ui'
 ##
@@ -43,7 +41,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QApplication, QCheckBox, QDialog, QPushButton, QSizePolicy, QSlider, QWidget
 
 
-class Ui_Dialog(object):
+class Ui_Dialog:
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")

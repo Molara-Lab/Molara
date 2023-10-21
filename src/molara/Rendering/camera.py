@@ -71,7 +71,10 @@ class Camera:
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def calculate_camera_position(
-        self, old_mouse_position: float, new_mouse_position: float, save: Optional[bool] = False
+        self,
+        old_mouse_position: float,
+        new_mouse_position: float,
+        save: bool | None = False,
     ) -> None:
         """Calculates the camera position according to arcball movement using the normalized mouse positions.
 

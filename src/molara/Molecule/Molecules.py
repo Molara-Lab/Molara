@@ -1,6 +1,6 @@
 import numpy as np
 
-from molara.Molecule import Molecule
+from molara.Molecule.molecule import Molecule
 
 
 class Molecules:
@@ -25,8 +25,6 @@ class Molecules:
         self.mol_index += 1
 
         self.mol_index %= self.num_mols
-
-        return
 
     def get_index_mol(self, index: int) -> Molecule:
         """
@@ -60,8 +58,6 @@ class Molecules:
 
             self.energies.append(mol.energy)
 
-        return
-
     def remove_molecule(self, index: int) -> None:
         """
         Removes a molecule from the list of molecules
@@ -70,5 +66,3 @@ class Molecules:
 
         self.mols.pop(index)
         self.num_mols -= 1
-
-        return

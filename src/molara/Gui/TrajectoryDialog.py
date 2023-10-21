@@ -8,9 +8,9 @@ from PySide6.QtCore import QTime, QTimer
 from PySide6.QtWidgets import QDialog, QGraphicsScene, QMainWindow, QTableWidgetItem, QVBoxLayout, QWidget
 
 from molara.Gui.ui_trajectory import Ui_Dialog
-from molara.Molecule.Atom import element_symbol_to_atomic_number
-from molara.Molecule.Molecule import Molecule
-from molara.Molecule.Molecules import Molecules
+from molara.Molecule.atom import element_symbol_to_atomic_number
+from molara.Molecule.molecule import Molecule
+from molara.Molecule.molecules import Molecules
 
 mpl.use("Qt5Agg")
 
@@ -19,7 +19,7 @@ class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
-        super(MplCanvas, self).__init__(fig)
+        super().__init__(fig)
 
 
 class TrajectoryDialog(QDialog):
@@ -29,7 +29,7 @@ class TrajectoryDialog(QDialog):
 
     def __init__(self, parent: QMainWindow = None):
         super().__init__(
-            parent
+            parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -48,15 +48,12 @@ class TrajectoryDialog(QDialog):
         else:
             self.timer.stop()
 
-        return
-
     def get_next_mol(self) -> None:
         """
         Calls molecules object to get the next molecule and update it in the GUI.
         """
         self.parent().mols.set_next_mol()
         self.update_molecule()
-        return
 
     def get_prev_mol(self) -> None:
         """
@@ -64,15 +61,12 @@ class TrajectoryDialog(QDialog):
         """
         self.parent().mols.set_previous_mol()
         self.update_molecule()
-        return
 
     def set_slider_range(self) -> None:
         """
         Set the slider range to the max number of molecules.
         """
         self.ui.verticalSlider.setRange(0, int(self.parent().mols.num_mols) - 1)
-
-        return
 
     def slide_molecule(self) -> None:
         """
@@ -82,8 +76,6 @@ class TrajectoryDialog(QDialog):
         self.parent().ui.openGLWidget.delete_molecule()
         self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_index_mol(index))
         self.UpdateEnergyPlot()
-
-        return
 
     def update_molecule(self) -> None:
         """
@@ -100,8 +92,6 @@ class TrajectoryDialog(QDialog):
         if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
             self.timer.stop()
 
-        return
-
     def InitialEnergyPlot(self) -> None:
         """
         Plot the energies of the molecules in the molecules object.
@@ -117,12 +107,8 @@ class TrajectoryDialog(QDialog):
 
         self.ui.widget.setLayout(layout)
 
-        return
-
     def UpdateEnergyPlot(self) -> None:
         self.sc.axes.cla()
         self.sc.axes.plot(np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-")
         self.sc.axes.plot(self.parent().mols.mol_index, self.parent().mols.energies[self.parent().mols.mol_index], "o")
         self.sc.draw()
-
-        return
