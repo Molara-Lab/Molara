@@ -6,7 +6,7 @@ from molara.Molecule.drawer import Drawer
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike, draw_bonds: bool = True):
+    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray, draw_bonds: bool = True):
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
