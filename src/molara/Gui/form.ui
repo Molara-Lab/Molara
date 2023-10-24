@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>37</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -38,7 +38,7 @@
       <string>Import</string>
      </property>
      <addaction name="action_xyz"/>
-     <addaction name="actioncoord"/>
+     <addaction name="action_coord"/>
     </widget>
     <addaction name="menuImport"/>
     <addaction name="quit"/>
@@ -59,6 +59,8 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggle_Bonds"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -122,9 +124,14 @@
     <string>Read POSCAR</string>
    </property>
   </action>
-  <action name="actioncoord">
+  <action name="action_coord">
    <property name="text">
     <string>coord</string>
+   </property>
+  </action>
+  <action name="actionToggle_Bonds">
+   <property name="text">
+    <string>Toggle Bonds</string>
    </property>
   </action>
  </widget>
