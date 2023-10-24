@@ -49,16 +49,15 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
             len(molecule.drawer.unique_spheres[idx].model_matrices),
         )
         glBindVertexArray(0)
-    if molecule.draw_bonds:
-        for vao, atomic_number in zip(vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers):
-            idx = molecule.drawer.unique_cylinders_mapping[atomic_number]
-            if molecule.drawer.unique_cylinders[idx].model_matrices is not None:
-                glBindVertexArray(vao)
-                glDrawElementsInstanced(
-                    GL_TRIANGLES,
-                    len(molecule.drawer.unique_cylinders[idx].vertices),
-                    GL_UNSIGNED_INT,
-                    None,
-                    len(molecule.drawer.unique_cylinders[idx].model_matrices),
-                )
-                glBindVertexArray(0)
+    for vao, atomic_number in zip(vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers):
+        idx = molecule.drawer.unique_cylinders_mapping[atomic_number]
+        if molecule.drawer.unique_cylinders[idx].model_matrices is not None:
+            glBindVertexArray(vao)
+            glDrawElementsInstanced(
+                GL_TRIANGLES,
+                len(molecule.drawer.unique_cylinders[idx].vertices),
+                GL_UNSIGNED_INT,
+                None,
+                len(molecule.drawer.unique_cylinders[idx].model_matrices),
+            )
+            glBindVertexArray(0)
