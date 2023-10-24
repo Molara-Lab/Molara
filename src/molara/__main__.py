@@ -14,65 +14,6 @@ from molara.Gui.crystal_dialog import CrystalDialog
 from molara.MainWindow.main_window import MainWindow
 
 
-class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        self.widget = self
-
-    def show_init_xyz(self) -> None:
-        """Read the file from terminal arguments."""
-        file_name = sys.argv[1]
-        mol = read_xyz(file_name)
-        self.ui.openGLWidget.set_molecule(mol)
-
-    def show_xyz(self) -> None:
-        file_name = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
-        mol = read_xyz(file_name[0])
-        self.ui.openGLWidget.set_molecule(mol)
-
-    def show_coord(self) -> None:
-        file_name = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
-        mol = read_coord(file_name[0])
-        self.ui.openGLWidget.set_molecule(mol)
-
-    def show_poscar(self) -> bool:
-        filename = QFileDialog.getOpenFileName(self, "Open POSCAR file", "/home", "POSCAR Files (*)")
-        crystal = Crystal.from_poscar(filename[0])
-        if not isinstance(crystal, Crystal):
-            error_message = crystal[1]
-            msg_box = QMessageBox()
-            msg_box.setText(error_message)
-            msg_box.exec()
-            return False
-        self.ui.openGLWidget.set_molecule(crystal)
-        return True
-
-    def toggle_bonds(self):
-        if self.ui.openGLWidget.molecule:
-            self.ui.openGLWidget.molecule.draw_bonds = not self.ui.openGLWidget.molecule.draw_bonds
-            self.ui.openGLWidget.update()
-
-
-def create_app_and_window():
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    return app, window
-
-
-def setup_ui(widget):
-    widget.ui.action_xyz.triggered.connect(widget.show_xyz)
-    widget.ui.actioncoord.triggered.connect(widget.show_coord)
-    widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
-    widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
-    widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
-    widget.ui.quit.triggered.connect(widget.close)
-    widget.ui.actionRead_POSCAR.triggered.connect(widget.show_poscar)
-    widget.ui.actionCreate_Lattice.triggered.connect(CrystalDialog.show)
-    widget.ui.actionToggle_Bonds.triggered.connect(widget.toggle_bonds)
-
-
 def main() -> None:
     format = QSurfaceFormat()
     format.setVersion(4, 1)
@@ -89,15 +30,21 @@ def main() -> None:
     timer.start(500)  # You may change this if you wish.
     timer.timeout.connect(lambda: None)
     widget = MainWindow()
-    CrystalDialog(widget)  # pass widget as parent
+    crystal_dialog = CrystalDialog(widget)  # pass widget as parent
     widget.setWindowTitle("Molara")
     widget.show()
 
     if len(sys.argv) > 1:
         widget.show_init_xyz()
 
-    setup_ui(widget)
-
+    widget.ui.action_xyz.triggered.connect(widget.show_xyz)
+    widget.ui.actioncoord.triggered.connect(widget.show_coord)
+    widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
+    widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
+    widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
+    widget.ui.quit.triggered.connect(widget.close)
+    widget.ui.actionRead_POSCAR.triggered.connect(widget.show_poscar)
+    widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
     sys.exit(app.exec())
 
 

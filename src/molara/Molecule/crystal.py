@@ -4,8 +4,8 @@ from collections.abc import Sequence
 import numpy as np
 from numpy.typing import ArrayLike
 
-from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.molecule import *
+from .atom import element_symbol_to_atomic_number
+from .molecule import *
 
 
 class Crystal(Molecule):
