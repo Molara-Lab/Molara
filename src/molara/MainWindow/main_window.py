@@ -40,3 +40,8 @@ class MainWindow(QMainWindow):
             return False
         self.ui.openGLWidget.set_molecule(crystal)
         return True
+
+    def toggle_bonds(self):
+        if self.ui.openGLWidget.molecule:
+            self.ui.openGLWidget.molecule.draw_bonds = not self.ui.openGLWidget.molecule.draw_bonds
+            self.ui.openGLWidget.update()
