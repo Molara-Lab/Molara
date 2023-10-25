@@ -25,11 +25,7 @@ jobs:
       run: |
         ruff --version
         ruff .
-
-    - name: black
-      run: |
-        black --version
-        black --check --diff --color $(find . -name "*.py" | xargs)
+        ruff format --check .
 
     - name: mypy
       run: |

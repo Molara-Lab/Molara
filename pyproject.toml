@@ -1,10 +1,7 @@
-[tool.black]
-line-length = 120
-
 [tool.ruff]
 exclude = ["ui_*",]
 target-version = "py39"
-line-length = 120#
+line-length = 120
 select = [
 #  "A",    # flake8-builtins
 #  "ANN",  # flake8-annotations
