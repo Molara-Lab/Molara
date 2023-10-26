@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
@@ -8,7 +10,7 @@ from molara.Molecule.molecule import read_coord, read_xyz
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QMainWindow = None) -> None:
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)

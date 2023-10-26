@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import signal
 import sys
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QSurfaceFormat
@@ -13,6 +16,9 @@ from molara.Gui.crystal_dialog import CrystalDialog
 #     pyside2-uic form.ui -o ui_form.py
 from molara.MainWindow.main_window import MainWindow
 
+if TYPE_CHECKING:
+    from types import FrameType
+
 
 def main() -> None:
     format = QSurfaceFormat()
@@ -21,7 +27,7 @@ def main() -> None:
     format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
     QSurfaceFormat.setDefaultFormat(format)
 
-    def sigint_handler(*args):
+    def sigint_handler(signum: int, frame: FrameType | None) -> None:
         app.quit()
 
     signal.signal(signal.SIGINT, sigint_handler)

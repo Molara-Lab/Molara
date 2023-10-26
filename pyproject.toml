@@ -4,7 +4,7 @@ target-version = "py39"
 line-length = 120
 select = [
 #  "A",    # flake8-builtins
-#  "ANN",  # flake8-annotations
+  "ANN",  # flake8-annotations
   "AIR",  # airflow
 #  "ARG",  # flake8-unused-arguments
   "ASYNC",# flake8-async
@@ -61,12 +61,14 @@ select = [
   "YTT",  # flake8-2020
   ]
 ignore = [
-  "F401", # {name} imported but unused
-  "F403", # {name} used but not defined
-  "F405", # {name} may be undefined, or defined from star imports
-  "S101", # Use of assert detected
+  "ANN101", # Missing type annotation for `self` in method
+  "F401",   # {name} imported but unused
+  "F403",   # {name} used but not defined
+  "F405",   # {name} may be undefined, or defined from star imports
+  "S101",   # Use of assert detected
   ]
 pydocstyle.convention = "google"
+isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
 ignore_missing_imports = true

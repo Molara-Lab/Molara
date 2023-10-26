@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import ctypes
+from typing import TYPE_CHECKING
 
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
@@ -18,8 +21,11 @@ from OpenGL.GL import (
     glVertexAttribPointer,
 )
 
+if TYPE_CHECKING:
+    import numpy as np
 
-def setup_vao(vertices, indices, model_matrices):
+
+def setup_vao(vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndarray) -> int:
     """Sets up a vertex attribute object and binds it to the GPU.
 
     :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
@@ -86,9 +92,7 @@ class Vao:
     :type model_matrices: numpy.array of numpy.float32, optional
     """
 
-    def __init__(self, opengl_widget, vertices, indices=None, model_matrices=None):
-        opengl_widget.makeCurrent()
-
+    def __init__(self, vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndarray) -> None:
         self.vertices = vertices
         self.indices = indices
         self.model_matrices = model_matrices
