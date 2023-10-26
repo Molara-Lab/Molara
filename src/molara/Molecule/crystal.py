@@ -110,9 +110,9 @@ class Crystal(Molecule):
         if mode.lower() != "direct":
             msg = "Currently, Molara can only process direct mode in POSCAR files."
             raise NotImplementedError(msg)
-        positions_cartesian = Crystal.fractional_to_cartesian_coords(positions, scale * basis_vectors)
+        positions_cartesian = Crystal.fractional_to_cartesian_coords(positions, basis_vectors)
         atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
-        return cls(atomic_numbers, positions_cartesian, basis_vectors)
+        return cls(atomic_numbers, positions_cartesian, scale*basis_vectors)
 
     def copy(self) -> Crystal:
         # supercell dimensions not included yet!
