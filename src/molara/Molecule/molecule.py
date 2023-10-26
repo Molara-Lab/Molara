@@ -1,17 +1,20 @@
 from __future__ import annotations
 
-import contextlib
-from typing import Optional
+from typing import TYPE_CHECKING
 
 import numpy as np
-import numpy.typing as npt
 
 from molara.Molecule.atom import Atom, element_symbol_to_atomic_number
 from molara.Molecule.drawer import Drawer
 
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
+
 
 class Molecule:
-    def __init__(self, atomic_numbers: npt.ArrayLike, coordinates: npt.ArrayLike, header: str | None = None):
+    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray, header:str=None, dummy: bool = False) -> None:
+        if dummy:
+            self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
@@ -26,10 +29,10 @@ class Molecule:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
 
-        if type(header) == str:
+        if isinstance(header,str):
             self.gen_energy_information(header)
 
-    def calculate_bonds(self):
+    def calculate_bonds(self) -> np.ndarray:
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
@@ -50,12 +53,12 @@ class Molecule:
 
         return np.array([[-1, -1]], dtype=np.int_)
 
-    def add_atom(self, atomic_number: int, coordinate: npt.ArrayLike):
+    def add_atom(self, atomic_number: int, coordinate: ArrayLike) -> None:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
 
-    def remove_atom(self, index: int):
+    def remove_atom(self, index: int) -> None:
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
 

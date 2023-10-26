@@ -1,18 +1,25 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 
 class Atom:
-    def __init__(self, atomic_number, position):
+    def __init__(self, atomic_number: int, position: ArrayLike) -> None:
         self.symbol = elements[atomic_number]["symbol"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]
         self.electronegativity = elements[atomic_number]["electronegativity"]
-        self.cpk_color = np.array(list(elements[atomic_number]["cpk_color"])) / 255
+        self.cpk_color: np.ndarray = np.array(elements[atomic_number]["cpk_color"]) / 255
         self.vdw_radius = elements[atomic_number]["vdw_radius"]
         self.position = np.array(position, dtype=np.float64)
 
 
-def element_symbol_to_atomic_number(symbol) -> int:
+def element_symbol_to_atomic_number(symbol: str) -> int:
     # Define a dictionary mapping element symbols to atomic numbers
     symbol_to_atomic_number = {
         "H": 1,
@@ -131,7 +138,7 @@ def element_symbol_to_atomic_number(symbol) -> int:
     return symbol_to_atomic_number[symbol]
 
 
-elements = {
+elements: dict[int, dict[str, Any]] = {
     1: {
         "symbol": "H",
         "name": "Hydrogen",

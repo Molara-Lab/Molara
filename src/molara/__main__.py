@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import signal
 import sys
 import time
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtCore import QTime, QTimer
 from PySide6.QtGui import QSurfaceFormat
@@ -17,6 +20,9 @@ from molara.Gui.ui_form import Ui_MainWindow
 from molara.MainWindow.main_window import MainWindow
 from molara.Molecule.importer import read_coord, read_xyz
 
+if TYPE_CHECKING:
+    from types import FrameType
+
 
 def main() -> None:
     format = QSurfaceFormat()
@@ -25,7 +31,7 @@ def main() -> None:
     format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
     QSurfaceFormat.setDefaultFormat(format)
 
-    def sigint_handler(*args):
+    def sigint_handler(signum: int, frame: FrameType | None) -> None:
         app.quit()
 
     signal.signal(signal.SIGINT, sigint_handler)

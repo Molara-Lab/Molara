@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtCore import QEvent, Qt
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 from molara.Rendering.buffers import Vao
@@ -9,18 +12,24 @@ from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import draw_scene
 from molara.Rendering.shaders import compile_shaders
 
+if TYPE_CHECKING:
+    from PySide6.QtGui import QMouseEvent
+
+    from molara.Molecule.molecule import Molecule
+
 
 class MoleculeWidget(QOpenGLWidget):
-    def __init__(self, parent):
+    def __init__(self, parent: QOpenGLWidget) -> None:
         self.shader = None
-        self.parent = parent
+        self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.molecule = None
-        self.vertex_attribute_objects = None
+        self.molecule_is_set = False
+        self.vertex_attribute_objects = [-1]
         self.axes = False
-        self.rotate_sphere = False
-        self.click_position = None
+        self.rotate = False
+        self.translate = False
+        self.click_position: np.ndarray | None = None
         self.rotation_angle_x = 0.0
         self.rotation_angle_y = 0.0
         self.position = np.zeros(2)
@@ -34,12 +43,13 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera.reset(self.width(), self.height())
         self.update()
 
-    def set_molecule(self, molecule):
+    def set_molecule(self, molecule: Molecule) -> None:
         self.molecule = molecule
         if self.molecule.bonded_pairs[0, 0] == -1:
             self.bonds = False
         else:
             self.bonds = True
+        self.molecule_is_set = True
         self.center_molecule()
 
     def delete_molecule(self):
@@ -64,20 +74,22 @@ class MoleculeWidget(QOpenGLWidget):
         glEnable(GL_DEPTH_TEST, GL_MULTISAMPLE)
         self.shader = compile_shaders()
 
-    def resizeGL(self, width, height):  # noqa: N802
+    def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         glViewport(0, 0, self.width(), self.height())
         self.camera.calculate_projection_matrix(self.width(), self.height())
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802
-        draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
+        if self.molecule_is_set:
+            draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
+        else:
+            draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
 
     def set_vertex_attribute_objects(self) -> None:
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
             idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
             vao = Vao(
-                self,
                 self.molecule.drawer.unique_spheres[idx].vertices,
                 self.molecule.drawer.unique_spheres[idx].indices,
                 self.molecule.drawer.unique_spheres[idx].model_matrices,
@@ -86,7 +98,6 @@ class MoleculeWidget(QOpenGLWidget):
         for atomic_number in self.molecule.unique_atomic_numbers:
             idx = self.molecule.drawer.unique_cylinders_mapping[atomic_number]
             vao = Vao(
-                self,
                 self.molecule.drawer.unique_cylinders[idx].vertices,
                 self.molecule.drawer.unique_cylinders[idx].indices,
                 self.molecule.drawer.unique_cylinders[idx].model_matrices,
@@ -96,16 +107,16 @@ class MoleculeWidget(QOpenGLWidget):
     def draw_axes(self) -> None:
         return
 
-    def wheelEvent(self, event):  # noqa: N802
+    def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         self.zoom_factor = 1
-        num_degrees = event.angleDelta().y() / 8
+        num_degrees = event.angleDelta().y() / 8  # type: ignore[attr-defined]
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
         self.zoom_factor += num_steps * 0.1  # Empirical value to control zoom sensitivity
         self.zoom_factor = max(0.1, self.zoom_factor)  # Limit zoom factor to avoid zooming too far
         self.camera.set_distance_from_target(self.zoom_factor)
         self.update()
 
-    def mousePressEvent(self, event: QMouseEvent):  # noqa: N802
+    def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if (
             event.button() == Qt.MouseButton.LeftButton
             and event.x() in range(self.width())
@@ -127,13 +138,13 @@ class MoleculeWidget(QOpenGLWidget):
             self.set_normalized_position(event)
             self.click_position = np.copy(self.position)
 
-    def mouseMoveEvent(self, event: QMouseEvent):  # noqa: N802
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if self.rotate and self.click_position is not None:
             self.set_normalized_position(event)
             self.camera.calculate_camera_position(self.click_position, self.position)
             self.update()
 
-    def set_normalized_position(self, event):
+    def set_normalized_position(self, event: QMouseEvent) -> None:
         if self.width() >= self.height():
             self.position[0] = (event.x() * 2 - self.width()) / self.width()
             self.position[1] = -(event.y() * 2 - self.height()) / self.width()
@@ -142,7 +153,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.position[1] = -(event.y() * 2 - self.height()) / self.height()
         self.position = np.array(self.position, dtype=np.float32)
 
-    def mouseReleaseEvent(self, event: QMouseEvent):  # noqa: N802
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if event.button() == Qt.MouseButton.LeftButton and self.rotate:
             self.stop_rotation(event)
         if event.button() == Qt.MouseButton.RightButton and self.translate:
