@@ -99,8 +99,8 @@ class Crystal(Molecule):
             latvec_c = np.fromstring(latvec_c_, sep=" ").tolist()
             species = re.split(r"\s+", species_)
             numbers = np.fromstring(numbers_, sep=" ", dtype=int)
-            positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
-            basis_vectors = [latvec_a, latvec_b, latvec_c]
+            positions = np.array([np.fromstring(pos, sep=" ").tolist() for pos in positions_])
+            basis_vectors = np.array([latvec_a, latvec_b, latvec_c])
         except ValueError as err:
             msg = "Error: faulty formatting of the POSCAR file."
             raise ValueError(msg) from err
