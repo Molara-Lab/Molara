@@ -27,7 +27,11 @@ mpl.use("Qt5Agg")
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(
-        self, parent: MainWindow = None, width: int = 5, height: int = 4, dpi: int = 100,
+        self,
+        parent: MainWindow = None,
+        width: int = 5,
+        height: int = 4,
+        dpi: int = 100,
     ) -> None:
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
@@ -114,7 +118,9 @@ class TrajectoryDialog(QDialog):
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
 
         self.sc.axes.plot(
-            np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-",
+            np.arange(self.parent().mols.num_mols),
+            self.parent().mols.energies,
+            "x-",
         )
         self.sc.axes.plot(
             self.parent().mols.mol_index,
@@ -130,7 +136,9 @@ class TrajectoryDialog(QDialog):
     def update_energy_plot(self) -> None:
         self.sc.axes.cla()
         self.sc.axes.plot(
-            np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-",
+            np.arange(self.parent().mols.num_mols),
+            self.parent().mols.energies,
+            "x-",
         )
         self.sc.axes.plot(
             self.parent().mols.mol_index,

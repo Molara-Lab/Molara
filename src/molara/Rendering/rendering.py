@@ -63,7 +63,7 @@ def draw_scene(
         )
         glBindVertexArray(0)
     for vao, atomic_number in zip(
-        vaos[len(molecule.unique_atomic_numbers):],
+        vaos[len(molecule.unique_atomic_numbers) :],
         molecule.unique_atomic_numbers,
     ):
         idx = molecule.drawer.unique_cylinders_mapping[atomic_number]

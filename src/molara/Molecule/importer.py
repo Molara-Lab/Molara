@@ -21,7 +21,7 @@ def read_xyz(file_path: str) -> Molecules:
 
         coordinates = []
 
-        for line in lines[2: 2 + num_atoms]:
+        for line in lines[2 : 2 + num_atoms]:
             atom_info = line.split()
 
             if atom_info[0].isnumeric():
@@ -51,7 +51,7 @@ def read_xyz(file_path: str) -> Molecules:
 
             xyz_len += 2 + num_atoms
 
-            for line in lines[2 + xyz_len: 2 + num_atoms + xyz_len]:
+            for line in lines[2 + xyz_len : 2 + num_atoms + xyz_len]:
                 atom_info = line.split()
 
                 if atom_info[0].isnumeric():
