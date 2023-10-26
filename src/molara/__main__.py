@@ -27,7 +27,7 @@ def main() -> None:
     _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
     QSurfaceFormat.setDefaultFormat(_format)
 
-    def sigint_handler(signum: int, frame: FrameType | None) -> None:
+    def sigint_handler(signum: int, frame: FrameType | None) -> None:  # noqa: ARG001
         app.quit()
 
     signal.signal(signal.SIGINT, sigint_handler)

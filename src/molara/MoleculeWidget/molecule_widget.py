@@ -72,7 +72,7 @@ class MoleculeWidget(QOpenGLWidget):
         glEnable(GL_MULTISAMPLE)
         self.shader = compile_shaders()
 
-    def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
+    def resizeGL(self, width: int, height: int) -> None:  # noqa: ARG002, N802
         glViewport(0, 0, self.width(), self.height())
         self.camera.calculate_projection_matrix(self.width(), self.height())
         self.update()
