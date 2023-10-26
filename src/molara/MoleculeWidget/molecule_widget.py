@@ -84,7 +84,10 @@ class MoleculeWidget(QOpenGLWidget):
     def paintGL(self) -> None:  # noqa: N802
         if self.molecule_is_set:
             draw_scene(
-                self.shader, self.camera, self.vertex_attribute_objects, self.molecule,
+                self.shader,
+                self.camera,
+                self.vertex_attribute_objects,
+                self.molecule,
             )
         else:
             draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
@@ -119,7 +122,8 @@ class MoleculeWidget(QOpenGLWidget):
             num_steps * 0.1
         )  # Empirical value to control zoom sensitivity
         self.zoom_factor = max(
-            0.1, self.zoom_factor,
+            0.1,
+            self.zoom_factor,
         )  # Limit zoom factor to avoid zooming too far
         self.camera.set_distance_from_target(self.zoom_factor)
         self.camera.update()

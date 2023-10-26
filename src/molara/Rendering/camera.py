@@ -41,7 +41,10 @@ class Camera:
         :param height: Height of the opengl widget.
         """
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
-            45, width / height, 0.1, 100,
+            45,
+            width / height,
+            0.1,
+            100,
         )
 
     def reset(self, width: float, height: float) -> None:
@@ -91,7 +94,9 @@ class Camera:
             self.last_translation = self.translation
 
     def set_translation_vector(
-        self, old_mouse_position: np.ndarray, mouse_position: np.ndarray,
+        self,
+        old_mouse_position: np.ndarray,
+        mouse_position: np.ndarray,
     ) -> None:
         """Calculates the translation matrix using the normalized mouse positions.
 
@@ -107,7 +112,9 @@ class Camera:
         )
 
     def set_rotation_quaternion(
-        self, old_mouse_position: np.ndarray, new_mouse_position: np.ndarray,
+        self,
+        old_mouse_position: np.ndarray,
+        new_mouse_position: np.ndarray,
     ) -> None:
         """Calculates the rotation quaternion using the normalized mouse positions.
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
@@ -134,10 +141,12 @@ class Camera:
             return np.array([x, y, -z], dtype=np.float32)
 
         previous_arcball_point = calculate_arcball_point(
-            old_mouse_position[0], old_mouse_position[1],
+            old_mouse_position[0],
+            old_mouse_position[1],
         )
         current_arcball_point = calculate_arcball_point(
-            new_mouse_position[0], new_mouse_position[1],
+            new_mouse_position[0],
+            new_mouse_position[1],
         )
 
         tolerance_parallel = 1e-5
@@ -152,7 +161,8 @@ class Camera:
             )
 
             self.rotation = self.last_rotation * pyrr.Quaternion.from_axis_rotation(
-                rotation_axis, rotation_angle,
+                rotation_axis,
+                rotation_angle,
             )
         else:
             self.rotation = self.last_rotation

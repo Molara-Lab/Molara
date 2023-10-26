@@ -26,7 +26,9 @@ if TYPE_CHECKING:
 
 
 def setup_vao(
-    vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndarray,
+    vertices: np.ndarray,
+    indices: np.ndarray,
+    model_matrices: np.ndarray,
 ) -> int:
     """Sets up a vertex attribute object and binds it to the GPU.
 
@@ -50,17 +52,32 @@ def setup_vao(
     # Vertex positions
     glEnableVertexAttribArray(0)
     glVertexAttribPointer(
-        0, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(0),
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        vertices.itemsize * 9,
+        ctypes.c_void_p(0),
     )
 
     glEnableVertexAttribArray(1)
     glVertexAttribPointer(
-        1, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(12),
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        vertices.itemsize * 9,
+        ctypes.c_void_p(12),
     )
 
     glEnableVertexAttribArray(2)
     glVertexAttribPointer(
-        2, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(24),
+        2,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        vertices.itemsize * 9,
+        ctypes.c_void_p(24),
     )
 
     if indices is not None:
@@ -83,7 +100,12 @@ def setup_vao(
         for i in range(4):
             glEnableVertexAttribArray(3 + i)
             glVertexAttribPointer(
-                3 + i, 4, GL_FLOAT, GL_FALSE, 16 * 4, ctypes.c_void_p(i * 16),
+                3 + i,
+                4,
+                GL_FLOAT,
+                GL_FALSE,
+                16 * 4,
+                ctypes.c_void_p(i * 16),
             )
             glVertexAttribDivisor(3 + i, 1)
 
@@ -108,7 +130,10 @@ class Vao:
     """
 
     def __init__(
-        self, vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndarray,
+        self,
+        vertices: np.ndarray,
+        indices: np.ndarray,
+        model_matrices: np.ndarray,
     ) -> None:
         self.vertices = vertices
         self.indices = indices

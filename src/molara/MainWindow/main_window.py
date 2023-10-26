@@ -34,7 +34,10 @@ class MainWindow(QMainWindow):
 
     def show_xyz(self) -> None:
         file_name = QFileDialog.getOpenFileName(
-            self, "Open .xyz file", "/home", "Image Files (*.xyz)",
+            self,
+            "Open .xyz file",
+            "/home",
+            "Image Files (*.xyz)",
         )
 
         self.mols = read_xyz(file_name[0])
@@ -45,10 +48,12 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
 
-
     def show_coord(self) -> None:
         file_name = QFileDialog.getOpenFileName(
-            self, "Open coord file", "/home", "Image Files (*)",
+            self,
+            "Open coord file",
+            "/home",
+            "Image Files (*)",
         )
 
         self.mols = read_coord(file_name[0])
@@ -57,7 +62,10 @@ class MainWindow(QMainWindow):
 
     def show_poscar(self) -> bool:
         filename = QFileDialog.getOpenFileName(
-            self, "Open POSCAR file", "/home", "POSCAR Files (*)",
+            self,
+            "Open POSCAR file",
+            "/home",
+            "POSCAR Files (*)",
         )
         crystal = Crystal.from_poscar(filename[0])
         if not isinstance(crystal, Crystal):

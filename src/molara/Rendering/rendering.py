@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 def draw_scene(
-    shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecule | None = None,
+    shader: GLuint,
+    camera: Camera,
+    vaos: list[int],
+    molecule: Molecule | None = None,
 ) -> None:
     """Draws the contents of the given vaos from the given camera perspective.
 
@@ -60,7 +63,8 @@ def draw_scene(
         )
         glBindVertexArray(0)
     for vao, atomic_number in zip(
-        vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers,
+        vaos[len(molecule.unique_atomic_numbers):],
+        molecule.unique_atomic_numbers,
     ):
         idx = molecule.drawer.unique_cylinders_mapping[atomic_number]
         if molecule.drawer.unique_cylinders[idx].model_matrices is not None:

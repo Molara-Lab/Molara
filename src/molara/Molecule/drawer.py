@@ -65,7 +65,8 @@ class Drawer:
             idx2 = self.unique_cylinders_mapping[self.atoms[bond[1]].atomic_number]
             if bond[0] != -1:
                 model_matrices = calculate_bond_cylinders_model_matrix(
-                    self.atoms[bond[0]], self.atoms[bond[1]],
+                    self.atoms[bond[0]],
+                    self.atoms[bond[1]],
                 )
                 if self.unique_cylinders[idx1].model_matrices.shape[0] == 0:
                     self.unique_cylinders[idx1].model_matrices = model_matrices[0]
@@ -164,7 +165,8 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     )
     # Calculate the rotation matrix to rotate the cylinder to the correct orientation.
     rotation_matrix = pyrr.matrix44.create_from_axis_rotation(
-        rotation_axis, rotation_angle,
+        rotation_axis,
+        rotation_angle,
     )
     # Calculate the scale matrix to scale the cylinder to the correct length.
     scale = pyrr.Vector3([0.15] * 3)

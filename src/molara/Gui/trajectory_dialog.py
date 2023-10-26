@@ -8,7 +8,14 @@ import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PySide6.QtCore import QTime, QTimer
-from PySide6.QtWidgets import QDialog, QGraphicsScene, QMainWindow, QTableWidgetItem, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QDialog,
+    QGraphicsScene,
+    QMainWindow,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from molara.Gui.ui_trajectory import Ui_Dialog
 
@@ -19,7 +26,9 @@ mpl.use("Qt5Agg")
 
 
 class MplCanvas(FigureCanvasQTAgg):
-    def __init__(self, parent:MainWindow=None, width:int=5, height:int=4, dpi:int=100) -> None:
+    def __init__(
+        self, parent: MainWindow = None, width: int = 5, height: int = 4, dpi: int = 100,
+    ) -> None:
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super().__init__(fig)
@@ -77,7 +86,9 @@ class TrajectoryDialog(QDialog):
         """
         index = self.ui.verticalSlider.sliderPosition()
         self.parent().ui.openGLWidget.delete_molecule()
-        self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_index_mol(index))
+        self.parent().ui.openGLWidget.set_molecule(
+            self.parent().mols.get_index_mol(index),
+        )
         self.update_energy_plot()
 
     def update_molecule(self) -> None:
@@ -102,8 +113,14 @@ class TrajectoryDialog(QDialog):
 
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
 
-        self.sc.axes.plot(np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-")
-        self.sc.axes.plot(self.parent().mols.mol_index, self.parent().mols.energies[self.parent().mols.mol_index], "o")
+        self.sc.axes.plot(
+            np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-",
+        )
+        self.sc.axes.plot(
+            self.parent().mols.mol_index,
+            self.parent().mols.energies[self.parent().mols.mol_index],
+            "o",
+        )
 
         layout = QVBoxLayout()
         layout.addWidget(self.sc)
@@ -112,6 +129,12 @@ class TrajectoryDialog(QDialog):
 
     def update_energy_plot(self) -> None:
         self.sc.axes.cla()
-        self.sc.axes.plot(np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-")
-        self.sc.axes.plot(self.parent().mols.mol_index, self.parent().mols.energies[self.parent().mols.mol_index], "o")
+        self.sc.axes.plot(
+            np.arange(self.parent().mols.num_mols), self.parent().mols.energies, "x-",
+        )
+        self.sc.axes.plot(
+            self.parent().mols.mol_index,
+            self.parent().mols.energies[self.parent().mols.mol_index],
+            "o",
+        )
         self.sc.draw()

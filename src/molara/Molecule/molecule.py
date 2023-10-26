@@ -70,7 +70,9 @@ class Molecule:
     def center_coordinates(self) -> None:
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(
-            coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0,
+            coordinates,
+            weights=[atom.atomic_mass for atom in self.atoms],
+            axis=0,
         )
         for _i, atom in enumerate(self.atoms):
             atom.position -= center
@@ -86,4 +88,3 @@ class Molecule:
             self.energy = float(string.split()[1])
         else:
             self.energy = 0.0
-

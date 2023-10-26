@@ -64,10 +64,12 @@ class Crystal(Molecule):
         self.fractional_coordinates_supercell = np.empty((0, 3), float)
         self.atomic_numbers_supercell = np.empty(0, int)
         for atomic_number_i, position_i in zip(
-            self.atomic_numbers_unitcell, self.coordinates_unitcell,
+            self.atomic_numbers_unitcell,
+            self.coordinates_unitcell,
         ):
             self.atomic_numbers_supercell = np.append(
-                self.atomic_numbers_supercell, [atomic_number_i] * num_unit_cells,
+                self.atomic_numbers_supercell,
+                [atomic_number_i] * num_unit_cells,
             )
             self.fractional_coordinates_supercell = np.append(
                 self.fractional_coordinates_supercell,
@@ -89,18 +91,23 @@ class Crystal(Molecule):
             np.concatenate((ids_remove_a, ids_remove_b, ids_remove_c)),
         )
         self.fractional_coordinates_supercell = np.delete(
-            self.fractional_coordinates_supercell, ids_remove, axis=0,
+            self.fractional_coordinates_supercell,
+            ids_remove,
+            axis=0,
         )
         self.atomic_numbers_supercell = np.delete(
-            self.atomic_numbers_supercell, ids_remove,
+            self.atomic_numbers_supercell,
+            ids_remove,
         )
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
         self.cartesian_coordinates_supercell = np.dot(
-            self.fractional_coordinates_supercell, self.basis_vectors,
+            self.fractional_coordinates_supercell,
+            self.basis_vectors,
         )
         super().__init__(
-            self.atomic_numbers_supercell, self.cartesian_coordinates_supercell,
+            self.atomic_numbers_supercell,
+            self.cartesian_coordinates_supercell,
         )
 
     @classmethod
@@ -142,7 +149,9 @@ class Crystal(Molecule):
     def copy(self) -> Crystal:
         # supercell dimensions not included yet!
         return Crystal(
-            self.atomic_numbers_unitcell, self.coordinates_unitcell, self.basis_vectors,
+            self.atomic_numbers_unitcell,
+            self.coordinates_unitcell,
+            self.basis_vectors,
         )
 
     """ overloading operators """

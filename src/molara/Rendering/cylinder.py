@@ -32,7 +32,8 @@ class Cylinders(Cylinder):
 
 
 def generate_cylinder(
-    color: np.ndarray, subdivisions: int,
+    color: np.ndarray,
+    subdivisions: int,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
