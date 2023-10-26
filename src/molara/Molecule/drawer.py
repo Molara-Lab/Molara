@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pyrr
 
-from molara.Molecule.atom import Atom
 from molara.Rendering.cylinder import Cylinders
 from molara.Rendering.sphere import Spheres
+
+if TYPE_CHECKING:
+    from molara.Molecule.atom import Atom
 
 
 class Drawer:

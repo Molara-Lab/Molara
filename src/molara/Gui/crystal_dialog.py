@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from contextlib import suppress
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
@@ -14,13 +17,13 @@ class CrystalDialog(QDialog):
     object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
     """
 
-    def __init__(self, parent: QMainWindow = None):
+    def __init__(self, parent: QMainWindow = None) -> None:
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = Ui_CrystalDialog()
         self.ui.setupUi(self)
-        self.list_of_coordinates: list[float] = []
+        self.list_of_coordinates: list = []
         self.list_of_atomic_numbers: list[int] = []
         self.change_crystal_system("Cubic")
         self.ui.selectCrystalSystem.currentTextChanged.connect(self.change_crystal_system)
@@ -33,7 +36,7 @@ class CrystalDialog(QDialog):
         self.list_of_coordinates = []
         self.ui.listAtoms.setRowCount(0)
 
-    def add_atom(self):
+    def add_atom(self) -> None:
         element_symbol = self.ui.inputElementSymbol.text()
         atomic_number = element_symbol_to_atomic_number(element_symbol)
         coord_a, coord_b, coord_c = (
@@ -54,7 +57,7 @@ class CrystalDialog(QDialog):
         self.ui.listAtoms.setItem(row_id, 2, item_coord_b)
         self.ui.listAtoms.setItem(row_id, 3, item_coord_c)
 
-    def accept(self):
+    def accept(self) -> None:
         # dim_a, dim_b, dim_c = (
         #     self.ui.inputSupercell_a.value(),
         #     self.ui.inputSupercell_b.value(),
@@ -62,16 +65,15 @@ class CrystalDialog(QDialog):
         # )
         # supercell_dimensions = np.array([dim_a, dim_b, dim_c])
         a, b, c = self.ui.inputLatConst_a.value(), self.ui.inputLatConst_b.value(), self.ui.inputLatConst_c.value()
-        list_of_coordinates = np.array(self.list_of_coordinates)
         mycrystal = Crystal(
-            np.array(self.list_of_atomic_numbers),
-            list_of_coordinates,
-            np.diag([a, b, c]),
+            self.list_of_atomic_numbers,
+            self.list_of_coordinates,
+            np.diag([a, b, c]).tolist(),
             #     supercell_dimensions=supercell_dimensions,
         )
-        self.parent().ui.openGLWidget.set_molecule(mycrystal)
+        self.parent().ui.openGLWidget.set_molecule(mycrystal)  # type: ignore[attr-defined]
 
-    def change_crystal_system(self, value: str):
+    def change_crystal_system(self, value: str) -> None:
         self.crystal_system = value
         select_space_group = self.ui.selectSpaceGroup
         view = select_space_group.view()
@@ -84,7 +86,7 @@ class CrystalDialog(QDialog):
             self.ui.inputLatConst_b.setEnabled(False)
             self.ui.inputLatConst_c.setEnabled(False)
 
-            def bc_equals_a(value):
+            def bc_equals_a(value: float) -> None:
                 self.ui.inputLatConst_b.setValue(value)
                 self.ui.inputLatConst_c.setValue(value)
 
@@ -101,7 +103,7 @@ class CrystalDialog(QDialog):
             self.ui.inputLatConst_b.setEnabled(False)
             self.ui.inputLatConst_c.setEnabled(True)
 
-            def b_equals_a(value):
+            def b_equals_a(value: float) -> None:
                 self.ui.inputLatConst_b.setValue(value)
 
             with suppress(Exception):
