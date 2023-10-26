@@ -90,6 +90,6 @@ class Crystal(Molecule):
             return False, "Error: faulty formatting of the POSCAR file."
         if mode.lower() != "direct":
             return False, "Currently, Molara can only process direct mode in POSCAR files."
-        positions_cartesian = fractional_to_cartesian_coords(positions, basis_vectors)
+        positions_cartesian = Crystal.fractional_to_cartesian_coords(positions, scale*basis_vectors)
         atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
         return cls(atomic_numbers, positions_cartesian, basis_vectors)
