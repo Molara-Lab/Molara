@@ -97,6 +97,7 @@ class MoleculeWidget(QOpenGLWidget):
 
     def set_vertex_attribute_objects(self) -> None:
         """Sets the vertex attribute objects of the molecule."""
+        self.makeCurrent()
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
             idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
