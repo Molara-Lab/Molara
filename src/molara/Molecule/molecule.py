@@ -1,3 +1,5 @@
+"""This module contains the Molecule class."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -12,7 +14,10 @@ if TYPE_CHECKING:
 
 
 class Molecule:
+    """Creates a Molecule object."""
+
     def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray, dummy: bool = False) -> None:
+        """Creates a Molecule object."""
         if dummy:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
@@ -30,6 +35,7 @@ class Molecule:
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
 
     def calculate_bonds(self) -> np.ndarray:
+        """Calculates the bonded pairs of atoms."""
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
@@ -51,15 +57,18 @@ class Molecule:
         return np.array([[-1, -1]], dtype=np.int_)
 
     def add_atom(self, atomic_number: int, coordinate: ArrayLike) -> None:
+        """Adds an atom to the molecule."""
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
 
     def remove_atom(self, index: int) -> None:
+        """Removes an atom from the molecule."""
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
 
     def center_coordinates(self) -> None:
+        """Centers the molecule around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0)
         for _i, atom in enumerate(self.atoms):
@@ -70,6 +79,7 @@ class Molecule:
 
 
 def read_xyz(file_path: str) -> Molecule:
+    """Imports an xyz file."""
     with open(file_path) as file:
         lines = file.readlines()
 
@@ -91,8 +101,10 @@ def read_xyz(file_path: str) -> Molecule:
 
 
 def read_coord(file_path: str) -> Molecule:
-    """Imports a coord file
-    Returns the Molecule.
+    """Imports a coord file.
+
+    Returns:
+        Molecule: Molecule object.
     """
     with open(file_path) as file:
         lines = file.readlines()  # To skip first row

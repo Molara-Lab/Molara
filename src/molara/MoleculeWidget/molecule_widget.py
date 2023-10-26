@@ -1,3 +1,5 @@
+"""This module contains the MoleculeWidget class, which is a subclass of QOpenGLWidget."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -19,7 +21,10 @@ if TYPE_CHECKING:
 
 
 class MoleculeWidget(QOpenGLWidget):
+    """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
+
     def __init__(self, parent: QOpenGLWidget) -> None:
+        """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
         self.shader = None
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
@@ -41,10 +46,12 @@ class MoleculeWidget(QOpenGLWidget):
         self.cursor_in_widget = False
 
     def reset_view(self) -> None:
+        """Resets the view of the molecule to the initial view."""
         self.camera.reset(self.width(), self.height())
         self.update()
 
     def set_molecule(self, molecule: Molecule) -> None:
+        """Sets the molecule to be drawn."""
         self.molecule = molecule
         if self.molecule.bonded_pairs[0, 0] == -1:
             self.bonds = False
@@ -54,12 +61,14 @@ class MoleculeWidget(QOpenGLWidget):
         self.center_molecule()
 
     def center_molecule(self) -> None:
+        """Centers the molecule in the widget."""
         if self.molecule_is_set:
             self.molecule.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
 
     def toggle_axes(self) -> None:
+        """Toggles the axes."""
         if self.axes:
             self.axes = False
         else:
@@ -67,23 +76,27 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def initializeGL(self) -> None:  # noqa: N802
+        """Initializes the widget."""
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
         self.shader = compile_shaders()
 
-    def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
+    def resizeGL(self, width: int, height: int) -> None:  # noqa: ARG002, N802
+        """Resizes the widget."""
         glViewport(0, 0, self.width(), self.height())
         self.camera.calculate_projection_matrix(self.width(), self.height())
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802
+        """Draws the scene."""
         if self.molecule_is_set:
             draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
         else:
             draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
 
     def set_vertex_attribute_objects(self) -> None:
+        """Sets the vertex attribute objects of the molecule."""
         self.makeCurrent()
         self.vertex_attribute_objects = []
         for atomic_number in self.molecule.unique_atomic_numbers:
@@ -104,9 +117,11 @@ class MoleculeWidget(QOpenGLWidget):
             self.vertex_attribute_objects.append(vao.vao)
 
     def draw_axes(self) -> None:
+        """Draws the axes."""
         return
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
+        """Zooms in and out of the molecule."""
         self.zoom_factor = 1
         num_degrees = event.angleDelta().y() / 8  # type: ignore[attr-defined]
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
@@ -117,6 +132,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
+        """Starts the rotation or translation of the molecule."""
         if (
             event.button() == Qt.MouseButton.LeftButton
             and event.x() in range(self.width())
@@ -139,6 +155,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.click_position = np.copy(self.position)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:  # noqa: N802
+        """Rotates or translates the molecule."""
         if self.rotate and self.click_position is not None:
             self.set_normalized_position(event)
             self.camera.set_rotation_quaternion(self.click_position, self.position)
@@ -151,6 +168,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.update()
 
     def set_normalized_position(self, event: QMouseEvent) -> None:
+        """Sets the normalized position of the mouse cursor."""
         if self.width() >= self.height():
             self.position[0] = (event.x() * 2 - self.width()) / self.width()
             self.position[1] = -(event.y() * 2 - self.height()) / self.width()
@@ -160,6 +178,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
+        """Stops the rotation or translation of the molecule."""
         if event.button() == Qt.MouseButton.LeftButton and self.rotate:
             self.stop_rotation(event)
         if event.button() == Qt.MouseButton.RightButton and self.translate:
@@ -167,6 +186,7 @@ class MoleculeWidget(QOpenGLWidget):
 
     def stop_translate(self, event: QMouseEvent) -> None:
         """Stops the translation of the molecule.
+
         :return:
         """
         self.translate = False
@@ -176,6 +196,7 @@ class MoleculeWidget(QOpenGLWidget):
 
     def stop_rotation(self, event: QMouseEvent) -> None:
         """Stops the rotation of the molecule.
+
         :return:
         """
         self.rotate = False
