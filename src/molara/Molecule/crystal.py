@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 import re
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-from numpy.typing import ArrayLike
 
 from .atom import element_symbol_to_atomic_number
 from .molecule import *
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from typing import Annotated
+
+    from numpy.typing import ArrayLike
 
 
 class Crystal(Molecule):
@@ -25,16 +32,16 @@ class Crystal(Molecule):
 
     def __init__(
         self,
-        atomic_numbers: np.ndarray,
-        coordinates: np.ndarray,
-        basis_vectors: np.ndarray,
-    ):
+        atomic_numbers: Sequence[int],
+        coordinates: Sequence[Sequence[float]],
+        basis_vectors: Sequence[Sequence[float]] | ArrayLike,
+    ) -> None:
         self.atomic_numbers_unitcell = atomic_numbers
         self.coordinates_unitcell = coordinates
         self.basis_vectors = basis_vectors
         self.make_supercell([1, 1, 1])
 
-    def make_supercell(self, supercell_dimensions):
+    def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
         self.supercell_dimensions = supercell_dimensions
         steps_a = np.arange(supercell_dimensions[0] + 1)
         steps_b = np.arange(supercell_dimensions[1] + 1)
@@ -71,40 +78,44 @@ class Crystal(Molecule):
         super().__init__(self.atomic_numbers_supercell, self.cartesian_coordinates_supercell)
 
     @classmethod
-    def from_poscar(cls, file_path: str):
+    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
         with open(file_path) as file:
             lines = file.readlines()
         header_length = 9
         if not len(lines) >= header_length:
-            return False
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg)
         scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
         species_, numbers_ = lines[5].strip(), lines[6]
         mode, positions_ = lines[7].strip(), lines[8:]
         try:
             scale = float(scale_)
-            latvec_a = np.fromstring(latvec_a_, sep=" ")
-            latvec_b = np.fromstring(latvec_b_, sep=" ")
-            latvec_c = np.fromstring(latvec_c_, sep=" ")
+            latvec_a = np.fromstring(latvec_a_, sep=" ").tolist()
+            latvec_b = np.fromstring(latvec_b_, sep=" ").tolist()
+            latvec_c = np.fromstring(latvec_c_, sep=" ").tolist()
             species = re.split(r"\s+", species_)
             numbers = np.fromstring(numbers_, sep=" ", dtype=int)
-            positions = np.array([np.fromstring(pos, sep=" ") for pos in positions_])
-            basis_vectors = np.array([latvec_a, latvec_b, latvec_c])
-        except ValueError:
-            return False, "Error: faulty formatting of the POSCAR file."
+            positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
+            basis_vectors = [latvec_a, latvec_b, latvec_c]
+        except ValueError as err:
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg) from err
         if len(numbers) != len(species) or len(positions) != len(species):
-            return False, "Error: faulty formatting of the POSCAR file."
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg)
         if mode.lower() != "direct":
-            return False, "Currently, Molara can only process direct mode in POSCAR files."
-        atomic_numbers = np.array([element_symbol_to_atomic_number(symb) for symb in species], dtype=int)
-        return cls(atomic_numbers, positions, scale * basis_vectors)
+            msg = "Currently, Molara can only process direct mode in POSCAR files."
+            raise NotImplementedError(msg)
+        atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
+        return cls(atomic_numbers, positions, [scale * np.array(bv, dtype=float) for bv in basis_vectors])
 
-    def copy(self):
+    def copy(self) -> Crystal:
         # supercell dimensions not included yet!
         return Crystal(self.atomic_numbers_unitcell, self.coordinates_unitcell, self.basis_vectors)
 
     """ overloading operators """
 
-    def __mul__(self, supercell_dimensions: Sequence[int]):
+    def __mul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
         """
         current implementation: multiply Crystal by a sequence of three integers [M, N, K]
         to create MxNxK supercell
@@ -113,5 +124,5 @@ class Crystal(Molecule):
         crystal_copy.make_supercell(supercell_dimensions)
         return crystal_copy
 
-    def __rmul__(self, supercell_dimensions: Sequence[int]):
+    def __rmul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
         return self.__mul__(supercell_dimensions)
