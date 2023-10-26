@@ -205,27 +205,57 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, CrystalDialog):
         CrystalDialog.setWindowTitle(
-            QCoreApplication.translate("CrystalDialog", "Create custom crystal structure", None),
+            QCoreApplication.translate(
+                "CrystalDialog", "Create custom crystal structure", None
+            ),
         )
-        self.buttonAddAtom.setText(QCoreApplication.translate("CrystalDialog", "Add Atom", None))
-        self.checkBoxPreview.setText(QCoreApplication.translate("CrystalDialog", "Show Preview", None))
-        self.selectCrystalSystem.setItemText(0, QCoreApplication.translate("CrystalDialog", "Cubic", None))
-        self.selectCrystalSystem.setItemText(1, QCoreApplication.translate("CrystalDialog", "Tetragonal", None))
-        self.selectCrystalSystem.setItemText(2, QCoreApplication.translate("CrystalDialog", "Orthorhombic", None))
+        self.buttonAddAtom.setText(
+            QCoreApplication.translate("CrystalDialog", "Add Atom", None)
+        )
+        self.checkBoxPreview.setText(
+            QCoreApplication.translate("CrystalDialog", "Show Preview", None)
+        )
+        self.selectCrystalSystem.setItemText(
+            0, QCoreApplication.translate("CrystalDialog", "Cubic", None)
+        )
+        self.selectCrystalSystem.setItemText(
+            1, QCoreApplication.translate("CrystalDialog", "Tetragonal", None)
+        )
+        self.selectCrystalSystem.setItemText(
+            2, QCoreApplication.translate("CrystalDialog", "Orthorhombic", None)
+        )
 
-        self.selectSpaceGroup.setItemText(0, QCoreApplication.translate("Dialog", "m3m", None))
-        self.selectSpaceGroup.setItemText(1, QCoreApplication.translate("Dialog", "4/mmm", None))
-        self.selectSpaceGroup.setItemText(2, QCoreApplication.translate("Dialog", "mmm", None))
+        self.selectSpaceGroup.setItemText(
+            0, QCoreApplication.translate("Dialog", "m3m", None)
+        )
+        self.selectSpaceGroup.setItemText(
+            1, QCoreApplication.translate("Dialog", "4/mmm", None)
+        )
+        self.selectSpaceGroup.setItemText(
+            2, QCoreApplication.translate("Dialog", "mmm", None)
+        )
 
-        self.labelElementSymbol.setText(QCoreApplication.translate("Dialog", "Element", None))
-        self.labelCoord_a.setText(QCoreApplication.translate("Dialog", "coord. a", None))
-        self.labelCoord_b.setText(QCoreApplication.translate("Dialog", "coord. b", None))
-        self.labelCoord_c.setText(QCoreApplication.translate("Dialog", "coord. c", None))
+        self.labelElementSymbol.setText(
+            QCoreApplication.translate("Dialog", "Element", None)
+        )
+        self.labelCoord_a.setText(
+            QCoreApplication.translate("Dialog", "coord. a", None)
+        )
+        self.labelCoord_b.setText(
+            QCoreApplication.translate("Dialog", "coord. b", None)
+        )
+        self.labelCoord_c.setText(
+            QCoreApplication.translate("Dialog", "coord. c", None)
+        )
         self.labelLatConst_a.setText(QCoreApplication.translate("Dialog", "a", None))
         self.labelLatConst_b.setText(QCoreApplication.translate("Dialog", "b", None))
         self.labelLatConst_C.setText(QCoreApplication.translate("Dialog", "c", None))
-        self.labelTitleLatConst.setText(QCoreApplication.translate("Dialog", "Lattice constants", None))
-        self.labelTitleSupercell.setText(QCoreApplication.translate("Dialog", "Supercell", None))
+        self.labelTitleLatConst.setText(
+            QCoreApplication.translate("Dialog", "Lattice constants", None)
+        )
+        self.labelTitleSupercell.setText(
+            QCoreApplication.translate("Dialog", "Supercell", None)
+        )
         self.labelSupercell_a.setText(
             QCoreApplication.translate(
                 "CrystalDialog",
@@ -247,6 +277,8 @@ class Ui_Dialog(object):
                 None,
             ),
         )
-        self.pushButton.setText(QCoreApplication.translate("Dialog", "Clear Atoms", None))
+        self.pushButton.setText(
+            QCoreApplication.translate("Dialog", "Clear Atoms", None)
+        )
 
     # retranslateUi

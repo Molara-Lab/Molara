@@ -11,7 +11,9 @@ if TYPE_CHECKING:
     from molara.Rendering.camera import Camera
 
 
-def draw_scene(shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecule | None = None) -> None:
+def draw_scene(
+    shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecule | None = None,
+) -> None:
     """Draws the contents of the given vaos from the given camera perspective.
 
     :param shader: The shader program of the opengl widget.
@@ -37,7 +39,9 @@ def draw_scene(shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecu
     camera_loc = glGetUniformLocation(shader, "camera_position")
     view_loc = glGetUniformLocation(shader, "view")
 
-    light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
+    light_direction = (
+        -camera.position - camera.up_vector * camera.distance_from_target * 0.5
+    )
     glUniform3fv(light_direction_loc, 1, light_direction)
     glUniform3fv(camera_loc, 1, camera.position)
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)
@@ -55,7 +59,9 @@ def draw_scene(shader: GLuint, camera: Camera, vaos: list[int], molecule: Molecu
             len(molecule.drawer.unique_spheres[idx].model_matrices),
         )
         glBindVertexArray(0)
-    for vao, atomic_number in zip(vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers):
+    for vao, atomic_number in zip(
+        vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers,
+    ):
         idx = molecule.drawer.unique_cylinders_mapping[atomic_number]
         if molecule.drawer.unique_cylinders[idx].model_matrices is not None:
             glBindVertexArray(vao)

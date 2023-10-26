@@ -10,7 +10,7 @@ from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 from molara.Gui.crystal_dialog import CrystalDialog
-from molara.Gui.TrajectoryDialog import TrajectoryDialog
+from molara.Gui.trajectory_dialog import TrajectoryDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -52,11 +52,15 @@ def main() -> None:
     widget.ui.actioncoord.triggered.connect(widget.show_coord)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
-    widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
+    widget.ui.actionCenter_Molecule.triggered.connect(
+        widget.ui.openGLWidget.center_molecule,
+    )
     widget.ui.quit.triggered.connect(widget.close)
     widget.ui.actionRead_POSCAR.triggered.connect(widget.show_poscar)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
-    widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(widget.trajectory_dialog.show)
+    widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(
+        widget.trajectory_dialog.show,
+    )
     widget.ui.quit.triggered.connect(widget.close)
 
     sys.exit(app.exec())
@@ -64,3 +68,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

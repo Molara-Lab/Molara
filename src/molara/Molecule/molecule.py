@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 
@@ -12,7 +12,13 @@ if TYPE_CHECKING:
 
 
 class Molecule:
-    def __init__(self, atomic_numbers: np.ndarray, coordinates: np.ndarray, header:str=None, dummy: bool = False) -> None:
+    def __init__(
+        self,
+        atomic_numbers: np.ndarray,
+        coordinates: np.ndarray,
+        header: str | None = None,
+        dummy: bool = False,
+    ) -> None:
         if dummy:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
@@ -29,7 +35,7 @@ class Molecule:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
 
-        if isinstance(header,str):
+        if isinstance(header, str):
             self.gen_energy_information(header)
 
     def calculate_bonds(self) -> np.ndarray:
@@ -64,18 +70,20 @@ class Molecule:
 
     def center_coordinates(self) -> None:
         coordinates = np.array([atom.position for atom in self.atoms])
-        center = np.average(coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0)
+        center = np.average(
+            coordinates, weights=[atom.atomic_mass for atom in self.atoms], axis=0,
+        )
         for _i, atom in enumerate(self.atoms):
             atom.position -= center
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_sphere_model_matrices()
         self.drawer.set_cylinder_model_matrices()
 
-    def gen_energy_information(self, string: str):
+    def gen_energy_information(self, string: str) -> None:
         """
         Reads the energy from the second line
         """
         try:
             self.energy = float(string.split()[1])
-        except:
+        except ValueError:
             self.energy = 0.0

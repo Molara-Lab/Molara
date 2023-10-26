@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from molara.Molecule.atom import element_symbol_to_atomic_number
 from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
@@ -33,7 +35,9 @@ def read_xyz(file_path: str) -> Molecules:
     molecules.add_molecule(Molecule(atomic_numbers, coordinates, lines[1]))
     # Read in for a single xyz file
     # Goes on if file has more than one structure stored
-    if (len(lines) > 2 + num_atoms) and lines[2 + num_atoms].replace("\n", "").isdigit():
+    if (len(lines) > 2 + num_atoms) and lines[2 + num_atoms].replace(
+        "\n", "",
+    ).isdigit():
         not_finished = True
 
         max_mols = 10000
@@ -58,11 +62,14 @@ def read_xyz(file_path: str) -> Molecules:
                 coordinates.append([float(coord) for coord in atom_info[1:4]])
 
             if not (
-                (len(lines) > 2 + xyz_len + num_atoms) and lines[xyz_len + 2 + num_atoms].replace("\n", "").isdigit()
+                (len(lines) > 2 + xyz_len + num_atoms)
+                and lines[xyz_len + 2 + num_atoms].replace("\n", "").isdigit()
             ):
                 not_finished = False
 
-            molecules.add_molecule(Molecule(atomic_numbers, coordinates, lines[1 + xyz_len]))
+            molecules.add_molecule(
+                Molecule(atomic_numbers, coordinates, lines[1 + xyz_len]),
+            )
 
     file.close()
 

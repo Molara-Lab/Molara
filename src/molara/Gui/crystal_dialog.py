@@ -12,7 +12,8 @@ from molara.Molecule.crystal import Crystal
 
 
 class CrystalDialog(QDialog):
-    """Dialog for specifying a crystal structure.
+    """
+    Dialog for specifying a crystal structure.
     Element symbols, coordinates, lattice constants, supercell size given by user,
     object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
     """
@@ -26,7 +27,9 @@ class CrystalDialog(QDialog):
         self.list_of_coordinates: list = []
         self.list_of_atomic_numbers: list[int] = []
         self.change_crystal_system("Cubic")
-        self.ui.selectCrystalSystem.currentTextChanged.connect(self.change_crystal_system)
+        self.ui.selectCrystalSystem.currentTextChanged.connect(
+            self.change_crystal_system,
+        )
         self.ui.buttonAddAtom.clicked.connect(self.add_atom)
         self.ui.pushButton.clicked.connect(self.reset)
         self.ui.listAtoms.setColumnCount(4)
@@ -64,7 +67,11 @@ class CrystalDialog(QDialog):
         #     self.ui.inputSupercell_c.value(),
         # )
         # supercell_dimensions = np.array([dim_a, dim_b, dim_c])
-        a, b, c = self.ui.inputLatConst_a.value(), self.ui.inputLatConst_b.value(), self.ui.inputLatConst_c.value()
+        a, b, c = (
+            self.ui.inputLatConst_a.value(),
+            self.ui.inputLatConst_b.value(),
+            self.ui.inputLatConst_c.value(),
+        )
         mycrystal = Crystal(
             self.list_of_atomic_numbers,
             self.list_of_coordinates,

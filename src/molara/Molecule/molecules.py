@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from molara.Molecule.molecule import Molecule
@@ -8,16 +10,16 @@ class Molecules:
     A class to store and manipulate a list of Molecules
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mols = []
         self.num_mols = 0
         self.mol_index = 0
         self.energies = []
 
-    def get_current_mol(self):
+    def get_current_mol(self) -> Molecule:
         return self.mols[self.mol_index]
 
-    def set_next_mol(self):
+    def set_next_mol(self) -> None:
         """
         Returns the next molecule in the list of molecules
         """
@@ -34,7 +36,7 @@ class Molecules:
         self.mol_index = index
         return self.mols[self.mol_index]
 
-    def set_previous_mol(self) -> Molecule:
+    def set_previous_mol(self) -> None:
         """
         Returns the previous molecule of the list of molecules
         """
@@ -42,8 +44,6 @@ class Molecules:
 
         if self.mol_index < 0:
             self.mol_index = self.num_mols - 1
-
-        return
 
     def add_molecule(self, mol: Molecule) -> None:
         """
