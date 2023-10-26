@@ -119,9 +119,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.zoom_factor = 1
         num_degrees = event.angleDelta().y() / 8  # type: ignore[attr-defined]
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
-        self.zoom_factor += (
-            num_steps * 0.1
-        )  # Empirical value to control zoom sensitivity
+        self.zoom_factor += num_steps * 0.1  # Empirical value to control zoom sensitivity
         self.zoom_factor = max(
             0.1,
             self.zoom_factor,

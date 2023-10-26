@@ -80,7 +80,7 @@ class Molecule:
         self.drawer.set_sphere_model_matrices()
         self.drawer.set_cylinder_model_matrices()
 
-    def gen_energy_information(self, string: str) -> None:
+    def gen_energy_information(self, string: str | None) -> None:
         """
         Reads the energy from the second line
         """

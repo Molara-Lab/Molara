@@ -42,9 +42,7 @@ def draw_scene(
     camera_loc = glGetUniformLocation(shader, "camera_position")
     view_loc = glGetUniformLocation(shader, "view")
 
-    light_direction = (
-        -camera.position - camera.up_vector * camera.distance_from_target * 0.5
-    )
+    light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
     glUniform3fv(light_direction_loc, 1, light_direction)
     glUniform3fv(camera_loc, 1, camera.position)
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)

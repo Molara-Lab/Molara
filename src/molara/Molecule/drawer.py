@@ -57,9 +57,7 @@ class Drawer:
                 self.unique_cylinders.append(
                     Cylinders(atom.cpk_color, self.subdivisions_cylinder),
                 )
-                self.unique_cylinders_mapping[atom.atomic_number] = (
-                    len(self.unique_cylinders) - 1
-                )
+                self.unique_cylinders_mapping[atom.atomic_number] = len(self.unique_cylinders) - 1
         for bond in self.bonds:
             idx1 = self.unique_cylinders_mapping[self.atoms[bond[0]].atomic_number]
             idx2 = self.unique_cylinders_mapping[self.atoms[bond[1]].atomic_number]
@@ -95,9 +93,7 @@ class Drawer:
                 self.unique_spheres[-1].model_matrices = calculate_sphere_model_matrix(
                     atom,
                 )
-                self.unique_spheres_mapping[atom.atomic_number] = (
-                    len(self.unique_spheres) - 1
-                )
+                self.unique_spheres_mapping[atom.atomic_number] = len(self.unique_spheres) - 1
             else:
                 self.unique_spheres[idx].model_matrices = np.concatenate(
                     (

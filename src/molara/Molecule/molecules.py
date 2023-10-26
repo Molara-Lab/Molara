@@ -11,10 +11,10 @@ class Molecules:
     """
 
     def __init__(self) -> None:
-        self.mols = []
+        self.mols: list = []
         self.num_mols = 0
         self.mol_index = 0
-        self.energies = []
+        self.energies: list = []
 
     def get_current_mol(self) -> Molecule:
         return self.mols[self.mol_index]
