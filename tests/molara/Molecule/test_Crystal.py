@@ -1,3 +1,5 @@
+"""Test the Crystal class."""
+
 from __future__ import annotations
 
 from unittest import TestCase
@@ -8,7 +10,10 @@ from numpy.testing import assert_array_equal
 
 
 class TestCrystal(TestCase):
+    """Test the Crystal class."""
+
     def setUp(self) -> None:
+        """Set up a crystal."""
         atomic_numbers = [5, 7]
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
@@ -20,6 +25,7 @@ class TestCrystal(TestCase):
         assert_array_equal(self.crystal.coordinates_unitcell, coordinates)
 
     def test_from_poscar(self) -> None:
+        """Test the creation of a crystal from a POSCAR file."""
         self.crystal_from_POSCAR = Crystal.from_poscar("examples/POSCAR/boron_nitride")
 
         assert len(self.crystal_from_POSCAR.atoms) == 2**3 + 1
@@ -38,5 +44,6 @@ class TestCrystal(TestCase):
         # assert self.crystal_from_POSCAR == self.crystal
 
     def test_make_supercell(self) -> None:
+        """Test the supercell generation."""
         self.crystal.make_supercell([3, 3, 3])
         assert len(self.crystal.atoms) == 4**3 + 3**3

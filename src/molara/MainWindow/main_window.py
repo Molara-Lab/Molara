@@ -1,3 +1,5 @@
+"""This module contains the main window of the application."""
+
 from __future__ import annotations
 
 import sys
@@ -10,7 +12,10 @@ from molara.Molecule.molecule import read_coord, read_xyz
 
 
 class MainWindow(QMainWindow):
+    """Creates a MainWindow object."""
+
     def __init__(self, parent: QMainWindow = None) -> None:
+        """Creates a MainWindow object."""
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -22,16 +27,19 @@ class MainWindow(QMainWindow):
         self.ui.openGLWidget.set_molecule(mol)
 
     def show_xyz(self) -> None:
+        """Open a file dialog to choose a .xyz file."""
         file_name = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
         mol = read_xyz(file_name[0])
         self.ui.openGLWidget.set_molecule(mol)
 
     def show_coord(self) -> None:
+        """Open a file dialog to choose a .coord file."""
         file_name = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
         mol = read_coord(file_name[0])
         self.ui.openGLWidget.set_molecule(mol)
 
     def show_poscar(self) -> bool:
+        """Open a file dialog to choose a POSCAR file."""
         filename = QFileDialog.getOpenFileName(self, "Open POSCAR file", "/home", "POSCAR Files (*)")
         crystal = Crystal.from_poscar(filename[0])
         if not isinstance(crystal, Crystal):

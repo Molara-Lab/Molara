@@ -1,3 +1,5 @@
+"""This module contains the shader source code for the rendering of the molecules."""
+
 from __future__ import annotations
 
 from OpenGL.GL import (

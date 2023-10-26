@@ -1,3 +1,5 @@
+"""Setup file for Molara."""
+
 from __future__ import annotations
 
 import pathlib

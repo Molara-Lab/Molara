@@ -1,3 +1,5 @@
+"""The main entry point for the application."""
+
 from __future__ import annotations
 
 import signal
@@ -21,6 +23,7 @@ if TYPE_CHECKING:
 
 
 def main() -> None:
+    """Run the application."""
     _format = QSurfaceFormat()
     _format.setVersion(4, 1)
     _format.setSamples(4)

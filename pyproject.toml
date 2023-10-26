@@ -14,7 +14,7 @@ select = [
   "C90",  # mccabe
   "COM",  # flake8-commas
   "CPY",  # flake8-copyright
-#  "D",    # pydocstyle
+  "D",    # pydocstyle
   "DJ",   # flake8-django
   "DTZ",  # flake8-daytime
   "E",    # pycodestyle error

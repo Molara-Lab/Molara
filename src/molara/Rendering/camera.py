@@ -1,3 +1,5 @@
+"""Camera class for the opengl widget."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -12,6 +14,7 @@ class Camera:
     """
 
     def __init__(self, width: float, height: float) -> None:
+        """Creates a Camera object."""
         self.width = width
         self.height = height
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
@@ -97,13 +100,13 @@ class Camera:
 
     def set_rotation_quaternion(self, old_mouse_position: np.ndarray, new_mouse_position: np.ndarray) -> None:
         """Calculates the rotation quaternion using the normalized mouse positions.
+
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
         :param new_mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
         """
 
         def calculate_arcball_point(x: float, y: float) -> np.ndarray:
-            """Calculates the x, y, and z on the surface of an invisible sphere using only the x and y coordinates and
-            using the positive z solution.
+            """Calculates the x, y, and z on the surface of an invisible sphere.
 
             :param x: Normalized x coordinate.
             :param y: Normalized y coordinate.
