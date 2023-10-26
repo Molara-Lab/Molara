@@ -21,11 +21,11 @@ if TYPE_CHECKING:
 
 
 def main() -> None:
-    format = QSurfaceFormat()
-    format.setVersion(4, 1)
-    format.setSamples(4)
-    format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
-    QSurfaceFormat.setDefaultFormat(format)
+    _format = QSurfaceFormat()
+    _format.setVersion(4, 1)
+    _format.setSamples(4)
+    _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
+    QSurfaceFormat.setDefaultFormat(_format)
 
     def sigint_handler(signum: int, frame: FrameType | None) -> None:
         app.quit()

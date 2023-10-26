@@ -13,7 +13,7 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 
 project = "Molara"
-copyright = "2023, Michel Heinz"
+project_copyright = "2023, Michel Heinz"
 author = "Michel Heinz"
 
 # -- General configuration ---------------------------------------------------
