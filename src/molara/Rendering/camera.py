@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 import pyrr
 
@@ -16,18 +14,25 @@ class Camera:
     def __init__(self, width: float, height: float) -> None:
         self.width = width
         self.height = height
-        self.reference_position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
-        self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
+        self.right_vector = pyrr.Vector3([0.0, 0.0, 1.0], dtype=np.float32)
         self.distance_from_target = 5.0
+        self.zoom_factor = 0.05
 
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
 
-        self.current_rotation = pyrr.Quaternion()
-        self.last_rotation = pyrr.Quaternion()
+        self.rotation = pyrr.Quaternion()
+        self.last_rotation = self.rotation
+        self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.last_translation = self.translation
         self.position *= self.distance_from_target
+        self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.initial_target = self.target
+        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position))
+        self.initial_up_vector = self.up_vector
+        self.initial_right_vector = self.right_vector
 
     def calculate_projection_matrix(self, width: float, height: float) -> None:
         """Calculates the projection matrix to get from world to camera space.
@@ -70,17 +75,30 @@ class Camera:
         self.distance_from_target += self.zoom_factor * zoom * (np.sign(zoom - 1))
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
-    def calculate_camera_position(
-        self,
-        old_mouse_position: float,
-        new_mouse_position: float,
-        save: bool | None = False,
-    ) -> None:
-        """Calculates the camera position according to arcball movement using the normalized mouse positions.
+    def update(self, save: bool = False) -> None:
+        """Updates the camera position and orientation."""
+        self.up_vector = self.rotation * self.initial_up_vector
+        self.right_vector = self.rotation * self.initial_right_vector
+        self.position = self.rotation * self.initial_position * self.distance_from_target + self.translation
+        self.target = self.initial_target + self.translation
+        if save:
+            self.last_rotation = self.rotation
+            self.last_translation = self.translation
 
-        :param old_mouse_position: Old normalized x and y coordinate of the mous position on the opengl widget.
-        :param new_mouse_position: New normalized x and y coordinate of the mous position on the opengl widget.
-        :param save: If given the current rotation quaternion is saved.
+    def set_translation_vector(self, old_mouse_position: np.ndarray, mouse_position: np.ndarray) -> None:
+        """Calculates the translation matrix using the normalized mouse positions.
+
+        :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
+        :param mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
+        """
+        x_translation = mouse_position[0] - old_mouse_position[0]
+        y_translation = -(mouse_position[1] - old_mouse_position[1])
+        self.translation = self.right_vector * x_translation + self.up_vector * y_translation + self.last_translation
+
+    def set_rotation_quaternion(self, old_mouse_position: np.ndarray, new_mouse_position: np.ndarray) -> None:
+        """Calculates the rotation quaternion using the normalized mouse positions.
+        :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
+        :param new_mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
         """
 
         def calculate_arcball_point(x: float, y: float) -> np.ndarray:
@@ -102,25 +120,15 @@ class Camera:
                 y /= length
             return np.array([x, y, -z], dtype=np.float32)
 
-        self.position = pyrr.vector3.normalize(self.position)
-
         previous_arcball_point = calculate_arcball_point(old_mouse_position[0], old_mouse_position[1])
         current_arcball_point = calculate_arcball_point(new_mouse_position[0], new_mouse_position[1])
 
         tolerance_parallel = 1e-5
         if np.linalg.norm(previous_arcball_point - current_arcball_point) > tolerance_parallel:
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
+            rotation_axis = pyrr.vector3.normalize(rotation_axis)
             rotation_angle = np.arccos(np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1))
 
-        rotation_quaternion = pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
-        self.current_rotation = rotation_quaternion
-        rotation = self.last_rotation * self.current_rotation
-
-        self.up_vector = rotation * pyrr.Vector3([0.0, 1.0, 0.0])
-        self.position = (
-            pyrr.vector3.normalize(rotation * (self.reference_position - self.target) + self.target)
-            * self.distance_from_target
-        )
-
-        if save:
-            self.last_rotation = self.last_rotation * self.current_rotation
+            self.rotation = self.last_rotation * pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
+        else:
+            self.rotation = self.last_rotation
