@@ -1,89 +1,92 @@
 import numpy as np
 import pyrr
 
-from molara.Molecule.Atom import Atom
-from molara.Rendering.Cylinder import Cylinders
-from molara.Rendering.Sphere import Spheres
+from molara.Molecule.atom import Atom
+from molara.Rendering.cylinder import Cylinders
+from molara.Rendering.sphere import Spheres
 
 
 class Drawer:
-    def __init__(self, atoms: [Atom], bonds: np.ndarray) -> None:
+    def __init__(self, atoms: list[Atom], bonds: np.ndarray) -> None:
         self.subdivisions_sphere = 15
         self.subdivisions_cylinder = 20
-        self.unique_spheres = [Spheres() for _ in range(119)]
-        self.unique_cylinders = [Cylinders() for _ in range(119)]
+        self.unique_spheres: list[Spheres] = []
+        self.unique_spheres_mapping: list[int] = [-1 for _ in range(119)]
+        self.unique_cylinders: list[Cylinders] = []
+        self.unique_cylinders_mapping: list[int] = [-1 for _ in range(119)]
         self.atoms = atoms
         self.bonds = bonds
         self.set_sphere_model_matrices()
         self.set_cylinder_model_matrices()
 
-    def set_atoms(self, atoms: [Atom]) -> None:
-        """
-        Sets the atoms to be displayed.
+    def set_atoms(self, atoms: list[Atom]) -> None:
+        """Sets the atoms to be displayed.
         :param atoms: List of atoms to be displayed.
         :return:
         """
         self.atoms = atoms
 
-    def reset_Spheres_model_matrices(self) -> None:
-        """
-        Resets the model matrices for the spheres.
+    def reset_spheres_model_matrices(self) -> None:
+        """Resets the model matrices for the spheres.
         :return:
         """
-        for sphere in self.unique_spheres:
-            sphere.model_matrices = None
+        self.unique_spheres = []
+        self.unique_spheres_mapping = [-1 for _ in range(119)]
 
-    def reset_Cylinders_model_matrices(self) -> None:
-        """
-        Resets the model matrices for the cylinders.
+    def reset_cylinders_model_matrices(self) -> None:
+        """Resets the model matrices for the cylinders.
         :return:
         """
-        for cylinder in self.unique_cylinders:
-            cylinder.model_matrices = None
+        self.unique_cylinders = []
+        self.unique_cylinders_mapping = [-1 for _ in range(119)]
 
     def set_cylinder_model_matrices(self) -> None:
-        """
-        Sets the model matrices for the cylinders.
+        """Sets the model matrices for the cylinders.
         :return:
         """
-        self.reset_Cylinders_model_matrices()
+        self.reset_cylinders_model_matrices()
         for atom in self.atoms:
-            if self.unique_cylinders[atom.atomic_number].model_matrices is None:
-                self.unique_cylinders[atom.atomic_number] = Cylinders(atom.cpk_color, self.subdivisions_cylinder)
+            idx = self.unique_cylinders_mapping[atom.atomic_number]
+            if idx == -1:
+                self.unique_cylinders.append(Cylinders(atom.cpk_color, self.subdivisions_cylinder))
+                self.unique_cylinders_mapping[atom.atomic_number] = len(self.unique_cylinders) - 1
         for bond in self.bonds:
-            model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
-            if self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices is None:
-                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = model_matrices[0]
-            else:
-                self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices = np.concatenate(
-                    (self.unique_cylinders[self.atoms[bond[0]].atomic_number].model_matrices, model_matrices[0])
-                )
-            if self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices is None:
-                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = model_matrices[1]
-            else:
-                self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices = np.concatenate(
-                    (self.unique_cylinders[self.atoms[bond[1]].atomic_number].model_matrices, model_matrices[1])
-                )
+            idx1 = self.unique_cylinders_mapping[self.atoms[bond[0]].atomic_number]
+            idx2 = self.unique_cylinders_mapping[self.atoms[bond[1]].atomic_number]
+            if bond[0] != -1:
+                model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
+                if self.unique_cylinders[idx1].model_matrices.shape[0] == 0:
+                    self.unique_cylinders[idx1].model_matrices = model_matrices[0]
+                else:
+                    self.unique_cylinders[idx1].model_matrices = np.concatenate(
+                        (self.unique_cylinders[idx1].model_matrices, model_matrices[0]),
+                    )
+                if self.unique_cylinders[idx2].model_matrices.shape[0] == 0:
+                    self.unique_cylinders[idx2].model_matrices = model_matrices[1]
+                else:
+                    self.unique_cylinders[idx2].model_matrices = np.concatenate(
+                        (self.unique_cylinders[idx2].model_matrices, model_matrices[1]),
+                    )
 
     def set_sphere_model_matrices(self) -> None:
-        """
-        Sets the model matrices for the spheres.
+        """Sets the model matrices for the spheres.
         :return:
         """
-        self.reset_Spheres_model_matrices()
+        self.reset_spheres_model_matrices()
         for atom in self.atoms:
-            if self.unique_spheres[atom.atomic_number].model_matrices is None:
-                self.unique_spheres[atom.atomic_number] = Spheres(atom.cpk_color, self.subdivisions_sphere)
-                self.unique_spheres[atom.atomic_number].model_matrices = calculate_sphere_model_matrix(atom)
+            idx = self.unique_spheres_mapping[atom.atomic_number]
+            if idx == -1:
+                self.unique_spheres.append(Spheres(atom.cpk_color, self.subdivisions_sphere))
+                self.unique_spheres[-1].model_matrices = calculate_sphere_model_matrix(atom)
+                self.unique_spheres_mapping[atom.atomic_number] = len(self.unique_spheres) - 1
             else:
-                self.unique_spheres[atom.atomic_number].model_matrices = np.concatenate(
-                    (self.unique_spheres[atom.atomic_number].model_matrices, calculate_sphere_model_matrix(atom))
+                self.unique_spheres[idx].model_matrices = np.concatenate(
+                    (self.unique_spheres[idx].model_matrices, calculate_sphere_model_matrix(atom)),
                 )
 
 
 def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
-    """
-    Calculates the model matrix for an atom displayed as a sphere.
+    """Calculates the model matrix for an atom displayed as a sphere.
     :param atom: Atom
     :return: Model matrix for the sphere.
     """
@@ -96,8 +99,7 @@ def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
 
 
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
-    """
-    Calculates the model matrix for a cylinder between two atoms.
+    """Calculates the model matrix for a cylinder between two atoms.
     :param atom1: Atom1
     :param atom2: Atom2
     :return: Model matrix for the cylinder between atom1 and atom2.
@@ -112,6 +114,7 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     position_2 = mid_point + difference / 4
     # Calculate the rotation axis to rotate the cylinder to the correct orientation.
     y_axis = np.array([0, 1, 0], dtype=np.float32)
+    difference = difference / np.linalg.norm(difference)
     if abs(y_axis @ difference) != 1:
         rotation_axis = np.cross(y_axis, difference)
         # Calculate the angle to rotate the cylinder to the correct orientation.
@@ -120,7 +123,7 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
                 np.dot(difference, y_axis) / (np.linalg.norm(difference)),
                 -1,
                 1,
-            )
+            ),
         )
     else:
         rotation_axis = np.array([0, 0, 1], dtype=np.float32)

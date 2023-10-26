@@ -94,6 +94,6 @@ class Vao:
         self.model_matrices = model_matrices
         self.vao = setup_vao(self.vertices, self.indices, self.model_matrices)
 
-    def destroy(self):
+    def destroy(self) -> None:
         """Destroys the vertex attribute object."""
         glDeleteVertexArrays(1, self.vao)

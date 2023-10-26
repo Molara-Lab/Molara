@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 
@@ -12,16 +10,12 @@ class Sphere:
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = -1) -> None:
+    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
         self.color = color
         self.subdivisions = subdivisions
-        if color is not None and subdivisions != -1:
-            vertices, indices = generate_sphere(self.color, self.subdivisions)
-            self.vertices = vertices
-            self.indices = indices
-        else:
-            self.vertices = None
-            self.indices = None
+        vertices, indices = generate_sphere(self.color, self.subdivisions)
+        self.vertices = vertices
+        self.indices = indices
 
 
 class Spheres(Sphere):
@@ -32,12 +26,12 @@ class Spheres(Sphere):
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, color: np.ndarray = None, subdivisions: int = -1) -> None:
+    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
         super().__init__(color, subdivisions)
-        self.model_matrices = None
+        self.model_matrices = np.array([], dtype=np.float32)
 
 
-def generate_sphere(color: np.ndarray, subdivisions: int) -> (np.ndarray, np.ndarray):
+def generate_sphere(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
 
     :param color: Color of the sphere.
@@ -50,7 +44,6 @@ def generate_sphere(color: np.ndarray, subdivisions: int) -> (np.ndarray, np.nda
     """
     vertices = []
     indices = []
-    normals = []
 
     for i in range(subdivisions + 1):
         phi = np.pi * (i / subdivisions - 0.5)
@@ -61,9 +54,8 @@ def generate_sphere(color: np.ndarray, subdivisions: int) -> (np.ndarray, np.nda
             x = np.cos(theta) * np.cos(phi)
             z = np.sin(theta) * np.cos(phi)
 
-            normal = [x, y, z]
+            normal = np.array([x, y, z])
             normal /= np.linalg.norm(normal)
-            normals.extend(normal)
             vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
             if j < subdivisions * 2 and i < subdivisions:
                 p1 = i * (subdivisions * 2 + 1) + j
