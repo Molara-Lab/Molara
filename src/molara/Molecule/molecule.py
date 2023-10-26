@@ -35,8 +35,7 @@ class Molecule:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
 
-        if isinstance(header, str):
-            self.gen_energy_information(header)
+        self.gen_energy_information(header)
 
     def calculate_bonds(self) -> np.ndarray:
         bonded_pairs = []
@@ -83,7 +82,8 @@ class Molecule:
         """
         Reads the energy from the second line
         """
-        try:
+        if isinstance(string, str):
             self.energy = float(string.split()[1])
-        except ValueError:
+        else:
             self.energy = 0.0
+

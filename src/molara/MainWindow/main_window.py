@@ -50,8 +50,10 @@ class MainWindow(QMainWindow):
         file_name = QFileDialog.getOpenFileName(
             self, "Open coord file", "/home", "Image Files (*)",
         )
-        mol = read_coord(file_name[0])
-        self.ui.openGLWidget.set_molecule(mol)
+
+        self.mols = read_coord(file_name[0])
+
+        self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
 
     def show_poscar(self) -> bool:
         filename = QFileDialog.getOpenFileName(
