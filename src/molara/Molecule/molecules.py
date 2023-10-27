@@ -17,6 +17,9 @@ class Molecules:
         self.energies: list = []
 
     def get_current_mol(self) -> Molecule:
+        """
+        Returns a
+        """
         return self.mols[self.mol_index]
 
     def set_next_mol(self) -> None:
