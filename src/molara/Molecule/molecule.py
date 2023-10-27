@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 
 
 class Molecule:
+    """Creates a new Molecule object."""
+
     def __init__(
         self,
         atomic_numbers: np.ndarray,
@@ -21,6 +23,14 @@ class Molecule:
         header: str | None = None,
         dummy: bool = False,
     ) -> None:
+        """Creates a new Molecule object.
+
+        params:
+        atomic_numbers:np.ndarray: atomic numbers of a atoms
+        coordinates:np.ndarray: coordinates of the molecule
+        header:str: header from the imported file
+        dummy: bool: a dummy object.
+        """
         if dummy:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
@@ -87,9 +97,7 @@ class Molecule:
         self.drawer.set_cylinder_model_matrices()
 
     def gen_energy_information(self, string: str | None) -> None:
-        """
-        Reads the energy from the second line
-        """
+        """Reads the energy from the second line."""
         if isinstance(string, str):
             self.energy = float(string.split()[1])
         else:

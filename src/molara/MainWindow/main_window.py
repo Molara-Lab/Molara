@@ -23,9 +23,7 @@ class MainWindow(QMainWindow):
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
 
     def show_init_xyz(self) -> None:
-        """
-        read the file from terminal arguments
-        """
+        """Read the file from terminal arguments."""
         file_name = sys.argv[1]
 
         self.mols = read_xyz(file_name)
@@ -38,6 +36,7 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.set_slider_range()
 
     def show_xyz(self) -> None:
+        """Reads xyz file and shows the first structure in this file."""
         file_name = QFileDialog.getOpenFileName(
             self,
             "Open .xyz file",
@@ -54,6 +53,7 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.initial_energy_plot()
 
     def show_coord(self) -> None:
+        """Reads coord file and shows the first structure in this file."""
         file_name = QFileDialog.getOpenFileName(
             self,
             "Open coord file",
@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
 
     def show_poscar(self) -> bool:
+        """Reads poscar file and shows the first structure in this file."""
         filename = QFileDialog.getOpenFileName(
             self,
             "Open POSCAR file",

@@ -51,6 +51,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def delete_molecule(self) -> None:
+        """Delete molecule and reset vertex attributes."""
         self.vertex_attribute_objects = []
         self.update()
 

@@ -1,3 +1,4 @@
+"""An importer class for all read in functions."""
 from __future__ import annotations
 
 from molara.Molecule.atom import element_symbol_to_atomic_number
@@ -6,9 +7,9 @@ from molara.Molecule.molecules import Molecules
 
 
 def read_xyz(file_path: str) -> Molecules:
-    """
-    Read-in function for .xyz files
-    param: file_path: str
+    """Read-in function for .xyz files.
+
+    param: file_path: str.
     """
     molecules = Molecules()
 
@@ -77,12 +78,10 @@ def read_xyz(file_path: str) -> Molecules:
 
 
 def read_coord(file_path: str) -> Molecules:
-    """
-    Imports a coord file
-    Returns the Molecule
-    param: file_path: str
-    """
+    """Imports a coord file and returns the Molecule.
 
+    param: file_path: str.
+    """
     molecules = Molecules()
 
     with open(file_path) as file:
