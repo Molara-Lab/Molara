@@ -1,3 +1,5 @@
+"""This module contains the Sphere and Spheres classes."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -11,6 +13,7 @@ class Sphere:
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Sphere object, containing its vertices and indices."""
         self.color = color
         self.subdivisions = subdivisions
         vertices, indices = generate_sphere(self.color, self.subdivisions)
@@ -19,14 +22,14 @@ class Sphere:
 
 
 class Spheres(Sphere):
-    """Creates a Spheres object containing multiple spheres of the same color and the model matrices to draw multiple
-    instances.
+    """Creates a Spheres object containing multiple spheres.
 
     :param color: Color of the sphere.
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Spheres object containing multiple spheres."""
         super().__init__(color, subdivisions)
         self.model_matrices = np.array([], dtype=np.float32)
 

@@ -1,3 +1,8 @@
+"""This module contains the Cylinder and Cylinders classes.
+
+They are used to create cylinders and multiple cylinders of the same color, respectively.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -11,6 +16,7 @@ class Cylinder:
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Cylinder object, containing its vertices and indices."""
         self.color = color
         self.subdivisions = subdivisions
         vertices, indices = generate_cylinder(self.color, self.subdivisions)
@@ -19,14 +25,14 @@ class Cylinder:
 
 
 class Cylinders(Cylinder):
-    """Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw
-    multiple instances.
+    """Creates a Cylinders object containing multiple cylinders.
 
     :param color: Color of the cylinder.
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Cylinders object containing multiple cylinders."""
         super().__init__(color, subdivisions)
         self.model_matrices = np.array([], dtype=np.float32)
 

@@ -1,3 +1,5 @@
+"""Dialog for specifying a crystal structure."""
+
 from __future__ import annotations
 
 from contextlib import suppress
@@ -12,13 +14,14 @@ from molara.Molecule.crystal import Crystal
 
 
 class CrystalDialog(QDialog):
-    """
-    Dialog for specifying a crystal structure.
+    """Dialog for specifying a crystal structure.
+
     Element symbols, coordinates, lattice constants, supercell size given by user,
     object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
     """
 
     def __init__(self, parent: QMainWindow = None) -> None:
+        """Creates a CrystalDialog object."""
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
@@ -35,11 +38,13 @@ class CrystalDialog(QDialog):
         self.ui.listAtoms.setColumnCount(4)
 
     def reset(self) -> None:
+        """Resets the dialog."""
         self.list_of_atomic_numbers = []
         self.list_of_coordinates = []
         self.ui.listAtoms.setRowCount(0)
 
     def add_atom(self) -> None:
+        """Adds an atom to the list of atoms."""
         element_symbol = self.ui.inputElementSymbol.text()
         atomic_number = element_symbol_to_atomic_number(element_symbol)
         coord_a, coord_b, coord_c = (
@@ -61,6 +66,7 @@ class CrystalDialog(QDialog):
         self.ui.listAtoms.setItem(row_id, 3, item_coord_c)
 
     def accept(self) -> None:
+        """Accepts the dialog and passes the crystal to the main window."""
         # dim_a, dim_b, dim_c = (
         #     self.ui.inputSupercell_a.value(),
         #     self.ui.inputSupercell_b.value(),
@@ -81,6 +87,7 @@ class CrystalDialog(QDialog):
         self.parent().ui.openGLWidget.set_molecule(mycrystal)  # type: ignore[attr-defined]
 
     def change_crystal_system(self, value: str) -> None:
+        """Changes the crystal system."""
         self.crystal_system = value
         select_space_group = self.ui.selectSpaceGroup
         view = select_space_group.view()

@@ -1,3 +1,5 @@
+"""This module contains the Molecule class."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
@@ -38,6 +40,7 @@ class Molecule:
         self.gen_energy_information(header)
 
     def calculate_bonds(self) -> np.ndarray:
+        """Calculates the bonded pairs of atoms."""
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
@@ -59,15 +62,18 @@ class Molecule:
         return np.array([[-1, -1]], dtype=np.int_)
 
     def add_atom(self, atomic_number: int, coordinate: ArrayLike) -> None:
+        """Adds an atom to the molecule."""
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
 
     def remove_atom(self, index: int) -> None:
+        """Removes an atom from the molecule."""
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
 
     def center_coordinates(self) -> None:
+        """Centers the molecule around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(
             coordinates,

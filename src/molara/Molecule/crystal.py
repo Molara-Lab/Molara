@@ -1,3 +1,5 @@
+"""This module contains the Crystal class, which is a subclass of Molecule."""
+
 from __future__ import annotations
 
 import re
@@ -17,6 +19,7 @@ if TYPE_CHECKING:
 
 class Crystal(Molecule):
     """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
+
     Particle positions are given in terms of the basis vectors:
     E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
 
@@ -36,12 +39,14 @@ class Crystal(Molecule):
         coordinates: Sequence[Sequence[float]],
         basis_vectors: Sequence[Sequence[float]] | ArrayLike,
     ) -> None:
+        """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_numbers_unitcell = atomic_numbers
         self.coordinates_unitcell = coordinates
         self.basis_vectors = basis_vectors
         self.make_supercell([1, 1, 1])
 
     def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
+        """Creates a supercell of the crystal."""
         self.supercell_dimensions = supercell_dimensions
         steps_a = np.arange(supercell_dimensions[0] + 1)
         steps_b = np.arange(supercell_dimensions[1] + 1)
@@ -112,6 +117,7 @@ class Crystal(Molecule):
 
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
+        """Creates a Crystal object from a POSCAR file."""
         with open(file_path) as file:
             lines = file.readlines()
         header_length = 9
@@ -147,6 +153,7 @@ class Crystal(Molecule):
         )
 
     def copy(self) -> Crystal:
+        """Returns a copy of the Crystal object."""
         # supercell dimensions not included yet!
         return Crystal(
             self.atomic_numbers_unitcell,
@@ -157,8 +164,9 @@ class Crystal(Molecule):
     """ overloading operators """
 
     def __mul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
-        """
-        current implementation: multiply Crystal by a sequence of three integers [M, N, K]
+        """Multiply Crystal by a sequence.
+
+        Current implementation: multiply Crystal by a sequence of three integers [M, N, K]
         to create MxNxK supercell
         """
         crystal_copy = self.copy()
@@ -166,4 +174,5 @@ class Crystal(Molecule):
         return crystal_copy
 
     def __rmul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
+        """Multiply Crystal by a sequence."""
         return self.__mul__(supercell_dimensions)

@@ -1,3 +1,5 @@
+"""This module contains the Atom class and a dictionary of elements."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -9,7 +11,10 @@ if TYPE_CHECKING:
 
 
 class Atom:
+    """Creates an Atom object."""
+
     def __init__(self, atomic_number: int, position: ArrayLike) -> None:
+        """Creates an Atom object."""
         self.symbol = elements[atomic_number]["symbol"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]
@@ -20,7 +25,7 @@ class Atom:
 
 
 def element_symbol_to_atomic_number(symbol: str) -> int:
-    # Define a dictionary mapping element symbols to atomic numbers
+    """Define a dictionary mapping element symbols to atomic numbers."""
     symbol_to_atomic_number = {
         "H": 1,
         "He": 2,

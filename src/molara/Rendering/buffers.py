@@ -1,3 +1,5 @@
+"""This module contains functions to set up vertex attribute objects and vertex buffer objects."""
+
 from __future__ import annotations
 
 import ctypes
@@ -129,12 +131,8 @@ class Vao:
     :type model_matrices: numpy.array of numpy.float32, optional
     """
 
-    def __init__(
-        self,
-        vertices: np.ndarray,
-        indices: np.ndarray,
-        model_matrices: np.ndarray,
-    ) -> None:
+    def __init__(self, vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndarray) -> None:
+        """Creates a vertex attribute object."""
         self.vertices = vertices
         self.indices = indices
         self.model_matrices = model_matrices

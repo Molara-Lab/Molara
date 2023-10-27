@@ -1,3 +1,5 @@
+"""Contains the rendering function for the opengl widget."""
+
 # mypy: disable-error-code="name-defined"
 from __future__ import annotations
 

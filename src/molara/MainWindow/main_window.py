@@ -1,3 +1,5 @@
+"""This module contains the main window of the application."""
+
 from __future__ import annotations
 
 import sys
@@ -11,7 +13,10 @@ from molara.Molecule.importer import read_coord, read_xyz
 
 
 class MainWindow(QMainWindow):
+    """Creates a MainWindow object."""
+
     def __init__(self, parent: QMainWindow = None) -> None:
+        """Creates a MainWindow object."""
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
