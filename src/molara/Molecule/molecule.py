@@ -31,7 +31,6 @@ class Molecule:
         header:str: header from the imported file
         dummy: bool: a dummy object.
         """
-
         if dummy:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
@@ -99,7 +98,13 @@ class Molecule:
 
     def gen_energy_information(self, string: str | None) -> None:
         """Reads the energy from the second line."""
+        self.energy = 0.0
+
         if isinstance(string, str):
-            self.energy = float(string.split()[1])
-        else:
-            self.energy = 0.0
+            split_string = string.split()
+
+            if "energy:" in split_string:
+                index_e = split_string.index("energy:")
+
+                if index_e + 1 < len(split_string):
+                    self.energy = float(string.split()[split_string.index("energy:") + 1])
