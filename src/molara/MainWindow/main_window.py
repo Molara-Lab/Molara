@@ -73,6 +73,7 @@ class MainWindow(QMainWindow):
             "/home",
             "POSCAR Files (*)",
         )
+
         crystal = Crystal.from_poscar(filename[0])
         if not isinstance(crystal, Crystal):
             error_message = crystal[1]

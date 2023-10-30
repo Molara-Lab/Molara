@@ -31,6 +31,7 @@ class Molecule:
         header:str: header from the imported file
         dummy: bool: a dummy object.
         """
+
         if dummy:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
