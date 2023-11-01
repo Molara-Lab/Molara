@@ -43,15 +43,4 @@ setup(
     install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL"],
     python_requires=">=3.8",
     entry_points={"console_scripts": ["molara=molara.__main__:main"]},
-    extras_require={
-        "dev": [
-            "black",
-            "mypy",
-            "pre-commit",
-            "pytest-cov",
-            "pytest-split",
-            "pytest",
-            "ruff",
-        ],
-    },
 )

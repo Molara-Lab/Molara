@@ -63,13 +63,18 @@ class Drawer:
         for atom in self.atoms:
             idx = self.unique_cylinders_mapping[atom.atomic_number]
             if idx == -1:
-                self.unique_cylinders.append(Cylinders(atom.cpk_color, self.subdivisions_cylinder))
+                self.unique_cylinders.append(
+                    Cylinders(atom.cpk_color, self.subdivisions_cylinder),
+                )
                 self.unique_cylinders_mapping[atom.atomic_number] = len(self.unique_cylinders) - 1
         for bond in self.bonds:
             idx1 = self.unique_cylinders_mapping[self.atoms[bond[0]].atomic_number]
             idx2 = self.unique_cylinders_mapping[self.atoms[bond[1]].atomic_number]
             if bond[0] != -1:
-                model_matrices = calculate_bond_cylinders_model_matrix(self.atoms[bond[0]], self.atoms[bond[1]])
+                model_matrices = calculate_bond_cylinders_model_matrix(
+                    self.atoms[bond[0]],
+                    self.atoms[bond[1]],
+                )
                 if self.unique_cylinders[idx1].model_matrices.shape[0] == 0:
                     self.unique_cylinders[idx1].model_matrices = model_matrices[0]
                 else:
@@ -92,12 +97,19 @@ class Drawer:
         for atom in self.atoms:
             idx = self.unique_spheres_mapping[atom.atomic_number]
             if idx == -1:
-                self.unique_spheres.append(Spheres(atom.cpk_color, self.subdivisions_sphere))
-                self.unique_spheres[-1].model_matrices = calculate_sphere_model_matrix(atom)
+                self.unique_spheres.append(
+                    Spheres(atom.cpk_color, self.subdivisions_sphere),
+                )
+                self.unique_spheres[-1].model_matrices = calculate_sphere_model_matrix(
+                    atom,
+                )
                 self.unique_spheres_mapping[atom.atomic_number] = len(self.unique_spheres) - 1
             else:
                 self.unique_spheres[idx].model_matrices = np.concatenate(
-                    (self.unique_spheres[idx].model_matrices, calculate_sphere_model_matrix(atom)),
+                    (
+                        self.unique_spheres[idx].model_matrices,
+                        calculate_sphere_model_matrix(atom),
+                    ),
                 )
 
 
@@ -108,11 +120,18 @@ def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
     :return: Model matrix for the sphere.
     """
     # Calculate the translation matrix to translate the sphere to the correct position.
-    translation_matrix = pyrr.matrix44.create_from_translation(pyrr.Vector3(atom.position))
+    translation_matrix = pyrr.matrix44.create_from_translation(
+        pyrr.Vector3(atom.position),
+    )
     # Calculate the scale matrix to scale the sphere to the correct size.
-    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3([atom.vdw_radius / 6] * 3))
+    scale_matrix = pyrr.matrix44.create_from_scale(
+        pyrr.Vector3([atom.vdw_radius / 6] * 3),
+    )
     # Return the model matrix for the sphere.
-    return np.array([np.array(scale_matrix @ translation_matrix, dtype=np.float32)], dtype=np.float32)
+    return np.array(
+        [np.array(scale_matrix @ translation_matrix, dtype=np.float32)],
+        dtype=np.float32,
+    )
 
 
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
@@ -146,10 +165,17 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     else:
         rotation_axis = np.array([0, 0, 1], dtype=np.float32)
         rotation_angle = 0
-    translation_matrix_1 = pyrr.matrix44.create_from_translation(pyrr.Vector3(position_1))
-    translation_matrix_2 = pyrr.matrix44.create_from_translation(pyrr.Vector3(position_2))
+    translation_matrix_1 = pyrr.matrix44.create_from_translation(
+        pyrr.Vector3(position_1),
+    )
+    translation_matrix_2 = pyrr.matrix44.create_from_translation(
+        pyrr.Vector3(position_2),
+    )
     # Calculate the rotation matrix to rotate the cylinder to the correct orientation.
-    rotation_matrix = pyrr.matrix44.create_from_axis_rotation(rotation_axis, rotation_angle)
+    rotation_matrix = pyrr.matrix44.create_from_axis_rotation(
+        rotation_axis,
+        rotation_angle,
+    )
     # Calculate the scale matrix to scale the cylinder to the correct length.
     scale = pyrr.Vector3([0.15] * 3)
     scale[1] = length / 2

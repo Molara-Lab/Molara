@@ -41,7 +41,16 @@ from PySide6.QtGui import (
     QRadialGradient,
     QTransform,
 )
-from PySide6.QtWidgets import QApplication, QGridLayout, QMainWindow, QMenu, QMenuBar, QSizePolicy, QStatusBar, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QGridLayout,
+    QMainWindow,
+    QMenu,
+    QMenuBar,
+    QSizePolicy,
+    QStatusBar,
+    QWidget,
+)
 
 from molara.MoleculeWidget.molecule_widget import MoleculeWidget
 
@@ -73,6 +82,8 @@ class Ui_MainWindow(object):
         self.actionRead_POSCAR.setObjectName("actionRead_POSCAR")
         self.actioncoord = QAction(MainWindow)
         self.actioncoord.setObjectName("actioncoord")
+        self.actionOpen_Trajectory_Dialog = QAction(MainWindow)
+        self.actionOpen_Trajectory_Dialog.setObjectName("actionOpen_Trajectory_Dialog")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -112,6 +123,7 @@ class Ui_MainWindow(object):
         self.menuEdit.addAction(self.actionReset_View)
         self.menuEdit.addAction(self.menuRotate.menuAction())
         self.menuEdit.addAction(self.actionDraw_Axes)
+        self.menuEdit.addAction(self.actionOpen_Trajectory_Dialog)
         self.menuRotate.addAction(self.actionto_x_axis)
         self.menuRotate.addAction(self.actionto_y_axis)
         self.menuRotate.addAction(self.actionto_z_axis)
@@ -125,22 +137,51 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(
+            QCoreApplication.translate("MainWindow", "MainWindow", None)
+        )
         self.quit.setText(QCoreApplication.translate("MainWindow", "Quit", None))
         self.action_xyz.setText(QCoreApplication.translate("MainWindow", ".xyz", None))
-        self.actionCenter_Molecule.setText(QCoreApplication.translate("MainWindow", "Center Molecule", None))
-        self.actionReset_View.setText(QCoreApplication.translate("MainWindow", "Reset View", None))
-        self.actionto_x_axis.setText(QCoreApplication.translate("MainWindow", "to x axis", None))
-        self.actionto_y_axis.setText(QCoreApplication.translate("MainWindow", "to y axis", None))
-        self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", "to z axis", None))
-        self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", "Draw Axes", None))
-        self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", "Create Lattice", None))
-        self.actionRead_POSCAR.setText(QCoreApplication.translate("MainWindow", "Read POSCAR", None))
-        self.actioncoord.setText(QCoreApplication.translate("MainWindow", "coord", None))
+        self.actionCenter_Molecule.setText(
+            QCoreApplication.translate("MainWindow", "Center Molecule", None)
+        )
+        self.actionReset_View.setText(
+            QCoreApplication.translate("MainWindow", "Reset View", None)
+        )
+        self.actionto_x_axis.setText(
+            QCoreApplication.translate("MainWindow", "to x axis", None)
+        )
+        self.actionto_y_axis.setText(
+            QCoreApplication.translate("MainWindow", "to y axis", None)
+        )
+        self.actionto_z_axis.setText(
+            QCoreApplication.translate("MainWindow", "to z axis", None)
+        )
+        self.actionDraw_Axes.setText(
+            QCoreApplication.translate("MainWindow", "Draw Axes", None)
+        )
+        self.actionCreate_Lattice.setText(
+            QCoreApplication.translate("MainWindow", "Create Lattice", None)
+        )
+        self.actionRead_POSCAR.setText(
+            QCoreApplication.translate("MainWindow", "Read POSCAR", None)
+        )
+        self.actioncoord.setText(
+            QCoreApplication.translate("MainWindow", "coord", None)
+        )
+        self.actionOpen_Trajectory_Dialog.setText(
+            QCoreApplication.translate("MainWindow", "Open Trajectory Dialog", None)
+        )
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
-        self.menuImport.setTitle(QCoreApplication.translate("MainWindow", "Import", None))
+        self.menuImport.setTitle(
+            QCoreApplication.translate("MainWindow", "Import", None)
+        )
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "View", None))
-        self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", "Rotate", None))
-        self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", "Crystal", None))
+        self.menuRotate.setTitle(
+            QCoreApplication.translate("MainWindow", "Rotate", None)
+        )
+        self.menuCrystal.setTitle(
+            QCoreApplication.translate("MainWindow", "Crystal", None)
+        )
 
     # retranslateUi

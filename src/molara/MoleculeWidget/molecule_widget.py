@@ -50,6 +50,11 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera.reset(self.width(), self.height())
         self.update()
 
+    def delete_molecule(self) -> None:
+        """Delete molecule and reset vertex attributes."""
+        self.vertex_attribute_objects = []
+        self.update()
+
     def set_molecule(self, molecule: Molecule) -> None:
         """Sets the molecule to be drawn."""
         self.molecule = molecule
@@ -91,7 +96,12 @@ class MoleculeWidget(QOpenGLWidget):
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         if self.molecule_is_set:
-            draw_scene(self.shader, self.camera, self.vertex_attribute_objects, self.molecule)
+            draw_scene(
+                self.shader,
+                self.camera,
+                self.vertex_attribute_objects,
+                self.molecule,
+            )
         else:
             draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
 
@@ -126,7 +136,10 @@ class MoleculeWidget(QOpenGLWidget):
         num_degrees = event.angleDelta().y() / 8  # type: ignore[attr-defined]
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
         self.zoom_factor += num_steps * 0.1  # Empirical value to control zoom sensitivity
-        self.zoom_factor = max(0.1, self.zoom_factor)  # Limit zoom factor to avoid zooming too far
+        self.zoom_factor = max(
+            0.1,
+            self.zoom_factor,
+        )  # Limit zoom factor to avoid zooming too far
         self.camera.set_distance_from_target(self.zoom_factor)
         self.camera.update()
         self.update()

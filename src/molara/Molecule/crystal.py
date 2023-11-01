@@ -57,13 +57,25 @@ class Crystal(Molecule):
         translations_a = 1.0 * steps_a + 0.0 * steps_b + 0.0 * steps_c
         translations_b = 0.0 * steps_a + 1.0 * steps_b + 0.0 * steps_c
         translations_c = 0.0 * steps_a + 0.0 * steps_b + 1.0 * steps_c
-        translation_vectors = np.array([translations_a.flatten(), translations_b.flatten(), translations_c.flatten()]).T
+        translation_vectors = np.array(
+            [
+                translations_a.flatten(),
+                translations_b.flatten(),
+                translations_c.flatten(),
+            ],
+        ).T
 
         num_unit_cells = translation_vectors.shape[0]
         self.fractional_coordinates_supercell = np.empty((0, 3), float)
         self.atomic_numbers_supercell = np.empty(0, int)
-        for atomic_number_i, position_i in zip(self.atomic_numbers_unitcell, self.coordinates_unitcell):
-            self.atomic_numbers_supercell = np.append(self.atomic_numbers_supercell, [atomic_number_i] * num_unit_cells)
+        for atomic_number_i, position_i in zip(
+            self.atomic_numbers_unitcell,
+            self.coordinates_unitcell,
+        ):
+            self.atomic_numbers_supercell = np.append(
+                self.atomic_numbers_supercell,
+                [atomic_number_i] * num_unit_cells,
+            )
             self.fractional_coordinates_supercell = np.append(
                 self.fractional_coordinates_supercell,
                 position_i + translation_vectors,
@@ -71,16 +83,37 @@ class Crystal(Molecule):
             )
 
         # remove positions outside of the supercell box
-        ids_remove_a = np.where(self.fractional_coordinates_supercell[:, 0] > supercell_dimensions[0])
-        ids_remove_b = np.where(self.fractional_coordinates_supercell[:, 1] > supercell_dimensions[1])
-        ids_remove_c = np.where(self.fractional_coordinates_supercell[:, 2] > supercell_dimensions[2])
-        ids_remove = np.unique(np.concatenate((ids_remove_a, ids_remove_b, ids_remove_c)))
-        self.fractional_coordinates_supercell = np.delete(self.fractional_coordinates_supercell, ids_remove, axis=0)
-        self.atomic_numbers_supercell = np.delete(self.atomic_numbers_supercell, ids_remove)
+        ids_remove_a = np.where(
+            self.fractional_coordinates_supercell[:, 0] > supercell_dimensions[0],
+        )
+        ids_remove_b = np.where(
+            self.fractional_coordinates_supercell[:, 1] > supercell_dimensions[1],
+        )
+        ids_remove_c = np.where(
+            self.fractional_coordinates_supercell[:, 2] > supercell_dimensions[2],
+        )
+        ids_remove = np.unique(
+            np.concatenate((ids_remove_a, ids_remove_b, ids_remove_c)),
+        )
+        self.fractional_coordinates_supercell = np.delete(
+            self.fractional_coordinates_supercell,
+            ids_remove,
+            axis=0,
+        )
+        self.atomic_numbers_supercell = np.delete(
+            self.atomic_numbers_supercell,
+            ids_remove,
+        )
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
-        self.cartesian_coordinates_supercell = np.dot(self.fractional_coordinates_supercell, self.basis_vectors)
-        super().__init__(self.atomic_numbers_supercell, self.cartesian_coordinates_supercell)
+        self.cartesian_coordinates_supercell = np.dot(
+            self.fractional_coordinates_supercell,
+            self.basis_vectors,
+        )
+        super().__init__(
+            self.atomic_numbers_supercell,
+            self.cartesian_coordinates_supercell,
+        )
 
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
@@ -113,12 +146,20 @@ class Crystal(Molecule):
             msg = "Currently, Molara can only process direct mode in POSCAR files."
             raise NotImplementedError(msg)
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-        return cls(atomic_numbers, positions, [scale * np.array(bv, dtype=float) for bv in basis_vectors])
+        return cls(
+            atomic_numbers,
+            positions,
+            [scale * np.array(bv, dtype=float) for bv in basis_vectors],
+        )
 
     def copy(self) -> Crystal:
         """Returns a copy of the Crystal object."""
         # supercell dimensions not included yet!
-        return Crystal(self.atomic_numbers_unitcell, self.coordinates_unitcell, self.basis_vectors)
+        return Crystal(
+            self.atomic_numbers_unitcell,
+            self.coordinates_unitcell,
+            self.basis_vectors,
+        )
 
     """ overloading operators """
 

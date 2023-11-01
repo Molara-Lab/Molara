@@ -37,7 +37,10 @@ class Cylinders(Cylinder):
         self.model_matrices = np.array([], dtype=np.float32)
 
 
-def generate_cylinder(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, np.ndarray]:
+def generate_cylinder(
+    color: np.ndarray,
+    subdivisions: int,
+) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
     :param color: Color of the cylinder.
@@ -64,10 +67,24 @@ def generate_cylinder(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray,
         normal = np.array([x, 0, z])
         normal /= np.linalg.norm(normal)
         vertices.extend([x, y, z, color[0], color[1], color[2], 0, -1, 0])
-        vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+        vertices.extend(
+            [x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]],
+        )
 
         vertices.extend([x, y + height, z, color[0], color[1], color[2], 0, 1, 0])
-        vertices.extend([x, y + height, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+        vertices.extend(
+            [
+                x,
+                y + height,
+                z,
+                color[0],
+                color[1],
+                color[2],
+                normal[0],
+                normal[1],
+                normal[2],
+            ],
+        )
 
         # indices
         if i == subdivisions - 1:

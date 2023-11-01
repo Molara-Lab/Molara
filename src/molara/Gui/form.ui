@@ -59,6 +59,7 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
+    <addaction name="actionOpen_Trajectory_Dialog"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -125,6 +126,11 @@
   <action name="actioncoord">
    <property name="text">
     <string>coord</string>
+   </property>
+  </action>
+  <action name="actionOpen_Trajectory_Dialog">
+   <property name="text">
+    <string>Open Trajectory Dialog</string>
    </property>
   </action>
  </widget>

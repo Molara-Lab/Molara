@@ -71,6 +71,7 @@ pydocstyle.convention = "google"
 isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
+exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
 

@@ -27,7 +27,11 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-def setup_vao(vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndarray) -> int:
+def setup_vao(
+    vertices: np.ndarray,
+    indices: np.ndarray,
+    model_matrices: np.ndarray,
+) -> int:
     """Sets up a vertex attribute object and binds it to the GPU.
 
     :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
@@ -49,13 +53,34 @@ def setup_vao(vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndar
 
     # Vertex positions
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(0))
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        vertices.itemsize * 9,
+        ctypes.c_void_p(0),
+    )
 
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(12))
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        vertices.itemsize * 9,
+        ctypes.c_void_p(12),
+    )
 
     glEnableVertexAttribArray(2)
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 9, ctypes.c_void_p(24))
+    glVertexAttribPointer(
+        2,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        vertices.itemsize * 9,
+        ctypes.c_void_p(24),
+    )
 
     if indices is not None:
         ebo = glGenBuffers(1)
@@ -67,11 +92,23 @@ def setup_vao(vertices: np.ndarray, indices: np.ndarray, model_matrices: np.ndar
         instance_vbo = glGenBuffers(1)
         num_instances = len(model_matrices)
         glBindBuffer(GL_ARRAY_BUFFER, instance_vbo)
-        glBufferData(GL_ARRAY_BUFFER, num_instances * 16 * model_matrices.itemsize, model_matrices, GL_DYNAMIC_DRAW)
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            num_instances * 16 * model_matrices.itemsize,
+            model_matrices,
+            GL_DYNAMIC_DRAW,
+        )
 
         for i in range(4):
             glEnableVertexAttribArray(3 + i)
-            glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, 16 * 4, ctypes.c_void_p(i * 16))
+            glVertexAttribPointer(
+                3 + i,
+                4,
+                GL_FLOAT,
+                GL_FALSE,
+                16 * 4,
+                ctypes.c_void_p(i * 16),
+            )
             glVertexAttribDivisor(3 + i, 1)
 
     glBindVertexArray(0)

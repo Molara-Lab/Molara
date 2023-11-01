@@ -34,7 +34,10 @@ class Spheres(Sphere):
         self.model_matrices = np.array([], dtype=np.float32)
 
 
-def generate_sphere(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, np.ndarray]:
+def generate_sphere(
+    color: np.ndarray,
+    subdivisions: int,
+) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
 
     :param color: Color of the sphere.
@@ -59,7 +62,19 @@ def generate_sphere(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, n
 
             normal = np.array([x, y, z])
             normal /= np.linalg.norm(normal)
-            vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+            vertices.extend(
+                [
+                    x,
+                    y,
+                    z,
+                    color[0],
+                    color[1],
+                    color[2],
+                    normal[0],
+                    normal[1],
+                    normal[2],
+                ],
+            )
             if j < subdivisions * 2 and i < subdivisions:
                 p1 = i * (subdivisions * 2 + 1) + j
                 p2 = p1 + 1
