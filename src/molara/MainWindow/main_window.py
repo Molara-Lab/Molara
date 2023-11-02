@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
-from molara.Molecule.importer import read_coord, read_xyz
+from molara.Molecule.io.importer import GeneralImporter
 
 
 class MainWindow(QMainWindow):
@@ -26,25 +26,21 @@ class MainWindow(QMainWindow):
         """Read the file from terminal arguments."""
         file_name = sys.argv[1]
 
-        self.mols = read_xyz(file_name)
+        self.load_molecules(file_name)
 
-        self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
-
-        if self.mols.num_mols > 1:
-            self.trajectory_dialog.show()
-            self.trajectory_dialog.initial_energy_plot()
-            self.trajectory_dialog.set_slider_range()
-
-    def show_xyz(self) -> None:
-        """Reads xyz file and shows the first structure in this file."""
+    def show_file_open_dialog(self):        
         file_name = QFileDialog.getOpenFileName(
             self,
             "Open .xyz file",
             "/home",
             "Image Files (*.xyz)",
-        )
+        )[0]
+        self.load_molecules(file_name)
 
-        self.mols = read_xyz(file_name[0])
+    def load_molecules(self, path):
+        '''low the molecules from path''' 
+        importer = GeneralImporter(path)
+        self.mols = importer.load()
 
         self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
 
@@ -52,19 +48,6 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
-
-    def show_coord(self) -> None:
-        """Reads coord file and shows the first structure in this file."""
-        file_name = QFileDialog.getOpenFileName(
-            self,
-            "Open coord file",
-            "/home",
-            "Image Files (*)",
-        )
-
-        self.mols = read_coord(file_name[0])
-
-        self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
 
     def show_poscar(self) -> bool:
         """Reads poscar file and shows the first structure in this file."""

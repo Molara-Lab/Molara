@@ -160,7 +160,7 @@ class QmImporter(MoleculesImporter):
         # conversion factor used by the cclib package
         CCLIB_EV_IN_HARTREE = 27.21138505
 
-        try: 
+        try:
             energy = np.array(cclib_data.scfenergies)
 
             energy /= CCLIB_EV_IN_HARTREE
@@ -182,14 +182,12 @@ class QmImporter(MoleculesImporter):
         except AttributeError as err:
             raise FileImporterError('Could not read atomic coordinates.')
 
-
 class GeneralImporter(MoleculesImporter):
     '''tries to determine the file format and calls the correct importer'''
 
     _IMPORTER_BY_SUFFIX: Mapping[str, MoleculesImporter] = {
         '.xyz': XyzImporter,
         '.coord': CoordImporter
-        
     }
 
     def __init__(self, path: PathLike | str) -> None:
@@ -198,7 +196,7 @@ class GeneralImporter(MoleculesImporter):
         suffix = self.path.suffix
 
         try:
-            self._importer = self._IMPORTER_BY_SUFFIX[suffix]
+            self._importer = self._IMPORTER_BY_SUFFIX[suffix](path)
         except KeyError:
             try:
                 self._importer = QmImporter(path)
@@ -207,4 +205,4 @@ class GeneralImporter(MoleculesImporter):
 
 
     def load(self) -> Molecules:
-        self._importer.load()
+        return self._importer.load()

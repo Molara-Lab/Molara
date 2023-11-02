@@ -20,7 +20,6 @@ from molara.Gui.trajectory_dialog import TrajectoryDialog
 #     pyside2-uic form.ui -o ui_form.py
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.MainWindow.main_window import MainWindow
-from molara.Molecule.importer import read_coord, read_xyz
 
 if TYPE_CHECKING:
     from types import FrameType
@@ -51,8 +50,7 @@ def main() -> None:
     if len(sys.argv) > 1:
         widget.show_init_xyz()
 
-    widget.ui.action_xyz.triggered.connect(widget.show_xyz)
-    widget.ui.actioncoord.triggered.connect(widget.show_coord)
+    widget.ui.actionImport.triggered.connect(widget.show_file_open_dialog)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(

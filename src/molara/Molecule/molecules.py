@@ -53,8 +53,6 @@ class Molecules:
         if type(mol) == Molecule:
             self.mols.append(mol)
 
-            self.num_mols += 1
-
             self.energies.append(mol.energy)
 
     def remove_molecule(self, index: int) -> None:
@@ -63,4 +61,3 @@ class Molecules:
         param: index: int.
         """
         self.mols.pop(index)
-        self.num_mols -= 1
