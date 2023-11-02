@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from os import PathLike
 from pathlib import Path
+from typing import List, Mapping
 
 import numpy as np
 
@@ -17,8 +18,8 @@ class FileImporterError(Exception):
 class FileFormatError(FileImporterError):
     '''raised when the file format is wrong or unsupported'''
 
-
-class Importer(ABC):
+class MoleculesImporter(ABC):
+    '''base class for importers loading molecules from files'''
 
     def __init__(self, path: PathLike | str) -> None:
         super().__init__()
@@ -30,8 +31,7 @@ class Importer(ABC):
         '''reads the file in self.path and create a Molecules object from its
         contents'''
 
-
-class XyzImporter(Importer):
+class XyzImporter(MoleculesImporter):
     '''
     import xyz files
     '''
@@ -103,33 +103,108 @@ class XyzImporter(Importer):
 
         return molecules
 
+class CoordImporter(MoleculesImporter):
+    '''importer fro *.coord files'''
 
-def read_coord(file_path: str) -> Molecules:
-    """Imports a coord file and returns the Molecule.
+    def load(self) -> Molecules:
+        molecules = Molecules()
 
-    param: file_path: str.
-    """
-    molecules = Molecules()
+        with open(self.path) as file:
+            lines = file.readlines()  # To skip first row
 
-    with open(file_path) as file:
-        lines = file.readlines()  # To skip first row
+        atomic_numbers = []
 
-    atomic_numbers = []
+        coordinates = []
 
-    coordinates = []
+        for line in lines[1:]:
+            if "$" in line:
+                break
 
-    for line in lines[1:]:
-        if "$" in line:
-            break
+            atom_info = line.split()
+            if atom_info[-1].isnumeric():
+                atomic_numbers.append(int(atom_info[-1]))
+            else:
+                atom_info[-1] = atom_info[-1].capitalize()
+                atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
+            coordinates.append([float(coord) * 0.529177249 for coord in atom_info[:3]])
 
-        atom_info = line.split()
-        if atom_info[-1].isnumeric():
-            atomic_numbers.append(int(atom_info[-1]))
-        else:
-            atom_info[-1] = atom_info[-1].capitalize()
-            atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
-        coordinates.append([float(coord) * 0.529177249 for coord in atom_info[:3]])
+        molecules.add_molecule(Molecule(np.array(atomic_numbers), np.array(coordinates)))
 
-    molecules.add_molecule(Molecule(np.array(atomic_numbers), np.array(coordinates)))
+        return molecules
 
-    return molecules
+class QmImporter(MoleculesImporter):
+    '''importer for output files of various quantum chemistry programs'''
+
+    def __init__(self, path: PathLike | str) -> None:
+        import cclib
+        super().__init__(path)
+
+        self._ccparser = cclib.io.ccopen(self.path)
+
+        if self._ccparser is None:
+            raise FileFormatError('Not a QM output file.')
+
+    def load(self) -> Molecules:
+        data = self._ccparser.parse()
+
+        mols: List[Molecule] = self._get_geometries(data)
+        energies = self._get_electronic_energies_in_hartree(data)
+
+        molecules = Molecules()
+        molecules.mols = mols
+        molecules.energies = energies if energies else []
+
+        return molecules
+
+    def _get_electronic_energies_in_hartree(self, cclib_data) -> np.ndarray | None:
+        # conversion factor used by the cclib package
+        CCLIB_EV_IN_HARTREE = 27.21138505
+
+        try: 
+            energy = np.array(cclib_data.scfenergies)
+
+            energy /= CCLIB_EV_IN_HARTREE
+
+            return energy
+        except AttributeError as err:
+            return None
+
+    def _get_geometries(self, cclib_data) -> List[Molecule]:
+        try: 
+            atoms = cclib_data.atomnos
+
+            mols = [
+                Molecule(atoms, coords)
+                for coords in cclib_data.atomcoords
+            ]
+
+            return mols
+        except AttributeError as err:
+            raise FileImporterError('Could not read atomic coordinates.')
+
+
+class GeneralImporter(MoleculesImporter):
+    '''tries to determine the file format and calls the correct importer'''
+
+    _IMPORTER_BY_SUFFIX: Mapping[str, MoleculesImporter] = {
+        '.xyz': XyzImporter,
+        '.coord': CoordImporter
+        
+    }
+
+    def __init__(self, path: PathLike | str) -> None:
+        super().__init__(path)
+
+        suffix = self.path.suffix
+
+        try:
+            self._importer = self._IMPORTER_BY_SUFFIX[suffix]
+        except KeyError:
+            try:
+                self._importer = QmImporter(path)
+            except FileFormatError:
+                raise FileFormatError('Could not open file.')
+
+
+    def load(self) -> Molecules:
+        self._importer.load()

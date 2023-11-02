@@ -12,9 +12,13 @@ class Molecules:
     def __init__(self) -> None:
         """Initializes the Molecules Class."""
         self.mols: list = []
-        self.num_mols = 0
         self.mol_index = 0
         self.energies: list = []
+
+    @property
+    def num_mols(self):
+        '''number of molecules'''
+        return len(self.mols)
 
     def get_current_mol(self) -> Molecule:
         """Returns a."""
