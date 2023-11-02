@@ -1,3 +1,8 @@
+"""This module contains the Cylinder and Cylinders classes.
+
+They are used to create cylinders and multiple cylinders of the same color, respectively.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -11,6 +16,7 @@ class Cylinder:
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Cylinder object, containing its vertices and indices."""
         self.color = color
         self.subdivisions = subdivisions
         vertices, indices = generate_cylinder(self.color, self.subdivisions)
@@ -19,19 +25,22 @@ class Cylinder:
 
 
 class Cylinders(Cylinder):
-    """Creates a Cylinders object containing multiple cylinders of the same color and the model matrices to draw
-    multiple instances.
+    """Creates a Cylinders object containing multiple cylinders.
 
     :param color: Color of the cylinder.
     :param subdivisions: Number of subdivisions of the cylinder.
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Cylinders object containing multiple cylinders."""
         super().__init__(color, subdivisions)
         self.model_matrices = np.array([], dtype=np.float32)
 
 
-def generate_cylinder(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, np.ndarray]:
+def generate_cylinder(
+    color: np.ndarray,
+    subdivisions: int,
+) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a cylinder for a given color and number of subdivisions.
 
     :param color: Color of the cylinder.
@@ -58,10 +67,24 @@ def generate_cylinder(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray,
         normal = np.array([x, 0, z])
         normal /= np.linalg.norm(normal)
         vertices.extend([x, y, z, color[0], color[1], color[2], 0, -1, 0])
-        vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+        vertices.extend(
+            [x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]],
+        )
 
         vertices.extend([x, y + height, z, color[0], color[1], color[2], 0, 1, 0])
-        vertices.extend([x, y + height, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+        vertices.extend(
+            [
+                x,
+                y + height,
+                z,
+                color[0],
+                color[1],
+                color[2],
+                normal[0],
+                normal[1],
+                normal[2],
+            ],
+        )
 
         # indices
         if i == subdivisions - 1:

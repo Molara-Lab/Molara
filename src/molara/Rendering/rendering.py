@@ -1,11 +1,24 @@
+"""Contains the rendering function for the opengl widget."""
+
 # mypy: disable-error-code="name-defined"
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
 import pyrr
 from OpenGL.GL import *
 
-from molara.Molecule.molecule import Molecule
+if TYPE_CHECKING:
+    from molara.Molecule.molecule import Molecule
+    from molara.Rendering.camera import Camera
 
 
-def draw_scene(shader, camera, vaos, molecule: Molecule):
+def draw_scene(
+    shader: GLuint,
+    camera: Camera,
+    vaos: list[int],
+    molecule: Molecule | None = None,
+) -> None:
     """Draws the contents of the given vaos from the given camera perspective.
 
     :param shader: The shader program of the opengl widget.
@@ -49,7 +62,10 @@ def draw_scene(shader, camera, vaos, molecule: Molecule):
             len(molecule.drawer.unique_spheres[idx].model_matrices),
         )
         glBindVertexArray(0)
-    for vao, atomic_number in zip(vaos[len(molecule.unique_atomic_numbers) :], molecule.unique_atomic_numbers):
+    for vao, atomic_number in zip(
+        vaos[len(molecule.unique_atomic_numbers) :],
+        molecule.unique_atomic_numbers,
+    ):
         idx = molecule.drawer.unique_cylinders_mapping[atomic_number]
         if molecule.drawer.unique_cylinders[idx].model_matrices is not None:
             glBindVertexArray(vao)

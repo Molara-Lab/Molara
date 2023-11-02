@@ -1,3 +1,5 @@
+"""This module contains the Sphere and Spheres classes."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -11,6 +13,7 @@ class Sphere:
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Sphere object, containing its vertices and indices."""
         self.color = color
         self.subdivisions = subdivisions
         vertices, indices = generate_sphere(self.color, self.subdivisions)
@@ -19,19 +22,22 @@ class Sphere:
 
 
 class Spheres(Sphere):
-    """Creates a Spheres object containing multiple spheres of the same color and the model matrices to draw multiple
-    instances.
+    """Creates a Spheres object containing multiple spheres.
 
     :param color: Color of the sphere.
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
     def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+        """Creates a Spheres object containing multiple spheres."""
         super().__init__(color, subdivisions)
         self.model_matrices = np.array([], dtype=np.float32)
 
 
-def generate_sphere(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, np.ndarray]:
+def generate_sphere(
+    color: np.ndarray,
+    subdivisions: int,
+) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
 
     :param color: Color of the sphere.
@@ -56,7 +62,19 @@ def generate_sphere(color: np.ndarray, subdivisions: int) -> tuple[np.ndarray, n
 
             normal = np.array([x, y, z])
             normal /= np.linalg.norm(normal)
-            vertices.extend([x, y, z, color[0], color[1], color[2], normal[0], normal[1], normal[2]])
+            vertices.extend(
+                [
+                    x,
+                    y,
+                    z,
+                    color[0],
+                    color[1],
+                    color[2],
+                    normal[0],
+                    normal[1],
+                    normal[2],
+                ],
+            )
             if j < subdivisions * 2 and i < subdivisions:
                 p1 = i * (subdivisions * 2 + 1) + j
                 p2 = p1 + 1

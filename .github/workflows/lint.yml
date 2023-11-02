@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
     steps:
     - uses: actions/checkout@v3
 
@@ -25,11 +25,7 @@ jobs:
       run: |
         ruff --version
         ruff .
-
-    - name: black
-      run: |
-        black --version
-        black --check --diff --color $(find . -name "*.py" | xargs)
+        ruff format --check .
 
     - name: mypy
       run: |
