@@ -28,7 +28,8 @@ class MainWindow(QMainWindow):
 
         self.load_molecules(file_name)
 
-    def show_file_open_dialog(self):        
+    def show_file_open_dialog(self) -> None:   
+        """Select a file in the file open dialog""" 
         file_name = QFileDialog.getOpenFileName(
             self,
             "Open .xyz file",
@@ -38,7 +39,7 @@ class MainWindow(QMainWindow):
         self.load_molecules(file_name)
 
     def load_molecules(self, path):
-        '''low the molecules from path''' 
+        """low the molecules from path""" 
         importer = GeneralImporter(path)
         self.mols = importer.load()
 

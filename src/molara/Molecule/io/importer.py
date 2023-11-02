@@ -13,13 +13,13 @@ from molara.Molecule.molecules import Molecules
 
 
 class FileImporterError(Exception):
-    '''base class for errors occuring when loading molecules from file'''
+    """base class for errors occuring when loading molecules from file"""
 
 class FileFormatError(FileImporterError):
-    '''raised when the file format is wrong or unsupported'''
+    """raised when the file format is wrong or unsupported"""
 
 class MoleculesImporter(ABC):
-    '''base class for importers loading molecules from files'''
+    """base class for importers loading molecules from files"""
 
     def __init__(self, path: PathLike | str) -> None:
         super().__init__()
@@ -28,18 +28,18 @@ class MoleculesImporter(ABC):
 
     @abstractmethod
     def load(self) -> Molecules:
-        '''reads the file in self.path and create a Molecules object from its
-        contents'''
+        """reads the file in self.path and create a Molecules object from its
+        contents"""
 
 class XyzImporter(MoleculesImporter):
-    '''
+    """
     import xyz files
-    '''
+    """
 
     def load(self) -> Molecules:
         molecules = Molecules()
 
-        with open(self.path, encoding='utf-8') as file:
+        with open(self.path, encoding="utf-8") as file:
             lines = file.readlines()
 
             num_atoms = int(lines[0])
@@ -60,7 +60,7 @@ class XyzImporter(MoleculesImporter):
                 coordinates.append([float(coord) for coord in atom_info[1:4]])
 
         molecules.add_molecule(Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1]))
-        
+
         # Read in for a single xyz file
         # Goes on if file has more than one structure stored
         if (len(lines) > 2 + num_atoms) and lines[2 + num_atoms].replace(
@@ -104,7 +104,7 @@ class XyzImporter(MoleculesImporter):
         return molecules
 
 class CoordImporter(MoleculesImporter):
-    '''importer fro *.coord files'''
+    """importer fro *.coord files"""
 
     def load(self) -> Molecules:
         molecules = Molecules()
@@ -133,7 +133,7 @@ class CoordImporter(MoleculesImporter):
         return molecules
 
 class QmImporter(MoleculesImporter):
-    '''importer for output files of various quantum chemistry programs'''
+    """importer for output files of various quantum chemistry programs"""
 
     def __init__(self, path: PathLike | str) -> None:
         import cclib
@@ -142,7 +142,7 @@ class QmImporter(MoleculesImporter):
         self._ccparser = cclib.io.ccopen(self.path)
 
         if self._ccparser is None:
-            raise FileFormatError('Not a QM output file.')
+            raise FileFormatError("Not a QM output file.")
 
     def load(self) -> Molecules:
         data = self._ccparser.parse()
@@ -180,14 +180,14 @@ class QmImporter(MoleculesImporter):
 
             return mols
         except AttributeError as err:
-            raise FileImporterError('Could not read atomic coordinates.')
+            raise FileImporterError("Could not read atomic coordinates.")
 
 class GeneralImporter(MoleculesImporter):
-    '''tries to determine the file format and calls the correct importer'''
+    """tries to determine the file format and calls the correct importer"""
 
     _IMPORTER_BY_SUFFIX: Mapping[str, MoleculesImporter] = {
-        '.xyz': XyzImporter,
-        '.coord': CoordImporter
+        ".xyz": XyzImporter,
+        ".coord": CoordImporter
     }
 
     def __init__(self, path: PathLike | str) -> None:
@@ -201,7 +201,7 @@ class GeneralImporter(MoleculesImporter):
             try:
                 self._importer = QmImporter(path)
             except FileFormatError:
-                raise FileFormatError('Could not open file.')
+                raise FileFormatError("Could not open file.")
 
 
     def load(self) -> Molecules:
