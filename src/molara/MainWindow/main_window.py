@@ -51,6 +51,7 @@ class MainWindow(QMainWindow):
         if self.mols.num_mols > 1:
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
+            self.trajectory_dialog.set_slider_range()
 
     def show_coord(self) -> None:
         """Reads coord file and shows the first structure in this file."""
