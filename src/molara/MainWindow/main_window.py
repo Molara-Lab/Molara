@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
             self,
             "Open .xyz file",
             "/home",
-            "Image Files (*.xyz)",
+            "All Files (*.*)",
         )[0]
         self.load_molecules(file_name)
 
