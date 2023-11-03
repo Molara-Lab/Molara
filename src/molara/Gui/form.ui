@@ -53,6 +53,8 @@
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
     <addaction name="actionOpen_Trajectory_Dialog"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggle_Bonds"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -116,7 +118,7 @@
     <string>Read POSCAR</string>
    </property>
   </action>
-  <action name="actioncoord">
+  <action name="action_coord">
    <property name="text">
     <string>coord</string>
    </property>
@@ -129,6 +131,9 @@
   <action name="actionImport">
    <property name="text">
     <string>Import</string>
+  <action name="actionToggle_Bonds">
+   <property name="text">
+    <string>Toggle Bonds</string>
    </property>
   </action>
  </widget>

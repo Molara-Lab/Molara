@@ -16,12 +16,13 @@ if TYPE_CHECKING:
 class Molecule:
     """Creates a new Molecule object."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
         header: str | None = None,
         dummy: bool = False,
+        draw_bonds: bool = True,
     ) -> None:
         """Creates a new Molecule object.
 
@@ -46,6 +47,7 @@ class Molecule:
 
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
+        self.draw_bonds = draw_bonds
 
         self.gen_energy_information(header)
 
@@ -71,7 +73,11 @@ class Molecule:
 
         return np.array([[-1, -1]], dtype=np.int_)
 
-    def add_atom(self, atomic_number: int, coordinate: ArrayLike) -> None:
+    def toggle_bonds(self) -> None:
+        """Toggles the bonds on and off."""
+        self.draw_bonds = not self.draw_bonds
+
+    def add_atom(self, atomic_number: int, coordinate: np.ndarray) -> None:
         """Adds an atom to the molecule."""
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)

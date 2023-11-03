@@ -23,7 +23,6 @@ setup(
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
@@ -43,4 +42,14 @@ setup(
     install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL"],
     python_requires=">=3.8",
     entry_points={"console_scripts": ["molara=molara.__main__:main"]},
+    extras_require={
+        "dev": [
+            "mypy",
+            "pre-commit",
+            "pytest-cov",
+            "pytest-split",
+            "pytest",
+            "ruff",
+        ],
+    },
 )

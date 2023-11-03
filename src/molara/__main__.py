@@ -59,6 +59,7 @@ def main() -> None:
     widget.ui.quit.triggered.connect(widget.close)
     widget.ui.actionRead_POSCAR.triggered.connect(widget.show_poscar)
     widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
+    widget.ui.actionToggle_Bonds.triggered.connect(widget.toggle_bonds)
     widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(
         widget.trajectory_dialog.show,
     )

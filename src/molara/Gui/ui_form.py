@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -46,12 +46,6 @@ class Ui_MainWindow(object):
         self.actionCreate_Lattice.setObjectName(u"actionCreate_Lattice")
         self.actionRead_POSCAR = QAction(MainWindow)
         self.actionRead_POSCAR.setObjectName(u"actionRead_POSCAR")
-        self.actioncoord = QAction(MainWindow)
-        self.actioncoord.setObjectName(u"actioncoord")
-        self.actionOpen_Trajectory_Dialog = QAction(MainWindow)
-        self.actionOpen_Trajectory_Dialog.setObjectName(u"actionOpen_Trajectory_Dialog")
-        self.actionImport = QAction(MainWindow)
-        self.actionImport.setObjectName(u"actionImport")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -88,6 +82,8 @@ class Ui_MainWindow(object):
         self.menuEdit.addAction(self.menuRotate.menuAction())
         self.menuEdit.addAction(self.actionDraw_Axes)
         self.menuEdit.addAction(self.actionOpen_Trajectory_Dialog)
+        self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.actionToggle_Bonds)
         self.menuRotate.addAction(self.actionto_x_axis)
         self.menuRotate.addAction(self.actionto_y_axis)
         self.menuRotate.addAction(self.actionto_z_axis)
@@ -111,10 +107,12 @@ class Ui_MainWindow(object):
         self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Draw Axes", None))
         self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", u"Create Lattice", None))
         self.actionRead_POSCAR.setText(QCoreApplication.translate("MainWindow", u"Read POSCAR", None))
-        self.actioncoord.setText(QCoreApplication.translate("MainWindow", u"coord", None))
         self.actionOpen_Trajectory_Dialog.setText(QCoreApplication.translate("MainWindow", u"Open Trajectory Dialog", None))
         self.actionImport.setText(QCoreApplication.translate("MainWindow", u"Import", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
+        self.actionToggle_Bonds.setText(QCoreApplication.translate("MainWindow", u"Toggle Bonds", None))
+        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
+        self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
