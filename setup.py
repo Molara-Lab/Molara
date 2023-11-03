@@ -51,5 +51,6 @@ setup(
             "pytest",
             "ruff",
         ],
+        "solids": ["pymatgen", "ase"],
     },
 )
