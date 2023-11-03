@@ -166,7 +166,7 @@ class QmImporter(MoleculesImporter):
 
         molecules = Molecules()
         molecules.mols = mols
-        molecules.energies = energies if energies is not None else []
+        molecules.energies = list(energies) if energies is not None else []
 
         return molecules
 
