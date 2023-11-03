@@ -7,15 +7,15 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
+from molara.Molecule.crystal import Crystal
 
 if TYPE_CHECKING:
     from os import PathLike
 
-    from molara.Molecule.crystal import Crystal
-
 
 class FileImporterError(Exception):
     """base class for errors occurring when loading molecules from file."""
+
 
 class FileFormatError(FileImporterError):
     """raised when the file format is wrong or unsupported."""
@@ -35,8 +35,12 @@ class Importer(ABC):
         """Reads the file in self.path."""
 
 
-class CifImporter(Importer):
-    """import crystal files."""
+class PymatgenImporter(Importer):
+    """import crystal files.
+
+    This class is a wrapper around the pymatgen Structure class. Supported file formats include cif, poscar, cssr,
+    pymatgen's json format, and pymatgen's yaml format.
+    """
 
     def __init__(self, path: PathLike | str) -> None:
         """Initializes the Importer object."""
@@ -46,6 +50,7 @@ class CifImporter(Importer):
         """Imports a file and returns the Crystal."""
         try:
             from pymatgen import Structure
+
             structure = Structure.from_file(self.path)
             crystal = Crystal(
                 atomic_numbers=structure.atomic_numbers,
@@ -53,9 +58,10 @@ class CifImporter(Importer):
                 basis_vectors=structure.lattice.matrix,
             )
         except ImportError as err:
-            msg = "pymatgen is not installed, cannot read .cif files"
+            msg = "pymatgen is not installed, cannot read files"
             raise ImportError(msg) from err
         return crystal
+
 
 class VasprunImporter(Importer):
     """import crystal files."""
@@ -66,19 +72,19 @@ class VasprunImporter(Importer):
 
     def load(self) -> Crystal:
         """Imports a file and returns the Crystal."""
-        if self.path.suffix == ".xml":
-            try:
-                from pymatgen.io.vasp import Vasprun
-                vasprun = Vasprun(self.path)
-                structure = vasprun.final_structure
-                crystal = Crystal(
-                    atomic_numbers=structure.atomic_numbers,
-                    coordinates=structure.cart_coords,
-                    basis_vectors=structure.lattice.matrix,
-                )
-            except ImportError as err:
-                msg = "pymatgen is not installed, cannot read .xml files"
-                raise FileFormatError(
-                    msg
-                ) from err
+        try:
+            from pymatgen.io.vasp import Vasprun
+
+            vasprun = Vasprun(self.path)
+            structure = vasprun.final_structure
+            crystal = Crystal(
+                atomic_numbers=structure.atomic_numbers,
+                coordinates=structure.cart_coords,
+                basis_vectors=structure.lattice.matrix,
+            )
+        except ImportError as err:
+            msg = "pymatgen is not installed, cannot read vasprun.xml files"
+            raise FileFormatError(
+                msg,
+            ) from err
         return crystal
