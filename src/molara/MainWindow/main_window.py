@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
@@ -10,6 +11,9 @@ from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer import GeneralImporter
+
+if TYPE_CHECKING:
+    from os import PathLike
 
 
 class MainWindow(QMainWindow):
@@ -38,8 +42,8 @@ class MainWindow(QMainWindow):
         )[0]
         self.load_molecules(file_name)
 
-    def load_molecules(self, path):
-        """Low the molecules from path"""
+    def load_molecules(self, path: PathLike | str) -> None:
+        """Load the molecules from path."""
         importer = GeneralImporter(path)
         self.mols = importer.load()
 

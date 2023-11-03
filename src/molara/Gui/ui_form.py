@@ -119,4 +119,3 @@ class Ui_MainWindow(object):
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
     # retranslateUi
-

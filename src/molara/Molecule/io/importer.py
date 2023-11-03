@@ -13,13 +13,18 @@ from molara.Molecule.molecules import Molecules
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from os import PathLike
+    from typing import Any
+
+    from cclib.data import ccData
 
 
 class FileImporterError(Exception):
-    """Base class for errors occuring when loading molecules from file."""
+    """Base class for errors occurring when loading molecules from file."""
+
 
 class FileFormatError(FileImporterError):
     """Raised when the file format is wrong or unsupported."""
+
 
 class MoleculesImporter(ABC):
     """Base class for importers loading molecules from files."""
@@ -33,10 +38,12 @@ class MoleculesImporter(ABC):
     def load(self) -> Molecules:
         """Reads the file in self.path and creates a Molecules object."""
 
+
 class XyzImporter(MoleculesImporter):
     """Import xyz files."""
 
     def load(self) -> Molecules:
+        """Reads the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
         with open(self.path, encoding="utf-8") as file:
@@ -91,7 +98,8 @@ class XyzImporter(MoleculesImporter):
                     coordinates.append([float(coord) for coord in atom_info[1:4]])
 
                 if not (
-                    (len(lines) > 2 + xyz_len + num_atoms) and lines[xyz_len + 2 + num_atoms].replace("\n", "").isdigit()
+                    (len(lines) > 2 + xyz_len + num_atoms)
+                    and lines[xyz_len + 2 + num_atoms].replace("\n", "").isdigit()
                 ):
                     not_finished = False
 
@@ -103,10 +111,12 @@ class XyzImporter(MoleculesImporter):
 
         return molecules
 
+
 class CoordImporter(MoleculesImporter):
-    """importer from *.coord files."""
+    """Importer from *.coord files."""
 
     def load(self) -> Molecules:
+        """Reads the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
         with open(self.path) as file:
@@ -132,19 +142,23 @@ class CoordImporter(MoleculesImporter):
 
         return molecules
 
+
 class QmImporter(MoleculesImporter):
     """importer for output files of various quantum chemistry programs."""
 
     def __init__(self, path: PathLike | str) -> None:  # noqa: D107
         import cclib
+
         super().__init__(path)
 
         self._ccparser = cclib.io.ccopen(self.path)
 
         if self._ccparser is None:
-            raise FileFormatError("Not a QM output file.")
+            msg = "Not a QM output file."
+            raise FileFormatError(msg)
 
     def load(self) -> Molecules:
+        """Reads the file in self.path and creates a Molecules object."""
         data = self._ccparser.parse()
 
         mols: list[Molecule] = self._get_geometries(data)
@@ -156,41 +170,42 @@ class QmImporter(MoleculesImporter):
 
         return molecules
 
-    def _get_electronic_energies_in_hartree(self, cclib_data) -> np.ndarray | None:
+    def _get_electronic_energies_in_hartree(self, cclib_data: ccData) -> np.ndarray | None:
         # conversion factor used by the cclib package
-        CCLIB_EV_IN_HARTREE = 27.21138505
+        cclib_ev_in_hartree = 27.21138505
 
         try:
             energy = np.array(cclib_data.scfenergies)
 
-            energy /= CCLIB_EV_IN_HARTREE
+            energy /= cclib_ev_in_hartree
 
-            return energy
         except AttributeError:
             return None
+        return energy
 
-    def _get_geometries(self, cclib_data) -> list[Molecule]:
+    def _get_geometries(self, cclib_data: ccData) -> list[Molecule]:
         try:
             atoms = cclib_data.atomnos
 
-            mols = [
-                Molecule(atoms, coords)
-                for coords in cclib_data.atomcoords
-            ]
+            mols = [Molecule(atoms, coords) for coords in cclib_data.atomcoords]
 
-            return mols
-        except AttributeError:
-            raise FileImporterError("Could not read atomic coordinates.")
+        except AttributeError as err:
+            msg = "Could not read atomic coordinates."
+            raise FileImporterError(msg) from err
+
+        return mols
+
 
 class GeneralImporter(MoleculesImporter):
-    """tries to determine the file format and calls the correct importer."""
+    """Tries to determine the file format and calls the correct importer."""
 
-    _IMPORTER_BY_SUFFIX: Mapping[str, MoleculesImporter] = {
+    _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzImporter,
         ".coord": CoordImporter,
     }
 
     def __init__(self, path: PathLike | str) -> None:
+        """Tries to determine the file format and calls the correct importer."""
         super().__init__(path)
 
         suffix = self.path.suffix
@@ -200,9 +215,10 @@ class GeneralImporter(MoleculesImporter):
         except KeyError:
             try:
                 self._importer = QmImporter(path)
-            except FileFormatError:
-                raise FileFormatError("Could not open file.")
-
+            except FileFormatError as err:
+                msg = "Could not open file."
+                raise FileFormatError(msg) from err
 
     def load(self) -> Molecules:
+        """Reads the file in self.path and creates a Molecules object."""
         return self._importer.load()

@@ -16,8 +16,8 @@ class Molecules:
         self.energies: list = []
 
     @property
-    def num_mols(self):
-        '''number of molecules'''
+    def num_mols(self) -> int:
+        """Number of molecules."""
         return len(self.mols)
 
     def get_current_mol(self) -> Molecule:
