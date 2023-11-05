@@ -9,10 +9,10 @@ from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glV
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from molara.Rendering.buffers import Vao
 from molara.Rendering.camera import Camera
-from molara.Rendering.rendering import draw_scene
+from molara.Rendering.rendering import draw_scene, update_atoms_vao, update_bonds_vao
 from molara.Rendering.shaders import compile_shaders
+from molara.Rendering.sphere import Sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
@@ -99,32 +99,26 @@ class MoleculeWidget(QOpenGLWidget):
             draw_scene(
                 self.shader,
                 self.camera,
-                self.vertex_attribute_objects,
                 self.molecule,
             )
         else:
-            draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
+            draw_scene(self.shader, self.camera)
 
     def set_vertex_attribute_objects(self) -> None:
         """Sets the vertex attribute objects of the molecule."""
         self.makeCurrent()
-        self.vertex_attribute_objects = []
-        for atomic_number in self.molecule.unique_atomic_numbers:
-            idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
-            vao = Vao(
-                self.molecule.drawer.unique_spheres[idx].vertices,
-                self.molecule.drawer.unique_spheres[idx].indices,
-                self.molecule.drawer.unique_spheres[idx].model_matrices,
-            )
-            self.vertex_attribute_objects.append(vao.vao)
-        for atomic_number in self.molecule.unique_atomic_numbers:
-            idx = self.molecule.drawer.unique_cylinders_mapping[atomic_number]
-            vao = Vao(
-                self.molecule.drawer.unique_cylinders[idx].vertices,
-                self.molecule.drawer.unique_cylinders[idx].indices,
-                self.molecule.drawer.unique_cylinders[idx].model_matrices,
-            )
-            self.vertex_attribute_objects.append(vao.vao)
+        update_atoms_vao(
+            self.molecule.drawer.sphere.vertices,
+            self.molecule.drawer.sphere.indices,
+            self.molecule.drawer.sphere_model_matrices,
+            self.molecule.drawer.sphere_colors,
+        )
+        update_bonds_vao(
+            self.molecule.drawer.cylinder.vertices,
+            self.molecule.drawer.cylinder.indices,
+            self.molecule.drawer.cylinder_model_matrices,
+            self.molecule.drawer.cylinder_colors,
+        )
 
     def draw_axes(self) -> None:
         """Draws the axes."""
@@ -146,6 +140,7 @@ class MoleculeWidget(QOpenGLWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         """Starts the rotation or translation of the molecule."""
+        self.set_vertex_attribute_objects()
         if (
             event.button() == Qt.MouseButton.LeftButton
             and event.x() in range(self.width())

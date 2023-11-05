@@ -48,7 +48,6 @@ class Molecule:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
         self.draw_bonds = draw_bonds
-
         self.gen_energy_information(header)
 
     def calculate_bonds(self) -> np.ndarray:
@@ -113,4 +112,6 @@ class Molecule:
                 index_e = split_string.index("energy:")
 
                 if index_e + 1 < len(split_string):
-                    self.energy = float(string.split()[split_string.index("energy:") + 1])
+                    self.energy = float(
+                        string.split()[split_string.index("energy:") + 1],
+                    )

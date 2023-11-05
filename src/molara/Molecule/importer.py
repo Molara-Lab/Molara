@@ -35,7 +35,9 @@ def read_xyz(file_path: str) -> Molecules:
 
             coordinates.append([float(coord) for coord in atom_info[1:4]])
 
-    molecules.add_molecule(Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1]))
+    molecules.add_molecule(
+        Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1]),
+    )
     # Read in for a single xyz file
     # Goes on if file has more than one structure stored
     if (len(lines) > 2 + num_atoms) and lines[2 + num_atoms].replace(
@@ -71,7 +73,11 @@ def read_xyz(file_path: str) -> Molecules:
                 not_finished = False
 
             molecules.add_molecule(
-                Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1 + xyz_len]),
+                Molecule(
+                    np.array(atomic_numbers),
+                    np.array(coordinates),
+                    lines[1 + xyz_len],
+                ),
             )
 
     file.close()

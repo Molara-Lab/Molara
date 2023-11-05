@@ -12,39 +12,23 @@ class Sphere:
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+    def __init__(self, subdivisions: int) -> None:
         """Creates a Sphere object, containing its vertices and indices."""
-        self.color = color
         self.subdivisions = subdivisions
-        vertices, indices = generate_sphere(self.color, self.subdivisions)
+        vertices, indices = generate_sphere(self.subdivisions)
         self.vertices = vertices
         self.indices = indices
 
 
-class Spheres(Sphere):
-    """Creates a Spheres object containing multiple spheres.
-
-    :param color: Color of the sphere.
-    :param subdivisions: Number of subdivisions of the sphere.
-    """
-
-    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
-        """Creates a Spheres object containing multiple spheres."""
-        super().__init__(color, subdivisions)
-        self.model_matrices = np.array([], dtype=np.float32)
-
-
 def generate_sphere(
-    color: np.ndarray,
     subdivisions: int,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
+    """Calculates the vertices and indices of a sphere for a given number of subdivisions.
 
-    :param color: Color of the sphere.
     :param subdivisions: Number of subdivisions of the sphere.
     :returns:
-        - **vertices** (numpy.array of numpy.float32) - Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where\
-         xyz are the cartesian coordinates,rgb are the color values [0,1], and nxnynz are the components of the normal\
+        - **vertices** (numpy.array of numpy.float32) - Vertices in the following order x,y,z,nx,ny,nz,..., where\
+         xyz are the cartesian coordinates and nxnynz are the components of the normal\
           vector.
         - **indices** (numpy.array of numpy.uint32) - Gives the connectivity of the vertices.
     """
@@ -67,9 +51,6 @@ def generate_sphere(
                     x,
                     y,
                     z,
-                    color[0],
-                    color[1],
-                    color[2],
                     normal[0],
                     normal[1],
                     normal[2],
