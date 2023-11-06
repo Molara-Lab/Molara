@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import numpy as np
+import pyrr
 
 
 class Sphere:
     """Creates a Sphere object, containing its vertices and indices.
 
-    :param color: Color of the sphere.
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
@@ -65,3 +65,24 @@ def generate_sphere(
                 indices.extend([p1, p2, p3, p3, p2, p4])
 
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+
+def calculate_sphere_model_matrix(position: np.ndarray, radius: np.ndarray) -> np.ndarray:
+    """Calculates the model matrix for a sphere.
+
+    :param position: Position of the sphere.
+    :param radius: Radius of the sphere.
+    :return: Model matrix of the sphere.
+    """
+    # Calculate the translation matrix to translate the sphere to the correct position.
+    translation_matrix = pyrr.matrix44.create_from_translation(
+        pyrr.Vector3(position),
+    )
+    # Calculate the scale matrix to scale the sphere to the correct size.
+    scale_matrix = pyrr.matrix44.create_from_scale(
+        pyrr.Vector3([radius, radius, radius]),
+    )
+    return np.array(
+        scale_matrix @ translation_matrix,
+        dtype=np.float32,
+    )

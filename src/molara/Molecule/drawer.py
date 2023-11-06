@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pyrr
 
-from molara.Rendering.cylinder import Cylinder
+from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
 from molara.Rendering.sphere import Sphere
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ class Drawer:
         self.cylinder_colors = np.array([], dtype=np.float32)
         self.atoms = atoms
         self.bonds = bonds
-        self.set_sphere_model_matrices()
+        self.set_atom_model_matrices()
         self.set_cylinder_model_matrices()
 
     def set_atoms(self, atoms: list[Atom]) -> None:
@@ -40,7 +40,7 @@ class Drawer:
         """
         self.atoms = atoms
 
-    def reset_spheres_model_matrices(self) -> None:
+    def reset_atom_model_matrices(self) -> None:
         """Resets the model matrices for the spheres.
 
         :return:
@@ -66,6 +66,7 @@ class Drawer:
                     self.atoms[bond[0]],
                     self.atoms[bond[1]],
                 )
+                # print(model_matrix)
                 colors_1 = np.array(self.atoms[bond[0]].cpk_color)
                 colors_2 = np.array(self.atoms[bond[1]].cpk_color)
                 if self.cylinder_model_matrices.shape[0] == 0:
@@ -85,21 +86,21 @@ class Drawer:
                         (self.cylinder_colors, np.array([colors_2], dtype=np.float32)),
                     )
 
-    def set_sphere_model_matrices(self) -> None:
+    def set_atom_model_matrices(self) -> None:
         """Sets the model matrices for the spheres.
 
         :return:
         """
-        self.reset_spheres_model_matrices()
+        self.reset_atom_model_matrices()
         for atom in self.atoms:
             if self.sphere_model_matrices.shape[0] == 0:
-                self.sphere_model_matrices = calculate_sphere_model_matrix(atom)
+                self.sphere_model_matrices = calculate_atom_model_matrix(atom)
                 self.sphere_colors = np.array([atom.cpk_color], dtype=np.float32)
             else:
                 self.sphere_model_matrices = np.concatenate(
                     (
                         self.sphere_model_matrices,
-                        calculate_sphere_model_matrix(atom),
+                        calculate_atom_model_matrix(atom),
                     ),
                 )
                 self.sphere_colors = np.concatenate(
@@ -107,7 +108,7 @@ class Drawer:
                 )
 
 
-def calculate_sphere_model_matrix(atom: Atom) -> np.ndarray:
+def calculate_atom_model_matrix(atom: Atom) -> np.ndarray:
     """Calculates the model matrix for an atom displayed as a sphere.
 
     :param atom: Atom
@@ -143,43 +144,13 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     position_1 = mid_point - difference / 4
     # calculate the point 3 quarter between the 2 atoms
     position_2 = mid_point + difference / 4
-    # Calculate the rotation axis to rotate the cylinder to the correct orientation.
-    y_axis = np.array([0, 1, 0], dtype=np.float32)
-    difference = difference / np.linalg.norm(difference)
-    if abs(y_axis @ difference) != 1:
-        rotation_axis = np.cross(y_axis, difference)
-        # Calculate the angle to rotate the cylinder to the correct orientation.
-        rotation_angle = np.arccos(
-            np.clip(
-                np.dot(difference, y_axis) / (np.linalg.norm(difference)),
-                -1,
-                1,
-            ),
-        )
-    else:
-        rotation_axis = np.array([0, 0, 1], dtype=np.float32)
-        rotation_angle = 0
-    translation_matrix_1 = pyrr.matrix44.create_from_translation(
-        pyrr.Vector3(position_1),
-    )
-    translation_matrix_2 = pyrr.matrix44.create_from_translation(
-        pyrr.Vector3(position_2),
-    )
-    # Calculate the rotation matrix to rotate the cylinder to the correct orientation.
-    rotation_matrix = pyrr.matrix44.create_from_axis_rotation(
-        rotation_axis,
-        rotation_angle,
-    )
-    # Calculate the scale matrix to scale the cylinder to the correct length.
-    scale = pyrr.Vector3([0.15] * 3)
-    scale[1] = length / 2
-    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3(scale))
-    # Return the model matrix for the cylinder.
-    rotation_scale_matrix = scale_matrix @ rotation_matrix
+
+    mat1 = calculate_cylinder_model_matrix(position_1, 0.15, length, difference)
+    mat2 = calculate_cylinder_model_matrix(position_2, 0.15, length, difference)
     return np.array(
         [
-            np.array([rotation_scale_matrix @ translation_matrix_2], dtype=np.float32),
-            np.array([rotation_scale_matrix @ translation_matrix_1], dtype=np.float32),
+            mat2,
+            mat1,
         ],
         dtype=np.float32,
     )

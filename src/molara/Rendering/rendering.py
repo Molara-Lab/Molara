@@ -5,18 +5,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
 import pyrr
 from OpenGL.GL import *
 
 from molara.Rendering.buffers import setup_vao
+from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 if TYPE_CHECKING:
-    import numpy as np
-
     from molara.Rendering.camera import Camera
-
-atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": []}
-bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
 
 
 class Renderer:
@@ -26,6 +23,8 @@ class Renderer:
         """Creates a Renderer object."""
         self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": []}
         self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
+        self.spheres: list[dict] = []
+        self.cylinders: list[dict] = []
         self.shader: GLuint = 0
 
     def set_shader(self, shader: GLuint) -> None:
@@ -35,6 +34,89 @@ class Renderer:
         :type shader: pyopengl program
         """
         self.shader = shader
+
+    def draw_spheres(
+        self,
+        positions: np.ndarray,
+        radii: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+    ) -> int:
+        """Draws one or multiple spheres.
+
+        If only one sphere is drawn, the positions, radii and colors are given
+        as np.ndarray containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple
+        spheres are drawn, the positions, radii and colors are given as np.ndarray containing multiple arrays, for
+        instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
+
+        :param positions: Positions of the spheres.
+        :type positions: numpy.array of numpy.float32
+        :param radii: Radii of the spheres.
+        :type radii: numpy.array of numpy.float32
+        :param colors: Colors of the spheres.
+        :type colors: numpy.array of numpy.float32
+        :param subdivisions: Number of subdivisions of the sphere.
+        :type subdivisions: int
+        :return: Returns the index of the sphere in the list of spheres.
+        """
+        n_instances = len(positions)
+        sphere_mesh = Sphere(subdivisions)
+        if n_instances == 1:
+            model_matrices = calculate_sphere_model_matrix(positions[0], radii[0])
+        else:
+            for i in range(n_instances):
+                model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
+                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+
+        sphere = {
+            "vao": 0,
+            "n_instances": n_instances,
+            "n_vertices": len(sphere_mesh.vertices),
+            "buffers": [],
+        }
+        sphere["vao"], sphere["buffers"] = setup_vao(
+            sphere_mesh.vertices,
+            sphere_mesh.indices,
+            model_matrices,
+            colors,
+        )
+
+        # get index of new sphere instances in list
+        i_sphere = -1
+        if len(self.spheres) != 0:
+            for i, check_sphere in enumerate(self.spheres):
+                if check_sphere["vao"] == 0:
+                    i_sphere = i
+                    self.spheres[i_sphere] = sphere
+            if i_sphere == -1:
+                i_sphere = len(self.spheres)
+                self.spheres.append(sphere)
+        else:
+            i_sphere = 0
+            self.spheres.append(sphere)
+        return i_sphere
+
+    def remove_sphere(self, i_sphere: int) -> None:
+        """Removes a sphere from the list of spheres.
+
+        :param i_sphere: Index of the sphere to remove.
+        :type i_sphere: int
+        :return:
+        """
+        if i_sphere < len(self.spheres):
+            sphere = self.spheres[i_sphere]
+            if sphere["vao"] != 0:
+                glBindBuffer(GL_ARRAY_BUFFER, 0)
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+                for buffer in sphere["buffers"]:
+                    glDeleteBuffers(1, buffer)
+                glDeleteVertexArrays(1, sphere["vao"])
+            self.spheres[i_sphere] = {
+                "vao": 0,
+                "n_instances": 0,
+                "n_vertices": 0,
+                "buffers": [],
+            }
 
     def update_atoms_vao(
         self,
@@ -58,10 +140,10 @@ class Renderer:
         if self.atoms_vao["vao"] == 0:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in atoms_vao["buffers"]:
+            for buffer in self.atoms_vao["buffers"]:
                 glDeleteBuffers(1, buffer)
-            glDeleteVertexArrays(1, atoms_vao["vao"])
-        self.atoms_vao["vao"], atoms_vao["buffers"] = setup_vao(
+            glDeleteVertexArrays(1, self.atoms_vao["vao"])
+        self.atoms_vao["vao"], self.atoms_vao["buffers"] = setup_vao(
             vertices,
             indices,
             model_matrices,
@@ -92,10 +174,10 @@ class Renderer:
         if self.bonds_vao["vao"] == 0:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in bonds_vao["buffers"]:
+            for buffer in self.bonds_vao["buffers"]:
                 glDeleteBuffers(1, buffer)
-            glDeleteVertexArrays(1, bonds_vao["vao"])
-        self.bonds_vao["vao"], bonds_vao["buffers"] = setup_vao(
+            glDeleteVertexArrays(1, self.bonds_vao["vao"])
+        self.bonds_vao["vao"], self.bonds_vao["buffers"] = setup_vao(
             vertices,
             indices,
             model_matrices,
@@ -135,6 +217,8 @@ class Renderer:
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, view_mat)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        # Draw atoms
         glBindVertexArray(self.atoms_vao["vao"])
         glDrawElementsInstanced(
             GL_TRIANGLES,
@@ -143,6 +227,8 @@ class Renderer:
             None,
             self.atoms_vao["n_atoms"],
         )
+
+        # Draw bonds
         glBindVertexArray(self.bonds_vao["vao"])
         glDrawElementsInstanced(
             GL_TRIANGLES,
@@ -151,4 +237,16 @@ class Renderer:
             None,
             self.bonds_vao["n_bonds"],
         )
+
+        # Draw spheres
+        for sphere in self.spheres:
+            if sphere["vao"] != 0:
+                glBindVertexArray(sphere["vao"])
+                glDrawElementsInstanced(
+                    GL_TRIANGLES,
+                    sphere["n_vertices"],
+                    GL_UNSIGNED_INT,
+                    None,
+                    sphere["n_instances"],
+                )
         glBindVertexArray(0)

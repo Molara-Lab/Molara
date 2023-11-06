@@ -6,6 +6,7 @@ They are used to create cylinders and multiple cylinders of the same color, resp
 from __future__ import annotations
 
 import numpy as np
+import pyrr
 
 
 class Cylinder:
@@ -88,3 +89,45 @@ def generate_cylinder(
             indices.extend([5 + 4 * i, 7 + 4 * i, 9 + 4 * i])
 
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+
+def calculate_cylinder_model_matrix(
+    position: np.ndarray,
+    radius: float,
+    length: float,
+    direction: np.ndarray,
+) -> np.ndarray:
+    """Calculates the model matrix for a cylinder.
+
+    :param position: Position of the center of the cylinder.
+    :param radius: Radius of the cylinder.
+    :param length: Length of the cylinder.
+    :param direction: Direction of the cylinder, does not need to be normalized.
+    """
+    y_axis = np.array([0, 1, 0], dtype=np.float32)
+    direction = direction / np.linalg.norm(direction)
+    if abs(y_axis @ direction) != 1:
+        rotation_axis = np.cross(y_axis, direction)
+        # Calculate the angle to rotate the cylinder to the correct orientation.
+        rotation_angle = np.arccos(
+            np.clip(
+                np.dot(direction, y_axis) / (np.linalg.norm(direction)),
+                -1,
+                1,
+            ),
+        )
+    else:
+        rotation_axis = np.array([0, 0, 1], dtype=np.float32)
+        rotation_angle = 0
+    translation_matrix = pyrr.matrix44.create_from_translation(
+        pyrr.Vector3(position),
+    )
+    rotation_matrix = pyrr.matrix44.create_from_axis_rotation(
+        rotation_axis,
+        rotation_angle,
+    )
+    scale = pyrr.Vector3([radius] * 3)
+    scale[1] = length / 2
+    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3(scale))
+    rotation_scale_matrix = scale_matrix @ rotation_matrix
+    return np.array(np.array([rotation_scale_matrix @ translation_matrix], dtype=np.float32))
