@@ -10,9 +10,8 @@ from PySide6.QtCore import QEvent, Qt
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 from molara.Rendering.camera import Camera
-from molara.Rendering.rendering import draw_scene, update_atoms_vao, update_bonds_vao
+from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
-from molara.Rendering.sphere import Sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
@@ -25,10 +24,10 @@ class MoleculeWidget(QOpenGLWidget):
 
     def __init__(self, parent: QOpenGLWidget) -> None:
         """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
-        self.shader = None
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
+        self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
         self.axes = False
@@ -85,7 +84,7 @@ class MoleculeWidget(QOpenGLWidget):
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
-        self.shader = compile_shaders()
+        self.renderer.set_shader(compile_shaders())
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: ARG002, N802
         """Resizes the widget."""
@@ -96,24 +95,22 @@ class MoleculeWidget(QOpenGLWidget):
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         if self.molecule_is_set:
-            draw_scene(
-                self.shader,
+            self.renderer.draw_scene(
                 self.camera,
-                self.molecule,
             )
         else:
-            draw_scene(self.shader, self.camera)
+            self.renderer.draw_scene(self.camera)
 
     def set_vertex_attribute_objects(self) -> None:
         """Sets the vertex attribute objects of the molecule."""
         self.makeCurrent()
-        update_atoms_vao(
+        self.renderer.update_atoms_vao(
             self.molecule.drawer.sphere.vertices,
             self.molecule.drawer.sphere.indices,
             self.molecule.drawer.sphere_model_matrices,
             self.molecule.drawer.sphere_colors,
         )
-        update_bonds_vao(
+        self.renderer.update_bonds_vao(
             self.molecule.drawer.cylinder.vertices,
             self.molecule.drawer.cylinder.indices,
             self.molecule.drawer.cylinder_model_matrices,
