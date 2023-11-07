@@ -138,7 +138,7 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     """
     difference = atom1.position - atom2.position
     # Calculate the length of the cylinder.
-    length = np.linalg.norm(difference)
+    length = float(np.linalg.norm(difference))
     mid_point = (atom1.position + atom2.position) / 2
     # calculate the point 1 quarter between the 2 atoms
     position_1 = mid_point - difference / 4
