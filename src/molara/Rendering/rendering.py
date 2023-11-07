@@ -10,6 +10,7 @@ import pyrr
 from OpenGL.GL import *
 
 from molara.Rendering.buffers import setup_vao
+from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 if TYPE_CHECKING:
@@ -34,6 +35,83 @@ class Renderer:
         :type shader: pyopengl program
         """
         self.shader = shader
+
+    def draw_cylinders(  # noqa: PLR0913
+        self,
+        positions: np.ndarray,
+        directions: np.ndarray,
+        radii: np.ndarray,
+        lengths: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+    ) -> int:
+        """Draws one or multiple cylinders.
+
+        If only one cylinder is drawn, the positions, directions, radii, lengths and colors are given as np.ndarray
+        containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple cylinders are drawn,
+        the positions, directions, radii, lengths and colors are given as np.ndarray containing multiple arrays, for
+        instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
+
+        :param positions: Positions of the cylinders.
+        :type positions: numpy.array of numpy.float32
+        :param directions: Directions of the cylinders.
+        :type directions: numpy.array of numpy.float32
+        :param radii: Radii of the cylinders.
+        :type radii: numpy.array of numpy.float32
+        :param lengths: Lengths of the cylinders.
+        :type lengths: numpy.array of numpy.float32
+        :param colors: Colors of the cylinders.
+        :type colors: numpy.array of numpy.float32
+        :param subdivisions: Number of subdivisions of the cylinder.
+        :type subdivisions: int
+        :return: Returns the index of the cylinder in the list of cylinders.
+        """
+        n_instances = len(positions)
+        cylinder_mesh = Cylinder(subdivisions)
+        if n_instances == 1:
+            model_matrices = calculate_cylinder_model_matrix(
+                positions[0],
+                radii[0],
+                lengths[0],
+                directions[0],
+            )
+        else:
+            for i in range(n_instances):
+                model_matrix = calculate_cylinder_model_matrix(
+                    positions[i],
+                    radii[i],
+                    lengths[i],
+                    directions[i],
+                )
+                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+
+        cylinder = {
+            "vao": 0,
+            "n_instances": n_instances,
+            "n_vertices": len(cylinder_mesh.vertices),
+            "buffers": [],
+        }
+        cylinder["vao"], cylinder["buffers"] = setup_vao(
+            cylinder_mesh.vertices,
+            cylinder_mesh.indices,
+            model_matrices,
+            colors,
+        )
+
+        # get index of new cylinder instances in list
+        i_cylinder = -1
+        if len(self.cylinders) != 0:
+            for i, check_cylinder in enumerate(self.cylinders):
+                if check_cylinder["vao"] == 0:
+                    i_cylinder = i
+                    self.cylinders[i_cylinder] = cylinder
+            if i_cylinder == -1:
+                i_cylinder = len(self.cylinders)
+                self.cylinders.append(cylinder)
+        else:
+            i_cylinder = 0
+            self.cylinders.append(cylinder)
+        return i_cylinder
 
     def draw_spheres(
         self,
@@ -96,6 +174,28 @@ class Renderer:
             self.spheres.append(sphere)
         return i_sphere
 
+    def remove_cylinder(self, i_cylinder: int) -> None:
+        """Removes a cylinder from the list of cylinders.
+
+        :param i_cylinder: Index of the cylinder to remove.
+        :type i_cylinder: int
+        :return:
+        """
+        if i_cylinder < len(self.cylinders):
+            cylinder = self.cylinders[i_cylinder]
+            if cylinder["vao"] != 0:
+                glBindBuffer(GL_ARRAY_BUFFER, 0)
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+                for buffer in cylinder["buffers"]:
+                    glDeleteBuffers(1, buffer)
+                glDeleteVertexArrays(1, cylinder["vao"])
+            self.cylinders[i_cylinder] = {
+                "vao": 0,
+                "n_instances": 0,
+                "n_vertices": 0,
+                "buffers": [],
+            }
+
     def remove_sphere(self, i_sphere: int) -> None:
         """Removes a sphere from the list of spheres.
 
@@ -137,7 +237,7 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :return:
         """
-        if self.atoms_vao["vao"] == 0:
+        if self.atoms_vao["vao"] != 0:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
             for buffer in self.atoms_vao["buffers"]:
@@ -171,7 +271,7 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :return:
         """
-        if self.bonds_vao["vao"] == 0:
+        if self.bonds_vao["vao"] != 0:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
             for buffer in self.bonds_vao["buffers"]:
@@ -248,5 +348,17 @@ class Renderer:
                     GL_UNSIGNED_INT,
                     None,
                     sphere["n_instances"],
+                )
+
+        # Draw cylinders
+        for cylinder in self.cylinders:
+            if cylinder["vao"] != 0:
+                glBindVertexArray(cylinder["vao"])
+                glDrawElementsInstanced(
+                    GL_TRIANGLES,
+                    cylinder["n_vertices"],
+                    GL_UNSIGNED_INT,
+                    None,
+                    cylinder["n_instances"],
                 )
         glBindVertexArray(0)
