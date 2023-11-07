@@ -18,7 +18,7 @@ setup(
     author_email='',
     description='',
     install_requires=[
-        'PySide6',
+        'PySide2',
         'numpy',
         'pyrr',
         'scipy',
@@ -28,5 +28,5 @@ setup(
         'console_scripts': [
             'molara=molara.__main__:main'
         ]
-    } 
+    }
 )

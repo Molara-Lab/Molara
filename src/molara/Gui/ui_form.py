@@ -8,7 +8,7 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
+from PySide2.QtCore import (
     QCoreApplication,
     QDate,
     QDateTime,
@@ -22,8 +22,7 @@ from PySide6.QtCore import (
     QTime,
     QUrl,
 )
-from PySide6.QtGui import (
-    QAction,
+from PySide2.QtGui import (
     QBrush,
     QColor,
     QConicalGradient,
@@ -41,7 +40,7 @@ from PySide6.QtGui import (
     QRadialGradient,
     QTransform,
 )
-from PySide6.QtWidgets import QApplication, QGridLayout, QMainWindow, QMenu, QMenuBar, QSizePolicy, QStatusBar, QWidget
+from PySide2.QtWidgets import QAction, QApplication, QGridLayout, QMainWindow, QMenu, QMenuBar, QSizePolicy, QStatusBar, QWidget
 
 from ..MoleculeWidget.MoleculeWidget import MoleculeWidget
 

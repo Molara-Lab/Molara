@@ -1,7 +1,7 @@
 import sys
 
-from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide2.QtGui import QSurfaceFormat
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -56,7 +56,7 @@ def main() -> None:
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
     widget.ui.quit.triggered.connect(widget.close)
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
     main()

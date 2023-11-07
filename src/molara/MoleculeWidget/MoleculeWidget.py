@@ -1,9 +1,9 @@
 # This Python file uses the following encoding: utf-8
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, glClearColor, glEnable, glViewport
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QMouseEvent
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QMouseEvent
+from PySide2.QtWidgets import QOpenGLWidget
 
 from ..Rendering.Buffers import Vao
 from ..Rendering.Camera import Camera
