@@ -202,6 +202,7 @@ class MoleculeWidget(QOpenGLWidget):
         """Draws the cartesian axes."""
         length = 2.0
         radius = 0.02
+        self.makeCurrent()
         if self.axes[0] != -1:
             self.renderer.remove_cylinder(self.axes[0])
             self.renderer.remove_sphere(self.axes[1])
