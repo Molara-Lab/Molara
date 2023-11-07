@@ -31,7 +31,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
-        self.axes = False
+        self.axes = [-1, -1]  # -1 means no axes are drawn, any other integer means axes are drawn
         self.rotate = False
         self.translate = False
         self.click_position: np.ndarray | None = None
@@ -72,14 +72,6 @@ class MoleculeWidget(QOpenGLWidget):
             self.set_vertex_attribute_objects()
         self.update()
 
-    def toggle_axes(self) -> None:
-        """Toggles the axes."""
-        if self.axes:
-            self.axes = False
-        else:
-            self.axes = True
-        self.update()
-
     def initializeGL(self) -> None:  # noqa: N802
         """Initializes the widget."""
         glClearColor(1, 1, 1, 1.0)
@@ -117,10 +109,6 @@ class MoleculeWidget(QOpenGLWidget):
             self.molecule.drawer.cylinder_model_matrices,
             self.molecule.drawer.cylinder_colors,
         )
-
-    def draw_axes(self) -> None:
-        """Draws the axes."""
-        return
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the molecule."""
@@ -209,3 +197,24 @@ class MoleculeWidget(QOpenGLWidget):
         self.set_normalized_position(event)
         self.camera.update(save=True)
         self.click_position = None
+
+    def toggle_axes(self) -> None:
+        """Draws the cartesian axes."""
+        length = 2.0
+        radius = 0.02
+        if self.axes[0] != -1:
+            self.renderer.remove_cylinder(self.axes[0])
+            self.renderer.remove_sphere(self.axes[1])
+            self.axes = [-1, -1]
+        else:
+            positions = np.array([[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]], dtype=np.float32)
+            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            radii = np.array([radius] * 3, dtype=np.float32)
+            lengths = np.array([length] * 3, dtype=np.float32)
+            self.axes[0] = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, 25)
+            positions = np.array([[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]], dtype=np.float32)
+            colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]], dtype=np.float32)
+            radii = np.array([radius] * 4, dtype=np.float32)
+            self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
+        self.update()
