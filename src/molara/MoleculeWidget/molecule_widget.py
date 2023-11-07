@@ -126,7 +126,6 @@ class MoleculeWidget(QOpenGLWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         """Starts the rotation or translation of the molecule."""
-        self.set_vertex_attribute_objects()
         if (
             event.button() == Qt.MouseButton.LeftButton
             and event.x() in range(self.width())
