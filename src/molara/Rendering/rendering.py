@@ -319,24 +319,26 @@ class Renderer:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # Draw atoms
-        glBindVertexArray(self.atoms_vao["vao"])
-        glDrawElementsInstanced(
-            GL_TRIANGLES,
-            self.atoms_vao["n_vertices"],
-            GL_UNSIGNED_INT,
-            None,
-            self.atoms_vao["n_atoms"],
-        )
+        if self.atoms_vao["vao"] != 0:
+            glBindVertexArray(self.atoms_vao["vao"])
+            glDrawElementsInstanced(
+                GL_TRIANGLES,
+                self.atoms_vao["n_vertices"],
+                GL_UNSIGNED_INT,
+                None,
+                self.atoms_vao["n_atoms"],
+            )
 
         # Draw bonds
-        glBindVertexArray(self.bonds_vao["vao"])
-        glDrawElementsInstanced(
-            GL_TRIANGLES,
-            self.bonds_vao["n_vertices"],
-            GL_UNSIGNED_INT,
-            None,
-            self.bonds_vao["n_bonds"],
-        )
+        if self.bonds_vao["vao"] != 0:
+            glBindVertexArray(self.bonds_vao["vao"])
+            glDrawElementsInstanced(
+                GL_TRIANGLES,
+                self.bonds_vao["n_vertices"],
+                GL_UNSIGNED_INT,
+                None,
+                self.bonds_vao["n_bonds"],
+            )
 
         # Draw spheres
         for sphere in self.spheres:
