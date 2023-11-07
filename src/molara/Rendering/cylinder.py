@@ -41,7 +41,7 @@ def generate_cylinder(
     indices = []
 
     height = 1.0
-    radius = 0.5
+    radius = 1.0
     vertices.extend([0.0, -height / 2, 0.0, 0.0, -1, 0.0])
     vertices.extend([0.0, height / 2, 0.0, 0.0, 1, 0.0])
     for i in range(subdivisions):
@@ -127,7 +127,7 @@ def calculate_cylinder_model_matrix(
         rotation_angle,
     )
     scale = pyrr.Vector3([radius] * 3)
-    scale[1] = length / 2
+    scale[1] = length
     scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3(scale))
     rotation_scale_matrix = scale_matrix @ rotation_matrix
     return np.array(np.array([rotation_scale_matrix @ translation_matrix], dtype=np.float32))
