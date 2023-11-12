@@ -1,12 +1,19 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "Molara"
 version = "0.0.1"
-description = ""
+description = "A visualisation tool for chemical structures."
 authors = [
     {name = "Michel Heinz"},
     {name = "Gereon Feldmann"},
     {name = "Adrian Usler"},
     {name = "Alexander Bonkowski", email = "alexander.bonkowski@rwth-aachen.de"},
+]
+maintainers = [
+    {name = "Michel Heinz, Gereon Feldmann, Adrian Usler, Alexander Bonkowski"},
 ]
 dependencies = [
     "PyOpenGL",
@@ -20,18 +27,15 @@ requires-python = ">=3.8"
 readme = "README.md"
 license = {file = "LICENSE"}
 keywords = ["analysis, science, structure, visualisation"]
-maintainers = [
-    {name = "Michel Heinz, Gereon Feldmann, Adrian Usler, Alexander Bonkowski"},
-]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.9",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Visualization",
@@ -39,7 +43,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Thursday-Evening-Hackathon/Molara"
+Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
 
 [project.optional-dependencies]
 dev = [
@@ -50,14 +54,19 @@ dev = [
     "pytest-split",
     "ruff",
 ]
+crystal = [
+    "pymatgen",
+]
 
 [project.scripts]
 molara = "molara.__main__:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
 [tool.setuptools.packages.find]
 include = ["molara", "molara.*"]
+exclude = ["tests", "tests.*"]
 
 [tool.ruff]
 exclude = ["ui_*",]
