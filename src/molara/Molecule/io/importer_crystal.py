@@ -77,11 +77,7 @@ class VasprunImporter(Importer):
 
             vasprun = Vasprun(self.path)
             structure = vasprun.final_structure
-            crystal = Crystal(
-                atomic_numbers=structure.atomic_numbers,
-                coordinates=structure.cart_coords,
-                basis_vectors=structure.lattice.matrix,
-            )
+            crystal = Crystal.from_pymatgen(structure)
         except ImportError as err:
             msg = "pymatgen is not installed, cannot read vasprun.xml files"
             raise FileFormatError(

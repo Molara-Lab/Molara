@@ -16,6 +16,11 @@ if TYPE_CHECKING:
 
     from numpy.typing import ArrayLike
 
+    try:
+        from pymatgen.core import Structure
+    except ImportError:
+        Structure = None
+
 
 class Crystal(Molecule):
     """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
@@ -150,6 +155,15 @@ class Crystal(Molecule):
             atomic_numbers,
             positions,
             [scale * np.array(bv, dtype=float) for bv in basis_vectors],
+        )
+
+    @classmethod
+    def from_pymatgen(cls: type[Crystal], structure: Structure) -> Crystal:
+        """Creates a Crystal object from a pymatgen.Structure object."""
+        return cls(
+            structure.atomic_numbers,
+            structure.frac_coords,
+            structure.lattice.matrix,
         )
 
     def copy(self) -> Crystal:
