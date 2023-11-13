@@ -7,7 +7,7 @@ from __future__ import annotations
 
 cimport numpy as npc
 import numpy as np
-import pyrr
+from molara.Tools.mathtools import norm
 
 
 class Cylinder:
@@ -52,7 +52,7 @@ def generate_cylinder(
         y = -height / 2
         z = radius * np.sin(theta)
         normal = np.array([x, 0, z])
-        normal /= np.linalg.norm(normal)
+        normal /= norm(normal)
         vertices.extend([x, y, z, 0, -1, 0])
         vertices.extend(
             [x, y, z, normal[0], normal[1], normal[2]],
@@ -105,7 +105,7 @@ cpdef calculate_cylinder_model_matrix(
     :param length: Length of the cylinder.
     :param direction: Direction of the cylinder, does not need to be normalized.
     """
-    cdef float[3] rotation_axis
+    cdef npc.ndarray[double, ndim=1] rotation_axis = np.empty(3, dtype=np.float64)
     cdef float rotation_angle, x, y, z, c, s, t
     cdef int i, j
     cdef npc.ndarray[double, ndim=2] rotation_scale_matrix
@@ -113,7 +113,7 @@ cpdef calculate_cylinder_model_matrix(
     cdef npc.ndarray[double, ndim=2] rotation_matrix
     cdef npc.ndarray[double, ndim=2] translation_matrix
     cdef float[3] y_axis = np.array([0, 1, 0], dtype=np.float32)
-    cdef float direction_norm = np.linalg.norm(direction)
+    cdef float direction_norm = norm(direction)
     direction = direction / direction_norm
     cdef float dot = np.dot(direction, y_axis)
     if abs(dot) != 1:
@@ -121,7 +121,7 @@ cpdef calculate_cylinder_model_matrix(
         y_axis[1] * direction[2] - y_axis[2] * direction[1],
         y_axis[2] * direction[0] - y_axis[0] * direction[2],
         y_axis[0] * direction[1] - y_axis[1] * direction[0]
-        ])
+        ], dtype=np.float64)
         # Calculate the angle to rotate the cylinder to the correct orientation.
         rotation_angle = np.arccos(
             np.clip(
@@ -131,14 +131,14 @@ cpdef calculate_cylinder_model_matrix(
             ),
         )
     else:
-        rotation_axis = np.array([0, 0, 1], dtype=np.float32)
+        rotation_axis = np.array([0, 0, 1], dtype=np.float64)
         rotation_angle = 0
     translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
     translation_matrix[3, 0:3] = position
 
     rotation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
-    
-    rotation_axis = rotation_axis / np.linalg.norm(rotation_axis)
+
+    rotation_axis = rotation_axis / norm(rotation_axis)
     x, y, z = rotation_axis
     c = np.cos(rotation_angle)
     s = np.sin(rotation_angle)

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 cimport numpy as npc
-
+from molara.Tools.mathtools import norm
 
 class Sphere:
     """Creates a Sphere object, containing its vertices and indices.
@@ -45,7 +45,7 @@ def generate_sphere(
             z = np.sin(theta) * np.cos(phi)
 
             normal = np.array([x, y, z])
-            normal /= np.linalg.norm(normal)
+            normal /= norm(normal)
             vertices.extend(
                 [
                     x,

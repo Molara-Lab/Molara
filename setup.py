@@ -54,6 +54,7 @@ setup(
             "ruff",
         ],
     },
-    ext_modules=cythonize(["src/molara/Rendering/cylinder.pyx", "src/molara/Rendering/sphere.pyx"]),
+    ext_modules=cythonize(["src/molara/Rendering/cylinder.pyx", "src/molara/Rendering/sphere.pyx",
+                           "src/molara/Tools/mathtools.pyx"]),
     include_dirs=[numpy.get_include()]
 )

@@ -9,6 +9,7 @@ import pyrr
 
 from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
+from molara.Tools.mathtools import norm
 
 if TYPE_CHECKING:
     from molara.Molecule.atom import Atom
@@ -128,7 +129,7 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     radius = 0.075
     difference = atom1.position - atom2.position
     # Calculate the length of the cylinder.
-    length = float(np.linalg.norm(difference)) / 2
+    length = float(norm(difference)) / 2
     mid_point = (atom1.position + atom2.position) / 2
     # calculate the point 1 quarter between the 2 atoms
     position_1 = mid_point - difference / 4
