@@ -117,7 +117,6 @@ cpdef calculate_cylinder_model_matrix(
     direction = direction / direction_norm
     cdef float dot = np.dot(direction, y_axis)
     if abs(dot) != 1:
-        #rotation_axis = np.cross(y_axis, direction)
         rotation_axis = np.array([
         y_axis[1] * direction[2] - y_axis[2] * direction[1],
         y_axis[2] * direction[0] - y_axis[0] * direction[2],
@@ -136,17 +135,21 @@ cpdef calculate_cylinder_model_matrix(
         rotation_angle = 0
     translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
     translation_matrix[3, 0:3] = position
+
     rotation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
+    
     rotation_axis = rotation_axis / np.linalg.norm(rotation_axis)
     x, y, z = rotation_axis
     c = np.cos(rotation_angle)
     s = np.sin(rotation_angle)
     t = 1 - c
+
     rotation_matrix[:3, :3] = np.array([
         [t*x*x + c, t*x*y + s*z, t*x*z - s*y],
         [t*x*y - s*z, t*y*y + c, t*y*z + s*x],
         [t*x*z + s*y, t*y*z - s*x, t*z*z + c]]
     )
+
     cdef float[3] scale = [radius, radius, radius]
     scale[1] = length
     scale_matrix =np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])

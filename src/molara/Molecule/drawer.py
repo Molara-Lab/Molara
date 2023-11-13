@@ -8,7 +8,7 @@ import numpy as np
 import pyrr
 
 from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
-from molara.Rendering.sphere import Sphere
+from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 if TYPE_CHECKING:
     from molara.Molecule.atom import Atom
@@ -114,19 +114,8 @@ def calculate_atom_model_matrix(atom: Atom) -> np.ndarray:
     :param atom: Atom
     :return: Model matrix for the sphere.
     """
-    # Calculate the translation matrix to translate the sphere to the correct position.
-    translation_matrix = pyrr.matrix44.create_from_translation(
-        pyrr.Vector3(atom.position),
-    )
-    # Calculate the scale matrix to scale the sphere to the correct size.
-    scale_matrix = pyrr.matrix44.create_from_scale(
-        pyrr.Vector3([atom.vdw_radius / 6] * 3),
-    )
-    # Return the model matrix for the sphere.
-    return np.array(
-        [np.array(scale_matrix @ translation_matrix, dtype=np.float32)],
-        dtype=np.float32,
-    )
+    return calculate_sphere_model_matrix(np.array(atom.position, dtype=np.float32), float(atom.vdw_radius / 6))
+
 
 
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
-import pyrr
+cimport numpy as npc
 
 
 class Sphere:
@@ -67,22 +67,29 @@ def generate_sphere(
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
 
-def calculate_sphere_model_matrix(position: np.ndarray, radius: np.ndarray) -> np.ndarray:
+def calculate_sphere_model_matrix(npc.ndarray[float, ndim=1] position,
+                                  float radius) -> np.ndarray:
     """Calculates the model matrix for a sphere.
 
     :param position: Position of the sphere.
     :param radius: Radius of the sphere.
     :return: Model matrix of the sphere.
     """
-    # Calculate the translation matrix to translate the sphere to the correct position.
-    translation_matrix = pyrr.matrix44.create_from_translation(
-        pyrr.Vector3(position),
-    )
-    # Calculate the scale matrix to scale the sphere to the correct size.
-    scale_matrix = pyrr.matrix44.create_from_scale(
-        pyrr.Vector3([radius, radius, radius]),
-    )
+
+    cdef npc.ndarray[float, ndim=2] translation_matrix
+    cdef npc.ndarray[float, ndim=2] scale_matrix
+    cdef npc.ndarray[float, ndim=2] model_matrix
+
+    translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
+    translation_matrix[3, 0:3] = position
+
+    scale_matrix =np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
+    scale_matrix[0,0] = radius
+    scale_matrix[1,1] = radius
+    scale_matrix[2,2] = radius
+
+    model_matrix = scale_matrix @ translation_matrix
     return np.array(
-        scale_matrix @ translation_matrix,
+        [model_matrix],
         dtype=np.float32,
     )
