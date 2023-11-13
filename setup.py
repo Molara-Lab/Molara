@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pathlib
 
+import numpy
+from Cython.Build import cythonize
 from setuptools import find_packages, setup
 
 _HERE = pathlib.Path(__file__).parent  # directory of setup.py
@@ -39,7 +41,7 @@ setup(
         include=("molara", "molara.*"),
     ),
     package_dir={"": "src"},
-    install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL", "matplotlib"],
+    install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL", "matplotlib", "Cython"],
     python_requires=">=3.8",
     entry_points={"console_scripts": ["molara=molara.__main__:main"]},
     extras_require={
@@ -52,4 +54,6 @@ setup(
             "ruff",
         ],
     },
+    ext_modules=cythonize(["src/molara/Rendering/cylinder.pyx", "src/molara/Rendering/sphere.pyx"]),
+    include_dirs=[numpy.get_include()]
 )

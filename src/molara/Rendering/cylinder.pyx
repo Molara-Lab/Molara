@@ -5,6 +5,7 @@ They are used to create cylinders and multiple cylinders of the same color, resp
 
 from __future__ import annotations
 
+cimport numpy as npc
 import numpy as np
 import pyrr
 
@@ -91,12 +92,12 @@ def generate_cylinder(
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
 
-def calculate_cylinder_model_matrix(
-    position: np.ndarray,
-    radius: float,
-    length: float,
-    direction: np.ndarray,
-) -> np.ndarray:
+cpdef calculate_cylinder_model_matrix(
+    npc.ndarray[double, ndim=1] position,
+    float radius,
+    float length,
+    npc.ndarray[double, ndim=1] direction,
+):
     """Calculates the model matrix for a cylinder.
 
     :param position: Position of the center of the cylinder.
@@ -104,14 +105,28 @@ def calculate_cylinder_model_matrix(
     :param length: Length of the cylinder.
     :param direction: Direction of the cylinder, does not need to be normalized.
     """
-    y_axis = np.array([0, 1, 0], dtype=np.float32)
-    direction = direction / np.linalg.norm(direction)
-    if abs(y_axis @ direction) != 1:
-        rotation_axis = np.cross(y_axis, direction)
+    cdef float[3] rotation_axis
+    cdef float rotation_angle, x, y, z, c, s, t
+    cdef int i, j
+    cdef npc.ndarray[double, ndim=2] rotation_scale_matrix
+    cdef npc.ndarray[double, ndim=2] scale_matrix
+    cdef npc.ndarray[double, ndim=2] rotation_matrix
+    cdef npc.ndarray[double, ndim=2] translation_matrix
+    cdef float[3] y_axis = np.array([0, 1, 0], dtype=np.float32)
+    cdef float direction_norm = np.linalg.norm(direction)
+    direction = direction / direction_norm
+    cdef float dot = np.dot(direction, y_axis)
+    if abs(dot) != 1:
+        #rotation_axis = np.cross(y_axis, direction)
+        rotation_axis = np.array([
+        y_axis[1] * direction[2] - y_axis[2] * direction[1],
+        y_axis[2] * direction[0] - y_axis[0] * direction[2],
+        y_axis[0] * direction[1] - y_axis[1] * direction[0]
+        ])
         # Calculate the angle to rotate the cylinder to the correct orientation.
         rotation_angle = np.arccos(
             np.clip(
-                np.dot(direction, y_axis) / (np.linalg.norm(direction)),
+                dot,
                 -1,
                 1,
             ),
@@ -119,15 +134,24 @@ def calculate_cylinder_model_matrix(
     else:
         rotation_axis = np.array([0, 0, 1], dtype=np.float32)
         rotation_angle = 0
-    translation_matrix = pyrr.matrix44.create_from_translation(
-        pyrr.Vector3(position),
+    translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
+    translation_matrix[3, 0:3] = position
+    rotation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
+    rotation_axis = rotation_axis / np.linalg.norm(rotation_axis)
+    x, y, z = rotation_axis
+    c = np.cos(rotation_angle)
+    s = np.sin(rotation_angle)
+    t = 1 - c
+    rotation_matrix[:3, :3] = np.array([
+        [t*x*x + c, t*x*y + s*z, t*x*z - s*y],
+        [t*x*y - s*z, t*y*y + c, t*y*z + s*x],
+        [t*x*z + s*y, t*y*z - s*x, t*z*z + c]]
     )
-    rotation_matrix = pyrr.matrix44.create_from_axis_rotation(
-        rotation_axis,
-        rotation_angle,
-    )
-    scale = pyrr.Vector3([radius] * 3)
+    cdef float[3] scale = [radius, radius, radius]
     scale[1] = length
-    scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3(scale))
+    scale_matrix =np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
+    scale_matrix[0, 0] = scale[0]
+    scale_matrix[1, 1] = scale[1]
+    scale_matrix[2, 2] = scale[2]
     rotation_scale_matrix = scale_matrix @ rotation_matrix
-    return np.array(np.array([rotation_scale_matrix @ translation_matrix], dtype=np.float32))
+    return np.array([rotation_scale_matrix @ translation_matrix], dtype=np.float32)
