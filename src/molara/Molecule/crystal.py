@@ -35,16 +35,15 @@ class Crystal(Molecule):
 
     def __init__(
         self,
-        numbers : Sequence[int],
         atomic_numbers: Sequence[int],
         coordinates: Sequence[Sequence[float]],
         basis_vectors: Sequence[Sequence[float]] | ArrayLike,
     ) -> None:
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
-        self.number = numbers
         self.atomic_numbers_unitcell = atomic_numbers
         self.coordinates_unitcell = coordinates
         self.basis_vectors = basis_vectors
+
         self.make_supercell([1, 1, 1])
 
     def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
@@ -148,10 +147,13 @@ class Crystal(Molecule):
             msg = "Currently, Molara can only process direct mode in POSCAR files."
             raise NotImplementedError(msg)
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-        print(atomic_numbers)
+        
+        atomic_numbers_extended = []
+        for num, an in zip(numbers, atomic_numbers):
+            atomic_numbers_extended.extend(num * [an])
+        
         return cls(
-            numbers,
-            atomic_numbers,
+            atomic_numbers_extended,
             positions,
             [scale * np.array(bv, dtype=float) for bv in basis_vectors],
         )
