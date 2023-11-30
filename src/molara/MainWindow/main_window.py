@@ -88,5 +88,7 @@ class MainWindow(QMainWindow):
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
         if self.ui.openGLWidget.molecule:
-            self.ui.openGLWidget.molecule.draw_bonds = not self.ui.openGLWidget.molecule.draw_bonds
+            self.ui.openGLWidget.molecule.draw_bonds = (
+                not self.ui.openGLWidget.molecule.draw_bonds
+            )
             self.ui.openGLWidget.update()

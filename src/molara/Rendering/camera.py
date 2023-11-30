@@ -87,7 +87,10 @@ class Camera:
         """Updates the camera position and orientation."""
         self.up_vector = self.rotation * self.initial_up_vector
         self.right_vector = self.rotation * self.initial_right_vector
-        self.position = self.rotation * self.initial_position * self.distance_from_target + self.translation
+        self.position = (
+            self.rotation * self.initial_position * self.distance_from_target
+            + self.translation
+        )
         self.target = self.initial_target + self.translation
         if save:
             self.last_rotation = self.rotation
@@ -105,7 +108,11 @@ class Camera:
         """
         x_translation = mouse_position[0] - old_mouse_position[0]
         y_translation = -(mouse_position[1] - old_mouse_position[1])
-        self.translation = self.right_vector * x_translation + self.up_vector * y_translation + self.last_translation
+        self.translation = (
+            self.right_vector * x_translation
+            + self.up_vector * y_translation
+            + self.last_translation
+        )
 
     def set_rotation_quaternion(
         self,
@@ -146,7 +153,10 @@ class Camera:
         )
 
         tolerance_parallel = 1e-5
-        if np.linalg.norm(previous_arcball_point - current_arcball_point) > tolerance_parallel:
+        if (
+            np.linalg.norm(previous_arcball_point - current_arcball_point)
+            > tolerance_parallel
+        ):
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
             rotation_axis = pyrr.vector3.normalize(rotation_axis)
             rotation_angle = np.arccos(

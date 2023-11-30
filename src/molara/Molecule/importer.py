@@ -68,7 +68,8 @@ def read_xyz(file_path: str) -> Molecules:
                 coordinates.append([float(coord) for coord in atom_info[1:4]])
 
             if not (
-                (len(lines) > 2 + xyz_len + num_atoms) and lines[xyz_len + 2 + num_atoms].replace("\n", "").isdigit()
+                (len(lines) > 2 + xyz_len + num_atoms)
+                and lines[xyz_len + 2 + num_atoms].replace("\n", "").isdigit()
             ):
                 not_finished = False
 

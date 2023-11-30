@@ -1,4 +1,3 @@
-
 ################################################################################
 ## Form generated from reading UI file 'trajectory.ui'
 ##
@@ -40,7 +39,15 @@ from PySide6.QtGui import (
     QRadialGradient,
     QTransform,
 )
-from PySide6.QtWidgets import QApplication, QCheckBox, QDialog, QPushButton, QSizePolicy, QSlider, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QDialog,
+    QPushButton,
+    QSizePolicy,
+    QSlider,
+    QWidget,
+)
 
 
 class Ui_Dialog:
@@ -69,6 +76,7 @@ class Ui_Dialog:
         self.retranslateUi(Dialog)
 
         QMetaObject.connectSlotsByName(Dialog)
+
     # setupUi
 
     def retranslateUi(self, Dialog):
@@ -76,5 +84,5 @@ class Ui_Dialog:
         self.checkBox.setText(QCoreApplication.translate("Dialog", "Trajectory", None))
         self.PrevButton.setText(QCoreApplication.translate("Dialog", "Previous", None))
         self.NextButton.setText(QCoreApplication.translate("Dialog", "Next", None))
-    # retranslateUi
 
+    # retranslateUi

@@ -83,7 +83,11 @@ class Renderer:
                     lengths[i],
                     directions[i],
                 )
-                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+                model_matrices = (
+                    model_matrix
+                    if i == 0
+                    else np.concatenate((model_matrices, model_matrix))
+                )
 
         cylinder = {
             "vao": 0,
@@ -144,7 +148,11 @@ class Renderer:
         else:
             for i in range(n_instances):
                 model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
-                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+                model_matrices = (
+                    model_matrix
+                    if i == 0
+                    else np.concatenate((model_matrices, model_matrix))
+                )
 
         sphere = {
             "vao": 0,
@@ -310,7 +318,9 @@ class Renderer:
         camera_loc = glGetUniformLocation(self.shader, "camera_position")
         view_loc = glGetUniformLocation(self.shader, "view")
 
-        light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
+        light_direction = (
+            -camera.position - camera.up_vector * camera.distance_from_target * 0.5
+        )
         glUniform3fv(light_direction_loc, 1, light_direction)
         glUniform3fv(camera_loc, 1, camera.position)
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)

@@ -19,7 +19,9 @@ class Atom:
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]
         self.electronegativity = elements[atomic_number]["electronegativity"]
-        self.cpk_color: np.ndarray = np.array(elements[atomic_number]["cpk_color"]) / 255
+        self.cpk_color: np.ndarray = (
+            np.array(elements[atomic_number]["cpk_color"]) / 255
+        )
         self.vdw_radius = elements[atomic_number]["vdw_radius"]
         self.position = np.array(position, dtype=np.float64)
 
