@@ -147,11 +147,11 @@ class Crystal(Molecule):
             msg = "Currently, Molara can only process direct mode in POSCAR files."
             raise NotImplementedError(msg)
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-        
+
         atomic_numbers_extended = []
         for num, an in zip(numbers, atomic_numbers):
             atomic_numbers_extended.extend(num * [an])
-        
+
         return cls(
             atomic_numbers_extended,
             positions,
