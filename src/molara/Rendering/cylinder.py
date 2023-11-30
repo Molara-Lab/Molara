@@ -131,5 +131,5 @@ def calculate_cylinder_model_matrix(
     scale_matrix = pyrr.matrix44.create_from_scale(pyrr.Vector3(scale))
     rotation_scale_matrix = scale_matrix @ rotation_matrix
     return np.array(
-        np.array([rotation_scale_matrix @ translation_matrix], dtype=np.float32)
+        np.array([rotation_scale_matrix @ translation_matrix], dtype=np.float32),
     )

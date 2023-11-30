@@ -68,7 +68,7 @@ def generate_sphere(
 
 
 def calculate_sphere_model_matrix(
-    position: np.ndarray, radius: np.ndarray
+    position: np.ndarray, radius: np.ndarray,
 ) -> np.ndarray:
     """Calculates the model matrix for a sphere.
 

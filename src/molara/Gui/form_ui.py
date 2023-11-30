@@ -141,53 +141,53 @@ class Ui_MainWindow:
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(
-            QCoreApplication.translate("MainWindow", "MainWindow", None)
+            QCoreApplication.translate("MainWindow", "MainWindow", None),
         )
         self.quit.setText(QCoreApplication.translate("MainWindow", "Quit", None))
         self.action_xyz.setText(QCoreApplication.translate("MainWindow", ".xyz", None))
         self.actionCenter_Molecule.setText(
-            QCoreApplication.translate("MainWindow", "Center Molecule", None)
+            QCoreApplication.translate("MainWindow", "Center Molecule", None),
         )
         self.actionReset_View.setText(
-            QCoreApplication.translate("MainWindow", "Reset View", None)
+            QCoreApplication.translate("MainWindow", "Reset View", None),
         )
         self.actionto_x_axis.setText(
-            QCoreApplication.translate("MainWindow", "to x axis", None)
+            QCoreApplication.translate("MainWindow", "to x axis", None),
         )
         self.actionto_y_axis.setText(
-            QCoreApplication.translate("MainWindow", "to y axis", None)
+            QCoreApplication.translate("MainWindow", "to y axis", None),
         )
         self.actionto_z_axis.setText(
-            QCoreApplication.translate("MainWindow", "to z axis", None)
+            QCoreApplication.translate("MainWindow", "to z axis", None),
         )
         self.actionDraw_Axes.setText(
-            QCoreApplication.translate("MainWindow", "Toggle Axes", None)
+            QCoreApplication.translate("MainWindow", "Toggle Axes", None),
         )
         self.actionCreate_Lattice.setText(
-            QCoreApplication.translate("MainWindow", "Create Lattice", None)
+            QCoreApplication.translate("MainWindow", "Create Lattice", None),
         )
         self.actionRead_POSCAR.setText(
-            QCoreApplication.translate("MainWindow", "Read POSCAR", None)
+            QCoreApplication.translate("MainWindow", "Read POSCAR", None),
         )
         self.action_coord.setText(
-            QCoreApplication.translate("MainWindow", "coord", None)
+            QCoreApplication.translate("MainWindow", "coord", None),
         )
         self.actionOpen_Trajectory_Dialog.setText(
-            QCoreApplication.translate("MainWindow", "Open Trajectory Dialog", None)
+            QCoreApplication.translate("MainWindow", "Open Trajectory Dialog", None),
         )
         self.actionToggle_Bonds.setText(
-            QCoreApplication.translate("MainWindow", "Toggle Bonds", None)
+            QCoreApplication.translate("MainWindow", "Toggle Bonds", None),
         )
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
         self.menuImport.setTitle(
-            QCoreApplication.translate("MainWindow", "Import", None)
+            QCoreApplication.translate("MainWindow", "Import", None),
         )
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "View", None))
         self.menuRotate.setTitle(
-            QCoreApplication.translate("MainWindow", "Rotate", None)
+            QCoreApplication.translate("MainWindow", "Rotate", None),
         )
         self.menuCrystal.setTitle(
-            QCoreApplication.translate("MainWindow", "Crystal", None)
+            QCoreApplication.translate("MainWindow", "Crystal", None),
         )
 
     # retranslateUi

@@ -221,14 +221,14 @@ class MoleculeWidget(QOpenGLWidget):
             radii = np.array([radius] * 3, dtype=np.float32)
             lengths = np.array([length] * 3, dtype=np.float32)
             self.axes[0] = self.renderer.draw_cylinders(
-                positions, directions, radii, lengths, colors, 25
+                positions, directions, radii, lengths, colors, 25,
             )
             positions = np.array(
                 [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
                 dtype=np.float32,
             )
             colors = np.array(
-                [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]], dtype=np.float32
+                [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]], dtype=np.float32,
             )
             radii = np.array([radius] * 4, dtype=np.float32)
             self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
