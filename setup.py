@@ -1,3 +1,5 @@
+"""Setup file for Molara."""
+
 from __future__ import annotations
 
 import pathlib
@@ -21,7 +23,6 @@ setup(
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
@@ -38,12 +39,11 @@ setup(
         include=("molara", "molara.*"),
     ),
     package_dir={"": "src"},
-    install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL"],
+    install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL", "matplotlib"],
     python_requires=">=3.8",
     entry_points={"console_scripts": ["molara=molara.__main__:main"]},
     extras_require={
         "dev": [
-            "black",
             "mypy",
             "pre-commit",
             "pytest-cov",

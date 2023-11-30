@@ -3,10 +3,10 @@ exclude = ["ui_*",]
 target-version = "py39"
 line-length = 120
 select = [
-#  "A",    # flake8-builtins
+  "A",    # flake8-builtins
   "ANN",  # flake8-annotations
   "AIR",  # airflow
-#  "ARG",  # flake8-unused-arguments
+  "ARG",  # flake8-unused-arguments
   "ASYNC",# flake8-async
   "B",    # flake8-bugbear
   "BLE",  # flake8-blind-except
@@ -14,7 +14,7 @@ select = [
   "C90",  # mccabe
   "COM",  # flake8-commas
   "CPY",  # flake8-copyright
-#  "D",    # pydocstyle
+  "D",    # pydocstyle
   "DJ",   # flake8-django
   "DTZ",  # flake8-daytime
   "E",    # pycodestyle error
@@ -71,6 +71,7 @@ pydocstyle.convention = "google"
 isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
+exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
 
