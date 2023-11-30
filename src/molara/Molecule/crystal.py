@@ -129,25 +129,30 @@ class Crystal(Molecule):
         mode, positions_ = lines[7].strip(), lines[8:]
         try:
             scale = float(scale_)
-            latvec_a = np.fromstring(latvec_a_, sep=" ").tolist()
-            latvec_b = np.fromstring(latvec_b_, sep=" ").tolist()
-            latvec_c = np.fromstring(latvec_c_, sep=" ").tolist()
+            latvec_a = [float(vec) for vec in latvec_a_.split()]
+            latvec_b = [float(vec) for vec in latvec_b_.split()]
+            latvec_c = [float(vec) for vec in latvec_c_.split()]
             species = re.split(r"\s+", species_)
-            numbers = np.fromstring(numbers_, sep=" ", dtype=int)
+            numbers = [int(num) for num in numbers_.split()]
             positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
             basis_vectors = [latvec_a, latvec_b, latvec_c]
         except ValueError as err:
             msg = "Error: faulty formatting of the POSCAR file."
             raise ValueError(msg) from err
-        if len(numbers) != len(species) or len(positions) != len(species):
+        if len(numbers) != len(species) or len(positions) != sum(numbers):
             msg = "Error: faulty formatting of the POSCAR file."
             raise ValueError(msg)
         if mode.lower() != "direct":
             msg = "Currently, Molara can only process direct mode in POSCAR files."
             raise NotImplementedError(msg)
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
+
+        atomic_numbers_extended = []
+        for num, an in zip(numbers, atomic_numbers):
+            atomic_numbers_extended.extend(num * [an])
+
         return cls(
-            atomic_numbers,
+            atomic_numbers_extended,
             positions,
             [scale * np.array(bv, dtype=float) for bv in basis_vectors],
         )
