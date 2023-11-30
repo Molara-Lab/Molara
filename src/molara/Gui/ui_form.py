@@ -66,7 +66,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 22))
+        self.menubar.setGeometry(QRect(0, 0, 800, 37))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuEdit = QMenu(self.menubar)
@@ -112,7 +112,7 @@ class Ui_MainWindow(object):
         self.actionto_x_axis.setText(QCoreApplication.translate("MainWindow", u"to x axis", None))
         self.actionto_y_axis.setText(QCoreApplication.translate("MainWindow", u"to y axis", None))
         self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", u"to z axis", None))
-        self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Draw Axes", None))
+        self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Toggle Axes", None))
         self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", u"Create Lattice", None))
         self.actionRead_POSCAR.setText(QCoreApplication.translate("MainWindow", u"Read POSCAR", None))
         self.actionOpen_Trajectory_Dialog.setText(QCoreApplication.translate("MainWindow", u"Open Trajectory Dialog", None))
@@ -124,3 +124,4 @@ class Ui_MainWindow(object):
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
     # retranslateUi
+

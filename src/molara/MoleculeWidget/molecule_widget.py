@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import random
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -9,9 +10,8 @@ from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glV
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from molara.Rendering.buffers import Vao
 from molara.Rendering.camera import Camera
-from molara.Rendering.rendering import draw_scene
+from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
 
 if TYPE_CHECKING:
@@ -25,13 +25,13 @@ class MoleculeWidget(QOpenGLWidget):
 
     def __init__(self, parent: QOpenGLWidget) -> None:
         """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
-        self.shader = None
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
+        self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
-        self.axes = False
+        self.axes = [-1, -1]  # -1 means no axes are drawn, any other integer means axes are drawn
         self.rotate = False
         self.translate = False
         self.click_position: np.ndarray | None = None
@@ -72,20 +72,12 @@ class MoleculeWidget(QOpenGLWidget):
             self.set_vertex_attribute_objects()
         self.update()
 
-    def toggle_axes(self) -> None:
-        """Toggles the axes."""
-        if self.axes:
-            self.axes = False
-        else:
-            self.axes = True
-        self.update()
-
     def initializeGL(self) -> None:  # noqa: N802
         """Initializes the widget."""
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
-        self.shader = compile_shaders()
+        self.renderer.set_shader(compile_shaders())
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: ARG002, N802
         """Resizes the widget."""
@@ -96,39 +88,27 @@ class MoleculeWidget(QOpenGLWidget):
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         if self.molecule_is_set:
-            draw_scene(
-                self.shader,
+            self.renderer.draw_scene(
                 self.camera,
-                self.vertex_attribute_objects,
-                self.molecule,
             )
         else:
-            draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
+            self.renderer.draw_scene(self.camera)
 
     def set_vertex_attribute_objects(self) -> None:
         """Sets the vertex attribute objects of the molecule."""
         self.makeCurrent()
-        self.vertex_attribute_objects = []
-        for atomic_number in self.molecule.unique_atomic_numbers:
-            idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
-            vao = Vao(
-                self.molecule.drawer.unique_spheres[idx].vertices,
-                self.molecule.drawer.unique_spheres[idx].indices,
-                self.molecule.drawer.unique_spheres[idx].model_matrices,
-            )
-            self.vertex_attribute_objects.append(vao.vao)
-        for atomic_number in self.molecule.unique_atomic_numbers:
-            idx = self.molecule.drawer.unique_cylinders_mapping[atomic_number]
-            vao = Vao(
-                self.molecule.drawer.unique_cylinders[idx].vertices,
-                self.molecule.drawer.unique_cylinders[idx].indices,
-                self.molecule.drawer.unique_cylinders[idx].model_matrices,
-            )
-            self.vertex_attribute_objects.append(vao.vao)
-
-    def draw_axes(self) -> None:
-        """Draws the axes."""
-        return
+        self.renderer.update_atoms_vao(
+            self.molecule.drawer.sphere.vertices,
+            self.molecule.drawer.sphere.indices,
+            self.molecule.drawer.sphere_model_matrices,
+            self.molecule.drawer.sphere_colors,
+        )
+        self.renderer.update_bonds_vao(
+            self.molecule.drawer.cylinder.vertices,
+            self.molecule.drawer.cylinder.indices,
+            self.molecule.drawer.cylinder_model_matrices,
+            self.molecule.drawer.cylinder_colors,
+        )
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the molecule."""
@@ -216,3 +196,25 @@ class MoleculeWidget(QOpenGLWidget):
         self.set_normalized_position(event)
         self.camera.update(save=True)
         self.click_position = None
+
+    def toggle_axes(self) -> None:
+        """Draws the cartesian axes."""
+        length = 2.0
+        radius = 0.02
+        self.makeCurrent()
+        if self.axes[0] != -1:
+            self.renderer.remove_cylinder(self.axes[0])
+            self.renderer.remove_sphere(self.axes[1])
+            self.axes = [-1, -1]
+        else:
+            positions = np.array([[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]], dtype=np.float32)
+            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            radii = np.array([radius] * 3, dtype=np.float32)
+            lengths = np.array([length] * 3, dtype=np.float32)
+            self.axes[0] = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, 25)
+            positions = np.array([[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]], dtype=np.float32)
+            colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]], dtype=np.float32)
+            radii = np.array([radius] * 4, dtype=np.float32)
+            self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
+        self.update()

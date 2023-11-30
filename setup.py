@@ -39,7 +39,7 @@ setup(
         include=("molara", "molara.*"),
     ),
     package_dir={"": "src"},
-    install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL"],
+    install_requires=["PySide6", "numpy", "pyrr", "scipy", "PyOpenGL", "matplotlib"],
     python_requires=">=3.8",
     entry_points={"console_scripts": ["molara=molara.__main__:main"]},
     extras_require={
