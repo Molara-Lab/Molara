@@ -140,7 +140,7 @@ class Crystal(Molecule):
         except ValueError as err:
             msg = "Error: faulty formatting of the POSCAR file."
             raise ValueError(msg) from err
-        if len(numbers) != len(species) or len(positions) != sum(numbers): #Warum auch immer das stimmen sollte? len(positions) != len(species)
+        if len(numbers) != len(species) or len(positions) != sum(numbers):
             msg = "Error: faulty formatting of the POSCAR file."
             raise ValueError(msg)
         if mode.lower() != "direct":
