@@ -33,14 +33,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuImport">
-     <property name="title">
-      <string>Import</string>
-     </property>
-     <addaction name="action_xyz"/>
-     <addaction name="action_coord"/>
-    </widget>
-    <addaction name="menuImport"/>
+    <addaction name="actionImport"/>
     <addaction name="quit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -135,6 +128,9 @@
     <string>Open Trajectory Dialog</string>
    </property>
   </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import</string>
   <action name="actionToggle_Bonds">
    <property name="text">
     <string>Toggle Bonds</string>
