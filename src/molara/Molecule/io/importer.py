@@ -66,7 +66,9 @@ class XyzImporter(MoleculesImporter):
 
                 coordinates.append([float(coord) for coord in atom_info[1:4]])
 
-        molecules.add_molecule(Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1]))
+        molecules.add_molecule(
+            Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1]),
+        )
 
         # Read in for a single xyz file
         # Goes on if file has more than one structure stored
@@ -93,7 +95,9 @@ class XyzImporter(MoleculesImporter):
                         atomic_numbers.append(int(atom_info[0]))
 
                     else:
-                        atomic_numbers.append(element_symbol_to_atomic_number(atom_info[0]))
+                        atomic_numbers.append(
+                            element_symbol_to_atomic_number(atom_info[0]),
+                        )
 
                     coordinates.append([float(coord) for coord in atom_info[1:4]])
 
@@ -104,7 +108,11 @@ class XyzImporter(MoleculesImporter):
                     not_finished = False
 
                 molecules.add_molecule(
-                    Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1 + xyz_len]),
+                    Molecule(
+                        np.array(atomic_numbers),
+                        np.array(coordinates),
+                        lines[1 + xyz_len],
+                    ),
                 )
 
         file.close()
@@ -138,7 +146,9 @@ class CoordImporter(MoleculesImporter):
                 atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
             coordinates.append([float(coord) * 0.529177249 for coord in atom_info[:3]])
 
-        molecules.add_molecule(Molecule(np.array(atomic_numbers), np.array(coordinates)))
+        molecules.add_molecule(
+            Molecule(np.array(atomic_numbers), np.array(coordinates)),
+        )
 
         return molecules
 
@@ -170,7 +180,10 @@ class QmImporter(MoleculesImporter):
 
         return molecules
 
-    def _get_electronic_energies_in_hartree(self, cclib_data: ccData) -> np.ndarray | None:
+    def _get_electronic_energies_in_hartree(
+        self,
+        cclib_data: ccData,
+    ) -> np.ndarray | None:
         # conversion factor used by the cclib package
         cclib_ev_in_hartree = 27.21138505
 

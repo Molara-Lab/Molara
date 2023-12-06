@@ -115,8 +115,10 @@ def calculate_atom_model_matrix(atom: Atom) -> np.ndarray:
     :param atom: Atom
     :return: Model matrix for the sphere.
     """
-    return calculate_sphere_model_matrix(np.array(atom.position, dtype=np.float32), float(atom.vdw_radius / 6))
-
+    return calculate_sphere_model_matrix(
+        np.array(atom.position, dtype=np.float32),
+        float(atom.vdw_radius / 6),
+    )
 
 
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
