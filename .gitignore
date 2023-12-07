@@ -161,3 +161,6 @@ cython_debug/
 test.ipynb
 .vscode/settings.json
 .DS_Store
+
+#Cython
+*.c
