@@ -98,6 +98,8 @@ class Molecule:
         for _i, atom in enumerate(self.atoms):
             atom.position -= center
         self.drawer.set_atoms(self.atoms)
+        self.drawer.set_atom_translation_matrices()
+        self.drawer.set_atom_scale_matrices()
         self.drawer.set_atom_model_matrices()
         self.drawer.set_cylinder_model_matrices()
 

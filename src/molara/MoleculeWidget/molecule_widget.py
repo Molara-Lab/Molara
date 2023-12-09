@@ -104,7 +104,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.molecule.drawer.sphere.vertices,
             self.molecule.drawer.sphere.indices,
             self.molecule.drawer.sphere_model_matrices,
-            self.molecule.drawer.sphere_colors,
+            self.molecule.drawer.atom_colors,
         )
         self.renderer.update_bonds_vao(
             self.molecule.drawer.cylinder.vertices,

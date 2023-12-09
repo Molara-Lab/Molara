@@ -66,7 +66,6 @@ def generate_sphere(
 
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
-
 def calculate_sphere_model_matrix(npc.ndarray[float, ndim=1] position,
                                   float radius) -> np.ndarray:
     """Calculates the model matrix for a sphere.

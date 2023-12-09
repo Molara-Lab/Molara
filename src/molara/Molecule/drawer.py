@@ -5,10 +5,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pyrr
 
 from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
-from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
+from molara.Rendering.matrices import (
+    calculate_model_matrices,
+    calculate_scale_matrices,
+    calculate_translation_matrices,
+)
+from molara.Rendering.sphere import (
+    Sphere,
+    calculate_sphere_model_matrix,
+)
 from molara.Tools.mathtools import norm
 
 if TYPE_CHECKING:
@@ -25,13 +32,22 @@ class Drawer:
         self.sphere = Sphere(self.subdivisions_sphere)
         self.cylinder = Cylinder(self.subdivisions_cylinder)
         self.sphere_model_matrices = np.array([], dtype=np.float32)
-        self.sphere_colors = np.array([], dtype=np.float32)
+        self.sphere_translation_matrices: list = []
+        self.sphere_scale_matrices: list = []
         self.cylinder_model_matrices = np.array([], dtype=np.float32)
         self.cylinder_colors = np.array([], dtype=np.float32)
         self.atoms = atoms
         self.bonds = bonds
-        self.set_atom_model_matrices()
+        self.atom_positions: list = []
+        self.atom_colors: list = []
+        self.atom_scale: list = []
+        self.set_atom_colors()
+        self.set_atom_positions()
+        self.set_atom_scales()
         self.set_cylinder_model_matrices()
+        self.set_atom_scale_matrices()
+        self.set_atom_translation_matrices()
+        self.set_atom_model_matrices()
 
     def set_atoms(self, atoms: list[Atom]) -> None:
         """Sets the atoms to be displayed.
@@ -40,6 +56,39 @@ class Drawer:
         :return:
         """
         self.atoms = atoms
+        self.set_atom_colors()
+        self.set_atom_positions()
+
+    def set_atom_colors(self) -> None:
+        """Sets the colors of the atoms.
+
+        :return:
+        """
+        self.atom_colors = []
+        for atom in self.atoms:
+            self.atom_colors.append(np.array([atom.cpk_color], dtype=np.float32))
+        self.atom_colors = np.array(self.atom_colors, dtype=np.float32)
+
+    def set_atom_positions(self) -> None:
+        """Sets the positions of the atoms.
+
+        :return:
+        """
+        self.atom_positions = []
+        for atom in self.atoms:
+            self.atom_positions.append(np.array(atom.position, dtype=np.float32))
+        self.atom_positions = np.array(self.atom_positions, dtype=np.float32)
+
+    def set_atom_scales(self) -> None:
+        """Sets the positions of the atoms.
+
+        :return:
+        """
+        self.atom_scales = []
+        for atom in self.atoms:
+            r = float(atom.vdw_radius / 6)
+            self.atom_scales.append([r, r, r])
+        self.atom_scales = np.array(self.atom_scales, dtype=np.float32)
 
     def reset_atom_model_matrices(self) -> None:
         """Resets the model matrices for the spheres.
@@ -55,6 +104,13 @@ class Drawer:
         """
         self.cylinder_model_matrices = np.array([], dtype=np.float32)
 
+    def reset_atom_colors(self) -> None:
+        """Resets the colors for the spheres.
+
+        :return:
+        """
+        self.atom_colors = []
+
     def set_cylinder_model_matrices(self) -> None:
         """Sets the model matrices for the cylinders.
 
@@ -67,7 +123,6 @@ class Drawer:
                     self.atoms[bond[0]],
                     self.atoms[bond[1]],
                 )
-                # print(model_matrix)
                 colors_1 = np.array(self.atoms[bond[0]].cpk_color)
                 colors_2 = np.array(self.atoms[bond[1]].cpk_color)
                 if self.cylinder_model_matrices.shape[0] == 0:
@@ -87,38 +142,34 @@ class Drawer:
                         (self.cylinder_colors, np.array([colors_2], dtype=np.float32)),
                     )
 
+    def set_atom_translation_matrices(self) -> None:
+        """Sets the translation matrices for the spheres.
+
+        :return:
+        """
+        self.sphere_translation_matrices = calculate_translation_matrices(
+            np.array(self.atom_positions),
+        )
+
+    def set_atom_scale_matrices(self) -> None:
+        """Sets the scale matrices for the spheres.
+
+        :return:
+        """
+        self.sphere_scale_matrices = calculate_scale_matrices(
+            np.array(self.atom_scales),
+        )
+
     def set_atom_model_matrices(self) -> None:
         """Sets the model matrices for the spheres.
 
         :return:
         """
         self.reset_atom_model_matrices()
-        for atom in self.atoms:
-            if self.sphere_model_matrices.shape[0] == 0:
-                self.sphere_model_matrices = calculate_atom_model_matrix(atom)
-                self.sphere_colors = np.array([atom.cpk_color], dtype=np.float32)
-            else:
-                self.sphere_model_matrices = np.concatenate(
-                    (
-                        self.sphere_model_matrices,
-                        calculate_atom_model_matrix(atom),
-                    ),
-                )
-                self.sphere_colors = np.concatenate(
-                    (self.sphere_colors, np.array([atom.cpk_color], dtype=np.float32)),
-                )
-
-
-def calculate_atom_model_matrix(atom: Atom) -> np.ndarray:
-    """Calculates the model matrix for an atom displayed as a sphere.
-
-    :param atom: Atom
-    :return: Model matrix for the sphere.
-    """
-    return calculate_sphere_model_matrix(
-        np.array(atom.position, dtype=np.float32),
-        float(atom.vdw_radius / 6),
-    )
+        self.sphere_model_matrices = calculate_model_matrices(
+            np.array(self.sphere_translation_matrices),
+            np.array(self.sphere_scale_matrices),
+        )
 
 
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
