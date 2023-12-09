@@ -116,7 +116,7 @@ class Crystal(Molecule):
 
     @staticmethod
     def fractional_to_cartesian_coords(
-        fractional_coords: ArrayLike, basis_vectors: ArrayLike
+        fractional_coords: ArrayLike, basis_vectors: ArrayLike,
     ) -> np.ndarray:
         """Transform fractional coordinates (coordinates in terms of basis vectors) to cartesian coordinates.
 
