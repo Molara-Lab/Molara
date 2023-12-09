@@ -23,10 +23,11 @@ class Crystal(Molecule):
     Particle positions are given in terms of the basis vectors:
     E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
 
-    :param atomic_nums: contains the atomic numbers of the particles specified for the unit cell.
-    :type atomic_nums: numpy.array of int
-    :param coords: Nx3 matrix of particle coordinates in the unit cell, in terms of the basis vectors.
-    :type coords: numpy.ndarray of numpy.float64
+    :param atomic_numbers: contains the atomic numbers of the particles specified for the unit cell.
+    :type atomic_numbers: numpy.array of int
+    :param coordinates: Nx3 matrix of particle (fractional) coordinates in the unit cell,
+        i.e., coordinates in terms of the basis vectors.
+    :type coordinates: numpy.ndarray of numpy.float64
     :param basis_vectors: 3x3 matrix of the lattice basis vectors.
     :type basis_vectors: numpy.ndarray of numpy.float64
     :param supercell_dimensions: side lengths of the supercell in terms of the cell constants
@@ -97,9 +98,9 @@ class Crystal(Molecule):
             self.fractional_coords_supercell, extra_fractional_coords, axis=0
         )
 
-        # transform fractional to cartesian coords ...
-        self.cartesian_coords_supercell = np.dot(
-            self.fractional_coords_supercell,
+        # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
+        self.cartesian_coordinates_supercell = Crystal.fractional_to_cartesian_coords(
+            self.fractional_coordinates_supercell,
             self.basis_vectors,
         )
         # ... and instantiate atoms in super().__init__
@@ -107,6 +108,15 @@ class Crystal(Molecule):
             self.atomic_nums_supercell,
             self.cartesian_coords_supercell,
         )
+
+    @staticmethod
+    def fractional_to_cartesian_coords(fractional_coords: ArrayLike, basis_vectors: ArrayLike) -> np.ndarray:
+        """Transform fractional coordinates (coordinates in terms of basis vectors) to cartesian coordinates.
+
+        :param fractional_coords: fractional coordinates of the atoms
+        :param basis_vectors: basis vectors of the crystal lattice
+        """
+        return np.dot(fractional_coords, basis_vectors)
 
     @classmethod
     def make_supercell_edge_atoms(
