@@ -21,7 +21,7 @@ class Camera:
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, 1.0], dtype=np.float32)
         self.distance_from_target = 5.0
-        self.zoom_factor = 0.05
+        self.zoom_factor = 0.5
 
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
@@ -58,7 +58,7 @@ class Camera:
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, 1.0], dtype=np.float32)
         self.distance_from_target = 5.0
-        self.zoom_factor = 0.05
+        self.zoom_factor = 0.5
 
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
