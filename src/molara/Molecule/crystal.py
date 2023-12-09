@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
 ONE, TWO, THREE = 1, 2, 3
 
+
 class Crystal(Molecule):
     """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
 
@@ -93,10 +94,13 @@ class Crystal(Molecule):
             supercell_dimensions,
         )
         self.atomic_nums_supercell = np.append(
-            self.atomic_nums_supercell, extra_atomic_nums,
+            self.atomic_nums_supercell,
+            extra_atomic_nums,
         )
         self.fractional_coords_supercell = np.append(
-            self.fractional_coords_supercell, extra_fractional_coords, axis=0,
+            self.fractional_coords_supercell,
+            extra_fractional_coords,
+            axis=0,
         )
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
@@ -111,7 +115,9 @@ class Crystal(Molecule):
         )
 
     @staticmethod
-    def fractional_to_cartesian_coords(fractional_coords: ArrayLike, basis_vectors: ArrayLike) -> np.ndarray:
+    def fractional_to_cartesian_coords(
+        fractional_coords: ArrayLike, basis_vectors: ArrayLike
+    ) -> np.ndarray:
         """Transform fractional coordinates (coordinates in terms of basis vectors) to cartesian coordinates.
 
         :param fractional_coords: fractional coordinates of the atoms
