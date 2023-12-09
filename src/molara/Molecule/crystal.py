@@ -68,7 +68,7 @@ class Crystal(Molecule):
         num_unit_cells = translation_vectors.shape[0]
         self.fractional_coords_supercell = np.empty((0, 3), float)
         self.atomic_nums_supercell = np.empty(0, int)
-        
+
         # create supercell arrays
         for atomic_number_i, position_i in zip(
             self.atomic_nums_unitcell,
@@ -83,16 +83,16 @@ class Crystal(Molecule):
                 position_i + translation_vectors,
                 axis=0,
             )
-        
+
         # create extra atoms at edges of supercell (quasi periodic boundaries)
         extra_atomic_nums, extra_fractional_coords = Crystal.make_supercell_edge_atoms(
             self.atomic_nums_supercell,
             self.fractional_coords_supercell,
-            supercell_dimensions
+            supercell_dimensions,
         )
         self.atomic_nums_supercell = np.append(self.atomic_nums_supercell, extra_atomic_nums)
         self.fractional_coords_supercell = np.append(self.fractional_coords_supercell, extra_fractional_coords, axis=0)
-        
+
         # transform fractional to cartesian coords ...
         self.cartesian_coords_supercell = np.dot(
             self.fractional_coords_supercell,
@@ -103,24 +103,21 @@ class Crystal(Molecule):
             self.atomic_nums_supercell,
             self.cartesian_coords_supercell,
         )
-    
+
     @classmethod
     def make_supercell_edge_atoms(
         cls: type[Crystal],
         atomic_nums: Sequence[float],
         fractional_coords: Sequence[Sequence[float]],
-        supercell_dims: Sequence[int]
-    ):
-        """ if an atom is on one (or more) of the unit cell boundaries,
-        it shall be mirrored to the other side. Effectively, this means
-        that any atom that has a fractional coordinate 0 should get one
-        with 1 extra.
-        
+        supercell_dims: Sequence[int],
+    ) -> (Sequence[int], Sequence[Sequence[float]]):
+        """Extra atoms are created at supercell edges (periodic boundaries).
+
         :param atomic_nums: atomic numbers of the atoms
         :param fractional_coords: fractional coordinates,
           i.e., the coordinates of the atoms in terms of the basis vectors.
-        :param supercell_dims: supercell dimensions, e.g., [3,2,5] for a 3x2x5 supercell."""
-        
+        :param supercell_dims: supercell dimensions, e.g., [3,2,5] for a 3x2x5 supercell.
+        """
         # first get 2D info on where the zero-valued atom coordinates are located.
         # ids_edge_atoms contains the 0th-axis ids, i.e., the ids of the atoms with zero-valued coords.
         # ids_edge_atom_coords contains the 1st-axis ids, i.e., the ids of the specific coords that are zero-valued.
@@ -128,9 +125,10 @@ class Crystal(Molecule):
         # respectively, then ids_edge_atoms would be [0, 3, 3], and ids_edge_atom_coords would be [0, 1, 2].
         _fractional_coords_np = np.array(fractional_coords)
         _supercell_dims_np = np.array(supercell_dims)
+
         ids_edge_atoms, ids_edge_atom_coords = np.where(_fractional_coords_np==0)
         extra_atomic_nums = []# atomic numbers of the newly created atoms
-        extra_fractional_coords = []
+        extra_fractional_coords = []# fractional coordinates of the newly created atoms
 
         # iterate over the relevant atoms
         for _id_atom_unique in np.unique(ids_edge_atoms):
@@ -188,7 +186,7 @@ class Crystal(Molecule):
             else:
                 raise(ValueError)
         return extra_atomic_nums, extra_fractional_coords
-        
+
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
         """Creates a Crystal object from a POSCAR file."""
