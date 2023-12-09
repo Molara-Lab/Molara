@@ -135,54 +135,51 @@ class Crystal(Molecule):
             _atomic_num = atomic_nums[_id_atom_unique]
             # get the zero-valued coord ids of the respective atom
             _ids_atom_coords = ids_edge_atom_coords[ids_edge_atoms==_id_atom_unique]
-            _atom_coords = _fractional_coords_np[_id_atom_unique].copy()
+            _fractional_coords_atom = _fractional_coords_np[_id_atom_unique]
+
             if len(_ids_atom_coords)==1:# e.g., (.5, 0, .5)
+                extra_atomic_nums += [_atomic_num]
+                extra_fractional_coords += [_fractional_coords_atom.copy()]
                 id1 = _ids_atom_coords[0]
                 dim1 = _supercell_dims_np[id1]
-                _atom_coords[id1] = dim1
-                extra_fractional_coords += [_atom_coords]
-                extra_atomic_nums += [_atomic_num]
+                extra_fractional_coords[-1][id1] = dim1
+
             elif len(_ids_atom_coords)==2:# e.g., (.5, 0, 0)
+                extra_atomic_nums += [_atomic_num]*3
                 id1, id2 = _ids_atom_coords
                 dim1, dim2 = _supercell_dims_np[_ids_atom_coords]
-                _atom_coords[id1] = dim1# (dim1,0)
-                extra_fractional_coords += [_atom_coords]
-                _atom_coords = _atom_coords.copy()
-                _atom_coords[id2] = dim2# (dim1,dim2)
-                extra_fractional_coords += [_atom_coords]
-                # reset
-                _atom_coords = _fractional_coords_np[_id_atom_unique].copy()
-                _atom_coords[id2] = dim1# (0,dim1)
-                extra_fractional_coords += [_atom_coords]
-                extra_atomic_nums += [_atomic_num]*3
+                extra_fractional_coords += [_fractional_coords_atom.copy()]
+                extra_fractional_coords[-1][id1] = dim1# (dim1,0)
+
+                extra_fractional_coords += [extra_fractional_coords[-1].copy()]
+                extra_fractional_coords[-1][id2] = dim2# (dim1,dim2)
+
+                extra_fractional_coords += [_fractional_coords_atom.copy()]
+                extra_fractional_coords[-1][id2] = dim1# (0,dim1)
+
             elif len(_ids_atom_coords)==3:# i.e., (0, 0, 0)
+                extra_atomic_nums += [_atomic_num]*7
                 id1, id2, id3 = _ids_atom_coords
                 dim1, dim2, dim3 = _supercell_dims_np[_ids_atom_coords]
-                _atom_coords[id1] = dim1#(dim1,0,0)
-                extra_fractional_coords += [_atom_coords]
-                _atom_coords = _atom_coords.copy()
-                _atom_coords[id2] = dim2#(dim1,dim2,0)
-                extra_fractional_coords += [_atom_coords]
-                _atom_coords = _atom_coords.copy()
-                _atom_coords[id3] = dim3#(dim1,dim2,dim3)
-                extra_fractional_coords += [_atom_coords]
+
+                extra_fractional_coords += [_fractional_coords_atom.copy()]
+                extra_fractional_coords[-1][id1] = dim1# (dim1,0,0)
+                extra_fractional_coords += [extra_fractional_coords[-1].copy()]
+                extra_fractional_coords[-1][id2] = dim2# (dim1,dim2,0)
+                extra_fractional_coords += [extra_fractional_coords[-1].copy()]
+                extra_fractional_coords[-1][id3] = dim3# (dim1,dim2,dim3)
+
+                extra_fractional_coords += [_fractional_coords_atom.copy()]
+                extra_fractional_coords[-1][id1] = dim1
+                extra_fractional_coords[-1][id3] = dim3# (dim1,0,dim3)
+
+                extra_fractional_coords += [_fractional_coords_atom.copy()]
+                extra_fractional_coords[-1][id2] = dim2# (0,dim2,0)
+                extra_fractional_coords += [extra_fractional_coords[-1].copy()]
+                extra_fractional_coords[-1][id3] = dim3# (0,dim2,dim3)
                 # reset
-                _atom_coords = _fractional_coords_np[_id_atom_unique].copy()
-                _atom_coords[id1] = dim1
-                _atom_coords[id3] = dim3# (dim1,0,dim3)
-                extra_fractional_coords += [_atom_coords]
-                # reset
-                _atom_coords = _fractional_coords_np[_id_atom_unique].copy()
-                _atom_coords[id2] = dim2# (0,dim2,0)
-                extra_fractional_coords += [_atom_coords]
-                _atom_coords = _atom_coords.copy()
-                _atom_coords[id3] = dim3# (0,dim2,dim3)
-                extra_fractional_coords += [_atom_coords]
-                # reset
-                _atom_coords = _fractional_coords_np[_id_atom_unique].copy()
-                _atom_coords[id3] = dim3# (0,0,dim3)
-                extra_fractional_coords += [_atom_coords]
-                extra_atomic_nums += [_atomic_num]*7
+                extra_fractional_coords += [_fractional_coords_atom.copy()]
+                extra_fractional_coords[-1][id3] = dim3# (0,0,dim3)
             else:
                 raise(ValueError)
         return extra_atomic_nums, extra_fractional_coords
