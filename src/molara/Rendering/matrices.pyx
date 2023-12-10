@@ -1,14 +1,17 @@
 import numpy as np
 cimport numpy as npc
 from cython.parallel import prange
+from cython import boundscheck, exceptval
 from cython import nogil
 
+@boundscheck(False)
 def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
-                             float[:,:,:] rotation=np.array([[[-1.0]]], dtype=np.float32)):
+                             float[:,:,:] rotation=np.array([[[-1.0]]], dtype=np.float32),
+                             bint cylinder=False):
 
     cdef int n = translation.shape[0], i, j, k, l
     cdef float[:,:,:] model_matrices = np.zeros((n, 4, 4), dtype=np.float32)
-    cdef float[:,:] temp = np.zeros((3, 3), dtype=np.float32)
+    cdef float[:,:] temp = np.zeros((3,3), dtype=np.float32)
     cdef float temp1
 
     model_matrices[:, 3, 3] = 1.0
@@ -23,13 +26,11 @@ def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
                 model_matrices[i, 3, 2] = translation[i, 3, 2]
         else:
             for i in prange(n):
-                temp[:,:] = 0.0
-                for j in range(3):
-                    for k in range(3):
-                        temp1 = 0.0
-                        for l in range(3):
-                            temp1 = temp1 + rotation[i, j, l] * scale[i, l, k]
-                        temp[k, j] = temp1
+                if cylinder:
+                    if (i % 2) == 0:
+                        dot_product_m(rotation[i//2, :, :], scale[i//2, :, :], temp)
+                else:
+                    dot_product_m(rotation[i, :, :], scale[i, :, :], temp)
                 model_matrices[i, :3, :3] = temp[:,:]
                 model_matrices[i, 3, 0] = translation[i, 3, 0]
                 model_matrices[i, 3, 1] = translation[i, 3, 1]
@@ -38,7 +39,25 @@ def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
         model_matrices,
         dtype=np.float32,
     )
+@exceptval(check=False)
+@boundscheck(False)
+cdef int dot_product_m(float[:,:] a, float[:,:] b, float[:,:] res) nogil:
+    """Calculates the dot product of two matrices.
 
+    :param res: Resulting matrix.
+    :param a: First matrix.
+    :param b: Second matrix.
+    """
+    cdef int j, k, l
+
+    for j in prange(3):
+        for k in prange(3):
+            res[k, j] = 0.0
+            for l in range(3):
+                res[k, j] = res[k, j] + a[j, l] * b[l, k]
+
+    return 0
+@boundscheck(False)
 def calculate_translation_matrices(npc.ndarray[float, ndim=2] positions) -> npc.ndarray:
     """Calculates the translation matrix for a sphere.
 
@@ -62,6 +81,7 @@ def calculate_translation_matrices(npc.ndarray[float, ndim=2] positions) -> npc.
 
     return np.array(translation_matrices, dtype=np.float32)
 
+@boundscheck(False)
 def calculate_scale_matrices(npc.ndarray[float, ndim=2] scales) -> np.ndarray:
     """Calculates the scale matrix for a sphere.
 
@@ -81,6 +101,7 @@ def calculate_scale_matrices(npc.ndarray[float, ndim=2] scales) -> np.ndarray:
 
     return np.array(scale_matrices, dtype=np.float32)
 
+@boundscheck(False)
 def calculate_rotation_matrices(
     double[:,:] directions,
 ):
@@ -97,7 +118,7 @@ def calculate_rotation_matrices(
     cdef float[3] y_axis = [0., 1., 0.]
 
     with (nogil):
-        for i in range(n):
+        for i in prange(n):
             direction_norm = (directions[i, 0]**2 + directions[i, 1]**2 + directions[i, 2]**2)**0.5
             normalized_direction[0] = directions[i, 0] / direction_norm
             normalized_direction[1] = directions[i, 1] / direction_norm

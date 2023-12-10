@@ -103,8 +103,6 @@ class Drawer:
                 self.cylinder_positions.append(position_1)
                 self.cylinder_positions.append(position_2)
                 self.cylinder_directions.append(difference)
-                self.cylinder_directions.append(difference)
-                self.cylinder_dimensions.append([radius, length, radius])
                 self.cylinder_dimensions.append([radius, length, radius])
                 self.cylinder_colors.append(
                     np.array([self.atoms[bond[0]].cpk_color], dtype=np.float32),
@@ -170,6 +168,7 @@ class Drawer:
             self.cylinder_translation_matrices,
             self.cylinder_scale_matrices,
             self.cylinder_rotation_matrices,
+            cylinder=True,
         )
 
     def set_cylinder_translation_matrices(self) -> None:
