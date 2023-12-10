@@ -78,10 +78,10 @@ class Renderer:
         else:
             for i in range(n_instances):
                 model_matrix = calculate_cylinder_model_matrix(
-                    positions[i],
-                    radii[i],
-                    lengths[i],
-                    directions[i],
+                    np.array(positions[i], dtype=np.float64),
+                    float(radii[i]),
+                    float(lengths[i]),
+                    np.array(directions[i], dtype=np.float64),
                 )
                 model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
