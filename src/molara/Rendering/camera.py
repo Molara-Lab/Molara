@@ -36,6 +36,12 @@ class Camera:
         self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position))
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
+        self.view_matrix = pyrr.matrix44.create_look_at(
+            self.position,
+            self.target,
+            self.up_vector,
+        )
+
 
     def calculate_projection_matrix(self, width: float, height: float) -> None:
         """Calculates the projection matrix to get from world to camera space.
@@ -92,6 +98,11 @@ class Camera:
         if save:
             self.last_rotation = self.rotation
             self.last_translation = self.translation
+        self.view_matrix = pyrr.matrix44.create_look_at(
+            self.position,
+            self.target,
+            self.up_vector,
+        )
 
     def set_translation_vector(
         self,

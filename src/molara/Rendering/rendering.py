@@ -299,11 +299,6 @@ class Renderer:
         :param vaos: The vertex array object pointers for the opengl draw call.
         :type vaos: GL_INT
         """
-        view_mat = pyrr.matrix44.create_look_at(
-            pyrr.Vector3(camera.position),
-            pyrr.Vector3(camera.target),
-            pyrr.Vector3(camera.up_vector),
-        )
 
         light_direction_loc = glGetUniformLocation(self.shader, "light_direction")
         proj_loc = glGetUniformLocation(self.shader, "projection")
@@ -314,7 +309,7 @@ class Renderer:
         glUniform3fv(light_direction_loc, 1, light_direction)
         glUniform3fv(camera_loc, 1, camera.position)
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)
-        glUniformMatrix4fv(view_loc, 1, GL_FALSE, view_mat)
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, camera.view_matrix)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
