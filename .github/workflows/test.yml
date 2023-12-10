@@ -36,7 +36,7 @@ jobs:
           python -m pip install --upgrade pip wheel
           python -m pip install numpy packaging
           python -m pip install cython setuptools
-          python -m cython_build.py build_ext --inplace
+          python -m cython_build build_ext --inplace
           python -m pip install -e '.[dev,optional]'
       - name: pytest
         run: |
