@@ -25,4 +25,5 @@ setup(
     # external to be compiled
     ext_modules=cythonize(extensions, compiler_directives={"language_level": 3}),
     include_dirs=[np.get_include()],
+    script_args=['build_ext', '--build-lib=src/'],
 )
