@@ -1,8 +1,4 @@
-from __future__ import annotations
-from cython import nogil
 
-
-cimport numpy as npc
 cpdef double norm(double[:] x):
     cdef double res = 0
     cdef int i

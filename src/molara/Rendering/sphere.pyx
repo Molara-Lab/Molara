@@ -1,7 +1,5 @@
 """This module contains the Sphere and Spheres classes."""
 
-from __future__ import annotations
-
 import numpy as np
 cimport numpy as npc
 from molara.Tools.mathtools import norm

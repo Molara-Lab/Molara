@@ -113,7 +113,8 @@ def calculate_rotation_matrices(
     cdef npc.ndarray[float, ndim=3] rotation_matrices = np.zeros((directions.shape[0], 4, 4), dtype=np.float32)
     cdef int n = directions.shape[0], i, j, k
     cdef double[3] rotation_axis
-    cdef float rotation_angle, x, y, z, c, s, t, dot_product, normalized_direction[3]
+    cdef float rotation_angle, x, y, z, c, s, t, dot_product
+    cdef float normalized_direction[3]
     cdef double direction_norm
     cdef float[3] y_axis = [0., 1., 0.]
 
@@ -124,7 +125,7 @@ def calculate_rotation_matrices(
             normalized_direction[1] = directions[i, 1] / direction_norm
             normalized_direction[2] = directions[i, 2] / direction_norm
             dot_product = -(y_axis[0]*normalized_direction[0] + y_axis[1]*normalized_direction[1] + y_axis[2]*normalized_direction[2])
-            if abs(dot_product) != 1:
+            if dot_product != 1 and dot_product != -1:
                 rotation_axis[0] = y_axis[1] * normalized_direction[2] - y_axis[2] * normalized_direction[1]
                 rotation_axis[1] = y_axis[2] * normalized_direction[0] - y_axis[0] * normalized_direction[2]
                 rotation_axis[2] = y_axis[0] * normalized_direction[1] - y_axis[1] * normalized_direction[0]

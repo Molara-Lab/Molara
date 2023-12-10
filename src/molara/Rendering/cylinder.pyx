@@ -3,8 +3,6 @@
 They are used to create cylinders and multiple cylinders of the same color, respectively.
 """
 
-from __future__ import annotations
-
 cimport numpy as npc
 import numpy as np
 from molara.Tools.mathtools import norm
