@@ -3,22 +3,39 @@ cimport numpy as npc
 from cython.parallel import prange
 from cython import nogil
 
-def calculate_model_matrices(npc.ndarray[float, ndim=3] translation, npc.ndarray[float, ndim=3]  scale):
+def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
+                             float[:,:,:] rotation=np.array([[[-1.0]]], dtype=np.float32)):
 
-    cdef int n = translation.shape[0], i
-    cdef npc.ndarray[float, ndim=3] model_matrix = np.zeros((n, 4, 4), dtype=np.float32)
+    cdef int n = translation.shape[0], i, j, k, l
+    cdef float[:,:,:] model_matrices = np.zeros((n, 4, 4), dtype=np.float32)
+    cdef float[:,:] temp = np.zeros((3, 3), dtype=np.float32)
+    cdef float temp1
 
+    model_matrices[:, 3, 3] = 1.0
     with nogil:
-        for i in prange(n):
-            model_matrix[i, 0, 0] = scale[i, 0, 0]
-            model_matrix[i, 1, 1] = scale[i, 1, 1]
-            model_matrix[i, 2, 2] = scale[i, 2, 2]
-            model_matrix[i, 3, 3] = 1.0
-            model_matrix[i, 3, 0] = translation[i, 3, 0]
-            model_matrix[i, 3, 1] = translation[i, 3, 1]
-            model_matrix[i, 3, 2] = translation[i, 3, 2]
+        if rotation[0, 0, 0] == -1:
+            for i in prange(n):
+                model_matrices[i, 0, 0] = scale[i, 0, 0]
+                model_matrices[i, 1, 1] = scale[i, 1, 1]
+                model_matrices[i, 2, 2] = scale[i, 2, 2]
+                model_matrices[i, 3, 0] = translation[i, 3, 0]
+                model_matrices[i, 3, 1] = translation[i, 3, 1]
+                model_matrices[i, 3, 2] = translation[i, 3, 2]
+        else:
+            for i in prange(n):
+                temp[:,:] = 0.0
+                for j in range(3):
+                    for k in range(3):
+                        temp1 = 0.0
+                        for l in range(3):
+                            temp1 = temp1 + rotation[i, j, l] * scale[i, l, k]
+                        temp[k, j] = temp1
+                model_matrices[i, :3, :3] = temp[:,:]
+                model_matrices[i, 3, 0] = translation[i, 3, 0]
+                model_matrices[i, 3, 1] = translation[i, 3, 1]
+                model_matrices[i, 3, 2] = translation[i, 3, 2]
     return np.array(
-        model_matrix,
+        model_matrices,
         dtype=np.float32,
     )
 
@@ -48,7 +65,7 @@ def calculate_translation_matrices(npc.ndarray[float, ndim=2] positions) -> npc.
 def calculate_scale_matrices(npc.ndarray[float, ndim=2] scales) -> np.ndarray:
     """Calculates the scale matrix for a sphere.
 
-    :param radius: Radius of the sphere.
+    :param scales: Scales of the spheres.
     :return: Scale matrix of the sphere.
     """
 
@@ -63,3 +80,53 @@ def calculate_scale_matrices(npc.ndarray[float, ndim=2] scales) -> np.ndarray:
             scale_matrices[i, 3, 3] = 1.0
 
     return np.array(scale_matrices, dtype=np.float32)
+
+def calculate_rotation_matrices(
+    double[:,:] directions,
+):
+    """Calculates the rotation matrix.
+
+    :param directions: Direction the y-axis of the rotated object should be rotated to.
+    :return: Rotation matrices.
+    """
+    cdef npc.ndarray[float, ndim=3] rotation_matrices = np.zeros((directions.shape[0], 4, 4), dtype=np.float32)
+    cdef int n = directions.shape[0], i, j, k
+    cdef double[3] rotation_axis
+    cdef float rotation_angle, x, y, z, c, s, t, dot_product, normalized_direction[3]
+    cdef double direction_norm
+    cdef float[3] y_axis = [0., 1., 0.]
+
+    with (nogil):
+        for i in range(n):
+            direction_norm = (directions[i, 0]**2 + directions[i, 1]**2 + directions[i, 2]**2)**0.5
+            normalized_direction[0] = directions[i, 0] / direction_norm
+            normalized_direction[1] = directions[i, 1] / direction_norm
+            normalized_direction[2] = directions[i, 2] / direction_norm
+            dot_product = -(y_axis[0]*normalized_direction[0] + y_axis[1]*normalized_direction[1] + y_axis[2]*normalized_direction[2])
+            if abs(dot_product) != 1:
+                rotation_axis[0] = y_axis[1] * normalized_direction[2] - y_axis[2] * normalized_direction[1]
+                rotation_axis[1] = y_axis[2] * normalized_direction[0] - y_axis[0] * normalized_direction[2]
+                rotation_axis[2] = y_axis[0] * normalized_direction[1] - y_axis[1] * normalized_direction[0]
+            else:
+                rotation_axis[0] = 0.0
+                rotation_axis[1] = 0.0
+                rotation_axis[2] = 1.0
+            c = dot_product
+            s = (rotation_axis[0]**2 + rotation_axis[1]**2 + rotation_axis[2]**2)**0.5
+            x = rotation_axis[0] / s
+            y = rotation_axis[1] / s
+            z = rotation_axis[2] / s
+            t = 1 - c
+
+            rotation_matrices[i, 0, 0] = t*x*x + c
+            rotation_matrices[i, 0, 1] = t*x*y + s*z
+            rotation_matrices[i, 0, 2] = t*x*z - s*y
+            rotation_matrices[i, 1, 0] = t*x*y - s*z
+            rotation_matrices[i, 1, 1] = t*y*y + c
+            rotation_matrices[i, 1, 2] = t*y*z + s*x
+            rotation_matrices[i, 2, 0] = t*x*z + s*y
+            rotation_matrices[i, 2, 1] = t*y*z - s*x
+            rotation_matrices[i, 2, 2] = t*z*z + c
+            rotation_matrices[i, 3, 3] = 1.0
+
+    return np.array(rotation_matrices, dtype=np.float32)
