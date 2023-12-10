@@ -33,21 +33,21 @@ class Drawer:
         self.sphere = Sphere(self.subdivisions_sphere)
         self.cylinder = Cylinder(self.subdivisions_cylinder)
         self.sphere_model_matrices = np.array([], dtype=np.float32)
-        self.sphere_translation_matrices: list = []
-        self.sphere_scale_matrices: list = []
-        self.cylinder_scale_matrices: list = []
-        self.cylinder_rotation_matrices: list = []
-        self.cylinder_translation_matrices: list = []
+        self.sphere_translation_matrices: list | np.ndarray = []
+        self.sphere_scale_matrices: list | np.ndarray = []
+        self.cylinder_scale_matrices: list | np.ndarray = []
+        self.cylinder_rotation_matrices: list | np.ndarray = []
+        self.cylinder_translation_matrices: list | np.ndarray = []
         self.cylinder_model_matrices = np.array([], dtype=np.float32)
-        self.cylinder_colors: list = []
+        self.cylinder_colors: np.ndarray = np.array([], dtype=np.float32)
         self.atoms = atoms
         self.bonds = bonds
-        self.atom_positions: list = []
-        self.atom_colors: list = []
-        self.atom_scale: list = []
-        self.cylinder_positions: list = []
-        self.cylinder_directions: list = []
-        self.cylinder_dimensions: list = []
+        self.atom_positions: list | np.ndarray = []
+        self.atom_colors: np.ndarray = np.array([], dtype=np.float32)
+        self.atom_scales: list | np.ndarray = []
+        self.cylinder_positions: list | np.ndarray = []
+        self.cylinder_directions: list | np.ndarray = []
+        self.cylinder_dimensions: list | np.ndarray = []
         self.set_atom_colors()
         self.set_atom_positions()
         self.set_atom_scales()
@@ -75,9 +75,13 @@ class Drawer:
 
         :return:
         """
-        self.atom_colors = []
+        i = 0
         for atom in self.atoms:
-            self.atom_colors.append(np.array([atom.cpk_color], dtype=np.float32))
+            if i != 0:
+                self.atom_colors = np.concatenate((self.atom_colors, np.array([atom.cpk_color], dtype=np.float32)))
+            else:
+                self.atom_colors = np.array([self.atoms[0].cpk_color], dtype=np.float32)
+            i += 1
         self.atom_colors = np.array(self.atom_colors, dtype=np.float32)
 
     def set_cylinder_props(self) -> None:
@@ -85,10 +89,11 @@ class Drawer:
 
         :return:
         """
-        self.cylinder_colors = []
+        self.cylinder_colors = np.array([], dtype=np.float32)
         self.cylinder_positions = []
         self.cylinder_directions = []
         self.cylinder_dimensions = []
+        i = 0
         for bond in self.bonds:
             if bond[0] != -1:
                 radius = 0.075
@@ -104,12 +109,23 @@ class Drawer:
                 self.cylinder_positions.append(position_2)
                 self.cylinder_directions.append(difference)
                 self.cylinder_dimensions.append([radius, length, radius])
-                self.cylinder_colors.append(
-                    np.array([self.atoms[bond[0]].cpk_color], dtype=np.float32),
-                )
-                self.cylinder_colors.append(
-                    np.array([self.atoms[bond[1]].cpk_color], dtype=np.float32),
-                )
+                if i != 0:
+                    self.cylinder_colors = np.concatenate(
+                        (
+                            self.cylinder_colors,
+                            np.array([self.atoms[bond[0]].cpk_color], dtype=np.float32),
+                            np.array([self.atoms[bond[1]].cpk_color], dtype=np.float32),
+                        ),
+                    )
+                else:
+                    self.cylinder_colors = np.array(
+                        [
+                            self.atoms[bond[0]].cpk_color,
+                            self.atoms[bond[1]].cpk_color,
+                        ],
+                        dtype=np.float32,
+                    )
+                i += 1
 
         self.cylinder_colors = np.array(self.cylinder_colors, dtype=np.float32)
         self.cylinder_positions = np.array(self.cylinder_positions, dtype=np.float32)
@@ -156,7 +172,7 @@ class Drawer:
 
         :return:
         """
-        self.atom_colors = []
+        self.atom_colors = np.array([], dtype=np.float32)
 
     def set_cylinder_model_matrices(self) -> None:
         """Sets the model matrices for the cylinders.
