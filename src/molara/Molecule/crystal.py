@@ -25,7 +25,8 @@ class Crystal(Molecule):
 
     :param atomic_numbers: contains the atomic numbers of the particles specified for the unit cell.
     :type atomic_numbers: numpy.array of int
-    :param coordinates: Nx3 matrix of particle coordinates in the unit cell, in terms of the basis vectors.
+    :param coordinates: Nx3 matrix of particle (fractional) coordinates in the unit cell,
+        i.e., coordinates in terms of the basis vectors.
     :type coordinates: numpy.ndarray of numpy.float64
     :param basis_vectors: 3x3 matrix of the lattice basis vectors.
     :type basis_vectors: numpy.ndarray of numpy.float64
@@ -106,7 +107,7 @@ class Crystal(Molecule):
         )
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
-        self.cartesian_coordinates_supercell = np.dot(
+        self.cartesian_coordinates_supercell = Crystal.fractional_to_cartesian_coords(
             self.fractional_coordinates_supercell,
             self.basis_vectors,
         )
@@ -114,6 +115,15 @@ class Crystal(Molecule):
             self.atomic_numbers_supercell,
             self.cartesian_coordinates_supercell,
         )
+
+    @staticmethod
+    def fractional_to_cartesian_coords(fractional_coords: ArrayLike, basis_vectors: ArrayLike) -> np.ndarray:
+        """Transform fractional coordinates (coordinates in terms of basis vectors) to cartesian coordinates.
+
+        :param fractional_coords: fractional coordinates of the atoms
+        :param basis_vectors: basis vectors of the crystal lattice
+        """
+        return np.dot(fractional_coords, basis_vectors)
 
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
