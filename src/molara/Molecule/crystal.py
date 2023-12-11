@@ -150,9 +150,7 @@ class Crystal(Molecule):
 
         ids_edge_atoms, ids_edge_atom_coords = np.where(_fractional_coords_np == 0)
         extra_atomic_nums = []  # atomic numbers of the newly created atoms
-        extra_fractional_coords = (
-            []
-        )  # fractional coordinates of the newly created atoms
+        extra_fractional_coords = []  # fractional coordinates of the newly created atoms
 
         # iterate over the relevant atoms
         for _id_atom_unique in np.unique(ids_edge_atoms):
