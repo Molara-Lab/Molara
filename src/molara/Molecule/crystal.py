@@ -16,8 +16,6 @@ if TYPE_CHECKING:
 
     from numpy.typing import ArrayLike
 
-ONE, TWO, THREE = 1, 2, 3
-
 
 class Crystal(Molecule):
     """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
@@ -89,8 +87,8 @@ class Crystal(Molecule):
 
         # create extra atoms at edges of supercell (quasi periodic boundaries)
         extra_atomic_nums, extra_fractional_coords = Crystal.make_supercell_edge_atoms(
-            self.atomic_nums_supercell,
-            self.fractional_coords_supercell,
+            self.atomic_nums_supercell.tolist(),
+            self.fractional_coords_supercell.tolist(),
             supercell_dimensions,
         )
         self.atomic_nums_supercell = np.append(
@@ -105,13 +103,13 @@ class Crystal(Molecule):
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
         self.cartesian_coordinates_supercell = Crystal.fractional_to_cartesian_coords(
-            self.fractional_coordinates_supercell,
+            self.fractional_coords_supercell,
             self.basis_vectors,
         )
         # ... and instantiate atoms in super().__init__
         super().__init__(
             self.atomic_nums_supercell,
-            self.cartesian_coords_supercell,
+            self.cartesian_coordinates_supercell,
         )
 
     @staticmethod
@@ -132,7 +130,7 @@ class Crystal(Molecule):
         atomic_nums: Sequence[float],
         fractional_coords: Sequence[Sequence[float]],
         supercell_dims: Sequence[int],
-    ) -> (Sequence[int], Sequence[Sequence[float]]):
+    ) -> tuple[Sequence[int], Sequence[Sequence[float]]]:
         """Extra atoms are created at supercell edges (periodic boundaries).
 
         :param atomic_nums: atomic numbers of the atoms
@@ -159,14 +157,14 @@ class Crystal(Molecule):
             _ids_atom_coords = ids_edge_atom_coords[ids_edge_atoms == _id_atom_unique]
             _fractional_coords_atom = _fractional_coords_np[_id_atom_unique]
 
-            if len(_ids_atom_coords) == ONE:  # e.g., (.5, 0, .5)
+            if len(_ids_atom_coords) == 1:  # e.g., (.5, 0, .5)
                 extra_atomic_nums += [_atomic_num]
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 id1 = _ids_atom_coords[0]
                 dim1 = _supercell_dims_np[id1]
                 extra_fractional_coords[-1][id1] = dim1
 
-            elif len(_ids_atom_coords) == TWO:  # e.g., (.5, 0, 0)
+            elif len(_ids_atom_coords) == 2:  # e.g., (.5, 0, 0)
                 extra_atomic_nums += [_atomic_num] * 3
                 id1, id2 = _ids_atom_coords
                 dim1, dim2 = _supercell_dims_np[_ids_atom_coords]
@@ -179,7 +177,7 @@ class Crystal(Molecule):
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 extra_fractional_coords[-1][id2] = dim1  # (0,dim1)
 
-            elif len(_ids_atom_coords) == THREE:  # i.e., (0, 0, 0)
+            elif len(_ids_atom_coords) == 3:  # i.e., (0, 0, 0)
                 extra_atomic_nums += [_atomic_num] * 7
                 id1, id2, id3 = _ids_atom_coords
                 dim1, dim2, dim3 = _supercell_dims_np[_ids_atom_coords]
