@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
 from molara.Molecule.molecule import Molecule
+from molara.Molecule.basisset import Basisset
 from molara.Molecule.molecules import Molecules
 
 if TYPE_CHECKING:
@@ -16,6 +17,9 @@ if TYPE_CHECKING:
     from typing import Any
 
     from cclib.data import ccData
+
+
+bohr_to_angstrom = 5.29177210903e-1
 
 
 class FileImporterError(Exception):
@@ -153,6 +157,137 @@ class CoordImporter(MoleculesImporter):
         return molecules
 
 
+class MoldenImporter(MoleculesImporter):
+    """Importer from *.molden files."""
+
+    def load(self) -> Molecules:
+        """Reads the file in self.path and creates a Molecules object."""
+        molecules = Molecules()
+
+        with open(self.path) as file:
+            lines = file.readlines()
+
+        i = 0
+        mo_keywords = ["[MO]", "[5D]", "[7F]", "[9G]"]
+
+        while i < len(lines):
+            if "[Atoms]" in lines[i]:
+                i_start = i
+                i += 1
+                while "[" not in lines[i]:
+                    i += 1
+                atomic_numbers, coordinates = self.get_atoms(lines[i_start:i])
+            if "[GTO]" in lines[i] or "[STO]" in lines[i]:
+                i_start = i
+                i += 1
+                while "[" not in lines[i]:
+                    i += 1
+                basisset = self.get_basisset(lines[i_start:i])
+            i += 1
+        molecules.add_molecule(
+            Molecule(np.array(atomic_numbers), np.array(coordinates)),
+        )
+        molecules.mols[0].basisset = basisset
+        print(atomic_numbers)
+        print(coordinates)
+        return molecules
+
+
+    def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
+        """Reads the atomic numbers and coordinates from the file.
+
+        :param lines: The lines of the atom block.
+        :return: The atomic numbers and coordinates.
+        """
+        atomic_numbers = []
+        coordinates = []
+
+        i = 0
+        if "Angs" in lines[i]:
+            angstrom = True
+        elif "AU" in lines[i]:
+            angstrom = False
+        else:
+            msg = "No unit specified in molden Atoms input."
+            raise FileFormatError(msg)
+        i += 1
+        while i < len(lines):
+            atom_info = lines[i].split()
+            atomic_numbers.append(int(atom_info[2]))
+            if not angstrom:
+                coordinates.append(
+                    [float(coord) * bohr_to_angstrom for coord in atom_info[3:6]],
+                )
+            else:
+                coordinates.append([float(coord) for coord in atom_info[3:6]])
+            i += 1
+
+        return atomic_numbers, coordinates
+
+    def get_basisset(self, lines: list[str]) -> Basisset:
+        """Reads the basis set from the file.
+
+        :param lines: The lines of the basis set block.
+        :return: The basis set.
+        """
+
+        i = 0
+        if "GTO" in lines[i]:
+            basis_type = "GTO"
+        elif "STO" in lines[i]:
+            basis_type = "STO"
+            msg = "STO type not implemented."
+            raise FileFormatError(msg)
+        else:
+            msg = "No basis type specified in molden file."
+            raise FileFormatError(msg)
+        i += 2
+        coefficients = []
+        exponents = []
+        shells = ['s', 'p', 'd', 'f', 'g', 'h', 'i', 'j', 'k']
+        basisset = Basisset(basis_type)
+        new_basisset_dict = {
+            "shells": [],
+            "exponents": [],
+            "coefficients": [],
+        }
+        words = lines[i].split()
+        while i < len(lines):
+            if not words:  # check if end of gto block
+                while not words:
+                    i += 1
+                    if i == len(lines):
+                        break
+                    words = lines[i].split()
+                if i == len(lines):
+                    break
+                basisset.basisset.append(new_basisset_dict)
+                i += 1  # skip line after empty line
+                words = lines[i].split()
+            if words[0] == "sp":
+                msg = "sp type not implemented."
+                raise FileFormatError(msg)
+            if words[0] in shells:
+                basisset.basisset[-1]["shells"].append(words[0])
+            i += 1
+            words = lines[i].split()
+            while words and words[0] not in shells:
+                if "D" in words[0]:
+                   words[0] = words[0].replace("D", "E")
+                if "D" in words[1]:
+                    words[1] = words[1].replace("D", "E")
+                exponents.append(float(words[0]))
+                coefficients.append(float(words[1]))
+                i += 1
+                words = lines[i].split()
+            basisset.basisset[-1]["exponents"].append(exponents)
+            basisset.basisset[-1]["coefficients"].append(coefficients)
+            exponents = []
+            coefficients = []
+
+        return basisset
+
+
 class QmImporter(MoleculesImporter):
     """importer for output files of various quantum chemistry programs."""
 
@@ -215,6 +350,7 @@ class GeneralImporter(MoleculesImporter):
     _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzImporter,
         ".coord": CoordImporter,
+        ".molden": MoldenImporter,
     }
 
     def __init__(self, path: PathLike | str) -> None:
