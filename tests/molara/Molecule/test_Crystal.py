@@ -18,8 +18,11 @@ class TestCrystal(TestCase):
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
         self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors)
-
-        assert len(self.crystal.atoms) == 2**3 + 1**3
+        supercell_dimensions = self.crystal.supercell_dimensions
+        assert len(self.crystal.atoms) == (
+            (supercell_dimensions[0]+1)*(supercell_dimensions[1]+1)*(supercell_dimensions[2]+1)
+            + supercell_dimensions[0]*supercell_dimensions[1]*supercell_dimensions[2]
+        )
         assert_array_equal(self.crystal.basis_vectors, basis_vectors)
         assert_array_equal(self.crystal.atomic_nums_unitcell, atomic_numbers)
         assert_array_equal(self.crystal.coords_unitcell, coordinates)
