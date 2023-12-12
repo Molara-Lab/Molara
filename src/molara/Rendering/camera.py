@@ -46,7 +46,6 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-
     def calculate_projection_matrix(self, width: float, height: float) -> None:
         """Calculates the projection matrix to get from world to camera space.
 
@@ -94,7 +93,6 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-
     def set_distance_from_target(self, zoom: float) -> None:
         """Set the distance between the camera and its target.
 
@@ -121,7 +119,6 @@ class Camera:
             dtype=np.float32,
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
-
 
     def set_translation_vector(
         self,

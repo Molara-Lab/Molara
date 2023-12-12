@@ -8,7 +8,7 @@ cpdef int select_sphere(float[:] screen_coordinates, float[:] camera_position,
                         float[:,:] view_matrix_inv, float[:,:] projection_matrix_inv, float fov, float aspect_ratio,
                         float[:,:] sphere_origins, float[:] radii):
     """Select the sphere that is closest to the screen coordinates.
-    
+
     :param screen_coordinates: Screen coordinates of mouse click
     :param camera_position: Position of camera
     :param view_matrix_inv: Inverted view matrix of camera
@@ -51,7 +51,7 @@ cpdef int select_sphere(float[:] screen_coordinates, float[:] camera_position,
 cpdef float check_sphere_intersect(float[:] sphere_origin, float radius,
                                    float[:] ray_origin, float[:] ray_direction):
     """Check if a given ray with a specified origin and direction intersects a sphere.
-    
+
     :param sphere_origin: Origin of sphere
     :param radius: Radius of sphere
     :param ray_origin: Origin of ray
@@ -82,5 +82,3 @@ cpdef float check_sphere_intersect(float[:] sphere_origin, float radius,
             return t1
     else:
         return -b / (2 * a)
-
-

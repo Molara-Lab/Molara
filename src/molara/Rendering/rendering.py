@@ -299,7 +299,6 @@ class Renderer:
         :type bonds: bool
         :return:
         """
-
         light_direction_loc = glGetUniformLocation(self.shader, "light_direction")
         proj_loc = glGetUniformLocation(self.shader, "projection")
         camera_loc = glGetUniformLocation(self.shader, "camera_position")
