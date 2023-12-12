@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 
-from molara.Molecule.atom import Atom, element_symbol_to_atomic_number
+from molara.Molecule.atom import Atom
+from molara.Molecule.basisset import Basisset
 from molara.Molecule.drawer import Drawer
 
 if TYPE_CHECKING:
@@ -36,6 +37,7 @@ class Molecule:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
+        self.basisset = Basisset()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.unique_atomic_numbers: list[int] = []
