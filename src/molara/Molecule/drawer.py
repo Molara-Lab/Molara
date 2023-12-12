@@ -55,13 +55,12 @@ class Drawer:
         self.set_atom_translation_matrices()
         self.set_atom_model_matrices()
 
-        if self.bonds[0,0] != -1:
+        if self.bonds[0, 0] != -1:
             self.set_cylinder_props()
             self.set_cylinder_scale_matrices()
             self.set_cylinder_rotation_matrices()
             self.set_cylinder_translation_matrices()
             self.set_cylinder_model_matrices()
-
 
     def set_atoms(self, atoms: list[Atom]) -> None:
         """Sets the atoms to be displayed.

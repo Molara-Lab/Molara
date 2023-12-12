@@ -47,7 +47,7 @@ class Molecule:
 
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
-        self.draw_bonds = (self.bonded_pairs[0,0] != -1) and draw_bonds
+        self.draw_bonds = (self.bonded_pairs[0, 0] != -1) and draw_bonds
         self.gen_energy_information(header)
 
     def calculate_bonds(self) -> np.ndarray:
