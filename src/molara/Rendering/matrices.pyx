@@ -129,26 +129,29 @@ def calculate_rotation_matrices(
                 rotation_axis[0] = y_axis[1] * normalized_direction[2] - y_axis[2] * normalized_direction[1]
                 rotation_axis[1] = y_axis[2] * normalized_direction[0] - y_axis[0] * normalized_direction[2]
                 rotation_axis[2] = y_axis[0] * normalized_direction[1] - y_axis[1] * normalized_direction[0]
-            else:
-                rotation_axis[0] = 0.0
-                rotation_axis[1] = 0.0
-                rotation_axis[2] = 1.0
-            c = dot_product
-            s = (rotation_axis[0]**2 + rotation_axis[1]**2 + rotation_axis[2]**2)**0.5
-            x = rotation_axis[0] / s
-            y = rotation_axis[1] / s
-            z = rotation_axis[2] / s
-            t = 1 - c
+                c = dot_product
+                s = (rotation_axis[0]**2 + rotation_axis[1]**2 + rotation_axis[2]**2)**0.5
+                x = rotation_axis[0] / s
+                y = rotation_axis[1] / s
+                z = rotation_axis[2] / s
+                t = 1 - c
 
-            rotation_matrices[i, 0, 0] = t*x*x + c
-            rotation_matrices[i, 0, 1] = t*x*y + s*z
-            rotation_matrices[i, 0, 2] = t*x*z - s*y
-            rotation_matrices[i, 1, 0] = t*x*y - s*z
-            rotation_matrices[i, 1, 1] = t*y*y + c
-            rotation_matrices[i, 1, 2] = t*y*z + s*x
-            rotation_matrices[i, 2, 0] = t*x*z + s*y
-            rotation_matrices[i, 2, 1] = t*y*z - s*x
-            rotation_matrices[i, 2, 2] = t*z*z + c
-            rotation_matrices[i, 3, 3] = 1.0
+                rotation_matrices[i, 0, 0] = t*x*x + c
+                rotation_matrices[i, 0, 1] = t*x*y + s*z
+                rotation_matrices[i, 0, 2] = t*x*z - s*y
+                rotation_matrices[i, 1, 0] = t*x*y - s*z
+                rotation_matrices[i, 1, 1] = t*y*y + c
+                rotation_matrices[i, 1, 2] = t*y*z + s*x
+                rotation_matrices[i, 2, 0] = t*x*z + s*y
+                rotation_matrices[i, 2, 1] = t*y*z - s*x
+                rotation_matrices[i, 2, 2] = t*z*z + c
+                rotation_matrices[i, 3, 3] = 1.0
+            else:
+                for j in prange(3):
+                    for k in prange(3):
+                        if j == k:
+                            rotation_matrices[i, j, k] = 1.0
+                        else:
+                            rotation_matrices[i, j, k] = 0.0
 
     return np.array(rotation_matrices, dtype=np.float32)
