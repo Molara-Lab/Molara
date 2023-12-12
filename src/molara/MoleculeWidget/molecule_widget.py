@@ -51,6 +51,13 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
         self.selected_spheres: list = [-1] * 4
+        self.old_sphere_colors: list = [np.ndarray] * 4
+        self.new_sphere_colors: list = [
+            np.array([1, 0, 0], dtype=np.float32),
+            np.array([0, 1, 0], dtype=np.float32),
+            np.array([0, 0, 1], dtype=np.float32),
+            np.array([1, 1, 0], dtype=np.float32),
+        ]
 
     def reset_view(self) -> None:
         """Resets the view of the molecule to the initial view."""
@@ -134,7 +141,8 @@ class MoleculeWidget(QOpenGLWidget):
             and event.y() in range(self.height())
         ):
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):
-                self.update_selected_atoms(event)
+                if self.measurement_dialog.isVisible():
+                    self.update_selected_atoms(event)
             else:
                 self.rotate = True
                 if self.translate is True:
@@ -252,7 +260,6 @@ class MoleculeWidget(QOpenGLWidget):
         :param event: The mouse event.
         :return:
         """
-        color_factor = 0.3  # Needs to be <1 to avoid white color
         click_position = np.array(
             [
                 (event.x() * 2 - self.width()) / self.width(),
@@ -273,20 +280,23 @@ class MoleculeWidget(QOpenGLWidget):
         if selected_sphere != -1:
             if -1 in self.selected_spheres:
                 if selected_sphere in self.selected_spheres:
+                    self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                        self.selected_spheres.index(selected_sphere)
+                    ].copy()
                     self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
-                    self.molecule.drawer.atom_colors[selected_sphere] = (
-                        self.molecule.drawer.atom_colors[selected_sphere] / color_factor
-                    )
                 else:
                     self.selected_spheres[self.selected_spheres.index(-1)] = selected_sphere
-                    self.molecule.drawer.atom_colors[selected_sphere] = (
-                        self.molecule.drawer.atom_colors[selected_sphere] * color_factor
-                    )
+                    self.old_sphere_colors[
+                        self.selected_spheres.index(selected_sphere)
+                    ] = self.molecule.drawer.atom_colors[selected_sphere].copy()
+                    self.molecule.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
+                        self.selected_spheres.index(selected_sphere)
+                    ].copy()
             elif selected_sphere in self.selected_spheres:
+                self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                    self.selected_spheres.index(selected_sphere)
+                ].copy()
                 self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
-                self.molecule.drawer.atom_colors[selected_sphere] = (
-                    self.molecule.drawer.atom_colors[selected_sphere] / color_factor
-                )
 
         self.renderer.update_atoms_vao(
             self.molecule.drawer.sphere.vertices,
