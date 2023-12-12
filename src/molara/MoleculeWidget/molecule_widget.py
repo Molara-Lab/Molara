@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
 from PySide6.QtCore import QEvent, Qt
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from molara.Tools.raycasting import check_sphere_intersect, select_sphere
 
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
@@ -139,6 +141,24 @@ class MoleculeWidget(QOpenGLWidget):
                 self.stop_translate(event)
             self.set_normalized_position(event)
             self.click_position = np.copy(self.position)
+            if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):
+                self.set_normalized_position(event)
+                click_position = np.array([(event.x() * 2 - self.width()) / self.width(),
+                                           (event.y() * 2 - self.height()) / self.height()], dtype=np.float32)
+                s_i = select_sphere(click_position, self.camera.position,
+                              self.camera.view_matrix_inv, self.camera.projection_matrix_inv, self.camera.fov,
+                              self.height() / self.width(), self.molecule.drawer.atom_positions,
+                              self.molecule.drawer.atom_scales[:,0])
+                if s_i != -1:
+                    self.molecule.drawer.atom_colors[s_i] = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+                    self.makeCurrent()
+                    self.renderer.update_atoms_vao(
+                        self.molecule.drawer.sphere.vertices,
+                        self.molecule.drawer.sphere.indices,
+                        self.molecule.drawer.sphere_model_matrices,
+                        self.molecule.drawer.atom_colors,
+                    )
+                    self.update()
         if (
             event.button() == Qt.MouseButton.RightButton
             and event.x() in range(self.width())
