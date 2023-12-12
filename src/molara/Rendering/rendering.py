@@ -78,10 +78,10 @@ class Renderer:
         else:
             for i in range(n_instances):
                 model_matrix = calculate_cylinder_model_matrix(
-                    positions[i],
-                    radii[i],
-                    lengths[i],
-                    directions[i],
+                    np.array(positions[i], dtype=np.float64),
+                    float(radii[i]),
+                    float(lengths[i]),
+                    np.array(directions[i], dtype=np.float64),
                 )
                 model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
@@ -289,15 +289,16 @@ class Renderer:
     def draw_scene(
         self,
         camera: Camera,
+        bonds: bool,
     ) -> None:
-        """Draws the contents of the given vaos from the given camera perspective.
+        """
+        Draws the scene.
 
-        :param shader: The shader program of the opengl widget.
-        :type shader: pyopengl program
-        :param camera: The camera object to capture the scene.
+        :param camera: Camera object.
         :type camera: Camera
-        :param vaos: The vertex array object pointers for the opengl draw call.
-        :type vaos: GL_INT
+        :param bonds: If True, bonds are drawn.
+        :type bonds: bool
+        :return:
         """
         view_mat = pyrr.matrix44.create_look_at(
             pyrr.Vector3(camera.position),
@@ -330,7 +331,7 @@ class Renderer:
             )
 
         # Draw bonds
-        if self.bonds_vao["vao"] != 0:
+        if self.bonds_vao["vao"] != 0 and bonds:
             glBindVertexArray(self.bonds_vao["vao"])
             glDrawElementsInstanced(
                 GL_TRIANGLES,
