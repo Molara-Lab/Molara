@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -90,12 +89,7 @@ class MoleculeWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
-        if self.molecule_is_set:
-            self.renderer.draw_scene(
-                self.camera,
-            )
-        else:
-            self.renderer.draw_scene(self.camera)
+        self.renderer.draw_scene(self.camera, self.bonds)
 
     def set_vertex_attribute_objects(self) -> None:
         """Sets the vertex attribute objects of the molecule."""
