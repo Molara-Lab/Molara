@@ -20,8 +20,8 @@ class TestCrystal(TestCase):
         self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors)
         supercell_dimensions = self.crystal.supercell_dimensions
         assert len(self.crystal.atoms) == (
-            (supercell_dimensions[0]+1)*(supercell_dimensions[1]+1)*(supercell_dimensions[2]+1)
-            + supercell_dimensions[0]*supercell_dimensions[1]*supercell_dimensions[2]
+            (supercell_dimensions[0] + 1) * (supercell_dimensions[1] + 1) * (supercell_dimensions[2] + 1)
+            + supercell_dimensions[0] * supercell_dimensions[1] * supercell_dimensions[2]
         )
         assert_array_equal(self.crystal.basis_vectors, basis_vectors)
         assert_array_equal(self.crystal.atomic_nums_unitcell, atomic_numbers)
@@ -33,8 +33,8 @@ class TestCrystal(TestCase):
 
         supercell_dimensions = self.crystal.supercell_dimensions
         assert len(self.crystal.atoms) == (
-            (supercell_dimensions[0]+1)*(supercell_dimensions[1]+1)*(supercell_dimensions[2]+1)
-            + supercell_dimensions[0]*supercell_dimensions[1]*supercell_dimensions[2]
+            (supercell_dimensions[0] + 1) * (supercell_dimensions[1] + 1) * (supercell_dimensions[2] + 1)
+            + supercell_dimensions[0] * supercell_dimensions[1] * supercell_dimensions[2]
         )
         assert_array_equal(
             self.crystal_from_POSCAR.basis_vectors,
@@ -71,6 +71,6 @@ class TestCrystal(TestCase):
             supercell_dimensions,
         )
         assert len(self.crystal.atoms) == (
-            (supercell_dimensions[0]+1)*(supercell_dimensions[1]+1)*(supercell_dimensions[2]+1)
-            + supercell_dimensions[0]*supercell_dimensions[1]*supercell_dimensions[2]
+            (supercell_dimensions[0] + 1) * (supercell_dimensions[1] + 1) * (supercell_dimensions[2] + 1)
+            + supercell_dimensions[0] * supercell_dimensions[1] * supercell_dimensions[2]
         )
