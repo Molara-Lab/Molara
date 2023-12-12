@@ -291,8 +291,7 @@ class Renderer:
         camera: Camera,
         bonds: bool,
     ) -> None:
-        """
-        Draws the scene.
+        """Draws the scene.
 
         :param camera: Camera object.
         :type camera: Camera
