@@ -34,7 +34,10 @@ class Camera:
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.initial_target = self.target
-        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position), dtype=np.float32)
+        self.initial_position = pyrr.Vector3(
+            pyrr.vector3.normalize(self.position),
+            dtype=np.float32,
+        )
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
         self.view_matrix = pyrr.matrix44.create_look_at(
@@ -80,7 +83,10 @@ class Camera:
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.initial_target = self.target
-        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position), dtype=np.float32)
+        self.initial_position = pyrr.Vector3(
+            pyrr.vector3.normalize(self.position),
+            dtype=np.float32,
+        )
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
 

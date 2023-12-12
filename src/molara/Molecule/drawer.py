@@ -80,7 +80,9 @@ class Drawer:
         i = 0
         for atom in self.atoms:
             if i != 0:
-                self.atom_colors = np.concatenate((self.atom_colors, np.array([atom.cpk_color], dtype=np.float32)))
+                self.atom_colors = np.concatenate(
+                    (self.atom_colors, np.array([atom.cpk_color], dtype=np.float32)),
+                )
             else:
                 self.atom_colors = np.array([self.atoms[0].cpk_color], dtype=np.float32)
             i += 1
