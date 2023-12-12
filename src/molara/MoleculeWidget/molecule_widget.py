@@ -30,7 +30,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.measurement_dialog = MeasurementDialog(self)
+        self.measurement_dialog = MeasurementDialog()
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
@@ -140,7 +140,7 @@ class MoleculeWidget(QOpenGLWidget):
             and event.x() in range(self.width())
             and event.y() in range(self.height())
         ):
-            if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):
+            if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
                 if self.measurement_dialog.isVisible():
                     self.update_selected_atoms(event)
             else:
