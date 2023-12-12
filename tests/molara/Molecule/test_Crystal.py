@@ -68,7 +68,7 @@ class TestCrystal(TestCase):
         self.crystal.make_supercell(supercell_dimensions)
         assert_array_equal(
             self.crystal.supercell_dimensions,
-            supercell_dimensions
+            supercell_dimensions,
         )
         assert len(self.crystal.atoms) == (
             (supercell_dimensions[0]+1)*(supercell_dimensions[1]+1)*(supercell_dimensions[2]+1)
