@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import signal
 import sys
-import time
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QTime, QTimer
 from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
+from PySide6.QtWidgets import QApplication
 
 from molara.Gui.crystal_dialog import CrystalDialog
-from molara.Gui.trajectory_dialog import TrajectoryDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -62,6 +59,9 @@ def main() -> None:
     widget.ui.actionToggle_Bonds.triggered.connect(widget.toggle_bonds)
     widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(
         widget.trajectory_dialog.show,
+    )
+    widget.ui.actionMeasure.triggered.connect(
+        widget.ui.openGLWidget.show_measurement_dialog,
     )
     widget.ui.quit.triggered.connect(widget.close)
 
