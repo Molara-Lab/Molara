@@ -12,6 +12,8 @@ Thank you for considering contributing to our project! We value your effort and 
 
 4. **Line Length**: Be mindful of the line length. The maximum permissible line length is 120 characters.
 
+5. **Canonical Abbreviations**: We have agreed upon a set of standard abbreviations that shall be used in the code, see abbreviations.txt
+
 ## Commit Messages:
 
 1. **Descriptiveness**: Your commit messages should clearly convey the change you've made. Ambiguous messages like "fix bug" are discouraged.

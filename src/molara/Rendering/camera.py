@@ -15,13 +15,14 @@ class Camera:
 
     def __init__(self, width: float, height: float) -> None:
         """Creates a Camera object."""
+        self.fov = 45.0
         self.width = width
         self.height = height
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
-        self.right_vector = pyrr.Vector3([0.0, 0.0, 1.0], dtype=np.float32)
+        self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
         self.distance_from_target = 5.0
-        self.zoom_factor = 0.05
+        self.zoom_factor = 0.5
 
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
@@ -33,9 +34,20 @@ class Camera:
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.initial_target = self.target
-        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position))
+        self.initial_position = pyrr.Vector3(
+            pyrr.vector3.normalize(self.position),
+            dtype=np.float32,
+        )
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
+        self.view_matrix = pyrr.matrix44.create_look_at(
+            self.position,
+            self.target,
+            self.up_vector,
+            dtype=np.float32,
+        )
+        self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
+        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def calculate_projection_matrix(self, width: float, height: float) -> None:
         """Calculates the projection matrix to get from world to camera space.
@@ -44,10 +56,11 @@ class Camera:
         :param height: Height of the opengl widget.
         """
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
-            45,
+            self.fov,
             width / height,
             0.1,
             100,
+            dtype=np.float32,
         )
 
     def reset(self, width: float, height: float) -> None:
@@ -56,9 +69,9 @@ class Camera:
         self.height = height
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
-        self.right_vector = pyrr.Vector3([0.0, 0.0, 1.0], dtype=np.float32)
+        self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
         self.distance_from_target = 5.0
-        self.zoom_factor = 0.05
+        self.zoom_factor = 0.5
 
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
@@ -70,9 +83,21 @@ class Camera:
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.initial_target = self.target
-        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position))
+        self.initial_position = pyrr.Vector3(
+            pyrr.vector3.normalize(self.position),
+            dtype=np.float32,
+        )
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
+
+        self.view_matrix = pyrr.matrix44.create_look_at(
+            self.position,
+            self.target,
+            self.up_vector,
+            dtype=np.float32,
+        )
+        self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
+        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def set_distance_from_target(self, zoom: float) -> None:
         """Set the distance between the camera and its target.
@@ -88,10 +113,18 @@ class Camera:
         self.up_vector = self.rotation * self.initial_up_vector
         self.right_vector = self.rotation * self.initial_right_vector
         self.position = self.rotation * self.initial_position * self.distance_from_target + self.translation
+        self.position = np.array(self.position, dtype=np.float32)
         self.target = self.initial_target + self.translation
         if save:
             self.last_rotation = self.rotation
             self.last_translation = self.translation
+        self.view_matrix = pyrr.matrix44.create_look_at(
+            self.position,
+            self.target,
+            self.up_vector,
+            dtype=np.float32,
+        )
+        self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
 
     def set_translation_vector(
         self,
@@ -103,7 +136,7 @@ class Camera:
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
         :param mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
         """
-        x_translation = mouse_position[0] - old_mouse_position[0]
+        x_translation = -(mouse_position[0] - old_mouse_position[0])
         y_translation = -(mouse_position[1] - old_mouse_position[1])
         self.translation = self.right_vector * x_translation + self.up_vector * y_translation + self.last_translation
 

@@ -25,7 +25,8 @@ class Crystal(Molecule):
 
     :param atomic_numbers: contains the atomic numbers of the particles specified for the unit cell.
     :type atomic_numbers: numpy.array of int
-    :param coordinates: Nx3 matrix of particle coordinates in the unit cell, in terms of the basis vectors.
+    :param coordinates: Nx3 matrix of particle (fractional) coordinates in the unit cell,
+        i.e., coordinates in terms of the basis vectors.
     :type coordinates: numpy.ndarray of numpy.float64
     :param basis_vectors: 3x3 matrix of the lattice basis vectors.
     :type basis_vectors: numpy.ndarray of numpy.float64
@@ -106,7 +107,7 @@ class Crystal(Molecule):
         )
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
-        self.cartesian_coordinates_supercell = np.dot(
+        self.cartesian_coordinates_supercell = Crystal.fractional_to_cartesian_coords(
             self.fractional_coordinates_supercell,
             self.basis_vectors,
         )
@@ -114,6 +115,18 @@ class Crystal(Molecule):
             self.atomic_numbers_supercell,
             self.cartesian_coordinates_supercell,
         )
+
+    @staticmethod
+    def fractional_to_cartesian_coords(
+        fractional_coords: ArrayLike,
+        basis_vectors: ArrayLike,
+    ) -> np.ndarray:
+        """Transform fractional coordinates (coordinates in terms of basis vectors) to cartesian coordinates.
+
+        :param fractional_coords: fractional coordinates of the atoms
+        :param basis_vectors: basis vectors of the crystal lattice
+        """
+        return np.dot(fractional_coords, basis_vectors)
 
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
@@ -129,25 +142,30 @@ class Crystal(Molecule):
         mode, positions_ = lines[7].strip(), lines[8:]
         try:
             scale = float(scale_)
-            latvec_a = np.fromstring(latvec_a_, sep=" ").tolist()
-            latvec_b = np.fromstring(latvec_b_, sep=" ").tolist()
-            latvec_c = np.fromstring(latvec_c_, sep=" ").tolist()
+            latvec_a = [float(vec) for vec in latvec_a_.split()]
+            latvec_b = [float(vec) for vec in latvec_b_.split()]
+            latvec_c = [float(vec) for vec in latvec_c_.split()]
             species = re.split(r"\s+", species_)
-            numbers = np.fromstring(numbers_, sep=" ", dtype=int)
+            numbers = [int(num) for num in numbers_.split()]
             positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
             basis_vectors = [latvec_a, latvec_b, latvec_c]
         except ValueError as err:
             msg = "Error: faulty formatting of the POSCAR file."
             raise ValueError(msg) from err
-        if len(numbers) != len(species) or len(positions) != len(species):
+        if len(numbers) != len(species) or len(positions) != sum(numbers):
             msg = "Error: faulty formatting of the POSCAR file."
             raise ValueError(msg)
         if mode.lower() != "direct":
             msg = "Currently, Molara can only process direct mode in POSCAR files."
             raise NotImplementedError(msg)
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
+
+        atomic_numbers_extended = []
+        for num, an in zip(numbers, atomic_numbers):
+            atomic_numbers_extended.extend(num * [an])
+
         return cls(
-            atomic_numbers,
+            atomic_numbers_extended,
             positions,
             [scale * np.array(bv, dtype=float) for bv in basis_vectors],
         )

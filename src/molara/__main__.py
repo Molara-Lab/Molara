@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import signal
 import sys
-import time
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QTime, QTimer
 from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
+from PySide6.QtWidgets import QApplication
 
 from molara.Gui.crystal_dialog import CrystalDialog
-from molara.Gui.trajectory_dialog import TrajectoryDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -20,7 +17,6 @@ from molara.Gui.trajectory_dialog import TrajectoryDialog
 #     pyside2-uic form.ui -o ui_form.py
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.MainWindow.main_window import MainWindow
-from molara.Molecule.importer import read_coord, read_xyz
 
 if TYPE_CHECKING:
     from types import FrameType
@@ -51,8 +47,7 @@ def main() -> None:
     if len(sys.argv) > 1:
         widget.show_init_xyz()
 
-    widget.ui.action_xyz.triggered.connect(widget.show_xyz)
-    widget.ui.action_coord.triggered.connect(widget.show_coord)
+    widget.ui.actionImport.triggered.connect(widget.show_file_open_dialog)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
     widget.ui.actionCenter_Molecule.triggered.connect(
@@ -64,6 +59,9 @@ def main() -> None:
     widget.ui.actionToggle_Bonds.triggered.connect(widget.toggle_bonds)
     widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(
         widget.trajectory_dialog.show,
+    )
+    widget.ui.actionMeasure.triggered.connect(
+        widget.ui.openGLWidget.show_measurement_dialog,
     )
     widget.ui.quit.triggered.connect(widget.close)
 

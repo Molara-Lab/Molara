@@ -29,9 +29,18 @@ class TestCrystal(TestCase):
         self.crystal_from_POSCAR = Crystal.from_poscar("examples/POSCAR/boron_nitride")
 
         assert len(self.crystal_from_POSCAR.atoms) == 2**3 + 1
-        assert_array_equal(self.crystal_from_POSCAR.basis_vectors, self.crystal.basis_vectors)
-        assert_array_equal(self.crystal_from_POSCAR.atomic_numbers_supercell, self.crystal.atomic_numbers_supercell)
-        assert_array_equal(self.crystal_from_POSCAR.atomic_numbers_unitcell, self.crystal.atomic_numbers_unitcell)
+        assert_array_equal(
+            self.crystal_from_POSCAR.basis_vectors,
+            self.crystal.basis_vectors,
+        )
+        assert_array_equal(
+            self.crystal_from_POSCAR.atomic_numbers_supercell,
+            self.crystal.atomic_numbers_supercell,
+        )
+        assert_array_equal(
+            self.crystal_from_POSCAR.atomic_numbers_unitcell,
+            self.crystal.atomic_numbers_unitcell,
+        )
         assert_array_equal(
             self.crystal_from_POSCAR.fractional_coordinates_supercell,
             self.crystal.fractional_coordinates_supercell,
@@ -40,7 +49,10 @@ class TestCrystal(TestCase):
             self.crystal_from_POSCAR.cartesian_coordinates_supercell,
             self.crystal.cartesian_coordinates_supercell,
         )
-        assert_array_equal(self.crystal_from_POSCAR.coordinates_unitcell, self.crystal.coordinates_unitcell)
+        assert_array_equal(
+            self.crystal_from_POSCAR.coordinates_unitcell,
+            self.crystal.coordinates_unitcell,
+        )
         # assert self.crystal_from_POSCAR == self.crystal
 
     def test_make_supercell(self) -> None:

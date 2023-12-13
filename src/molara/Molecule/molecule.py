@@ -47,8 +47,7 @@ class Molecule:
 
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
-        self.draw_bonds = draw_bonds
-
+        self.draw_bonds = (self.bonded_pairs[0, 0] != -1) and draw_bonds
         self.gen_energy_information(header)
 
     def calculate_bonds(self) -> np.ndarray:
@@ -99,8 +98,12 @@ class Molecule:
         for _i, atom in enumerate(self.atoms):
             atom.position -= center
         self.drawer.set_atoms(self.atoms)
-        self.drawer.set_sphere_model_matrices()
-        self.drawer.set_cylinder_model_matrices()
+        self.drawer.set_atom_translation_matrices()
+        if self.draw_bonds:
+            self.drawer.set_cylinder_props()
+            self.drawer.set_cylinder_translation_matrices()
+            self.drawer.set_cylinder_model_matrices()
+        self.drawer.set_atom_model_matrices()
 
     def gen_energy_information(self, string: str | None) -> None:
         """Reads the energy from the second line."""
@@ -113,4 +116,6 @@ class Molecule:
                 index_e = split_string.index("energy:")
 
                 if index_e + 1 < len(split_string):
-                    self.energy = float(string.split()[split_string.index("energy:") + 1])
+                    self.energy = float(
+                        string.split()[split_string.index("energy:") + 1],
+                    )
