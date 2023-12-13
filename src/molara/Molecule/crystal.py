@@ -46,7 +46,7 @@ class Crystal(Molecule):
         self.atomic_nums_unitcell = atomic_nums
         self.coords_unitcell = coords
         self.basis_vectors = basis_vectors
-        self.make_supercell([3, 3, 3])
+        self.make_supercell([2, 3, 4])
 
     def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
         """Creates a supercell of the crystal."""
@@ -177,7 +177,7 @@ class Crystal(Molecule):
                 extra_fractional_coords[-1][id2] = dim2  # (dim1,dim2)
 
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
-                extra_fractional_coords[-1][id2] = dim1  # (0,dim1)
+                extra_fractional_coords[-1][id2] = dim2  # (0,dim2)
 
             elif len(_ids_atom_coords) == THREE:  # i.e., (0, 0, 0)
                 extra_atomic_nums += [_atomic_num] * 7
@@ -199,7 +199,7 @@ class Crystal(Molecule):
                 extra_fractional_coords[-1][id2] = dim2  # (0,dim2,0)
                 extra_fractional_coords += [extra_fractional_coords[-1].copy()]
                 extra_fractional_coords[-1][id3] = dim3  # (0,dim2,dim3)
-                # reset
+
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 extra_fractional_coords[-1][id3] = dim3  # (0,0,dim3)
             else:
