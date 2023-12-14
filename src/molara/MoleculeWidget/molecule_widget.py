@@ -7,12 +7,14 @@ from typing import TYPE_CHECKING
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
 from PySide6.QtCore import QEvent, Qt
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from molara.Rendering.buffers import Vao
+from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Rendering.camera import Camera
-from molara.Rendering.rendering import draw_scene
+from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
+from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
@@ -25,13 +27,17 @@ class MoleculeWidget(QOpenGLWidget):
 
     def __init__(self, parent: QOpenGLWidget) -> None:
         """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
-        self.shader = None
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
+        self.measurement_dialog = MeasurementDialog()
+        self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
-        self.axes = False
+        self.axes = [
+            -1,
+            -1,
+        ]  # -1 means no axes are drawn, any other integer means axes are drawn
         self.rotate = False
         self.translate = False
         self.click_position: np.ndarray | None = None
@@ -44,6 +50,14 @@ class MoleculeWidget(QOpenGLWidget):
         self.bonds = True
         self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
+        self.selected_spheres: list = [-1] * 4
+        self.old_sphere_colors: list = [np.ndarray] * 4
+        self.new_sphere_colors: list = [
+            np.array([1, 0, 0], dtype=np.float32),
+            np.array([0, 1, 0], dtype=np.float32),
+            np.array([0, 0, 1], dtype=np.float32),
+            np.array([1, 1, 0], dtype=np.float32),
+        ]
 
     def reset_view(self) -> None:
         """Resets the view of the molecule to the initial view."""
@@ -72,20 +86,12 @@ class MoleculeWidget(QOpenGLWidget):
             self.set_vertex_attribute_objects()
         self.update()
 
-    def toggle_axes(self) -> None:
-        """Toggles the axes."""
-        if self.axes:
-            self.axes = False
-        else:
-            self.axes = True
-        self.update()
-
     def initializeGL(self) -> None:  # noqa: N802
         """Initializes the widget."""
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
-        self.shader = compile_shaders()
+        self.renderer.set_shader(compile_shaders())
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: ARG002, N802
         """Resizes the widget."""
@@ -95,40 +101,23 @@ class MoleculeWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
-        if self.molecule_is_set:
-            draw_scene(
-                self.shader,
-                self.camera,
-                self.vertex_attribute_objects,
-                self.molecule,
-            )
-        else:
-            draw_scene(self.shader, self.camera, self.vertex_attribute_objects)
+        self.renderer.draw_scene(self.camera, self.bonds)
 
     def set_vertex_attribute_objects(self) -> None:
         """Sets the vertex attribute objects of the molecule."""
         self.makeCurrent()
-        self.vertex_attribute_objects = []
-        for atomic_number in self.molecule.unique_atomic_numbers:
-            idx = self.molecule.drawer.unique_spheres_mapping[atomic_number]
-            vao = Vao(
-                self.molecule.drawer.unique_spheres[idx].vertices,
-                self.molecule.drawer.unique_spheres[idx].indices,
-                self.molecule.drawer.unique_spheres[idx].model_matrices,
-            )
-            self.vertex_attribute_objects.append(vao.vao)
-        for atomic_number in self.molecule.unique_atomic_numbers:
-            idx = self.molecule.drawer.unique_cylinders_mapping[atomic_number]
-            vao = Vao(
-                self.molecule.drawer.unique_cylinders[idx].vertices,
-                self.molecule.drawer.unique_cylinders[idx].indices,
-                self.molecule.drawer.unique_cylinders[idx].model_matrices,
-            )
-            self.vertex_attribute_objects.append(vao.vao)
-
-    def draw_axes(self) -> None:
-        """Draws the axes."""
-        return
+        self.renderer.update_atoms_vao(
+            self.molecule.drawer.sphere.vertices,
+            self.molecule.drawer.sphere.indices,
+            self.molecule.drawer.sphere_model_matrices,
+            self.molecule.drawer.atom_colors,
+        )
+        self.renderer.update_bonds_vao(
+            self.molecule.drawer.cylinder.vertices,
+            self.molecule.drawer.cylinder.indices,
+            self.molecule.drawer.cylinder_model_matrices,
+            self.molecule.drawer.cylinder_colors,
+        )
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the molecule."""
@@ -151,11 +140,15 @@ class MoleculeWidget(QOpenGLWidget):
             and event.x() in range(self.width())
             and event.y() in range(self.height())
         ):
-            self.rotate = True
-            if self.translate is True:
-                self.stop_translate(event)
-            self.set_normalized_position(event)
-            self.click_position = np.copy(self.position)
+            if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
+                if self.measurement_dialog.isVisible():
+                    self.update_selected_atoms(event)
+            else:
+                self.rotate = True
+                if self.translate is True:
+                    self.stop_translate(event)
+                self.set_normalized_position(event)
+                self.click_position = np.copy(self.position)
         if (
             event.button() == Qt.MouseButton.RightButton
             and event.x() in range(self.width())
@@ -216,3 +209,103 @@ class MoleculeWidget(QOpenGLWidget):
         self.set_normalized_position(event)
         self.camera.update(save=True)
         self.click_position = None
+
+    def toggle_axes(self) -> None:
+        """Draws the cartesian axes."""
+        length = 2.0
+        radius = 0.02
+        self.makeCurrent()
+        if self.axes[0] != -1:
+            self.renderer.remove_cylinder(self.axes[0])
+            self.renderer.remove_sphere(self.axes[1])
+            self.axes = [-1, -1]
+        else:
+            positions = np.array(
+                [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
+                dtype=np.float32,
+            )
+            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            radii = np.array([radius] * 3, dtype=np.float32)
+            lengths = np.array([length] * 3, dtype=np.float32)
+            self.axes[0] = self.renderer.draw_cylinders(
+                positions,
+                directions,
+                radii,
+                lengths,
+                colors,
+                25,
+            )
+            positions = np.array(
+                [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
+                dtype=np.float32,
+            )
+            colors = np.array(
+                [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
+                dtype=np.float32,
+            )
+            radii = np.array([radius] * 4, dtype=np.float32)
+            self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
+        self.update()
+
+    def show_measurement_dialog(self) -> None:
+        """Show the measurement dialog."""
+        if self.molecule_is_set:
+            self.measurement_dialog.ini_labels()
+            self.measurement_dialog.show()
+
+    def update_selected_atoms(self, event: QMouseEvent) -> None:
+        """Updates the selected atoms in the measurement dialog.
+
+        :param event: The mouse event.
+        :return:
+        """
+        click_position = np.array(
+            [
+                (event.x() * 2 - self.width()) / self.width(),
+                (event.y() * 2 - self.height()) / self.height(),
+            ],
+            dtype=np.float32,
+        )
+        selected_sphere = select_sphere(
+            click_position,
+            self.camera.position,
+            self.camera.view_matrix_inv,
+            self.camera.projection_matrix_inv,
+            self.camera.fov,
+            self.height() / self.width(),
+            self.molecule.drawer.atom_positions,
+            self.molecule.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
+        )
+        if selected_sphere != -1:
+            if -1 in self.selected_spheres:
+                if selected_sphere in self.selected_spheres:
+                    self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                        self.selected_spheres.index(selected_sphere)
+                    ].copy()
+                    self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
+                else:
+                    self.selected_spheres[self.selected_spheres.index(-1)] = selected_sphere
+                    self.old_sphere_colors[
+                        self.selected_spheres.index(selected_sphere)
+                    ] = self.molecule.drawer.atom_colors[selected_sphere].copy()
+                    self.molecule.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
+                        self.selected_spheres.index(selected_sphere)
+                    ].copy()
+            elif selected_sphere in self.selected_spheres:
+                self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                    self.selected_spheres.index(selected_sphere)
+                ].copy()
+                self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
+
+        self.renderer.update_atoms_vao(
+            self.molecule.drawer.sphere.vertices,
+            self.molecule.drawer.sphere.indices,
+            self.molecule.drawer.sphere_model_matrices,
+            self.molecule.drawer.atom_colors,
+        )
+        self.update()
+        self.measurement_dialog.display_metrics(
+            self.molecule,
+            self.selected_spheres,
+        )

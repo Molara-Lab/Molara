@@ -1,50 +1,32 @@
 """This module contains the Sphere and Spheres classes."""
 
-from __future__ import annotations
-
 import numpy as np
-
+cimport numpy as npc
+from molara.Tools.mathtools import norm
 
 class Sphere:
     """Creates a Sphere object, containing its vertices and indices.
 
-    :param color: Color of the sphere.
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
+    def __init__(self, subdivisions: int) -> None:
         """Creates a Sphere object, containing its vertices and indices."""
-        self.color = color
         self.subdivisions = subdivisions
-        vertices, indices = generate_sphere(self.color, self.subdivisions)
+        vertices, indices = generate_sphere(self.subdivisions)
         self.vertices = vertices
         self.indices = indices
 
 
-class Spheres(Sphere):
-    """Creates a Spheres object containing multiple spheres.
-
-    :param color: Color of the sphere.
-    :param subdivisions: Number of subdivisions of the sphere.
-    """
-
-    def __init__(self, color: np.ndarray, subdivisions: int) -> None:
-        """Creates a Spheres object containing multiple spheres."""
-        super().__init__(color, subdivisions)
-        self.model_matrices = np.array([], dtype=np.float32)
-
-
 def generate_sphere(
-    color: np.ndarray,
     subdivisions: int,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Calculates the vertices and indices of a sphere for a given color and number of subdivisions.
+    """Calculates the vertices and indices of a sphere for a given number of subdivisions.
 
-    :param color: Color of the sphere.
     :param subdivisions: Number of subdivisions of the sphere.
     :returns:
-        - **vertices** (numpy.array of numpy.float32) - Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where\
-         xyz are the cartesian coordinates,rgb are the color values [0,1], and nxnynz are the components of the normal\
+        - **vertices** (numpy.array of numpy.float32) - Vertices in the following order x,y,z,nx,ny,nz,..., where\
+         xyz are the cartesian coordinates and nxnynz are the components of the normal\
           vector.
         - **indices** (numpy.array of numpy.uint32) - Gives the connectivity of the vertices.
     """
@@ -61,15 +43,12 @@ def generate_sphere(
             z = np.sin(theta) * np.cos(phi)
 
             normal = np.array([x, y, z])
-            normal /= np.linalg.norm(normal)
+            normal /= norm(normal)
             vertices.extend(
                 [
                     x,
                     y,
                     z,
-                    color[0],
-                    color[1],
-                    color[2],
                     normal[0],
                     normal[1],
                     normal[2],
@@ -84,3 +63,30 @@ def generate_sphere(
                 indices.extend([p1, p2, p3, p3, p2, p4])
 
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+def calculate_sphere_model_matrix(npc.ndarray[float, ndim=1] position,
+                                  float radius) -> np.ndarray:
+    """Calculates the model matrix for a sphere.
+
+    :param position: Position of the sphere.
+    :param radius: Radius of the sphere.
+    :return: Model matrix of the sphere.
+    """
+
+    cdef npc.ndarray[float, ndim=2] translation_matrix
+    cdef npc.ndarray[float, ndim=2] scale_matrix
+    cdef npc.ndarray[float, ndim=2] model_matrix
+
+    translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
+    translation_matrix[3, 0:3] = position
+
+    scale_matrix =np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
+    scale_matrix[0,0] = radius
+    scale_matrix[1,1] = radius
+    scale_matrix[2,2] = radius
+
+    model_matrix = scale_matrix @ translation_matrix
+    return np.array(
+        [model_matrix],
+        dtype=np.float32,
+    )
