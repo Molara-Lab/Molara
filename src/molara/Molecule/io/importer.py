@@ -15,7 +15,10 @@ if TYPE_CHECKING:
     from os import PathLike
     from typing import Any
 
-    from cclib.data import ccData
+    try:
+        from cclib.data import ccData
+    except ImportError:
+        ccData = Any
 
 
 class FileImporterError(Exception):
