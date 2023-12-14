@@ -53,8 +53,8 @@ class PymatgenImporter(Importer):
 
             structure = Structure.from_file(self.path)
             crystal = Crystal(
-                atomic_numbers=structure.atomic_numbers,
-                coordinates=structure.cart_coords,
+                atomic_nums=structure.atomic_numbers,
+                coords=structure.cart_coords,
                 basis_vectors=structure.lattice.matrix,
             )
         except ImportError as err:
