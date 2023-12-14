@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
+from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
@@ -25,6 +26,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
+        self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""
