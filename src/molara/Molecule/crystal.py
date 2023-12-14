@@ -41,14 +41,15 @@ class Crystal(Molecule):
         atomic_nums: Sequence[int],
         coords: Sequence[Sequence[float]],
         basis_vectors: Sequence[Sequence[float]] | ArrayLike,
+        supercell_dimensions: Annotated[Sequence[int], 3] = [1, 1, 1],
     ) -> None:
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_nums_unitcell = atomic_nums
         self.coords_unitcell = coords
         self.basis_vectors = basis_vectors
-        self.make_supercell([2, 3, 4])
+        self.make_supercell(supercell_dimensions)
 
-    def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
+    def make_supercell(self, supercell_dimensions: Annotated[Sequence[int], 3]) -> None:
         """Creates a supercell of the crystal."""
         self.supercell_dimensions = supercell_dimensions
         steps_a = np.arange(supercell_dimensions[0])
