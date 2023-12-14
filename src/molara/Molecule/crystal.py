@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
 
-class Crystal(Molecule):
+class Crystal(Geometry):
     """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
 
     Particle positions are given in terms of the basis vectors:
