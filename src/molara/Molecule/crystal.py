@@ -20,6 +20,10 @@ if TYPE_CHECKING:
         from pymatgen.core import Structure
     except ImportError:
         Structure = None
+    try:
+        from ase import Atoms
+    except ImportError:
+        Atoms = None
 
 ONE, TWO, THREE = 1, 2, 3
 
@@ -260,6 +264,20 @@ class Crystal(Molecule):
             structure.atomic_numbers,
             structure.frac_coords,
             structure.lattice.matrix,
+        )
+
+    @classmethod
+    def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:
+        """Creates a Crystal object from an ase.Atoms object."""
+        assert atoms.get_pbc().all(), (
+            "You are attempting to create a crystal from a non-periodic ase.Atoms object. "
+            "For non-periodic systems, use Molecule.from_ase(). "
+            "Partially periodic systems are not supported yet."
+        )
+        return cls(
+            atoms.get_atomic_numbers(),
+            atoms.get_scaled_positions(),
+            atoms.get_cell(),
         )
 
     def copy(self) -> Crystal:
