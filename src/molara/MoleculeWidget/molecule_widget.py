@@ -69,7 +69,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.vertex_attribute_objects = []
         self.update()
 
-    def set_molecule(self, molecule: Molecule) -> None:
+    def set_geometry(self, molecule: Molecule) -> None:
         """Sets the molecule to be drawn."""
         self.molecule = molecule
         if self.molecule.bonded_pairs[0, 0] == -1:

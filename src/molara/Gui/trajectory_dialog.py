@@ -100,7 +100,7 @@ class TrajectoryDialog(QDialog):
         """Updates the molecule and energy plot in dependence of the slider position."""
         index = self.ui.verticalSlider.sliderPosition()
         self.parent().ui.openGLWidget.delete_molecule()
-        self.parent().ui.openGLWidget.set_molecule(
+        self.parent().ui.openGLWidget.set_geometry(
             self.parent().mols.get_index_mol(index),
         )
         self.update_energy_plot()
@@ -114,7 +114,7 @@ class TrajectoryDialog(QDialog):
 
         self.update_energy_plot()
 
-        self.parent().ui.openGLWidget.set_molecule(self.parent().mols.get_current_mol())
+        self.parent().ui.openGLWidget.set_geometry(self.parent().mols.get_current_mol())
 
         if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
             self.timer.stop()
