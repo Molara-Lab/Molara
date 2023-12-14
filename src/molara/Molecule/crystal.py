@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from molara.Gui.supercell_dialog import SupercellDialog
+
 from .atom import element_symbol_to_atomic_number
 from .molecule import *
 
@@ -41,12 +43,15 @@ class Crystal(Molecule):
         atomic_nums: Sequence[int],
         coords: Sequence[Sequence[float]],
         basis_vectors: Sequence[Sequence[float]] | ArrayLike,
-        supercell_dimensions: Annotated[Sequence[int], 3] = [1, 1, 1],
+        supercell_dimensions: Annotated[Sequence[int], 3] | None = None,
     ) -> None:
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_nums_unitcell = atomic_nums
         self.coords_unitcell = coords
         self.basis_vectors = basis_vectors
+        if supercell_dimensions is None:
+            supercell_dimensions = [1, 1, 1]
+            SupercellDialog.get_supercell_dimensions(supercell_dimensions)
         self.make_supercell(supercell_dimensions)
 
     def make_supercell(self, supercell_dimensions: Annotated[Sequence[int], 3]) -> None:
