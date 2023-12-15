@@ -47,14 +47,10 @@ class PymatgenImporter(Importer):
     def load(self) -> Crystal:
         """Imports a file and returns the Crystal."""
         try:
-            from pymatgen import Structure
+            from pymatgen.core import Structure
 
             structure = Structure.from_file(self.path)
-            crystal = Crystal(
-                atomic_nums=structure.atomic_numbers,
-                coords=structure.cart_coords,
-                basis_vectors=structure.lattice.matrix,
-            )
+            crystal = Crystal.from_pymatgen(structure)
         except ImportError as err:
             msg = "pymatgen is not installed, cannot read files"
             raise ImportError(msg) from err
