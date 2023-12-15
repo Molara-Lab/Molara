@@ -36,7 +36,7 @@ class TestCrystal(TestCase):
 
         assert_array_equal(
             supercell_dims,
-            self.crystal.supercell_dims,
+            self.crystal_from_POSCAR.supercell_dims,
         )
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
