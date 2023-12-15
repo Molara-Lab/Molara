@@ -19,10 +19,10 @@ class TestCrystal(TestCase):
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
         self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors, [1, 1, 1])
-        supercell_dimensions = self.crystal.supercell_dimensions
+        supercell_dims = self.crystal.supercell_dims
         assert len(self.crystal.atoms) == (
-            (supercell_dimensions[0] + 1) * (supercell_dimensions[1] + 1) * (supercell_dimensions[2] + 1)
-            + supercell_dimensions[0] * supercell_dimensions[1] * supercell_dimensions[2]
+            (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
+            + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
         assert_array_equal(self.crystal.basis_vectors, basis_vectors)
         assert_array_equal(self.crystal.atomic_nums_unitcell, atomic_numbers)
@@ -30,13 +30,17 @@ class TestCrystal(TestCase):
 
     def test_from_poscar(self) -> None:
         """Test the creation of a crystal from a POSCAR file."""
-        importer = PoscarImporter("examples/POSCAR/boron_nitride")
+        supercell_dims = [2, 7, 4]
+        importer = PoscarImporter("examples/POSCAR/boron_nitride", supercell_dims)
         self.crystal_from_POSCAR = importer.load()
 
-        supercell_dimensions = self.crystal.supercell_dimensions
+        assert_array_equal(
+            supercell_dims,
+            self.crystal.supercell_dims,
+        )
         assert len(self.crystal.atoms) == (
-            (supercell_dimensions[0] + 1) * (supercell_dimensions[1] + 1) * (supercell_dimensions[2] + 1)
-            + supercell_dimensions[0] * supercell_dimensions[1] * supercell_dimensions[2]
+            (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
+            + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
         assert_array_equal(
             self.crystal_from_POSCAR.basis_vectors,
@@ -65,13 +69,13 @@ class TestCrystal(TestCase):
 
     def test_make_supercell(self) -> None:
         """Test the supercell generation."""
-        supercell_dimensions = [3, 3, 3]
-        self.crystal.make_supercell(supercell_dimensions)
+        supercell_dims = [3, 3, 3]
+        self.crystal.make_supercell(supercell_dims)
         assert_array_equal(
-            self.crystal.supercell_dimensions,
-            supercell_dimensions,
+            self.crystal.supercell_dims,
+            supercell_dims,
         )
         assert len(self.crystal.atoms) == (
-            (supercell_dimensions[0] + 1) * (supercell_dimensions[1] + 1) * (supercell_dimensions[2] + 1)
-            + supercell_dimensions[0] * supercell_dimensions[1] * supercell_dimensions[2]
+            (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
+            + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )

@@ -1,4 +1,4 @@
-"""Dialog for specifying supercell dimensions."""
+"""Dialog for specifying supercell dims."""
 
 from __future__ import annotations
 
@@ -29,23 +29,23 @@ class SupercellDialog(QDialog):
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        # the supercell_dimensions attribute's purpose is to be overwritten
+        # the supercell_dims attribute's purpose is to be overwritten
         # by a list that is passed by a Crystal object. The entries of this
         # list are changed in the accept routine, thus changing the original
         # list in the crystal object.
-        self.supercell_dimensions = [1, 1, 1]
+        self.supercell_dims = [1, 1, 1]
 
     @staticmethod
-    def get_supercell_dimensions(supercell_dimensions: Annotated[Sequence[int], 3]) -> bool:
+    def get_supercell_dims(supercell_dims: Annotated[Sequence[int], 3]) -> bool:
         """Opens dialog for supercell size specification."""
         dialog = SupercellDialog()
-        dialog.supercell_dimensions = supercell_dimensions
+        dialog.supercell_dims = supercell_dims
         return dialog.exec()
 
     def accept(self) -> None:
         """Submit contents of supercell dialog.
 
-        entries of supercell_dimensions are changed in order to pass
+        entries of supercell_dims are changed in order to pass
         the user-specified dimensions to the Crystal object.
         """
         dim_a, dim_b, dim_c = (
@@ -53,7 +53,7 @@ class SupercellDialog(QDialog):
             self.ui.inputSupercell_b.value(),
             self.ui.inputSupercell_c.value(),
         )
-        self.supercell_dimensions[0] = dim_a
-        self.supercell_dimensions[1] = dim_b
-        self.supercell_dimensions[2] = dim_c
+        self.supercell_dims[0] = dim_a
+        self.supercell_dims[1] = dim_b
+        self.supercell_dims[2] = dim_c
         self.close()

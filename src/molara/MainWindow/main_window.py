@@ -28,7 +28,6 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
         self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
-        # self.supercell_dialog = SupercellDialog(self)  # pass widget as parent
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""
@@ -67,7 +66,13 @@ class MainWindow(QMainWindow):
             "POSCAR Files (*)",
         )
 
-        importer = PoscarImporter(filename[0])
+        supercell_dims = [-1, -1, -1]
+        SupercellDialog.get_supercell_dims(supercell_dims)
+        # check if supercell dimensions have successfully been passed (i.e., all are >0)
+        if sum(1 for component in supercell_dims if component <= 0):
+            return False
+
+        importer = PoscarImporter(filename[0], supercell_dims)
         crystal = importer.load()
 
         if not isinstance(crystal, Crystal):

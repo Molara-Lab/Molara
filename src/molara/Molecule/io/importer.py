@@ -13,9 +13,9 @@ from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
     from os import PathLike
-    from typing import Any
+    from typing import Annotated, Any
 
     from cclib.data import ccData
 
@@ -257,6 +257,11 @@ class GeneralImporter(MoleculesImporter):
 class PoscarImporter(CrystalImporter):
     """Class for importing crystal structures from POSCAR files."""
 
+    def __init__(self, path: PathLike | str, supercell_dims: Annotated[Sequence[int], 3]) -> None:
+        """instantiate."""
+        super().__init__(path)
+        self.supercell_dims = supercell_dims
+
     def load(self) -> Crystal:
         """Creates a Crystal object from a POSCAR file."""
         with open(self.path) as file:
@@ -296,4 +301,5 @@ class PoscarImporter(CrystalImporter):
             atomic_numbers_extended,
             positions,
             [scale * np.array(bv, dtype=float) for bv in basis_vectors],
+            self.supercell_dims,
         )
