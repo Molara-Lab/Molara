@@ -18,7 +18,8 @@ class TestCrystal(TestCase):
         atomic_numbers = [5, 7]
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
-        self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors, [1, 1, 1])
+        self.supercell_dims = [2, 7, 4]
+        self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors, self.supercell_dims)
         supercell_dims = self.crystal.supercell_dims
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
@@ -30,7 +31,7 @@ class TestCrystal(TestCase):
 
     def test_from_poscar(self) -> None:
         """Test the creation of a crystal from a POSCAR file."""
-        supercell_dims = [2, 7, 4]
+        supercell_dims = self.supercell_dims
         importer = PoscarImporter("examples/POSCAR/boron_nitride", supercell_dims)
         self.crystal_from_POSCAR = importer.load()
 
@@ -38,7 +39,7 @@ class TestCrystal(TestCase):
             supercell_dims,
             self.crystal_from_POSCAR.supercell_dims,
         )
-        assert len(self.crystal.atoms) == (
+        assert len(self.crystal_from_POSCAR.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
