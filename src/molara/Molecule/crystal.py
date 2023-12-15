@@ -212,48 +212,6 @@ class Crystal(Molecule):
                 raise (ValueError)
         return extra_atomic_nums, extra_fractional_coords
 
-    @classmethod
-    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
-        """Creates a Crystal object from a POSCAR file."""
-        with open(file_path) as file:
-            lines = file.readlines()
-        header_length = 9
-        if not len(lines) >= header_length:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
-        species_, numbers_ = lines[5].strip(), lines[6]
-        mode, positions_ = lines[7].strip(), lines[8:]
-        try:
-            scale = float(scale_)
-            latvec_a = [float(vec) for vec in latvec_a_.split()]
-            latvec_b = [float(vec) for vec in latvec_b_.split()]
-            latvec_c = [float(vec) for vec in latvec_c_.split()]
-            species = re.split(r"\s+", species_)
-            numbers = [int(num) for num in numbers_.split()]
-            positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
-            basis_vectors = [latvec_a, latvec_b, latvec_c]
-        except ValueError as err:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg) from err
-        if len(numbers) != len(species) or len(positions) != sum(numbers):
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        if mode.lower() != "direct":
-            msg = "Currently, Molara can only process direct mode in POSCAR files."
-            raise NotImplementedError(msg)
-        atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-
-        atomic_numbers_extended = []
-        for num, an in zip(numbers, atomic_numbers):
-            atomic_numbers_extended.extend(num * [an])
-
-        return cls(
-            atomic_numbers_extended,
-            positions,
-            [scale * np.array(bv, dtype=float) for bv in basis_vectors],
-        )
-
     def copy(self) -> Crystal:
         """Returns a copy of the Crystal object."""
         # supercell dimensions not included yet!

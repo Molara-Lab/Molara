@@ -6,6 +6,7 @@ from unittest import TestCase
 
 import numpy as np
 from molara.Molecule.crystal import Crystal
+from molara.Molecule.io.importer import PoscarImporter
 from numpy.testing import assert_array_equal
 
 
@@ -17,7 +18,7 @@ class TestCrystal(TestCase):
         atomic_numbers = [5, 7]
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
-        self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors)
+        self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors, [1, 1, 1])
         supercell_dimensions = self.crystal.supercell_dimensions
         assert len(self.crystal.atoms) == (
             (supercell_dimensions[0] + 1) * (supercell_dimensions[1] + 1) * (supercell_dimensions[2] + 1)
@@ -29,7 +30,8 @@ class TestCrystal(TestCase):
 
     def test_from_poscar(self) -> None:
         """Test the creation of a crystal from a POSCAR file."""
-        self.crystal_from_POSCAR = Crystal.from_poscar("examples/POSCAR/boron_nitride")
+        importer = PoscarImporter("examples/POSCAR/boron_nitride")
+        self.crystal_from_POSCAR = importer.load()
 
         supercell_dimensions = self.crystal.supercell_dimensions
         assert len(self.crystal.atoms) == (
@@ -60,7 +62,6 @@ class TestCrystal(TestCase):
             self.crystal_from_POSCAR.coords_unitcell,
             self.crystal.coords_unitcell,
         )
-        # assert self.crystal_from_POSCAR == self.crystal
 
     def test_make_supercell(self) -> None:
         """Test the supercell generation."""

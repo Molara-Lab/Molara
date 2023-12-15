@@ -12,7 +12,7 @@ from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
-from molara.Molecule.io.importer import GeneralImporter
+from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -67,7 +67,9 @@ class MainWindow(QMainWindow):
             "POSCAR Files (*)",
         )
 
-        crystal = Crystal.from_poscar(filename[0])
+        importer = PoscarImporter(filename[0])
+        crystal = importer.load()
+
         if not isinstance(crystal, Crystal):
             error_message = crystal[1]
             msg_box = QMessageBox()
