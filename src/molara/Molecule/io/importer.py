@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     try:
         from cclib.data import ccData
     except ImportError:
-        ccData = Any
+        ccData = Any  # noqa: N816
 
 
 class FileImporterError(Exception):
