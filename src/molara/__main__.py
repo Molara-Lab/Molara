@@ -1,62 +1,77 @@
-import sys
+"""The main entry point for the application."""
 
-from PySide2.QtGui import QSurfaceFormat
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog
+from __future__ import annotations
+
+import signal
+import sys
+from typing import TYPE_CHECKING
+
+try:
+    from PySide6.QtGui import QSurfaceFormat
+    from PySide6.QtWidgets import QApplication
+except ImportError:
+    from PySide2.QtGui import QSurfaceFormat
+    from PySide2.QtWidgets import QApplication
+    QApplication.exec_ = QApplication.exec
+
+from molara.Gui.crystal_dialog import CrystalDialog
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
+from molara.Gui.ui_form import Ui_MainWindow
+from molara.MainWindow.main_window import MainWindow
 
-from .Gui.ui_form import Ui_MainWindow
-from .Molecule.Molecule import read_xyz,read_coord
+if TYPE_CHECKING:
+    from types import FrameType
+
 
 def main() -> None:
+    """Run the application."""
+    _format = QSurfaceFormat()
+    _format.setVersion(4, 1)
+    _format.setSamples(4)
+    _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
+    QSurfaceFormat.setDefaultFormat(_format)
 
-    format = QSurfaceFormat()
-    format.setVersion(4, 1)
-    format.setProfile(QSurfaceFormat.CoreProfile)
-    QSurfaceFormat.setDefaultFormat(format)
+    def sigint_handler(signum: int, frame: FrameType | None) -> None:  # noqa: ARG001
+        app.quit()
 
-    class MainWindow(QMainWindow):
-        def __init__(self, parent=None):
-            super().__init__(parent)
-            self.ui = Ui_MainWindow()
-            self.ui.setupUi(self)
-
-        def show_init_xyz(self):
-            """
-            read the file from terminal arguments
-
-            """
-            fileName = sys.argv[1]
-            mol = read_xyz(fileName)
-            widget.ui.openGLWidget.set_molecule(mol)
-
-        def show_xyz(self):
-            fileName = QFileDialog.getOpenFileName(self, "Open .xyz file", "/home", "Image Files (*.xyz)")
-            mol = read_xyz(fileName[0])
-            widget.ui.openGLWidget.set_molecule(mol)
-            
-        def show_coord(self):
-            fileName = QFileDialog.getOpenFileName(self, "Open coord file", "/home", "Image Files (*)")
-            mol = read_coord(fileName[0])
-            widget.ui.openGLWidget.set_molecule(mol)
-
+    signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
+
     widget = MainWindow()
-    widget.setWindowTitle('Molara')
+
+    crystal_dialog = CrystalDialog(widget)  # pass widget as parent
+
+    widget.setWindowTitle("Molara")
+
     widget.show()
 
     if len(sys.argv) > 1:
         widget.show_init_xyz()
 
-    widget.ui.action_xyz.triggered.connect(widget.show_xyz)
+    widget.ui.actionImport.triggered.connect(widget.show_file_open_dialog)
     widget.ui.actionReset_View.triggered.connect(widget.ui.openGLWidget.reset_view)
     widget.ui.actionDraw_Axes.triggered.connect(widget.ui.openGLWidget.toggle_axes)
-    widget.ui.actionCenter_Molecule.triggered.connect(widget.ui.openGLWidget.center_molecule)
+    widget.ui.actionCenter_Molecule.triggered.connect(
+        widget.ui.openGLWidget.center_molecule,
+    )
     widget.ui.quit.triggered.connect(widget.close)
-    sys.exit(app.exec_())
+    widget.ui.actionRead_POSCAR.triggered.connect(widget.show_poscar)
+    widget.ui.actionCreate_Lattice.triggered.connect(crystal_dialog.show)
+    widget.ui.actionToggle_Bonds.triggered.connect(widget.toggle_bonds)
+    widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(
+        widget.trajectory_dialog.show,
+    )
+    widget.ui.actionMeasure.triggered.connect(
+        widget.ui.openGLWidget.show_measurement_dialog,
+    )
+    widget.ui.quit.triggered.connect(widget.close)
 
-if __name__ == '__main__':
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
     main()

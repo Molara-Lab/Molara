@@ -26,20 +26,14 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuImport">
-     <property name="title">
-      <string>Import</string>
-     </property>
-     <addaction name="action_xyz"/>
-    </widget>
-    <addaction name="menuImport"/>
+    <addaction name="actionImport"/>
     <addaction name="quit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -58,9 +52,27 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionDraw_Axes"/>
+    <addaction name="actionOpen_Trajectory_Dialog"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggle_Bonds"/>
+   </widget>
+   <widget class="QMenu" name="menuCrystal">
+    <property name="title">
+     <string>Crystal</string>
+    </property>
+    <addaction name="actionRead_POSCAR"/>
+    <addaction name="actionCreate_Lattice"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionMeasure"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuCrystal"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="quit">
@@ -100,7 +112,42 @@
   </action>
   <action name="actionDraw_Axes">
    <property name="text">
-    <string>Draw Axes</string>
+    <string>Toggle Axes</string>
+   </property>
+  </action>
+  <action name="actionCreate_Lattice">
+   <property name="text">
+    <string>Create Lattice</string>
+   </property>
+  </action>
+  <action name="actionRead_POSCAR">
+   <property name="text">
+    <string>Read POSCAR</string>
+   </property>
+  </action>
+  <action name="action_coord">
+   <property name="text">
+    <string>coord</string>
+   </property>
+  </action>
+  <action name="actionOpen_Trajectory_Dialog">
+   <property name="text">
+    <string>Open Trajectory Dialog</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </action>
+  <action name="actionToggle_Bonds">
+   <property name="text">
+    <string>Toggle Bonds</string>
+   </property>
+  </action>
+  <action name="actionMeasure">
+   <property name="text">
+    <string>Measure</string>
    </property>
   </action>
  </widget>
@@ -108,7 +155,7 @@
   <customwidget>
    <class>MoleculeWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">MoleculeWidget/MoleculeWidget</header>
+   <header location="global">molara/MoleculeWidget/molecule_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

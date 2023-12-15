@@ -1,8 +1,20 @@
-from OpenGL.GL import GL_FRAGMENT_SHADER, GL_VERTEX_SHADER, glAttachShader, glCreateProgram, glLinkProgram, glUseProgram
+"""This module contains the shader source code for the rendering of the molecules."""
+
+from __future__ import annotations
+
+from OpenGL.GL import (
+    GL_FRAGMENT_SHADER,
+    GL_VERTEX_SHADER,
+    GLuint,
+    glAttachShader,
+    glCreateProgram,
+    glLinkProgram,
+    glUseProgram,
+)
 from OpenGL.GL.shaders import compileShader
 
 
-def compile_shaders():
+def compile_shaders() -> GLuint:
     """Compiles the shader program with the given shader source code in glsl.
 
     :return: The compiled shader program from pyopengl.
@@ -21,8 +33,8 @@ vertex_src = """
 # version 410 core
 
 layout(location = 0) in vec3 a_position;
-layout(location = 1) in vec3 a_color;
-layout(location = 2) in vec3 a_normal;
+layout(location = 1) in vec3 a_normal;
+layout(location = 2) in vec3 a_color;
 layout(location = 3) in mat4 a_model;
 
 uniform mat4 model;

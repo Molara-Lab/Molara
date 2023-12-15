@@ -1,25 +1,95 @@
-[tool.black]
-line-length = 120
+[build-system]
+requires = ["setuptools>=65.0.0", "cython", "numpy", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Molara"
+version = "0.0.1"
+description = "A visualisation tool for chemical structures."
+authors = [
+    {name = "Michel Heinz"},
+    {name = "Gereon Feldmann"},
+    {name = "Adrian Usler"},
+    {name = "Alexander Bonkowski", email = "alexander.bonkowski@rwth-aachen.de"},
+]
+maintainers = [
+    {name = "Michel Heinz, Gereon Feldmann, Adrian Usler, Alexander Bonkowski"},
+]
+dependencies = [
+    "PyOpenGL",
+    "PySide6",
+    "matplotlib",
+    "numpy",
+    "pyrr",
+    "scipy",
+    "cython",
+]
+requires-python = ">=3.8"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["analysis, science, structure, visualisation"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
+
+[project.optional-dependencies]
+dev = [
+    "mypy",
+    "pre-commit",
+    "pytest",
+    "cython",
+    "pytest-cov",
+    "pytest-split",
+    "ruff",
+]
+crystal = [
+    "pymatgen",
+]
+
+[project.scripts]
+molara = "molara.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+include = ["molara", "molara.*"]
+exclude = ["tests", "tests.*"]
 
 [tool.ruff]
+exclude = ["ui_*",]
 target-version = "py39"
-line-length = 120#
+line-length = 120
 select = [
-#  "A",    # flake8-builtins
-#  "ANN",  # flake8-annotations
+  "A",    # flake8-builtins
+  "ANN",  # flake8-annotations
   "AIR",  # airflow
-#  "ARG",  # flake8-unused-arguments
+  "ARG",  # flake8-unused-arguments
   "ASYNC",# flake8-async
   "B",    # flake8-bugbear
   "BLE",  # flake8-blind-except
   "C4",   # flake8-comprehensions
   "C90",  # mccabe
-#  "COM",  # flake8-commas
+  "COM",  # flake8-commas
   "CPY",  # flake8-copyright
-#  "D",    # pydocstyle
+  "D",    # pydocstyle
   "DJ",   # flake8-django
   "DTZ",  # flake8-daytime
-#  "E",    # pycodestyle error
+  "E",    # pycodestyle error
   "EM",   # flake8-errormessage
 #  "ERA",  # eradicate
   "EXE",  # flake8-executable
@@ -35,12 +105,12 @@ select = [
 #  "INP",  # flake8-no-pep420
   "INT",  # flake8-gettext
   "ISC",  # flake8-implicit-str-concat
-#  "N",    # pep8-naming
+  "N",    # pep8-naming
   "NPY",  # numpy
   "PERF", # perflint
   "PGH",  # pygrep-hooks
   "PIE",  # flake8-pie
-#  "PL",   # pylint
+  "PL",   # pylint
   "PT",   # flake8-pytest-style
 #  "PTH",  # flake8-use-pathlib
   "PYI",  # flakes8-pyi
@@ -58,13 +128,40 @@ select = [
   "TD",   # flake8-todos
   "TID",  # flake8-tidy-imports
   "TRY",  # tryceratops
-#  "UP",   # pyupgrade
+  "UP",   # pyupgrade
   "W",    # pycodestyle warning
   "YTT",  # flake8-2020
   ]
 ignore = [
-  "F401", # {name} imported but unused
-  "F403", # {name} used but not defined
-  "F405", # {name} may be undefined, or defined from star imports
+  "ANN101", # Missing type annotation for `self` in method
+  "F401",   # {name} imported but unused
+  "F403",   # {name} used but not defined
+  "F405",   # {name} may be undefined, or defined from star imports
+  "S101",   # Use of assert detected
   ]
 pydocstyle.convention = "google"
+isort.required-imports = ["from __future__ import annotations"]
+
+[tool.mypy]
+exclude = ["ui_*"]
+ignore_missing_imports = true
+no_implicit_optional = false
+
+[tool.codespell]
+ignore-words-list = "nd,te"
+skip = "pymatgen/analysis/aflow_prototypes.json"
+check-filenames = true
+
+[tool.cythonize]
+# Specify the files to be compiled by Cython
+modules = [
+    "src/molara/Rendering/cylinder.pyx",
+    "src/molara/Rendering/sphere.pyx",
+    "src/molara/Rendering/matrices.pyx",
+    "src/molara/Tools/mathtools.pyx",
+]
+# Optional: Specify include directories
+include-dirs = [
+    "",
+    "{env:NUMPY_INCLUDE}",
+]

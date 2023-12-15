@@ -1,10 +1,12 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""Configuration file for the Sphinx documentation builder.
 
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+For the full list of built-in configuration values, see the documentation:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+-- Project information -----------------------------------------------------
+https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+"""
+from __future__ import annotations
 
 import os
 import sys
@@ -12,7 +14,7 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 
 project = "Molara"
-copyright = "2023, Michel Heinz"
+project_copyright = "2023, Michel Heinz"
 author = "Michel Heinz"
 
 # -- General configuration ---------------------------------------------------
