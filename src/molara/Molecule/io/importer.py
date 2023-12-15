@@ -219,7 +219,7 @@ class GeneralImporter(MoleculesImporter):
     _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzImporter,
         ".coord": CoordImporter,
-        ".poscar": PymatgenImporter,
+        ".POSCAR": PymatgenImporter,
         ".cif": PymatgenImporter,
         ".xml": VasprunImporter,
     }
