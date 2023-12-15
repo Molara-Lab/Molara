@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
+from molara.Molecule.io.importer_crystal import PymatgenImporter, VasprunImporter
 from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
 
@@ -218,6 +219,9 @@ class GeneralImporter(MoleculesImporter):
     _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzImporter,
         ".coord": CoordImporter,
+        ".poscar": PymatgenImporter,
+        ".cif": PymatgenImporter,
+        ".xml": VasprunImporter,
     }
 
     def __init__(self, path: PathLike | str) -> None:
