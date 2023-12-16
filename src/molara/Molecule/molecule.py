@@ -38,7 +38,6 @@ class Molecule:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
-        self.basisset = Basisset()
         self.mos = Mos()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
