@@ -7,9 +7,10 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.molecule import Molecule
 from molara.Molecule.basisset import Basisset
+from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
+from molara.Molecule.mos import Mos
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -160,7 +161,7 @@ class CoordImporter(MoleculesImporter):
 class MoldenImporter(MoleculesImporter):
     """Importer from *.molden files."""
 
-    def load(self) -> Molecules:
+    def load(self) -> Molecules:  # noqa: C901
         """Reads the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
@@ -194,16 +195,21 @@ class MoldenImporter(MoleculesImporter):
                     i += 1
                     if i == len(lines):
                         break
-                mo_coefficients = self.get_mo_coefficients(lines[i_start:i])
+                (
+                    mo_coefficients,
+                    labels,
+                    energies,
+                    spins,
+                    occupations,
+                ) = self.get_mo_coefficients(lines[i_start:i])
             i += 1
         molecules.add_molecule(
             Molecule(np.array(atomic_numbers), np.array(coordinates)),
         )
+        molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
+        molecules.mols[0].mos.coefficients = mo_coefficients
         molecules.mols[0].basisset = basisset
-        print(atomic_numbers)
-        print(coordinates)
         return molecules
-
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
         """Reads the atomic numbers and coordinates from the lines of the atoms block.
@@ -236,13 +242,12 @@ class MoldenImporter(MoleculesImporter):
 
         return atomic_numbers, coordinates
 
-    def get_basisset(self, lines: list[str]) -> Basisset:
+    def get_basisset(self, lines: list[str]) -> Basisset:  # noqa: C901, PLR0912
         """Reads the basis set from the lines of the basisset block.
 
         :param lines: The lines of the basis set block.
         :return: The basis set.
         """
-
         i = 0
         if "GTO" in lines[i]:
             basis_type = "GTO"
@@ -256,9 +261,9 @@ class MoldenImporter(MoleculesImporter):
         i += 2
         coefficients = []
         exponents = []
-        shells = ['s', 'p', 'd', 'f', 'g', 'h', 'i', 'j', 'k']
+        shells = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
         basisset = Basisset(basis_type)
-        new_basisset_dict = {
+        new_basisset_dict: dict = {
             "shells": [],
             "exponents": [],
             "coefficients": [],
@@ -285,7 +290,7 @@ class MoldenImporter(MoleculesImporter):
             words = lines[i].split()
             while words and words[0] not in shells:
                 if "D" in words[0]:
-                   words[0] = words[0].replace("D", "E")
+                    words[0] = words[0].replace("D", "E")
                 if "D" in words[1]:
                     words[1] = words[1].replace("D", "E")
                 exponents.append(float(words[0]))
@@ -299,18 +304,50 @@ class MoldenImporter(MoleculesImporter):
 
         return basisset
 
-    def get_mo_coefficients(self, lines: list[str]) -> list[list[float]]:
+    def get_mo_coefficients(
+        self,
+        lines: list[str],
+    ) -> tuple[list[list[float]], list[str], list[float], list[int], list[float]]:
         """Reads the MO coefficients from the lines of the MO block.
 
         :param lines: The lines of the MO block.
         :return: The MO coefficients.
         """
-
-        i = 0
-        mo_coefficients = []
+        i = 1
+        mo_coefficients: list = []
+        labels = []
+        energies = []
+        spins = []
+        occupations = []
         while i < len(lines):
-            break
-        return mo_coefficients
+            words = lines[i].split()
+            if words[0] == "Sym=":
+                labels.append(words[1])
+                i += 1
+                words = lines[i].split()
+            if words[0] == "Ene=":
+                energies.append(float(words[1]))
+                i += 1
+                words = lines[i].split()
+            if words[0] == "Spin=":
+                if words[1] == "Alpha":
+                    spins.append(1)
+                elif words[1] == "Beta":
+                    spins.append(-1)
+                i += 1
+                words = lines[i].split()
+            if words[0] == "Occup=":
+                occupations.append(float(words[1]))
+                i += 1
+                words = lines[i].split()
+            mo_coefficients.append([])
+            while words[0] != "Sym=":
+                mo_coefficients[-1].append(float(words[1]))
+                i += 1
+                if i == len(lines):
+                    break
+                words = lines[i].split()
+        return mo_coefficients, labels, energies, spins, occupations
 
 
 class QmImporter(MoleculesImporter):

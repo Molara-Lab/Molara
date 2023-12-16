@@ -9,6 +9,7 @@ import numpy as np
 from molara.Molecule.atom import Atom
 from molara.Molecule.basisset import Basisset
 from molara.Molecule.drawer import Drawer
+from molara.Molecule.mos import Mos
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
@@ -38,6 +39,7 @@ class Molecule:
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.basisset = Basisset()
+        self.mos = Mos()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.unique_atomic_numbers: list[int] = []
