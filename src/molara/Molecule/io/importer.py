@@ -168,7 +168,7 @@ class MoldenImporter(MoleculesImporter):
             lines = file.readlines()
 
         i = 0
-        mo_keywords = ["[MO]", "[5D]", "[7F]", "[9G]"]
+        spherical_harmonics = ["[5D]", "[7F]", "[9G]"]
 
         while i < len(lines):
             if "[Atoms]" in lines[i]:
@@ -183,6 +183,18 @@ class MoldenImporter(MoleculesImporter):
                 while "[" not in lines[i]:
                     i += 1
                 basisset = self.get_basisset(lines[i_start:i])
+            for sph_key in spherical_harmonics:
+                if sph_key in lines[i]:
+                    msg = "Spherical Harmonics not implemented."
+                    raise FileFormatError(msg)
+            if "[MO]" in lines[i]:
+                i_start = i
+                i += 1
+                while "[" not in lines[i]:
+                    i += 1
+                    if i == len(lines):
+                        break
+                mo_coefficients = self.get_mo_coefficients(lines[i_start:i])
             i += 1
         molecules.add_molecule(
             Molecule(np.array(atomic_numbers), np.array(coordinates)),
@@ -194,7 +206,7 @@ class MoldenImporter(MoleculesImporter):
 
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
-        """Reads the atomic numbers and coordinates from the file.
+        """Reads the atomic numbers and coordinates from the lines of the atoms block.
 
         :param lines: The lines of the atom block.
         :return: The atomic numbers and coordinates.
@@ -225,7 +237,7 @@ class MoldenImporter(MoleculesImporter):
         return atomic_numbers, coordinates
 
     def get_basisset(self, lines: list[str]) -> Basisset:
-        """Reads the basis set from the file.
+        """Reads the basis set from the lines of the basisset block.
 
         :param lines: The lines of the basis set block.
         :return: The basis set.
@@ -286,6 +298,19 @@ class MoldenImporter(MoleculesImporter):
             coefficients = []
 
         return basisset
+
+    def get_mo_coefficients(self, lines: list[str]) -> list[list[float]]:
+        """Reads the MO coefficients from the lines of the MO block.
+
+        :param lines: The lines of the MO block.
+        :return: The MO coefficients.
+        """
+
+        i = 0
+        mo_coefficients = []
+        while i < len(lines):
+            break
+        return mo_coefficients
 
 
 class QmImporter(MoleculesImporter):
