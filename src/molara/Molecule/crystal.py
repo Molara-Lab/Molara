@@ -48,9 +48,9 @@ class Crystal(Molecule):
         self.basis_vectors = basis_vectors
         self.make_supercell([2, 3, 4])
 
-    def _fold_coords_into_unitcell(self, fractional_coords: ArrayLike) -> np.ndarray:
+    def _fold_coords_into_unitcell(self, fractional_coords: ArrayLike) -> list[list[float]]:
         """Folds coordinates into unit cell."""
-        return np.mod(fractional_coords, 1.0)
+        return np.mod(fractional_coords, 1.0).tolist()
 
     def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
         """Creates a supercell of the crystal."""
