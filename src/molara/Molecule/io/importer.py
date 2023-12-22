@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.basisset import Basisset
 from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
 from molara.Molecule.mos import Mos
@@ -207,13 +206,14 @@ class MoldenImporter(MoleculesImporter):
             Molecule(np.array(atomic_numbers), np.array(coordinates)),
         )
         molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
-        molecules.mols[0].mos.coefficients = mo_coefficients
+        molecules.mols[0].mos.coefficients = np.array(mo_coefficients)
         for i, atom in enumerate(basisset):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_orbitals(
                 atom["shells"],
                 atom["exponents"],
                 atom["coefficients"],
+                molecules.mols[0].atoms[i].position,
             )
         return molecules
 

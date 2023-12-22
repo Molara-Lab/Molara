@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
+
 def calculate_aos(
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,

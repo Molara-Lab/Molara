@@ -25,8 +25,17 @@ class Atom:
             np.array(elements[atomic_number]["cpk_color"]) / 255
         )
         self.vdw_radius = elements[atomic_number]["vdw_radius"]
-        self.position = np.array(position, dtype=np.float64)
         self.basis_set = Basisset()
+        self.position = np.array([])
+        self.set_position(position)
+
+    def set_position(self, position: ArrayLike) -> None:
+        """Set the position of the atom.
+
+        :param position: new position of the atom
+        :return: None
+        """
+        self.position = np.array(position, dtype=np.float64)
 
 
 def element_symbol_to_atomic_number(symbol: str) -> int:

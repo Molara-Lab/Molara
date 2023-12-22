@@ -8,6 +8,7 @@ from molara.Molecule.io.importer import GeneralImporter
 from molara.Eval.aos import calculate_aos
 import matplotlib.pyplot as plt
 
+
 class TestBasisset(TestCase):
     """Test the Basisset class."""
 
@@ -33,16 +34,24 @@ class TestBasisset(TestCase):
 
         for orb in self.basisset.orbitals:
             if orb[0] == "s":
-                s.append(calculate_aos(self.electron_position, self.nuclear_position,
-                               self.basisset.orbitals[orb].exponents,
-                               self.basisset.orbitals[orb].coefficients,
-                               orb[0]))
+                s.append(
+                    calculate_aos(
+                        self.electron_position,
+                        self.nuclear_position,
+                        self.basisset.orbitals[orb].exponents,
+                        self.basisset.orbitals[orb].coefficients,
+                        orb[0],
+                    )
+                )
             elif orb[0] == "p" and pi % 3 == 0:
-                p.append(calculate_aos(self.electron_position, self.nuclear_position,
-                               self.basisset.orbitals[orb].exponents,
-                               self.basisset.orbitals[orb].coefficients,
-                               orb[0]))
+                p.append(
+                    calculate_aos(
+                        self.electron_position,
+                        self.nuclear_position,
+                        self.basisset.orbitals[orb].exponents,
+                        self.basisset.orbitals[orb].coefficients,
+                        orb[0],
+                    )
+                )
                 pi += 1
         # assert False
-
-

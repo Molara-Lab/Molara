@@ -36,6 +36,7 @@ class Basisset:
         """
         self.basis_type: str = basis_type
         self.orbitals: dict = {}
+        self.orbitals_list: list = []
 
         # self.generate_ijk()
 
@@ -44,12 +45,14 @@ class Basisset:
         shells: list,
         exponents: list,
         coefficients: list,
+        position: np.ndarray,
     ) -> None:
         """Generates the orbitals for the basisset and normalizes the primitive functions.
 
         :param shells: list of shells
         :param exponents: list of exponents
         :param coefficients: list of coefficients
+        :param position: list of positions
         :return:
         """
         i = 0
@@ -112,54 +115,75 @@ class Basisset:
             ijks = np.array(ijks, dtype=int)
             if shell == "s":
                 self.orbitals[f"s{si}"] = Orbital(
-                    ijks[0], exponents[i], coefficients[i]
+                    ijks[0],
+                    exponents[i],
+                    coefficients[i],
+                    position,
                 )
                 si += 1
                 i += 1
             elif shell == "p":
                 for j, orb in enumerate(orbs[1]):
                     self.orbitals[f"{orb}{pi}"] = Orbital(
-                        ijks[j], exponents[i], coefficients[i]
+                        ijks[j],
+                        exponents[i],
+                        coefficients[i],
+                        position,
                     )
                 pi += 1
                 i += 1
             elif shell == "d":
                 for j, orb in enumerate(orbs[2]):
                     self.orbitals[f"{orb}{di}"] = Orbital(
-                        ijks[j], exponents[i], coefficients[i]
+                        ijks[j],
+                        exponents[i],
+                        coefficients[i],
+                        position,
                     )
                 di += 1
                 i += 1
             elif shell == "f":
                 for j, orb in enumerate(orbs[3]):
                     self.orbitals[f"{orb}{fi}"] = Orbital(
-                        ijks[j], exponents[i], coefficients[i]
+                        ijks[j],
+                        exponents[i],
+                        coefficients[i],
+                        position,
                     )
                 fi += 1
                 i += 1
             elif shell == "g":
                 for j, orb in enumerate(orbs[4]):
                     self.orbitals[f"{orb}{gi}"] = Orbital(
-                        ijks[j], exponents[i], coefficients[i]
+                        ijks[j],
+                        exponents[i],
+                        coefficients[i],
+                        position,
                     )
                 gi += 1
                 i += 1
             else:
                 msg = f"The shell {shell} type is not supported."
                 raise TypeError(msg)
+            self.orbitals_list = self.orbitals.values()
 
 
 class Orbital:
     """Class to store either an STO or GTO."""
 
     def __init__(
-        self, ijk: np.ndarray, exponents: np.ndarray, coefficients: np.ndarray
+        self,
+        ijk: np.ndarray,
+        exponents: np.ndarray,
+        coefficients: np.ndarray,
+        position: np.ndarray,
     ) -> None:
         """Initializes the orbital class.
 
         :param ijk: list of ijk values
         :param exponents: list of exponents
         :param coefficients: list of coefficients
+        :param position: position of the orbital
         :return:
         """
         self.ijk = ijk
@@ -171,6 +195,7 @@ class Orbital:
             coefficients,
             self.norms,
         )
+        self.position = np.array([0.0, 0.0, 0.0])
 
 
 def calculate_normalization_primitive_gtos(
