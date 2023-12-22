@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-def calc_aos(
+def calculate_aos(
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,
     exponents: np.ndarray,
@@ -143,6 +143,6 @@ def calc_aos(
             uao[gyyxz] = uao[gyyxz] + dy * dxyz * u
             uao[gzzxy] = uao[gzzxy] + dz * dxyz * u
     else:
-        print("(calc_aos): wrong GTO")
+        print("(calculate_aos): wrong GTO")
 
     return uao

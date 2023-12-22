@@ -5,7 +5,7 @@ from unittest import TestCase
 from numpy.testing import assert_array_equal
 import numpy as np
 from molara.Molecule.io.importer import GeneralImporter
-from molara.eval.aos import calc_aos
+from molara.eval.aos import calculate_aos
 import matplotlib.pyplot as plt
 
 class TestBasisset(TestCase):
@@ -33,12 +33,12 @@ class TestBasisset(TestCase):
 
         for orb in self.basisset.orbitals:
             if orb[0] == "s":
-                s.append(calc_aos(self.electron_position, self.nuclear_position,
+                s.append(calculate_aos(self.electron_position, self.nuclear_position,
                                self.basisset.orbitals[orb].exponents,
                                self.basisset.orbitals[orb].coefficients,
                                orb[0]))
             elif orb[0] == "p" and pi % 3 == 0:
-                p.append(calc_aos(self.electron_position, self.nuclear_position,
+                p.append(calculate_aos(self.electron_position, self.nuclear_position,
                                self.basisset.orbitals[orb].exponents,
                                self.basisset.orbitals[orb].coefficients,
                                orb[0]))
