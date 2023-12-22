@@ -10,7 +10,7 @@ def calculate_aos(
     atom_coords: np.ndarray,
     exponents: np.ndarray,
     coefficients: np.ndarray,
-    orbital: str,
+    orbital: int,
 ) -> np.ndarray:
     """Calculates the atomic orbitals for a given atom (cartesian).
 
@@ -59,12 +59,12 @@ def calculate_aos(
     relative_coords = electron_coords - atom_coords
     rr = np.linalg.norm(relative_coords)
     r2 = rr * rr
-    if orbital == "s":
+    if orbital == 0:
         uao = np.zeros(1)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
             uao[0] = uao[0] + u
-    elif orbital == "p":
+    elif orbital == 1:
         uao = np.zeros(3)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
@@ -74,7 +74,7 @@ def calculate_aos(
             uao[0] = uao[0] + dx * u
             uao[1] = uao[1] + dy * u
             uao[2] = uao[2] + dz * u
-    elif orbital == "d":
+    elif orbital == 2:
         uao = np.zeros(6)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
@@ -91,7 +91,7 @@ def calculate_aos(
             uao[3] = uao[3] + dx * dy * u
             uao[4] = uao[4] + dx * dz * u
             uao[5] = uao[5] + dy * dz * u
-    elif orbital == "f":
+    elif orbital == 3:
         uao = np.zeros(10)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
@@ -114,7 +114,7 @@ def calculate_aos(
             uao[fyzz] = uao[fyzz] + dz2 * dy * u
             u = sqr3 * u
             uao[fxyz] = uao[fxyz] + dxyz * u
-    elif orbital == "g":
+    elif orbital == 4:
         uao = np.zeros(15)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)

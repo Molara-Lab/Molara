@@ -40,7 +40,7 @@ class TestBasisset(TestCase):
                         self.nuclear_position,
                         self.basisset.orbitals[orb].exponents,
                         self.basisset.orbitals[orb].coefficients,
-                        orb[0],
+                        0,
                     )
                 )
             elif orb[0] == "p" and pi % 3 == 0:
@@ -50,7 +50,7 @@ class TestBasisset(TestCase):
                         self.nuclear_position,
                         self.basisset.orbitals[orb].exponents,
                         self.basisset.orbitals[orb].coefficients,
-                        orb[0],
+                        1,
                     )
                 )
                 pi += 1
