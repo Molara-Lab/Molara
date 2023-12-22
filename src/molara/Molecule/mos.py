@@ -1,6 +1,10 @@
 """Module for the Basisset class."""
 from __future__ import annotations
 
+import numpy as np
+from molara.Molecule.basisset import Orbital
+from molara.Eval.aos import calculate_aos
+
 
 class Mos:
     """Class to store either an STO or GTO basisset for each atom in the same order as in molecule."""
@@ -36,4 +40,54 @@ class Mos:
             self.occupations = occupations
         else:
             self.occupations = []
-        self.coefficients: list[list] = [[]]
+        self.coefficients: np.ndarray = np.array([])
+
+    def calculate_mo_cartesian(
+        self,
+        index: int,
+        aos: list[Orbital],
+        electron_position: np.ndarray,
+    ) -> float:
+        """Calculates the value of one mo for a given electron position. Cartesian only!
+
+        :param index: index of the mo
+        :param aos: list of all the aos
+        :param electron_position: position of the electron
+        :return: value of the mo
+        """
+        mo = 0
+        mo_coefficients = self.coefficients[index]
+        i = 0
+        while i < len(mo_coefficients):
+
+            shell = sum(aos[i].ijk)
+            ao_values = calculate_aos(
+                electron_position,
+                aos[i].position,
+                aos[i].exponents,
+                aos[i].coefficients,
+                shell,
+            )
+            if shell == 0:
+                mo += mo_coefficients[i] * ao_values[0]
+                i += 1
+            elif shell == 1:
+                for j in range(3):
+                    mo += mo_coefficients[i] * ao_values[j]
+                    i += 1
+            elif shell == 2:
+                for j in range(6):
+                    mo += mo_coefficients[i] * ao_values[j]
+                    i += 1
+            elif shell == 3:
+                for j in range(10):
+                    mo += mo_coefficients[i] * ao_values[j]
+                    i += 1
+            elif shell == 4:
+                for j in range(15):
+                    mo += mo_coefficients[i] * ao_values[j]
+                    i += 1
+            else:
+                msg = f"The shell {shell} type is not supported."
+                raise TypeError(msg)
+        return mo
