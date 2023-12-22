@@ -1,4 +1,4 @@
-"""Test the basis set and check if normalized."""
+"""Test the aos module."""
 
 from unittest import TestCase
 
@@ -9,7 +9,7 @@ from molara.Eval.aos import calculate_aos
 import matplotlib.pyplot as plt
 
 
-class TestBasisset(TestCase):
+class TestAos(TestCase):
     """Test the Basisset class."""
 
     def setUp(self) -> None:
@@ -20,7 +20,7 @@ class TestBasisset(TestCase):
         self.electron_position = np.array([0.1, -0.234, 0.5])
         self.nuclear_position = np.array([0.0, 0.0, 0.0])
 
-    def test_normalized(self) -> None:
+    def test_aos(self) -> None:
         """Test if the basis set is normalized."""
         s = []
         p = []
