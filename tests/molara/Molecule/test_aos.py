@@ -21,7 +21,7 @@ class TestAos(TestCase):
         self.nuclear_position = np.array([0.0, 0.0, 0.0])
 
     def test_aos(self) -> None:
-        """Test if the basis set is normalized."""
+        """Test if the aos are correct."""
         s = []
         p = []
         d = []
