@@ -52,6 +52,7 @@ class Molecule:
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
         self.draw_bonds = (self.bonded_pairs[0, 0] != -1) and draw_bonds
         self.gen_energy_information(header)
+        self.aos: list = []
 
     def calculate_bonds(self) -> np.ndarray:
         """Calculates the bonded pairs of atoms."""
@@ -99,7 +100,8 @@ class Molecule:
             axis=0,
         )
         for _i, atom in enumerate(self.atoms):
-            atom.position -= center
+            position = atom.position - center
+            atom.set_position(position)
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_atom_translation_matrices()
         if self.draw_bonds:

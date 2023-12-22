@@ -215,6 +215,9 @@ class MoldenImporter(MoleculesImporter):
                 atom["coefficients"],
                 molecules.mols[0].atoms[i].position,
             )
+            molecules.mols[0].aos.extend(
+                molecules.mols[0].atoms[i].basis_set.orbitals_list,
+            )
         return molecules
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
