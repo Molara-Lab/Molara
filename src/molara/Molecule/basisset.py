@@ -195,7 +195,7 @@ class Orbital:
             coefficients,
             self.norms,
         )
-        self.position = np.array([0.0, 0.0, 0.0])
+        self.position = position
 
 
 def calculate_normalization_primitive_gtos(
