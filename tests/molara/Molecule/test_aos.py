@@ -5,7 +5,7 @@ from unittest import TestCase
 from numpy.testing import assert_array_equal
 import numpy as np
 from molara.Molecule.io.importer import GeneralImporter
-from molara.eval.aos import calculate_aos
+from molara.Eval.aos import calculate_aos
 import matplotlib.pyplot as plt
 
 class TestBasisset(TestCase):
