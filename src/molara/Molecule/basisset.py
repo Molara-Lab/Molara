@@ -58,231 +58,90 @@ class Basisset:
         di = 1
         fi = 1
         gi = 1
+        orbs = [
+            [
+                "s",
+            ],
+            [
+                "px",
+                "py",
+                "pz",
+            ],
+            [
+                "dxx",
+                "dyy",
+                "dzz",
+                "dxy",
+                "dxz",
+                "dyz",
+            ],
+            [
+                "fxxx",
+                "fyyy",
+                "fzzz",
+                "fxyy",
+                "fxxy",
+                "fxxz",
+                "fxzz",
+                "fyzz",
+                "fyyz",
+                "fxyz",
+            ],
+            [
+                "gxxxx",
+                "gyyyy",
+                "gzzzz",
+                "gxxxy",
+                "gxxxz",
+                "gyyyx",
+                "gyyyz",
+                "gzzzx",
+                "gzzzy",
+                "gxxyy",
+                "gxxzz",
+                "gyyzz",
+                "gxxyz",
+                "gyyxz",
+                "gzzxy",
+            ],
+        ]
         for shell in shells:
             ijks = generate_ijks(shell)
+            coefficients[i] = np.array(coefficients[i])
+            exponents[i] = np.array(exponents[i])
+            ijks = np.array(ijks, dtype=int)
             if shell == "s":
-                self.orbitals[f"s{si}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[0],
-                    "norms": normalize_primitive_gtos(ijks[0], exponents[i]),
-                }
+                self.orbitals[f"s{si}"] = Orbital(
+                    ijks[0], exponents[i], coefficients[i]
+                )
                 si += 1
                 i += 1
             elif shell == "p":
-                self.orbitals[f"px{pi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[0],
-                    "norms": normalize_primitive_gtos(ijks[0], exponents[i]),
-                }
-                self.orbitals[f"py{pi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[1],
-                    "norms": normalize_primitive_gtos(ijks[1], exponents[i]),
-                }
-                self.orbitals[f"pz{pi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[2],
-                    "norms": normalize_primitive_gtos(ijks[2], exponents[i]),
-                }
+                for j, orb in enumerate(orbs[1]):
+                    self.orbitals[f"{orb}{pi}"] = Orbital(
+                        ijks[j], exponents[i], coefficients[i]
+                    )
                 pi += 1
                 i += 1
             elif shell == "d":
-                self.orbitals[f"dxx{di}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[0],
-                    "norms": normalize_primitive_gtos(ijks[0], exponents[i]),
-                }
-                self.orbitals[f"dyy{di}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[1],
-                    "norms": normalize_primitive_gtos(ijks[1], exponents[i]),
-                }
-                self.orbitals[f"dzz{di}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[2],
-                    "norms": normalize_primitive_gtos(ijks[2], exponents[i]),
-                }
-                self.orbitals[f"dxy{di}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[3],
-                    "norms": normalize_primitive_gtos(ijks[3], exponents[i]),
-                }
-                self.orbitals[f"dxz{di}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[4],
-                    "norms": normalize_primitive_gtos(ijks[4], exponents[i]),
-                }
-                self.orbitals[f"dyz{di}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[5],
-                    "norms": normalize_primitive_gtos(ijks[5], exponents[i]),
-                }
+                for j, orb in enumerate(orbs[2]):
+                    self.orbitals[f"{orb}{di}"] = Orbital(
+                        ijks[j], exponents[i], coefficients[i]
+                    )
                 di += 1
                 i += 1
             elif shell == "f":
-                self.orbitals[f"fxxx{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[0],
-                    "norms": normalize_primitive_gtos(ijks[0], exponents[i]),
-                }
-                self.orbitals[f"fyyy{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[1],
-                    "norms": normalize_primitive_gtos(ijks[1], exponents[i]),
-                }
-                self.orbitals[f"fzzz{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[2],
-                    "norms": normalize_primitive_gtos(ijks[2], exponents[i]),
-                }
-                self.orbitals[f"fxyy{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[3],
-                    "norms": normalize_primitive_gtos(ijks[3], exponents[i]),
-                }
-                self.orbitals[f"fxxy{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[4],
-                    "norms": normalize_primitive_gtos(ijks[4], exponents[i]),
-                }
-                self.orbitals[f"fxxz{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[5],
-                    "norms": normalize_primitive_gtos(ijks[5], exponents[i]),
-                }
-                self.orbitals[f"fxzz{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[6],
-                    "norms": normalize_primitive_gtos(ijks[6], exponents[i]),
-                }
-                self.orbitals[f"fyzz{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[7],
-                    "norms": normalize_primitive_gtos(ijks[7], exponents[i]),
-                }
-                self.orbitals[f"fyyz{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[8],
-                    "norms": normalize_primitive_gtos(ijks[8], exponents[i]),
-                }
-                self.orbitals[f"fxyz{fi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[9],
-                    "norms": normalize_primitive_gtos(ijks[9], exponents[i]),
-                }
+                for j, orb in enumerate(orbs[3]):
+                    self.orbitals[f"{orb}{fi}"] = Orbital(
+                        ijks[j], exponents[i], coefficients[i]
+                    )
                 fi += 1
                 i += 1
             elif shell == "g":
-                self.orbitals[f"gxxxx{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[0],
-                    "norms": normalize_primitive_gtos(ijks[0], exponents[i]),
-                }
-                self.orbitals[f"gyyyy{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[1],
-                    "norms": normalize_primitive_gtos(ijks[1], exponents[i]),
-                }
-                self.orbitals[f"gzzzz{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[2],
-                    "norms": normalize_primitive_gtos(ijks[2], exponents[i]),
-                }
-                self.orbitals[f"gxxxy{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[3],
-                    "norms": normalize_primitive_gtos(ijks[3], exponents[i]),
-                }
-                self.orbitals[f"gxxxz{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[4],
-                    "norms": normalize_primitive_gtos(ijks[4], exponents[i]),
-                }
-                self.orbitals[f"gyyyx{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[5],
-                    "norms": normalize_primitive_gtos(ijks[5], exponents[i]),
-                }
-                self.orbitals[f"gyyyz{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[6],
-                    "norms": normalize_primitive_gtos(ijks[6], exponents[i]),
-                }
-                self.orbitals[f"gzzzx{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[7],
-                    "norms": normalize_primitive_gtos(ijks[7], exponents[i]),
-                }
-                self.orbitals[f"gzzzy{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[8],
-                    "norms": normalize_primitive_gtos(ijks[8], exponents[i]),
-                }
-                self.orbitals[f"gxxyy{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[9],
-                    "norms": normalize_primitive_gtos(ijks[9], exponents[i]),
-                }
-                self.orbitals[f"gxxzz{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[10],
-                    "norms": normalize_primitive_gtos(ijks[10], exponents[i]),
-                }
-                self.orbitals[f"gyyzz{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[11],
-                    "norms": normalize_primitive_gtos(ijks[11], exponents[i]),
-                }
-                self.orbitals[f"gxxyz{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[12],
-                    "norms": normalize_primitive_gtos(ijks[12], exponents[i]),
-                }
-                self.orbitals[f"gyyxz{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[13],
-                    "norms": normalize_primitive_gtos(ijks[13], exponents[i]),
-                }
-                self.orbitals[f"gzzxy{gi}"] = {
-                    "exponents": exponents[i],
-                    "coefficients": coefficients[i],
-                    "ijk": ijks[14],
-                    "norms": normalize_primitive_gtos(ijks[14], exponents[i]),
-                }
+                for j, orb in enumerate(orbs[4]):
+                    self.orbitals[f"{orb}{gi}"] = Orbital(
+                        ijks[j], exponents[i], coefficients[i]
+                    )
                 gi += 1
                 i += 1
             else:
@@ -290,7 +149,33 @@ class Basisset:
                 raise TypeError(msg)
 
 
-def normalize_primitive_gtos(ijk: list, exponents: list[float]) -> list[float]:
+class Orbital:
+    """Class to store either an STO or GTO."""
+
+    def __init__(
+        self, ijk: np.ndarray, exponents: np.ndarray, coefficients: np.ndarray
+    ) -> None:
+        """Initializes the orbital class.
+
+        :param ijk: list of ijk values
+        :param exponents: list of exponents
+        :param coefficients: list of coefficients
+        :return:
+        """
+        self.ijk = ijk
+        self.exponents = exponents
+        self.norms = calculate_normalization_primitive_gtos(ijk, exponents)
+        self.coefficients = coefficients * calculate_normalization_contracted_gtos(
+            ijk,
+            exponents,
+            coefficients,
+            self.norms,
+        )
+
+
+def calculate_normalization_primitive_gtos(
+    ijk: np.ndarray, exponents: np.ndarray
+) -> np.ndarray:
     """Normalizes the primitive gaussians.
 
     :param ijk: list of ijk values
@@ -306,20 +191,22 @@ def normalize_primitive_gtos(ijk: list, exponents: list[float]) -> list[float]:
     fj = 1 if j == 0 else fact2[2 * j - 1]
     fk = 1 if k == 0 else fact2[2 * k - 1]
 
-    return [
-        np.sqrt(
-            (2 ** (2 * m + 1.5) * exponent ** (m + 1.5))
-            / (fi * fj * fk * np.pi**1.5),
-        )
-        for exponent in exponents
-    ]
+    return np.array(
+        [
+            np.sqrt(
+                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5))
+                / (fi * fj * fk * np.pi**1.5),
+            )
+            for exponent in exponents
+        ]
+    )
 
 
-def normalize_contracted_gtos(
-    ijk: list,
-    exponents: list[float],
-    coefficients: list[float],
-    norms: list[float],
+def calculate_normalization_contracted_gtos(
+    ijk: np.ndarray,
+    exponents: np.ndarray,
+    coefficients: np.ndarray,
+    norms: np.ndarray,
 ) -> float:
     """Normalizes the contracted gaussians.
 
