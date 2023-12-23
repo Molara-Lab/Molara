@@ -9,27 +9,28 @@ import numpy as np
 from .atom import Atom
 from .drawer import Drawer
 
-class Geometry:
-    """A class to represent a molecule's geometry."""
 
-    def __init__(  # noqa: PLR0913
+class Structure:
+    """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
+
+    def __init__(
         self,
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
         draw_bonds: bool = True,
     ) -> None:
-        """Creates a new Geometry object.
+        """Creates a new Structure object.
 
         params:
         atomic_numbers:np.ndarray: atomic numbers of a atoms
-        coordinates:np.ndarray: coordinates of the molecule
+        coordinates:np.ndarray: coordinates of the atoms
         header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
         self.unique_atomic_numbers: list[int] = []
-       
+
         for i, atomic_number in enumerate(atomic_numbers):
             atom = Atom(atomic_number, coordinates[i])
             self.atoms.append(atom)
@@ -41,7 +42,7 @@ class Geometry:
         self.draw_bonds = (self.bonded_pairs[0, 0] != -1) and draw_bonds
 
     def center_coordinates(self) -> None:
-        """Centers the molecule around the center of mass."""
+        """Centers the structure around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(
             coordinates,
@@ -85,12 +86,12 @@ class Geometry:
         self.draw_bonds = not self.draw_bonds
 
     def add_atom(self, atomic_number: int, coordinate: np.ndarray) -> None:
-        """Adds an atom to the molecule."""
+        """Adds an atom to the structure."""
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
 
     def remove_atom(self, index: int) -> None:
-        """Removes an atom from the molecule."""
+        """Removes an atom from the structure."""
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()

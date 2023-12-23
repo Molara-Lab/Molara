@@ -10,13 +10,13 @@ from molara.Molecule.atom import Atom
 from molara.Molecule.basisset import Basisset
 from molara.Molecule.drawer import Drawer
 from molara.Molecule.mos import Mos
-from molara.Molecule.geometry import Geometry
+from molara.Molecule.structure import Structure
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
 
-class Molecule(Geometry):
+class Molecule(Structure):
     """Creates a new Molecule object."""
 
     def __init__(  # noqa: PLR0913
@@ -44,6 +44,7 @@ class Molecule(Geometry):
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.gen_energy_information(header)
+        super().__init__(atomic_numbers, coordinates, draw_bonds)
 
     def gen_energy_information(self, string: str | None) -> None:
         """Reads the energy from the second line."""
