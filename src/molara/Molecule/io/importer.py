@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
+from molara.Molecule.crystals import Crystals
 from molara.Molecule.io.importer_crystal import PymatgenImporter, VasprunImporter
 from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
@@ -39,7 +40,7 @@ class MoleculesImporter(ABC):
         self.path = Path(path)
 
     @abstractmethod
-    def load(self) -> Molecules:
+    def load(self) -> Molecules | Crystals:
         """Reads the file in self.path and creates a Molecules object."""
 
 
@@ -239,6 +240,6 @@ class GeneralImporter(MoleculesImporter):
                 msg = "Could not open file."
                 raise FileFormatError(msg) from err
 
-    def load(self) -> Molecules:
+    def load(self) -> Molecules | Crystals:
         """Reads the file in self.path and creates a Molecules object."""
         return self._importer.load()

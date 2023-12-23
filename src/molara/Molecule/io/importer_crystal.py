@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from molara.Molecule.crystal import Crystal
+from molara.Molecule.crystals import Crystals
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -29,7 +30,7 @@ class Importer(ABC):
         self.path = Path(path)
 
     @abstractmethod
-    def load(self) -> Crystal:
+    def load(self) -> Crystals:
         """Reads the file in self.path."""
 
 
@@ -44,7 +45,7 @@ class PymatgenImporter(Importer):
         """Initializes the Importer object."""
         super().__init__(path)
 
-    def load(self) -> Crystal:
+    def load(self) -> Crystals:
         """Imports a file and returns the Crystal."""
         try:
             from pymatgen.core import Structure
@@ -54,7 +55,9 @@ class PymatgenImporter(Importer):
         except ImportError as err:
             msg = "pymatgen is not installed, cannot read files"
             raise ImportError(msg) from err
-        return crystal
+        crystals = Crystals()
+        crystals.add_crystal(crystal)
+        return crystals
 
 
 class VasprunImporter(Importer):
@@ -64,7 +67,7 @@ class VasprunImporter(Importer):
         """Initializes the Importer object."""
         super().__init__(path)
 
-    def load(self) -> Crystal:
+    def load(self) -> Crystals:
         """Imports a file and returns the Crystal."""
         try:
             from pymatgen.io.vasp import Vasprun
@@ -77,4 +80,6 @@ class VasprunImporter(Importer):
             raise FileFormatError(
                 msg,
             ) from err
-        return crystal
+        crystals = Crystals()
+        crystals.add_crystal(crystal)
+        return crystals
