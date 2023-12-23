@@ -44,9 +44,13 @@ class Crystal(Molecule):
     ) -> None:
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_nums_unitcell = atomic_nums
-        self.coords_unitcell = coords
+        self.coords_unitcell = self._fold_coords_into_unitcell(coords)
         self.basis_vectors = basis_vectors
         self.make_supercell([2, 3, 4])
+
+    def _fold_coords_into_unitcell(self, fractional_coords: ArrayLike) -> list[list[float]]:
+        """Folds coordinates into unit cell."""
+        return np.mod(fractional_coords, 1.0).tolist()
 
     def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
         """Creates a supercell of the crystal."""
