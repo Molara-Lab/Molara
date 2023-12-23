@@ -22,8 +22,7 @@ class Camera:
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
         self.distance_from_target = 5.0
-        self.zoom_factor = 0.5
-
+        self.zoom_sensitivity = 0.15
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
 
@@ -71,8 +70,7 @@ class Camera:
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
         self.distance_from_target = 5.0
-        self.zoom_factor = 0.5
-
+        self.zoom_sensitivity = 0.15
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
 
@@ -99,13 +97,19 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-    def set_distance_from_target(self, zoom: float) -> None:
+    def set_distance_from_target(self, num_steps: int) -> None:
         """Set the distance between the camera and its target.
 
         :param zoom: Factor that is multiplied with the normalized camera position vector and the current distance
             between the camera and the target.
         """
-        self.distance_from_target += self.zoom_factor * zoom * (np.sign(zoom - 1))
+        zoom_factor = 1.0
+        zoom_factor += num_steps * 1  # Empirical value to control zoom sensitivity
+        zoom_factor = max(
+            0.1,
+            zoom_factor,
+        )  # Limit zoom factor to avoid zooming too far
+        self.distance_from_target += zoom_factor * (np.sign(zoom_factor - 1)) * self.zoom_sensitivity
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def update(self, save: bool = False) -> None:
