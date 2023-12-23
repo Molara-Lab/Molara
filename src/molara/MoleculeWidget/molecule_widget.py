@@ -45,7 +45,6 @@ class MoleculeWidget(QOpenGLWidget):
         self.rotation_angle_y = 0.0
         self.position = np.zeros(2)
         self.old_position = np.zeros(2)
-        self.zoom_factor = 1.0
         self.contour = False
         self.bonds = True
         self.camera = Camera(self.width(), self.height())
@@ -121,15 +120,9 @@ class MoleculeWidget(QOpenGLWidget):
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the molecule."""
-        self.zoom_factor = 1
         num_degrees = event.angleDelta().y() / 8  # type: ignore[attr-defined]
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
-        self.zoom_factor += num_steps * 0.1  # Empirical value to control zoom sensitivity
-        self.zoom_factor = max(
-            0.1,
-            self.zoom_factor,
-        )  # Limit zoom factor to avoid zooming too far
-        self.camera.set_distance_from_target(self.zoom_factor)
+        self.camera.set_distance_from_target(num_steps)
         self.camera.update()
         self.update()
 

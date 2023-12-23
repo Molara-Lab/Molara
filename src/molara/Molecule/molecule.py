@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 
-from molara.Molecule.atom import Atom, element_symbol_to_atomic_number
-# from molara.Molecule.drawer import Drawer
+from molara.Molecule.atom import Atom
+from molara.Molecule.basisset import Basisset
+from molara.Molecule.drawer import Drawer
+from molara.Molecule.mos import Mos
 from molara.Molecule.geometry import Geometry
 
 if TYPE_CHECKING:
@@ -35,8 +37,11 @@ class Molecule(Geometry):
         """
         if dummy:
             self.dummy = True
-
-        super().__init__()
+        self.atomic_numbers = np.array(atomic_numbers)
+        self.atoms = []
+        self.basisset = Basisset()
+        self.mos = Mos()
+        self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.gen_energy_information(header)
 

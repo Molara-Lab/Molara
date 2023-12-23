@@ -36,9 +36,7 @@ class MainWindow(QMainWindow):
         """Select a file in the file open dialog."""
         file_name = QFileDialog.getOpenFileName(
             self,
-            "Open .xyz file",
-            "/home",
-            "All Files (*.*)",
+            dir=".",
         )[0]
         self.load_molecules(file_name)
 
