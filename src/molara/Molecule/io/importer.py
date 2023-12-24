@@ -422,7 +422,7 @@ class GeneralImporter(MoleculesImporter):
         ".POSCAR": PoscarImporter,
         ".CONTCAR": PoscarImporter,
         ".vasp": PoscarImporter,
-        ".cif": PoscarImporter,
+        ".cif": PymatgenImporter,
         ".xml": VasprunImporter,
         ".molden": MoldenImporter,
     }
