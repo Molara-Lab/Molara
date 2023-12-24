@@ -26,7 +26,10 @@ fact2 = [
 
 
 class Basisset:
-    """Class to store either an STO or GTO basisset for each atom in the same order as in molecule."""
+    """Class for either a STO or GTO basisset for each atom in the same order as in molecule.
+
+    GTOs are gaussian type orbitals, STOs are slater type orbitals.
+    """
 
     def __init__(self, basis_type: str = "None") -> None:
         """Initializes the Basisset class.
