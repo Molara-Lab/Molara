@@ -15,7 +15,7 @@ class TestAos(TestCase):
 
     def setUp(self) -> None:
         """Set up a basisset."""
-        importer = GeneralImporter("../../input_files/molden/h2_cas.molden")
+        importer = GeneralImporter("tests/input_files/molden/h2_cas.molden")
         molecules = importer.load()
         self.basisset = molecules.mols[0].atoms[0].basis_set
         self.electron_position = np.array([0.1, -0.234, 0.5])

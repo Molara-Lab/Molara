@@ -17,7 +17,7 @@ class TestBasisset(TestCase):
 
     def setUp(self) -> None:
         """Set up a basisset."""
-        importer = GeneralImporter("../../input_files/molden/h2_cas.molden")
+        importer = GeneralImporter("tests/input_files/molden/h2_cas.molden")
         molecules = importer.load()
         self.basisset = molecules.mols[0].atoms[0].basis_set
         self.correct_matrix = np.array(

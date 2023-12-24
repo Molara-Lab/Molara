@@ -14,7 +14,7 @@ class TestMos(TestCase):
 
     def setUp(self) -> None:
         """Set up a basisset."""
-        importer = GeneralImporter("../../input_files/molden/h2_cas.molden")
+        importer = GeneralImporter("tests/input_files/molden/h2_cas.molden")
         molecules = importer.load()
         self.mos = molecules.mols[0].mos
         self.aos = molecules.mols[0].aos
