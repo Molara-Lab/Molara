@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from molara.Molecule.basisset import Basisset
+
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
@@ -21,6 +23,16 @@ class Atom:
         self.electronegativity = elements[atomic_number]["electronegativity"]
         self.cpk_color: np.ndarray = np.array(elements[atomic_number]["cpk_color"]) / 255
         self.vdw_radius = elements[atomic_number]["vdw_radius"]
+        self.basis_set = Basisset()
+        self.position = np.array([])
+        self.set_position(position)
+
+    def set_position(self, position: ArrayLike) -> None:
+        """Set the position of the atom.
+
+        :param position: new position of the atom
+        :return: None
+        """
         self.position = np.array(position, dtype=np.float64)
 
 
