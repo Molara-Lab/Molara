@@ -214,8 +214,18 @@ class MoldenImporter(MoleculesImporter):
             Molecule(np.array(atomic_numbers), np.array(coordinates)),
         )
         molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
-        molecules.mols[0].mos.coefficients = mo_coefficients
-        molecules.mols[0].basisset = basisset
+        molecules.mols[0].mos.coefficients = np.array(mo_coefficients)
+        for i, atom in enumerate(basisset):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
+            molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
+            molecules.mols[0].atoms[i].basis_set.generate_orbitals(
+                atom["shells"],
+                atom["exponents"],
+                atom["coefficients"],
+                molecules.mols[0].atoms[i].position,
+            )
+            molecules.mols[0].aos.extend(
+                molecules.mols[0].atoms[i].basis_set.orbitals_list,
+            )
         return molecules
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
@@ -249,27 +259,27 @@ class MoldenImporter(MoleculesImporter):
 
         return atomic_numbers, coordinates
 
-    def get_basisset(self, lines: list[str]) -> Basisset:  # noqa: C901, PLR0912
+    def get_basisset(self, lines: list[str]) -> list:  # noqa: C901
         """Reads the basis set from the lines of the basisset block.
 
         :param lines: The lines of the basis set block.
         :return: The basis set.
         """
         i = 0
-        if "GTO" in lines[i]:
-            basis_type = "GTO"
-        elif "STO" in lines[i]:
-            basis_type = "STO"
+        if "STO" in lines[i]:
             msg = "STO type not implemented."
-            raise FileFormatError(msg)
-        else:
-            msg = "No basis type specified in molden file."
             raise FileFormatError(msg)
         i += 2
         coefficients = []
         exponents = []
         shells = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
-        basisset = Basisset(basis_type)
+        basisset: list = [
+            {
+                "shells": [],
+                "exponents": [],
+                "coefficients": [],
+            },
+        ]
         new_basisset_dict: dict = {
             "shells": [],
             "exponents": [],
@@ -285,14 +295,14 @@ class MoldenImporter(MoleculesImporter):
                     words = lines[i].split()
                 if i == len(lines):
                     break
-                basisset.basisset.append(new_basisset_dict)
+                basisset.append(new_basisset_dict)
                 i += 1  # skip line after empty line
                 words = lines[i].split()
             if words[0] == "sp":
                 msg = "sp type not implemented."
                 raise FileFormatError(msg)
             if words[0] in shells:
-                basisset.basisset[-1]["shells"].append(words[0])
+                basisset[-1]["shells"].append(words[0])
             i += 1
             words = lines[i].split()
             while words and words[0] not in shells:
@@ -304,8 +314,8 @@ class MoldenImporter(MoleculesImporter):
                 coefficients.append(float(words[1]))
                 i += 1
                 words = lines[i].split()
-            basisset.basisset[-1]["exponents"].append(exponents)
-            basisset.basisset[-1]["coefficients"].append(coefficients)
+            basisset[-1]["exponents"].append(exponents)
+            basisset[-1]["coefficients"].append(coefficients)
             exponents = []
             coefficients = []
 
