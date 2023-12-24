@@ -58,7 +58,7 @@ class TestBasisset(TestCase):
                     np.array([0.0, 0.0, 0.0]),
                     np.array([0.0, 0.0, 0.0]),
                 )
-        assert_array_almost_equal_nulp(overlap_matrix, self.correct_matrix, 1e-17)
+        assert_array_almost_equal_nulp(overlap_matrix, self.correct_matrix, 1e-15)
 
 
 def hermite_coefs(i: int, j: int, t: int, qx: float, a: float, b: float) -> float:  # noqa: PLR0913

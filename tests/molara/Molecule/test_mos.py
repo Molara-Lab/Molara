@@ -10,7 +10,7 @@ from numpy.testing import assert_array_equal
 
 
 class TestMos(TestCase):
-    """Test the Basisset class."""
+    """Test the Mos class."""
 
     def setUp(self) -> None:
         """Set up a basisset."""

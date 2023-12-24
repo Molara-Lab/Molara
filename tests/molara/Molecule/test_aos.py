@@ -11,7 +11,7 @@ from numpy.testing import assert_array_equal
 
 
 class TestAos(TestCase):
-    """Test the Basisset class."""
+    """Test the Aos class."""
 
     def setUp(self) -> None:
         """Set up a basisset."""
