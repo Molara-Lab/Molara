@@ -1,4 +1,4 @@
-"""A module for the Geometry class."""
+"""A module for the Structure class."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

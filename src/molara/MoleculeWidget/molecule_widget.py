@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
 
     from molara.Molecule.molecule import Molecule
+    from molara.Molecule.structure import Structure
 
 
 class MoleculeWidget(QOpenGLWidget):
@@ -68,10 +69,10 @@ class MoleculeWidget(QOpenGLWidget):
         self.vertex_attribute_objects = []
         self.update()
 
-    def set_geometry(self, molecule: Molecule) -> None:
+    def set_structure(self, struc: Structure) -> None:
         """Sets the molecule to be drawn."""
-        self.molecule = molecule
-        if self.molecule.bonded_pairs[0, 0] == -1:
+        self.structure = struc
+        if self.structure.bonded_pairs[0, 0] == -1:
             self.bonds = False
         else:
             self.bonds = True
@@ -81,7 +82,7 @@ class MoleculeWidget(QOpenGLWidget):
     def center_molecule(self) -> None:
         """Centers the molecule in the widget."""
         if self.molecule_is_set:
-            self.molecule.center_coordinates()
+            self.structure.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
 
@@ -106,16 +107,16 @@ class MoleculeWidget(QOpenGLWidget):
         """Sets the vertex attribute objects of the molecule."""
         self.makeCurrent()
         self.renderer.update_atoms_vao(
-            self.molecule.drawer.sphere.vertices,
-            self.molecule.drawer.sphere.indices,
-            self.molecule.drawer.sphere_model_matrices,
-            self.molecule.drawer.atom_colors,
+            self.structure.drawer.sphere.vertices,
+            self.structure.drawer.sphere.indices,
+            self.structure.drawer.sphere_model_matrices,
+            self.structure.drawer.atom_colors,
         )
         self.renderer.update_bonds_vao(
-            self.molecule.drawer.cylinder.vertices,
-            self.molecule.drawer.cylinder.indices,
-            self.molecule.drawer.cylinder_model_matrices,
-            self.molecule.drawer.cylinder_colors,
+            self.structure.drawer.cylinder.vertices,
+            self.structure.drawer.cylinder.indices,
+            self.structure.drawer.cylinder_model_matrices,
+            self.structure.drawer.cylinder_colors,
         )
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
@@ -267,13 +268,13 @@ class MoleculeWidget(QOpenGLWidget):
             self.camera.projection_matrix_inv,
             self.camera.fov,
             self.height() / self.width(),
-            self.molecule.drawer.atom_positions,
-            self.molecule.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
+            self.structure.drawer.atom_positions,
+            self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
         if selected_sphere != -1:
             if -1 in self.selected_spheres:
                 if selected_sphere in self.selected_spheres:
-                    self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                    self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
                     ].copy()
                     self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
@@ -281,24 +282,24 @@ class MoleculeWidget(QOpenGLWidget):
                     self.selected_spheres[self.selected_spheres.index(-1)] = selected_sphere
                     self.old_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
-                    ] = self.molecule.drawer.atom_colors[selected_sphere].copy()
-                    self.molecule.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
+                    ] = self.structure.drawer.atom_colors[selected_sphere].copy()
+                    self.structure.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
                     ].copy()
             elif selected_sphere in self.selected_spheres:
-                self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
                     self.selected_spheres.index(selected_sphere)
                 ].copy()
                 self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
 
         self.renderer.update_atoms_vao(
-            self.molecule.drawer.sphere.vertices,
-            self.molecule.drawer.sphere.indices,
-            self.molecule.drawer.sphere_model_matrices,
-            self.molecule.drawer.atom_colors,
+            self.structure.drawer.sphere.vertices,
+            self.structure.drawer.sphere.indices,
+            self.structure.drawer.sphere_model_matrices,
+            self.structure.drawer.atom_colors,
         )
         self.update()
         self.measurement_dialog.display_metrics(
-            self.molecule,
+            self.structure,
             self.selected_spheres,
         )
