@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
 from molara.Molecule.basisset import Basisset
-from molara.Molecule.io.importer_crystal import PymatgenImporter, VasprunImporter
+from molara.Molecule.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
 from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
 from molara.Molecule.mos import Mos
@@ -418,8 +419,10 @@ class GeneralImporter(MoleculesImporter):
     _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzImporter,
         ".coord": CoordImporter,
-        ".POSCAR": PymatgenImporter,
-        ".cif": PymatgenImporter,
+        ".POSCAR": PoscarImporter,
+        ".CONTCAR": PoscarImporter,
+        ".vasp": PoscarImporter,
+        ".cif": PoscarImporter,
         ".xml": VasprunImporter,
         ".molden": MoldenImporter,
     }
@@ -429,10 +432,17 @@ class GeneralImporter(MoleculesImporter):
         super().__init__(path)
 
         suffix = self.path.suffix
+        fname = self.path.name
 
         try:
-            self._importer = self._IMPORTER_BY_SUFFIX[suffix](path)
+            if suffix:
+                self._importer = self._IMPORTER_BY_SUFFIX[suffix](path)
+            elif fnmatch(fname, "*POSCAR*") or fnmatch(fname, "*CONTCAR*"):
+                self._importer = PoscarImporter(path)
+            elif fnmatch(fname, "*.json*") or fnmatch(fname, "*.mson*"):
+                self._importer = PymatgenImporter(path)
         except KeyError:
+            # Instead of the cclib import, we should open a dialog window to manually select the importer.
             try:
                 self._importer = QmImporter(path)
             except FileFormatError as err:

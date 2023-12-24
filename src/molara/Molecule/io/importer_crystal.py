@@ -53,6 +53,31 @@ class PymatgenImporter(Importer):
             structure = Structure.from_file(self.path)
             crystal = Crystal.from_pymatgen(structure)
         except ImportError as err:
+            msg = "pymatgen is not installed and internal importer not successful, cannot read files"
+            raise ImportError(msg) from err
+        crystals = Crystals()
+        crystals.add_crystal(crystal)
+        return crystals
+
+
+class PoscarImporter(Importer):
+    """import crystal files.
+
+    This class can be used to import poscar files. It tries the pymatgen import first.
+    """
+
+    def __init__(self, path: PathLike | str) -> None:
+        """Initializes the Importer object."""
+        super().__init__(path)
+
+    def load(self) -> Crystals:
+        """Imports a file and returns the Crystal."""
+        try:
+            from pymatgen.core import Structure
+
+            structure = Structure.from_file(self.path)
+            crystal = Crystal.from_pymatgen(structure)
+        except ImportError as err:
             try:
                 crystal = Crystal.from_poscar(str(self.path))
             except ValueError:
