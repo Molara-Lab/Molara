@@ -24,12 +24,12 @@ class Structures:
         """Returns a."""
         return self._structures[self._structure_id]
 
-    def _get_structure_by_id(self, id: int) -> Structure:
+    def _get_structure_by_id(self, structure_id: int) -> Structure:
         """Return a structure of the list of structure by a given index.
 
         param: index: int.
         """
-        self._structure_id = id
+        self._structure_id = structure_id
         return self._structures[self._structure_id]
 
     def _set_next_structure(self) -> None:
@@ -51,13 +51,13 @@ class Structures:
         """
         if not isinstance(struc, Structure):
             # insert error message?
-            return False
+            return
         self._structures.append(struc)
         # self.energies.append(struc.energy)
 
-    def _remove_structure(self, id: int) -> None:
+    def _remove_structure(self, structure_id: int) -> None:
         """Removes a structure from the list of structures.
 
         param: id: int.
         """
-        self._structures.pop(id)
+        self._structures.pop(structure_id)

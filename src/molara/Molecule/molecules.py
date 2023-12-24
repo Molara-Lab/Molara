@@ -1,9 +1,13 @@
 """A Molecules Class to be able to work with several molecules."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-from molara.Molecule.molecule import Molecule
+if TYPE_CHECKING:
+    from molara.Molecule.molecule import Molecule
+
 from molara.Molecule.structures import Structures
 
 
@@ -26,16 +30,16 @@ class Molecules(Structures):
         self.remove_molecule = self._remove_structure
 
     @property
-    def num_mols(self):
+    def num_mols(self) -> int:
         """Number of molecules."""
         return self._num_structures
 
     @property
-    def mol_index(self):
+    def mol_index(self) -> int:
         """Index of currently displayed molecule."""
         return self._structure_id
 
-    def add_molecule(self, mol: Molecule):
+    def add_molecule(self, mol: Molecule) -> None:
         """Add a new molecules to list of molecules."""
         self._add_structure(mol)
         self.energies.append(mol.energy)

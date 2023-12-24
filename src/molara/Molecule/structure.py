@@ -38,8 +38,8 @@ class Structure:
                 self.unique_atomic_numbers.append(atomic_number)
 
         self.bonded_pairs = self.calculate_bonds()
+        self.draw_bonds = draw_bonds  # (self.bonded_pairs[0, 0] != -1) and
         self.drawer = Drawer(self.atoms, self.bonded_pairs)
-        self.draw_bonds = (self.bonded_pairs[0, 0] != -1) and draw_bonds
 
     def center_coordinates(self) -> None:
         """Centers the structure around the center of mass."""
