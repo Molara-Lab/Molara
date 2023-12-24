@@ -50,7 +50,8 @@ class Structure:
             axis=0,
         )
         for _i, atom in enumerate(self.atoms):
-            atom.position -= center
+            position = atom.position - center
+            atom.set_position(position)
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_atom_translation_matrices()
         if self.draw_bonds:
