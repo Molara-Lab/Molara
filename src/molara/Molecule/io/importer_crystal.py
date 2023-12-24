@@ -53,8 +53,11 @@ class PymatgenImporter(Importer):
             structure = Structure.from_file(self.path)
             crystal = Crystal.from_pymatgen(structure)
         except ImportError as err:
-            msg = "pymatgen is not installed, cannot read files"
-            raise ImportError(msg) from err
+            try:
+                crystal = Crystal.from_poscar(str(self.path))
+            except ValueError:
+                msg = "pymatgen is not installed and internal importer not successful, cannot read files"
+                raise ImportError(msg) from err
         crystals = Crystals()
         crystals.add_crystal(crystal)
         return crystals
