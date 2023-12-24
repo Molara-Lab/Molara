@@ -1,12 +1,13 @@
 """Test the aos module."""
+from __future__ import annotations
 
 from unittest import TestCase
 
-from numpy.testing import assert_array_equal
-import numpy as np
-from molara.Molecule.io.importer import GeneralImporter
-from molara.Eval.aos import calculate_aos
 import matplotlib.pyplot as plt
+import numpy as np
+from molara.Eval.aos import calculate_aos
+from molara.Molecule.io.importer import GeneralImporter
+from numpy.testing import assert_array_equal
 
 
 class TestAos(TestCase):
@@ -21,16 +22,13 @@ class TestAos(TestCase):
         self.nuclear_position = np.array([0.0, 0.0, 0.0])
 
     def test_aos(self) -> None:
-        """Test if the aos are correct."""
+        """Test if the aos are correct.
+
+        Tests still need to be implemented.
+        """
         s = []
         p = []
-        d = []
-        f = []
-        g = []
         pi = 0
-        di = 0
-        fi = 0
-        gi = 0
 
         for orb in self.basisset.orbitals:
             if orb[0] == "s":
@@ -41,7 +39,7 @@ class TestAos(TestCase):
                         self.basisset.orbitals[orb].exponents,
                         self.basisset.orbitals[orb].coefficients,
                         0,
-                    )
+                    ),
                 )
             elif orb[0] == "p" and pi % 3 == 0:
                 p.append(
@@ -51,7 +49,7 @@ class TestAos(TestCase):
                         self.basisset.orbitals[orb].exponents,
                         self.basisset.orbitals[orb].coefficients,
                         1,
-                    )
+                    ),
                 )
                 pi += 1
         # assert False

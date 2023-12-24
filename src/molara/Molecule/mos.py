@@ -1,9 +1,14 @@
 """Module for the Basisset class."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-from molara.Molecule.basisset import Orbital
+
 from molara.Eval.aos import calculate_aos
+
+if TYPE_CHECKING:
+    from molara.Molecule.basisset import Orbital
 
 
 class Mos:
@@ -42,7 +47,7 @@ class Mos:
             self.occupations = []
         self.coefficients: np.ndarray = np.array([])
 
-    def calculate_mo_cartesian(
+    def calculate_mo_cartesian(  # noqa: C901
         self,
         index: int,
         aos: list[Orbital],
@@ -55,11 +60,15 @@ class Mos:
         :param electron_position: position of the electron
         :return: value of the mo
         """
+        s = 0
+        p = 1
+        d = 2
+        f = 3
+        g = 4
         mo = 0
         mo_coefficients = self.coefficients[index]
         i = 0
         while i < len(mo_coefficients):
-
             shell = sum(aos[i].ijk)
             ao_values = calculate_aos(
                 electron_position,
@@ -68,22 +77,22 @@ class Mos:
                 aos[i].coefficients,
                 shell,
             )
-            if shell == 0:
+            if shell == s:
                 mo += mo_coefficients[i] * ao_values[0]
                 i += 1
-            elif shell == 1:
+            elif shell == p:
                 for j in range(3):
                     mo += mo_coefficients[i] * ao_values[j]
                     i += 1
-            elif shell == 2:
+            elif shell == d:
                 for j in range(6):
                     mo += mo_coefficients[i] * ao_values[j]
                     i += 1
-            elif shell == 3:
+            elif shell == f:
                 for j in range(10):
                     mo += mo_coefficients[i] * ao_values[j]
                     i += 1
-            elif shell == 4:
+            elif shell == g:
                 for j in range(15):
                     mo += mo_coefficients[i] * ao_values[j]
                     i += 1

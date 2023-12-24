@@ -1,12 +1,15 @@
 """Test the basis set and check if normalized."""
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest import TestCase
 
-from numpy.testing import assert_array_almost_equal_nulp
 import numpy as np
 from molara.Molecule.io.importer import GeneralImporter
+from numpy.testing import assert_array_almost_equal_nulp
 
-from molara.Molecule.basisset import Orbital
+if TYPE_CHECKING:
+    from molara.Molecule.basisset import Orbital
 
 
 class TestBasisset(TestCase):
@@ -39,13 +42,13 @@ class TestBasisset(TestCase):
                 [0.0, 0.0, 0.0, 0.9999999999999999, 0.0, 0.0],
                 [0.0, 0.0, 0.0, 0.0, 0.9999999999999999, 0.0],
                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.9999999999999999],
-            ]
+            ],
         )
 
     def test_normalized(self) -> None:
         """Test if the basis set is normalized."""
         overlap_matrix = np.zeros(
-            (len(self.basisset.orbitals), len(self.basisset.orbitals))
+            (len(self.basisset.orbitals), len(self.basisset.orbitals)),
         )
         for i, orb1 in enumerate(self.basisset.orbitals):
             for j, orb2 in enumerate(self.basisset.orbitals):
@@ -58,9 +61,8 @@ class TestBasisset(TestCase):
         assert_array_almost_equal_nulp(overlap_matrix, self.correct_matrix, 1e-17)
 
 
-def hermite_coefs(i: int, j: int, t: int, qx: float, a: float, b: float) -> float:
-    """
-    Recursive definition of Hermite Gaussian coefficients.
+def hermite_coefs(i: int, j: int, t: int, qx: float, a: float, b: float) -> float:  # noqa: PLR0913
+    """Recursive definition of Hermite Gaussian coefficients.
 
     Returns a float.
     :param i: orbital angular momentum number on Gaussian 'a'
@@ -75,35 +77,35 @@ def hermite_coefs(i: int, j: int, t: int, qx: float, a: float, b: float) -> floa
     q = a * b / p
     if (t < 0) or (t > (i + j)):
         return 0.0  # out of bounds for t
-    elif i == j == t == 0:
+    if i == j == t == 0:
         # base case
         return np.exp(-q * qx * qx)  # K_AB elif j == 0:
 
-    elif j == 0:
+    if j == 0:
         # decrement index i
         return (
             (1 / (2 * p)) * hermite_coefs(i - 1, j, t - 1, qx, a, b)
             - (q * qx / a) * hermite_coefs(i - 1, j, t, qx, a, b)
             + (t + 1) * hermite_coefs(i - 1, j, t + 1, qx, a, b)
         )
-    else:
-        # decrement index j
-        return (
-            (1 / (2 * p)) * hermite_coefs(i, j - 1, t - 1, qx, a, b)
-            + (q * qx / b) * hermite_coefs(i, j - 1, t, qx, a, b)
-            + (t + 1) * hermite_coefs(i, j - 1, t + 1, qx, a, b)
-        )
+
+    # decrement index j
+    return (
+        (1 / (2 * p)) * hermite_coefs(i, j - 1, t - 1, qx, a, b)
+        + (q * qx / b) * hermite_coefs(i, j - 1, t, qx, a, b)
+        + (t + 1) * hermite_coefs(i, j - 1, t + 1, qx, a, b)
+    )
 
 
-def primitive_overlap(
+def primitive_overlap(  # noqa: PLR0913
     a: float,
     lmn1: np.ndarray,
     a_xyz: np.ndarray,
     b: float,
     lmn2: np.ndarray,
     b_xyz: np.ndarray,
-):
-    """Evaluates overlap integral between two Gaussians
+) -> float:
+    """Evaluates overlap integral between two Gaussians.
 
     Returns a float.
     :param a: orbital exponent on Gaussian 'a' (e.g. alpha in the text)
@@ -114,7 +116,6 @@ def primitive_overlap(
     :param a_xyz: list containing origin of Gaussian 'a', e.g. [1.0, 2.0, 0.0]
     :param b_xyz: list containing origin of Gaussian 'b'
     """
-
     l1, m1, n1 = lmn1  # shell angular momentum on Gaussian 'a'
     l2, m2, n2 = lmn2  # shell angular momentum on Gaussian 'b'
 
@@ -125,10 +126,12 @@ def primitive_overlap(
 
 
 def contracted_overlap(
-    a: Orbital, b: Orbital, a_xyz: np.ndarray, b_xyz: np.ndarray
+    a: Orbital,
+    b: Orbital,
+    a_xyz: np.ndarray,
+    b_xyz: np.ndarray,
 ) -> float:
-    """
-    Evaluates overlap between two contracted Gaussians
+    """Evaluates overlap between two contracted Gaussians.
 
     Returns a float.
     :param a: contracted Gaussian 'a', BasisFunction object
@@ -137,7 +140,6 @@ def contracted_overlap(
     :param b_xyz: list containing origin of contracted Gaussian 'b'
     :return: overlap between contracted Gaussians 'a' and 'b'
     """
-
     s = 0.0
     for ia, ca in enumerate(a.coefficients):
         for ib, cb in enumerate(b.coefficients):
@@ -147,7 +149,12 @@ def contracted_overlap(
                 * ca
                 * cb
                 * primitive_overlap(
-                    a.exponents[ia], a.ijk, a_xyz, b.exponents[ib], b.ijk, b_xyz
+                    a.exponents[ia],
+                    a.ijk,
+                    a_xyz,
+                    b.exponents[ib],
+                    b.ijk,
+                    b_xyz,
                 )
             )
     return s

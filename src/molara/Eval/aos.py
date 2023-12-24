@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 
 
-def calculate_aos(
+def calculate_aos(  # noqa: PLR0915 C901
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,
     exponents: np.ndarray,
@@ -23,10 +23,15 @@ def calculate_aos(
     :param orbital: Name of the orbital (ie, s, p, d, etc.)
     :return: Value of the atomic orbital(s) for a given atom position and electron position
     """
-
     sqr3 = 1.73205080756887729
     sqr5 = 2.236067977499789696
     sqr7 = 2.645751311064591
+
+    s = 0
+    p = 1
+    d = 2
+    f = 3
+    g = 4
 
     fxxx = 0
     fyyy = 1
@@ -59,12 +64,12 @@ def calculate_aos(
     relative_coords = electron_coords - atom_coords
     rr = np.linalg.norm(relative_coords)
     r2 = rr * rr
-    if orbital == 0:
+    if orbital == s:
         uao = np.zeros(1)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
             uao[0] = uao[0] + u
-    elif orbital == 1:
+    elif orbital == p:
         uao = np.zeros(3)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
@@ -74,7 +79,7 @@ def calculate_aos(
             uao[0] = uao[0] + dx * u
             uao[1] = uao[1] + dy * u
             uao[2] = uao[2] + dz * u
-    elif orbital == 2:
+    elif orbital == d:
         uao = np.zeros(6)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
@@ -91,7 +96,7 @@ def calculate_aos(
             uao[3] = uao[3] + dx * dy * u
             uao[4] = uao[4] + dx * dz * u
             uao[5] = uao[5] + dy * dz * u
-    elif orbital == 3:
+    elif orbital == f:
         uao = np.zeros(10)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
@@ -114,7 +119,7 @@ def calculate_aos(
             uao[fyzz] = uao[fyzz] + dz2 * dy * u
             u = sqr3 * u
             uao[fxyz] = uao[fxyz] + dxyz * u
-    elif orbital == 4:
+    elif orbital == g:
         uao = np.zeros(15)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2)
@@ -144,6 +149,6 @@ def calculate_aos(
             uao[gyyxz] = uao[gyyxz] + dy * dxyz * u
             uao[gzzxy] = uao[gzzxy] + dz * dxyz * u
     else:
-        print("(calculate_aos): wrong GTO")
-
+        msg = "(calculate_aos): wrong GTO"
+        raise TypeError(msg)
     return uao

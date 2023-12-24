@@ -40,7 +40,7 @@ class Basisset:
 
         # self.generate_ijk()
 
-    def generate_orbitals(  # noqa: PLR0915
+    def generate_orbitals(  # noqa: C901
         self,
         shells: list,
         exponents: list,
@@ -109,7 +109,7 @@ class Basisset:
             ],
         ]
         for shell in shells:
-            ijks = generate_ijks(shell)
+            ijks: list[list] | np.ndarray = generate_ijks(shell)
             coefficients[i] = np.array(coefficients[i])
             exponents[i] = np.array(exponents[i])
             ijks = np.array(ijks, dtype=int)
@@ -165,7 +165,7 @@ class Basisset:
             else:
                 msg = f"The shell {shell} type is not supported."
                 raise TypeError(msg)
-            self.orbitals_list = self.orbitals.values()
+            self.orbitals_list = list(self.orbitals.values())
 
 
 class Orbital:
@@ -199,7 +199,8 @@ class Orbital:
 
 
 def calculate_normalization_primitive_gtos(
-    ijk: np.ndarray, exponents: np.ndarray
+    ijk: np.ndarray,
+    exponents: np.ndarray,
 ) -> np.ndarray:
     """Normalizes the primitive gaussians.
 
@@ -219,11 +220,10 @@ def calculate_normalization_primitive_gtos(
     return np.array(
         [
             np.sqrt(
-                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5))
-                / (fi * fj * fk * np.pi**1.5),
+                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5)) / (fi * fj * fk * np.pi**1.5),
             )
             for exponent in exponents
-        ]
+        ],
     )
 
 
@@ -255,9 +255,9 @@ def calculate_normalization_contracted_gtos(
 
     for ia in range(len(exponents)):
         for ib in range(len(exponents)):
-            n += (coefficients[ia] * coefficients[ib] * norms[ia] * norms[ib]) / (
-                exponents[ia] + exponents[ib]
-            ) ** (m + 1.5)
+            n += (coefficients[ia] * coefficients[ib] * norms[ia] * norms[ib]) / (exponents[ia] + exponents[ib]) ** (
+                m + 1.5
+            )
     n = n * prefactor
 
     return n ** (-0.5)
