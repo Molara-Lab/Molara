@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
 
     from molara.Molecule.molecule import Molecule
+    from molara.Molecule.structure import Structure
 
 
 class MoleculeWidget(QOpenGLWidget):
@@ -45,7 +46,6 @@ class MoleculeWidget(QOpenGLWidget):
         self.rotation_angle_y = 0.0
         self.position = np.zeros(2)
         self.old_position = np.zeros(2)
-        self.zoom_factor = 1.0
         self.contour = False
         self.bonds = True
         self.camera = Camera(self.width(), self.height())
@@ -69,10 +69,10 @@ class MoleculeWidget(QOpenGLWidget):
         self.vertex_attribute_objects = []
         self.update()
 
-    def set_molecule(self, molecule: Molecule) -> None:
+    def set_structure(self, struc: Structure) -> None:
         """Sets the molecule to be drawn."""
-        self.molecule = molecule
-        if self.molecule.bonded_pairs[0, 0] == -1:
+        self.structure = struc
+        if self.structure.bonded_pairs[0, 0] == -1:
             self.bonds = False
         else:
             self.bonds = True
@@ -82,7 +82,7 @@ class MoleculeWidget(QOpenGLWidget):
     def center_molecule(self) -> None:
         """Centers the molecule in the widget."""
         if self.molecule_is_set:
-            self.molecule.center_coordinates()
+            self.structure.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
 
@@ -107,29 +107,23 @@ class MoleculeWidget(QOpenGLWidget):
         """Sets the vertex attribute objects of the molecule."""
         self.makeCurrent()
         self.renderer.update_atoms_vao(
-            self.molecule.drawer.sphere.vertices,
-            self.molecule.drawer.sphere.indices,
-            self.molecule.drawer.sphere_model_matrices,
-            self.molecule.drawer.atom_colors,
+            self.structure.drawer.sphere.vertices,
+            self.structure.drawer.sphere.indices,
+            self.structure.drawer.sphere_model_matrices,
+            self.structure.drawer.atom_colors,
         )
         self.renderer.update_bonds_vao(
-            self.molecule.drawer.cylinder.vertices,
-            self.molecule.drawer.cylinder.indices,
-            self.molecule.drawer.cylinder_model_matrices,
-            self.molecule.drawer.cylinder_colors,
+            self.structure.drawer.cylinder.vertices,
+            self.structure.drawer.cylinder.indices,
+            self.structure.drawer.cylinder_model_matrices,
+            self.structure.drawer.cylinder_colors,
         )
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the molecule."""
-        self.zoom_factor = 1
         num_degrees = event.angleDelta().y() / 8  # type: ignore[attr-defined]
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
-        self.zoom_factor += num_steps * 0.1  # Empirical value to control zoom sensitivity
-        self.zoom_factor = max(
-            0.1,
-            self.zoom_factor,
-        )  # Limit zoom factor to avoid zooming too far
-        self.camera.set_distance_from_target(self.zoom_factor)
+        self.camera.set_distance_from_target(num_steps)
         self.camera.update()
         self.update()
 
@@ -274,13 +268,13 @@ class MoleculeWidget(QOpenGLWidget):
             self.camera.projection_matrix_inv,
             self.camera.fov,
             self.height() / self.width(),
-            self.molecule.drawer.atom_positions,
-            self.molecule.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
+            self.structure.drawer.atom_positions,
+            self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
         if selected_sphere != -1:
             if -1 in self.selected_spheres:
                 if selected_sphere in self.selected_spheres:
-                    self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                    self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
                     ].copy()
                     self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
@@ -288,24 +282,24 @@ class MoleculeWidget(QOpenGLWidget):
                     self.selected_spheres[self.selected_spheres.index(-1)] = selected_sphere
                     self.old_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
-                    ] = self.molecule.drawer.atom_colors[selected_sphere].copy()
-                    self.molecule.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
+                    ] = self.structure.drawer.atom_colors[selected_sphere].copy()
+                    self.structure.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
                     ].copy()
             elif selected_sphere in self.selected_spheres:
-                self.molecule.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
                     self.selected_spheres.index(selected_sphere)
                 ].copy()
                 self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
 
         self.renderer.update_atoms_vao(
-            self.molecule.drawer.sphere.vertices,
-            self.molecule.drawer.sphere.indices,
-            self.molecule.drawer.sphere_model_matrices,
-            self.molecule.drawer.atom_colors,
+            self.structure.drawer.sphere.vertices,
+            self.structure.drawer.sphere.indices,
+            self.structure.drawer.sphere_model_matrices,
+            self.structure.drawer.atom_colors,
         )
         self.update()
         self.measurement_dialog.display_metrics(
-            self.molecule,
+            self.structure,
             self.selected_spheres,
         )
