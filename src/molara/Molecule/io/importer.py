@@ -464,7 +464,11 @@ class GeneralImporter(MoleculesImporter):
 class PoscarImporter(CrystalImporter):
     """Class for importing crystal structures from POSCAR files."""
 
-    def __init__(self, path: PathLike | str, supercell_dims: Annotated[Sequence[int], 3]) -> None:
+    def __init__(
+        self,
+        path: PathLike | str,
+        supercell_dims: Annotated[Sequence[int], 3],
+    ) -> None:
         """instantiate."""
         super().__init__(path)
         self.supercell_dims = supercell_dims

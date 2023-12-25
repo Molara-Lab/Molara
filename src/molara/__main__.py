@@ -54,6 +54,7 @@ def main() -> None:
     widget.ui.actionCreate_Lattice.triggered.connect(
         widget.crystal_dialog.show,
     )
+    widget.ui.actionSupercell.triggered.connect(widget.edit_supercell_dims)
     widget.ui.actionToggle_Bonds.triggered.connect(widget.toggle_bonds)
     widget.ui.actionOpen_Trajectory_Dialog.triggered.connect(
         widget.trajectory_dialog.show,

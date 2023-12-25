@@ -55,6 +55,21 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
 
+    def edit_supercell_dims(self) -> bool:
+        """Open dialog window to edit supercell dimensions."""
+        if not isinstance(self.ui.openGLWidget.structure, Crystal):
+            # insert error message?
+            return False
+        crystal = self.ui.openGLWidget.structure
+        supercell_dims = [-1, -1, -1]
+        SupercellDialog.get_supercell_dims(supercell_dims)
+        # check if supercell dimensions have successfully been passed (i.e., all are >0)
+        if sum(1 for component in supercell_dims if component <= 0):
+            return False
+        crystal.make_supercell(supercell_dims)
+        self.ui.openGLWidget.set_structure(crystal)
+        return True
+
     def show_poscar(self) -> bool:
         """Reads poscar file and shows the first structure in this file."""
         filename = QFileDialog.getOpenFileName(
@@ -64,11 +79,7 @@ class MainWindow(QMainWindow):
             "POSCAR Files (*)",
         )
 
-        supercell_dims = [-1, -1, -1]
-        SupercellDialog.get_supercell_dims(supercell_dims)
-        # check if supercell dimensions have successfully been passed (i.e., all are >0)
-        if sum(1 for component in supercell_dims if component <= 0):
-            return False
+        supercell_dims = [1, 1, 1]
 
         importer = PoscarImporter(filename[0], supercell_dims)
         crystal = importer.load()

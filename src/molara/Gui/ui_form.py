@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -90,6 +90,8 @@ class Ui_MainWindow(object):
         self.actionToggle_Bonds.setObjectName("actionToggle_Bonds")
         self.actionMeasure = QAction(MainWindow)
         self.actionMeasure.setObjectName("actionMeasure")
+        self.actionSupercell = QAction(MainWindow)
+        self.actionSupercell.setObjectName("actionSupercell")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -102,7 +104,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 37))
+        self.menubar.setGeometry(QRect(0, 0, 800, 22))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         self.menuEdit = QMenu(self.menubar)
@@ -136,6 +138,7 @@ class Ui_MainWindow(object):
         self.menuRotate.addAction(self.actionto_z_axis)
         self.menuCrystal.addAction(self.actionRead_POSCAR)
         self.menuCrystal.addAction(self.actionCreate_Lattice)
+        self.menuCrystal.addAction(self.actionSupercell)
         self.menuTools.addAction(self.actionMeasure)
 
         self.retranslateUi(MainWindow)
@@ -188,6 +191,9 @@ class Ui_MainWindow(object):
         )
         self.actionMeasure.setText(
             QCoreApplication.translate("MainWindow", "Measure", None)
+        )
+        self.actionSupercell.setText(
+            QCoreApplication.translate("MainWindow", "Supercell", None)
         )
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "View", None))
