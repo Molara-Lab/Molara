@@ -52,7 +52,6 @@ class Crystal(Structure):
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_nums_unitcell = atomic_nums
         self.coords_unitcell = self._fold_coords_into_unitcell(coords)
-        self.fractional_coords_unitcell = self.fractional_to_cartesian_coords(self.coords_unitcell, basis_vectors)
         self.basis_vectors = basis_vectors
         self.energy = 0.0  # TD: implement energy calculation
         # if supercell_dims is None:
