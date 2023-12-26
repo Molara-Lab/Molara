@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.Molecule.atom import Atom
-from molara.Molecule.basisset import Basisset
-from molara.Molecule.drawer import Drawer
 from molara.Molecule.mos import Mos
 from molara.Molecule.structure import Structure
 
