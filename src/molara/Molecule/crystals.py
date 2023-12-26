@@ -4,9 +4,10 @@ from __future__ import annotations
 import numpy as np
 
 from molara.Molecule.crystal import Crystal
+from molara.Molecule.structures import Structures
 
 
-class Crystals:
+class Crystals(Structures):
     """A class to store and manipulate a list of Crystals."""
 
     def __init__(self) -> None:
@@ -53,7 +54,7 @@ class Crystals:
         if type(mol) == Crystal:
             self.mols.append(mol)
 
-            self.energies.append(mol.energy)
+            #self.energies.append(mol.energy)
 
     def remove_crystal(self, index: int) -> None:
         """Removes a crystal from the list of crystals.

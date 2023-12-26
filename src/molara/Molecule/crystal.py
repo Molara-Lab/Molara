@@ -18,9 +18,9 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     try:
-        from pymatgen.core import Structure
+        from pymatgen.core import Structure as Pmgstructure
     except ImportError:
-        Structure = None
+        pmgstructure = None
     try:
         from ase import Atoms
     except ImportError:
@@ -262,7 +262,7 @@ class Crystal(Structure):
         )
 
     @classmethod
-    def from_pymatgen(cls: type[Crystal], structure: Structure) -> Crystal:
+    def from_pymatgen(cls: type[Crystal], structure: Pmgstructure) -> Crystal:
         """Creates a Crystal object from a pymatgen.Structure object."""
         return cls(
             structure.atomic_numbers,
