@@ -84,7 +84,7 @@ class CrystalDialog(QDialog):
             np.diag([a, b, c]).tolist(),
             #     supercell_dimensions=supercell_dimensions,
         )
-        self.parent().ui.openGLWidget.set_molecule(mycrystal)  # type: ignore[attr-defined]
+        self.parent().ui.openGLWidget.set_structure(mycrystal)  # type: ignore[attr-defined]
 
     def change_crystal_system(self, value: str) -> None:
         """Changes the crystal system."""

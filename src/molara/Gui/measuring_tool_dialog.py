@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
 from molara.Gui.ui_measuring_tool import Ui_measuring_tool
 
 if TYPE_CHECKING:
-    from molara.Molecule.molecule import Molecule
+    from molara.Molecule.structure import Structure
 
 
 class MeasurementDialog(QDialog):
@@ -62,21 +62,21 @@ class MeasurementDialog(QDialog):
         self.ui.a234.setText("")
         self.ui.d1234.setText("")
 
-    def display_metrics(self, molecule: Molecule, selected_atoms: list) -> None:
+    def display_metrics(self, structure: Structure, selected_atoms: list) -> None:
         """Display the metrics in the table.
 
-        :param molecule: The molecule to measure.
+        :param structure: The structure to measure.
         :param selected_atoms: The selected atoms.
         :return:
         """
-        self.display_distances(molecule, selected_atoms)
-        self.display_angles(molecule, selected_atoms)
-        self.display_dihedral(molecule, selected_atoms)
+        self.display_distances(structure, selected_atoms)
+        self.display_angles(structure, selected_atoms)
+        self.display_dihedral(structure, selected_atoms)
 
-    def display_distances(self, molecule: Molecule, selected_atoms: list) -> None:
+    def display_distances(self, structure: Structure, selected_atoms: list) -> None:
         """Display the distances in the table.
 
-        :param molecule: The molecule to measure.
+        :param structure: The structure to measure.
         :param selected_atoms: The selected atoms.
         :return:
         """
@@ -94,32 +94,32 @@ class MeasurementDialog(QDialog):
                 for j in range(3):
                     atom_coordinates[i][j].setText("")
             else:
-                atom_labels[i].setText(molecule.atoms[selected_atoms[i]].symbol)
+                atom_labels[i].setText(structure.atoms[selected_atoms[i]].symbol)
                 for j in range(3):
                     atom_coordinates[i][j].setText(
-                        f"{molecule.atoms[selected_atoms[i]].position[j].round(3):.3f}",
+                        f"{structure.atoms[selected_atoms[i]].position[j].round(3):.3f}",
                     )
         for i in range(3):
             if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1:
                 d = np.linalg.norm(
-                    molecule.atoms[selected_atoms[i]].position - molecule.atoms[selected_atoms[i + 1]].position,
+                    structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position,
                 )
                 distances[i].setText(f"{d.round(3):.3f}")
             else:
                 distances[i].setText("")
 
-    def display_angles(self, molecule: Molecule, selected_atoms: list) -> None:
+    def display_angles(self, structure: Structure, selected_atoms: list) -> None:
         """Display the angles in the table.
 
-        :param molecule: The molecule to measure.
+        :param structure: The structure to measure.
         :param selected_atoms: The selected atoms.
         :return:
         """
         angles = [self.ui.a123, self.ui.a234]
         for i in range(2):
             if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1 and selected_atoms[i + 2] != -1:
-                v1 = molecule.atoms[selected_atoms[i]].position - molecule.atoms[selected_atoms[i + 1]].position
-                v2 = molecule.atoms[selected_atoms[i + 2]].position - molecule.atoms[selected_atoms[i + 1]].position
+                v1 = structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position
+                v2 = structure.atoms[selected_atoms[i + 2]].position - structure.atoms[selected_atoms[i + 1]].position
                 a = np.arccos(
                     np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
                 )
@@ -127,18 +127,18 @@ class MeasurementDialog(QDialog):
             else:
                 angles[i].setText("")
 
-    def display_dihedral(self, molecule: Molecule, selected_atoms: list) -> None:
+    def display_dihedral(self, structure: Structure, selected_atoms: list) -> None:
         """Display the dihedral in the table.
 
-        :param molecule: The molecule to measure.
+        :param structure: The structure to measure.
         :param selected_atoms: The selected atoms.
         :return:
         """
         dihedral = self.ui.d1234
         if selected_atoms[0] != -1 and selected_atoms[1] != -1 and selected_atoms[2] != -1 and selected_atoms[3] != -1:
-            ab = molecule.atoms[selected_atoms[1]].position - molecule.atoms[selected_atoms[0]].position
-            bc = molecule.atoms[selected_atoms[2]].position - molecule.atoms[selected_atoms[1]].position
-            cd = molecule.atoms[selected_atoms[3]].position - molecule.atoms[selected_atoms[2]].position
+            ab = structure.atoms[selected_atoms[1]].position - structure.atoms[selected_atoms[0]].position
+            bc = structure.atoms[selected_atoms[2]].position - structure.atoms[selected_atoms[1]].position
+            cd = structure.atoms[selected_atoms[3]].position - structure.atoms[selected_atoms[2]].position
             nabc = np.cross(ab, bc)
             nbcd = np.cross(bc, cd)
             t = np.cross(nabc, bc)

@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         importer = GeneralImporter(path)
         self.mols = importer.load()
 
-        self.ui.openGLWidget.set_molecule(self.mols.get_current_mol())
+        self.ui.openGLWidget.set_structure(self.mols.get_current_mol())
 
         if self.mols.num_mols > 1:
             self.trajectory_dialog.show()
@@ -68,11 +68,12 @@ class MainWindow(QMainWindow):
             msg_box.setText(error_message)
             msg_box.exec()
             return False
-        self.ui.openGLWidget.set_molecule(crystal)
+        self.ui.openGLWidget.set_structure(crystal)
         return True
 
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
-        if self.ui.openGLWidget.molecule:
+        if self.ui.openGLWidget.structure:
+            self.ui.openGLWidget.structure.toggle_bonds()
             self.ui.openGLWidget.bonds = not self.ui.openGLWidget.bonds
             self.ui.openGLWidget.update()

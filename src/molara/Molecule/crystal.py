@@ -9,6 +9,7 @@ import numpy as np
 
 from .atom import element_symbol_to_atomic_number
 from .molecule import *
+from .structure import Structure
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -28,21 +29,17 @@ if TYPE_CHECKING:
 ONE, TWO, THREE = 1, 2, 3
 
 
-class Crystal(Molecule):
+class Crystal(Structure):
     """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
 
     Particle positions are given in terms of the basis vectors:
     E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
 
     :param atomic_numbers: contains the atomic numbers of the particles specified for the unit cell.
-    :type atomic_numbers: numpy.array of int
     :param coordinates: Nx3 matrix of particle (fractional) coordinates in the unit cell,
         i.e., coordinates in terms of the basis vectors.
-    :type coordinates: numpy.ndarray of numpy.float64
     :param basis_vectors: 3x3 matrix of the lattice basis vectors.
-    :type basis_vectors: numpy.ndarray of numpy.float64
     :param supercell_dimensions: side lengths of the supercell in terms of the cell constants
-    :type supercell_dimensions: numpy.array of int
     """
 
     def __init__(
@@ -57,7 +54,10 @@ class Crystal(Molecule):
         self.basis_vectors = basis_vectors
         self.make_supercell([2, 3, 4])
 
-    def _fold_coords_into_unitcell(self, fractional_coords: ArrayLike) -> list[list[float]]:
+    def _fold_coords_into_unitcell(
+        self,
+        fractional_coords: ArrayLike,
+    ) -> list[list[float]]:
         """Folds coordinates into unit cell."""
         return np.mod(fractional_coords, 1.0).tolist()
 
