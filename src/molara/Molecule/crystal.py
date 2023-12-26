@@ -53,7 +53,6 @@ class Crystal(Structure):
         self.coords_unitcell = self._fold_coords_into_unitcell(coords)
         self.fractional_coords_unitcell = self.fractional_to_cartesian_coords(self.coords_unitcell, basis_vectors)
         self.basis_vectors = basis_vectors
-        super().__init__(np.array(atomic_nums), np.array(self.fractional_coords_unitcell), draw_bonds=False)
         self.make_supercell([2, 3, 4])
         self.energy = 0.0  # TD: implement energy calculation
 
