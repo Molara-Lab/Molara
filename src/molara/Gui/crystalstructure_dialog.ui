@@ -98,6 +98,26 @@
      <string>Orthorhombic</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>Hexagonal</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Monoclinic</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Triclinic</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>(Trigonal)</string>
+    </property>
+   </item>
   </widget>
   <widget class="QComboBox" name="selectSpaceGroup">
    <property name="enabled">
@@ -111,6 +131,11 @@
      <height>24</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>–</string>
+    </property>
+   </item>
    <item>
     <property name="text">
      <string>m3m</string>

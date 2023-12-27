@@ -12,6 +12,11 @@ from molara.Gui.ui_crystalstructure_dialog import UiCrystalDialog
 from molara.Molecule.atom import element_symbol_to_atomic_number
 from molara.Molecule.crystal import Crystal
 
+RIGHTANGLE = 90.0
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 
 class CrystalDialog(QDialog):
     """Dialog for specifying a crystal structure.
@@ -78,59 +83,125 @@ class CrystalDialog(QDialog):
             self.ui.inputLatConst_b.value(),
             self.ui.inputLatConst_c.value(),
         )
+        alpha, beta, gamma = (
+            self.ui.inputLatAngle_alpha.value(),
+            self.ui.inputLatAngle_beta.value(),
+            self.ui.inputLatAngle_gamma.value(),
+        )
+        if alpha == RIGHTANGLE and beta == RIGHTANGLE and gamma == RIGHTANGLE:
+            basis_vectors = np.diag([a, b, c]).tolist()
+        else:
+            cosalpha = np.cos(alpha / 180.0 * np.pi)
+            cosbeta = np.cos(beta / 180.0 * np.pi)
+            cosgamma = np.cos(gamma / 180.0 * np.pi)
+            avec = [a, 0.0, 0.0]
+            bvec = [
+                b * cosgamma,
+                b * np.sqrt(1.0 - cosgamma**2),
+                0.0,
+            ]
+            cvec = [
+                c * cosbeta,
+                c * (cosalpha - cosbeta * cosgamma) / np.sqrt(1.0 - cosgamma**2),
+                c
+                * np.sqrt(
+                    (1.0 - cosalpha**2 - cosbeta**2 - cosgamma**2 + 2 * cosalpha * cosbeta * cosgamma)
+                    / (1.0 - cosgamma**2),
+                ),
+            ]
+            basis_vectors = np.array([avec, bvec, cvec]).tolist()
         mycrystal = Crystal(
             self.list_of_atomic_numbers,
             self.list_of_coordinates,
-            np.diag([a, b, c]).tolist(),
+            basis_vectors=basis_vectors,
             supercell_dims=supercell_dims,
         )
         self.parent().ui.openGLWidget.set_structure(mycrystal)  # type: ignore[attr-defined]
+
+    def bc_equals_a(self, value: float) -> None:
+        """Set b and c lattice constants equal to a."""
+        self.ui.inputLatConst_b.setValue(value)
+        self.ui.inputLatConst_c.setValue(value)
+
+    def b_equals_a(self, value: float) -> None:
+        """Set b lattice constant equal to a."""
+        self.ui.inputLatConst_b.setValue(value)
+
+    def angles_hexagonal(self) -> None:
+        """Set lattice angles to 90°, 90°, and 120° for a hexagonal cell."""
+        self.ui.inputLatAngle_alpha.setValue(90.0)
+        self.ui.inputLatAngle_beta.setValue(90.0)
+        self.ui.inputLatAngle_gamma.setValue(120.0)
+        self.ui.inputLatAngle_alpha.setEnabled(False)
+        self.ui.inputLatAngle_beta.setEnabled(False)
+        self.ui.inputLatAngle_gamma.setEnabled(False)
+
+    def angles_monoclinic(self) -> None:
+        """Set lattice angles to 90°, 90°, and <arbitrary> for a monoclinic cell."""
+        self.ui.inputLatAngle_alpha.setValue(90.0)
+        self.ui.inputLatAngle_gamma.setValue(90.0)
+        self.ui.inputLatAngle_alpha.setEnabled(False)
+        self.ui.inputLatAngle_beta.setEnabled(True)
+        self.ui.inputLatAngle_gamma.setEnabled(False)
+
+    def angles_orthorhombic(self) -> None:
+        """Set lattice angles to 90°, 90°, and 90° for an orthorhombic cell."""
+        self.ui.inputLatAngle_alpha.setValue(90.0)
+        self.ui.inputLatAngle_beta.setValue(90.0)
+        self.ui.inputLatAngle_gamma.setValue(90.0)
+        self.ui.inputLatAngle_alpha.setEnabled(False)
+        self.ui.inputLatAngle_beta.setEnabled(False)
+        self.ui.inputLatAngle_gamma.setEnabled(False)
+
+    def enable_lattice_constants(self, ids: Sequence[int]) -> None:
+        """Enable or disable inputs for lattice constants, depending on crystal system."""
+        aid, bid, cid = 0, 1, 2
+        self.ui.inputLatConst_a.setEnabled(aid in ids)
+        self.ui.inputLatConst_b.setEnabled(bid in ids)
+        self.ui.inputLatConst_c.setEnabled(cid in ids)
+
+    def hide_space_groups(self, hide: Sequence[bool]) -> None:
+        """Hide space-group entries depending on crystal system."""
+        view = self.ui.selectSpaceGroup.view()
+        for i, hide_i in enumerate(hide):
+            view.setRowHidden(i, hide_i)
 
     def change_crystal_system(self, value: str) -> None:
         """Changes the crystal system."""
         self.crystal_system = value
         select_space_group = self.ui.selectSpaceGroup
-        view = select_space_group.view()
         if value == "Cubic":
-            view.setRowHidden(0, False)
-            view.setRowHidden(1, True)
-            view.setRowHidden(2, True)
+            self.hide_space_groups([False, False, True, True])
             select_space_group.setCurrentIndex(0)
-            self.ui.inputLatConst_a.setEnabled(True)
-            self.ui.inputLatConst_b.setEnabled(False)
-            self.ui.inputLatConst_c.setEnabled(False)
-
-            def bc_equals_a(value: float) -> None:
-                self.ui.inputLatConst_b.setValue(value)
-                self.ui.inputLatConst_c.setValue(value)
-
+            self.enable_lattice_constants([0])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
-            self.ui.inputLatConst_a.valueChanged.connect(bc_equals_a)
-            bc_equals_a(self.ui.inputLatConst_a.value())
+            self.ui.inputLatConst_a.valueChanged.connect(self.bc_equals_a)
+            self.bc_equals_a(self.ui.inputLatConst_a.value())
+            self.angles_orthorhombic()
         elif value == "Tetragonal":
-            view.setRowHidden(0, True)
-            view.setRowHidden(1, False)
-            view.setRowHidden(2, True)
-            select_space_group.setCurrentIndex(1)
-            self.ui.inputLatConst_a.setEnabled(True)
-            self.ui.inputLatConst_b.setEnabled(False)
-            self.ui.inputLatConst_c.setEnabled(True)
-
-            def b_equals_a(value: float) -> None:
-                self.ui.inputLatConst_b.setValue(value)
-
+            self.hide_space_groups([False, True, False, True])
+            select_space_group.setCurrentIndex(0)
+            self.enable_lattice_constants([0, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
-            self.ui.inputLatConst_a.valueChanged.connect(b_equals_a)
-            b_equals_a(self.ui.inputLatConst_a.value())
+            self.ui.inputLatConst_a.valueChanged.connect(self.b_equals_a)
+            self.b_equals_a(self.ui.inputLatConst_a.value())
+            self.angles_orthorhombic()
         elif value == "Orthorhombic":
-            view.setRowHidden(0, True)
-            view.setRowHidden(1, True)
-            view.setRowHidden(2, False)
-            select_space_group.setCurrentIndex(2)
-            self.ui.inputLatConst_a.setEnabled(True)
-            self.ui.inputLatConst_b.setEnabled(True)
-            self.ui.inputLatConst_c.setEnabled(True)
+            self.hide_space_groups([False, True, True, False])
+            select_space_group.setCurrentIndex(0)
+            self.enable_lattice_constants([0, 1, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
+            self.angles_orthorhombic()
+        elif value == "Hexagonal":
+            self.hide_space_groups([False, True, True, True])
+            select_space_group.setCurrentIndex(0)
+            self.enable_lattice_constants([0, 2])
+            self.angles_hexagonal()
+        elif value == "Monoclinic":
+            self.hide_space_groups([False, True, True, True])
+            select_space_group.setCurrentIndex(0)
+            self.enable_lattice_constants([0, 1, 2])
+            self.angles_monoclinic()
