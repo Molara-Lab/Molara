@@ -67,12 +67,12 @@ class CrystalDialog(QDialog):
 
     def accept(self) -> None:
         """Accepts the dialog and passes the crystal to the main window."""
-        # dim_a, dim_b, dim_c = (
-        #     self.ui.inputSupercell_a.value(),
-        #     self.ui.inputSupercell_b.value(),
-        #     self.ui.inputSupercell_c.value(),
-        # )
-        # supercell_dimensions = np.array([dim_a, dim_b, dim_c])
+        dim_a, dim_b, dim_c = (
+            self.ui.inputSupercell_a.value(),
+            self.ui.inputSupercell_b.value(),
+            self.ui.inputSupercell_c.value(),
+        )
+        supercell_dims = np.array([dim_a, dim_b, dim_c])
         a, b, c = (
             self.ui.inputLatConst_a.value(),
             self.ui.inputLatConst_b.value(),
@@ -82,7 +82,7 @@ class CrystalDialog(QDialog):
             self.list_of_atomic_numbers,
             self.list_of_coordinates,
             np.diag([a, b, c]).tolist(),
-            #     supercell_dimensions=supercell_dimensions,
+            supercell_dims=supercell_dims,
         )
         self.parent().ui.openGLWidget.set_structure(mycrystal)  # type: ignore[attr-defined]
 
