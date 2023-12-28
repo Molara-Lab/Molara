@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip wheel setuptools
-          python -m pip install numpy packaging cython 
+          python -m pip install numpy packaging cython
           python -m cython_build build_ext --inplace
           python -m pip install -e '.[dev,optional]'
       - if: runner.os == 'Linux'

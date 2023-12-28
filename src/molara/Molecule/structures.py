@@ -1,8 +1,6 @@
 """A Molecules Class to be able to work with several molecules."""
 from __future__ import annotations
 
-import numpy as np
-
 from molara.Molecule.structure import Structure
 
 
@@ -13,7 +11,6 @@ class Structures:
         """Initializes the Structures Class."""
         self._structures: list = []
         self._structure_id = 0
-        # self.energies: list = []
 
     @property
     def _num_structures(self) -> int:
@@ -21,7 +18,7 @@ class Structures:
         return len(self._structures)
 
     def _get_current_structure(self) -> Structure:
-        """Returns a."""
+        """Returns the current structure."""
         return self._structures[self._structure_id]
 
     def _get_structure_by_id(self, structure_id: int) -> Structure:
@@ -44,16 +41,15 @@ class Structures:
         if self._structure_id < 0:
             self._structure_id = self._num_structures - 1
 
-    def _add_structure(self, struc: Structure) -> None:
+    def _add_structure(self, struct: Structure) -> None:
         """Adds a structure to the list of structures.
 
-        param: struc: Structure.
+        param: struct: Structure.
         """
-        if not isinstance(struc, Structure):
-            # insert error message?
-            return
-        self._structures.append(struc)
-        # self.energies.append(struc.energy)
+        if not isinstance(struct, Structure):
+            msg = "The given structure is not a Structure object."
+            raise TypeError(msg)
+        self._structures.append(struct)
 
     def _remove_structure(self, structure_id: int) -> None:
         """Removes a structure from the list of structures.

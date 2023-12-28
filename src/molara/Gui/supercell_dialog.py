@@ -36,7 +36,7 @@ class SupercellDialog(QDialog):
         self.supercell_dims = [1, 1, 1]
 
     @staticmethod
-    def get_supercell_dims(supercell_dims: Annotated[Sequence[int], 3]) -> bool:
+    def get_supercell_dims(supercell_dims: Annotated[list[int], 3]) -> bool:
         """Opens dialog for supercell size specification."""
         dialog = SupercellDialog()
         dialog.supercell_dims = supercell_dims

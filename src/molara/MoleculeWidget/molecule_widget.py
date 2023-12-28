@@ -69,9 +69,9 @@ class MoleculeWidget(QOpenGLWidget):
         self.vertex_attribute_objects = []
         self.update()
 
-    def set_structure(self, struc: Structure) -> None:
+    def set_structure(self, struct: Structure) -> None:
         """Sets the molecule to be drawn."""
-        self.structure = struc
+        self.structure = struct
         if self.structure.bonded_pairs[0, 0] == -1:
             self.bonds = False
         else:
