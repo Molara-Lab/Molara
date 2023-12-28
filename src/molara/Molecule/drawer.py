@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 class Drawer:
     """Creates a Drawer object."""
 
-    def __init__(self, atoms: list[Atom], bonds: np.ndarray) -> None:
+    def __init__(self, atoms: list[Atom], bonds: np.ndarray, draw_bonds: bool = True) -> None:
         """Creates a Drawer object."""
         self.subdivisions_sphere = 15
         self.subdivisions_cylinder = 20
@@ -55,7 +55,7 @@ class Drawer:
         self.set_atom_translation_matrices()
         self.set_atom_model_matrices()
 
-        if self.bonds[0, 0] != -1:
+        if self.bonds[0, 0] != -1 and draw_bonds:
             self.set_cylinder_props()
             self.set_cylinder_scale_matrices()
             self.set_cylinder_rotation_matrices()
