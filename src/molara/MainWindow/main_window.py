@@ -8,10 +8,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 from molara.Gui.crystal_dialog import CrystalDialog
-<<<<<<< HEAD
-=======
 from molara.Gui.supercell_dialog import SupercellDialog
->>>>>>> main
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
