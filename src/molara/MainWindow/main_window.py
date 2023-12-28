@@ -28,6 +28,27 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
         self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
+        self.set_action_triggers()
+
+    def set_action_triggers(self) -> None:
+        """Connect Triggers of menu actions with the corresponding routines."""
+        self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
+        self.ui.actionReset_View.triggered.connect(self.ui.openGLWidget.reset_view)
+        self.ui.actionDraw_Axes.triggered.connect(self.ui.openGLWidget.toggle_axes)
+        self.ui.actionCenter_Molecule.triggered.connect(
+            self.ui.openGLWidget.center_molecule,
+        )
+        self.ui.quit.triggered.connect(self.close)
+        self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
+        self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
+        self.ui.actionToggle_Bonds.triggered.connect(self.toggle_bonds)
+        self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
+            self.trajectory_dialog.show,
+        )
+        self.ui.actionMeasure.triggered.connect(
+            self.ui.openGLWidget.show_measurement_dialog,
+        )
+        self.ui.quit.triggered.connect(self.close)
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""
