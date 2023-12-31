@@ -153,6 +153,12 @@ class CrystalDialog(QDialog):
         self.ui.inputLatAngle_beta.setEnabled(False)
         self.ui.inputLatAngle_gamma.setEnabled(False)
 
+    def angles_triclinic(self) -> None:
+        """Enable lattice inputs for a triclinic cell."""
+        self.ui.inputLatAngle_alpha.setEnabled(True)
+        self.ui.inputLatAngle_beta.setEnabled(True)
+        self.ui.inputLatAngle_gamma.setEnabled(True)
+
     def enable_lattice_constants(self, ids: Sequence[int]) -> None:
         """Enable or disable inputs for lattice constants, depending on crystal system."""
         aid, bid, cid = 0, 1, 2
@@ -199,9 +205,20 @@ class CrystalDialog(QDialog):
             self.hide_space_groups([False, True, True, True])
             select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0, 2])
+            with suppress(Exception):
+                self.ui.inputLatConst_a.valueChanged.disconnect()
             self.angles_hexagonal()
         elif value == "Monoclinic":
             self.hide_space_groups([False, True, True, True])
             select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0, 1, 2])
+            with suppress(Exception):
+                self.ui.inputLatConst_a.valueChanged.disconnect()
             self.angles_monoclinic()
+        elif value == "Triclinic":
+            self.hide_space_groups([False, True, True, True])
+            select_space_group.setCurrentIndex(0)
+            self.enable_lattice_constants([0, 1, 2])
+            with suppress(Exception):
+                self.ui.inputLatConst_a.valueChanged.disconnect()
+            self.angles_triclinic()
