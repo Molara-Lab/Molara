@@ -55,6 +55,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Sequence
     from typing import Annotated
+    intvec3 = Annotated[Sequence[int], 3]
 
 class Ui_Dialog:
     """Class for supercell dialog Gui."""
@@ -101,7 +102,7 @@ class Ui_Dialog:
 
     # setupUi
 
-    def set_supercell_dims(self, supercell_dims: Annotated[Sequence[int], 3]) -> None:
+    def set_supercell_dims(self, supercell_dims: intvec3) -> None:
         """Set supercell dimensions in input boxes."""
         self.inputSupercell_a.setValue(supercell_dims[0])
         self.inputSupercell_b.setValue(supercell_dims[1])

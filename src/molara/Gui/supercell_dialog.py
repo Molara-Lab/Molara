@@ -14,6 +14,8 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
     from typing import Annotated
 
+    intvec3 = Annotated[Sequence[int], 3]
+
 
 class SupercellDialog(QDialog):
     """Dialog for specifying supercell dimensions.
@@ -36,13 +38,13 @@ class SupercellDialog(QDialog):
         self.supercell_dims = [1, 1, 1]
 
     @staticmethod
-    def get_supercell_dims(supercell_dims: Annotated[Sequence[int], 3]) -> bool:
+    def get_supercell_dims(supercell_dims: intvec3) -> bool:
         """Opens dialog for supercell size specification."""
         dialog = SupercellDialog()
         dialog.set_supercell_dims(supercell_dims)
         return dialog.exec()
 
-    def set_supercell_dims(self, supercell_dims: Annotated[Sequence[int], 3]) -> None:
+    def set_supercell_dims(self, supercell_dims: intvec3) -> None:
         """Set supercell dimensions."""
         self.supercell_dims = supercell_dims
         self.ui.set_supercell_dims(self.supercell_dims)
