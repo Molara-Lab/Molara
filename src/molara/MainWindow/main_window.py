@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
             # insert error message?
             return False
         crystal = self.ui.openGLWidget.structure
-        supercell_dims = [-1, -1, -1]
+        supercell_dims = crystal.supercell_dims
         SupercellDialog.get_supercell_dims(supercell_dims)
         # check if supercell dimensions have successfully been passed (i.e., all are >0)
         if sum(1 for component in supercell_dims if component <= 0):
