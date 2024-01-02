@@ -39,7 +39,7 @@ class Crystal(Structure):
     :param coordinates: Nx3 matrix of particle (fractional) coordinates in the unit cell,
         i.e., coordinates in terms of the basis vectors.
     :param basis_vectors: 3x3 matrix of the lattice basis vectors.
-    :param supercell_dimensions: side lengths of the supercell in terms of the cell constants
+    :param supercell_dims: side lengths of the supercell in terms of the cell constants
     """
 
     def __init__(
@@ -47,14 +47,18 @@ class Crystal(Structure):
         atomic_nums: Sequence[int],
         coords: Sequence[Sequence[float]],
         basis_vectors: Sequence[Sequence[float]] | ArrayLike,
+        supercell_dims: Annotated[Sequence[int], 3],
     ) -> None:
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_nums_unitcell = atomic_nums
         self.coords_unitcell = self._fold_coords_into_unitcell(coords)
         self.fractional_coords_unitcell = self.fractional_to_cartesian_coords(self.coords_unitcell, basis_vectors)
         self.basis_vectors = basis_vectors
-        self.make_supercell([2, 3, 4])
         self.energy = 0.0  # TD: implement energy calculation
+        # if supercell_dims is None:
+        #     supercell_dims = [1, 1, 1]
+        #     SupercellDialog.get_supercell_dims(supercell_dims)
+        self.make_supercell(supercell_dims)
 
     def _fold_coords_into_unitcell(
         self,
@@ -63,12 +67,12 @@ class Crystal(Structure):
         """Folds coordinates into unit cell."""
         return np.mod(fractional_coords, 1.0).tolist()
 
-    def make_supercell(self, supercell_dimensions: Annotated[Sequence, 3]) -> None:
+    def make_supercell(self, supercell_dims: Annotated[Sequence[int], 3]) -> None:
         """Creates a supercell of the crystal."""
-        self.supercell_dimensions = supercell_dimensions
-        steps_a = np.arange(supercell_dimensions[0])
-        steps_b = np.arange(supercell_dimensions[1])
-        steps_c = np.arange(supercell_dimensions[2])
+        self.supercell_dims = supercell_dims
+        steps_a = np.arange(supercell_dims[0])
+        steps_b = np.arange(supercell_dims[1])
+        steps_c = np.arange(supercell_dims[2])
         steps_a.shape = (*steps_a.shape, 1, 1)
         steps_b.shape = (1, *steps_b.shape, 1)
         steps_c.shape = (1, 1, *steps_c.shape)
@@ -106,7 +110,7 @@ class Crystal(Structure):
         extra_atomic_nums, extra_fractional_coords = Crystal.make_supercell_edge_atoms(
             self.atomic_nums_supercell.tolist(),
             self.fractional_coords_supercell.tolist(),
-            supercell_dimensions,
+            supercell_dims,
         )
         self.atomic_nums_supercell = np.append(
             self.atomic_nums_supercell,
@@ -288,25 +292,25 @@ class Crystal(Structure):
 
     def copy(self) -> Crystal:
         """Returns a copy of the Crystal object."""
-        # supercell dimensions not included yet!
         return Crystal(
             self.atomic_nums_unitcell,
             self.coords_unitcell,
             self.basis_vectors,
+            self.supercell_dims,
         )
 
     """ overloading operators """
 
-    def __mul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
+    def __mul__(self, supercell_dims: Sequence[int]) -> Crystal:
         """Multiply Crystal by a sequence.
 
         Current implementation: multiply Crystal by a sequence of three integers [M, N, K]
         to create MxNxK supercell
         """
         crystal_copy = self.copy()
-        crystal_copy.make_supercell(supercell_dimensions)
+        crystal_copy.make_supercell(supercell_dims)
         return crystal_copy
 
-    def __rmul__(self, supercell_dimensions: Sequence[int]) -> Crystal:
+    def __rmul__(self, supercell_dims: Sequence[int]) -> Crystal:
         """Multiply Crystal by a sequence."""
-        return self.__mul__(supercell_dimensions)
+        return self.__mul__(supercell_dims)
