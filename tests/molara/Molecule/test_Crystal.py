@@ -33,7 +33,8 @@ class TestCrystal(TestCase):
         """Test the creation of a crystal from a POSCAR file."""
         supercell_dims = self.supercell_dims
         importer = PoscarImporter("examples/POSCAR/boron_nitride", supercell_dims)
-        self.crystal_from_POSCAR = importer.load()
+        self.crystals_from_POSCAR = importer.load()
+        self.crystal_from_POSCAR = self.crystals_from_POSCAR.get_current_mol()
 
         assert_array_equal(
             supercell_dims,

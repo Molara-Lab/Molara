@@ -12,6 +12,7 @@ from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
+from molara.Molecule.crystals import Crystals
 from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
 
 if TYPE_CHECKING:
@@ -105,7 +106,8 @@ class MainWindow(QMainWindow):
         importer = PoscarImporter(filename[0], supercell_dims)
         crystal = importer.load()
 
-        if not isinstance(crystal, Crystal):
+        if not isinstance(crystal, Crystals):
+            crystal = crystal.get_current_mol()
             error_message = crystal[1]
             msg_box = QMessageBox()
             msg_box.setText(error_message)

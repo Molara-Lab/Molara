@@ -27,6 +27,10 @@ class Crystals(Structures):
         self.set_previous_mol = self._set_previous_structure
         self.remove_crystal = self._remove_structure
 
+    def _get_current_structure(self) -> Crystal:
+        """Returns the current structure."""
+        return self._structures[self._structure_id]
+
     @property
     def num_mols(self) -> int:
         """Number of crystals."""

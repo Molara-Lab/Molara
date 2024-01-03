@@ -47,7 +47,7 @@ class Crystal(Structure):
         atomic_nums: Sequence[int],
         coords: Sequence[Sequence[float]],
         basis_vectors: Sequence[Sequence[float]] | ArrayLike,
-        supercell_dims: Annotated[Sequence[int], 3],
+        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
     ) -> None:
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_nums_unitcell = atomic_nums
