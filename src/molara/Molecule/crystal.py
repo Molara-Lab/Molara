@@ -5,8 +5,6 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-import numpy as np
-
 from .atom import element_symbol_to_atomic_number
 from .molecule import *
 from .structure import Structure

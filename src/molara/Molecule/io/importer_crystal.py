@@ -70,7 +70,8 @@ class PoscarImporter(Importer):
     This class can be used to import poscar files. It tries the pymatgen import first.
     """
 
-    def __init__(self, path: PathLike | str, supercell_dims: Annotated[Sequence[int], 3]) -> None:
+    def __init__(self, path: PathLike | str, supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
+                 ) -> None:
         """Initializes the Importer object."""
         super().__init__(path)
         self.supercell_dims = supercell_dims
