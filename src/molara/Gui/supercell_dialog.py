@@ -14,6 +14,8 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
     from typing import Annotated
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class SupercellDialog(QDialog):
     """Dialog for specifying supercell dimensions.

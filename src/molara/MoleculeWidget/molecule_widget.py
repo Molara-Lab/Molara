@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from molara.Molecule.molecule import Molecule
     from molara.Molecule.structure import Structure
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class MoleculeWidget(QOpenGLWidget):
     """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""

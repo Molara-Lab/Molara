@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from molara.Molecule.structures import Structures
+
 if TYPE_CHECKING:
     from molara.Molecule.molecule import Molecule
 
-from molara.Molecule.structures import Structures
+__copyright__ = "Copyright 2024, Molara"
 
 
 class Molecules(Structures):

@@ -11,6 +11,8 @@ from numpy.testing import assert_array_almost_equal_nulp
 if TYPE_CHECKING:
     from molara.Molecule.basisset import Orbital
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class TestBasisset(TestCase):
     """Test the Basisset class."""

@@ -10,6 +10,8 @@ from molara.Eval.aos import calculate_aos
 if TYPE_CHECKING:
     from molara.Molecule.basisset import Orbital
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Mos:
     """Class to store either an STO or GTO basisset for each atom in the same order as in molecule."""

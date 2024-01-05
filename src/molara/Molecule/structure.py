@@ -9,6 +9,8 @@ import numpy as np
 from .atom import Atom
 from .drawer import Drawer
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Structure:
     """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""

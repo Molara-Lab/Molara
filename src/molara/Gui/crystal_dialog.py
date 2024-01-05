@@ -12,6 +12,8 @@ from molara.Gui.ui_crystalstructure_dialog import Ui_Dialog
 from molara.Molecule.atom import element_symbol_to_atomic_number
 from molara.Molecule.crystal import Crystal
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class CrystalDialog(QDialog):
     """Dialog for specifying a crystal structure.

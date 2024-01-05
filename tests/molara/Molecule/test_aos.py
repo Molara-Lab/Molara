@@ -9,6 +9,8 @@ from molara.Eval.aos import calculate_aos
 from molara.Molecule.io.importer import GeneralImporter
 from numpy.testing import assert_array_equal
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class TestAos(TestCase):
     """Test the Aos class."""

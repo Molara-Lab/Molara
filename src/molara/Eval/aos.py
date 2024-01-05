@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def calculate_aos(  # noqa: PLR0915 C901
     electron_coords: np.ndarray,

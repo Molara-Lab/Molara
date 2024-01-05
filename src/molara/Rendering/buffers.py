@@ -26,6 +26,8 @@ from OpenGL.GL import (
 if TYPE_CHECKING:
     import numpy as np
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def setup_vao(
     vertices: np.ndarray,

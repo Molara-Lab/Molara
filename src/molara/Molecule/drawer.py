@@ -22,6 +22,8 @@ from molara.Tools.mathtools import norm
 if TYPE_CHECKING:
     from molara.Molecule.atom import Atom
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Drawer:
     """Creates a Drawer object."""

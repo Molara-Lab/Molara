@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from molara.Molecule.structure import Structure
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Structures:
     """A class to store and manipulate a list of Structures."""

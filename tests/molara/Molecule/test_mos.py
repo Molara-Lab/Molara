@@ -8,6 +8,8 @@ import numpy as np
 from molara.Molecule.io.importer import GeneralImporter
 from numpy.testing import assert_array_equal
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class TestMos(TestCase):
     """Test the Mos class."""

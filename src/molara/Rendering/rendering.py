@@ -16,6 +16,8 @@ from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 if TYPE_CHECKING:
     from molara.Rendering.camera import Camera
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Renderer:
     """Contains the rendering function for the opengl widget."""

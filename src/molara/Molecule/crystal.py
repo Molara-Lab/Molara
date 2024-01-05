@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 
     from numpy.typing import ArrayLike
 
+__copyright__ = "Copyright 2024, Molara"
+
 ONE, TWO, THREE = 1, 2, 3
 
 

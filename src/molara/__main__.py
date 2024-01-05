@@ -19,6 +19,8 @@ from molara.MainWindow.main_window import MainWindow
 if TYPE_CHECKING:
     from types import FrameType
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def main() -> None:
     """Run the application."""

@@ -9,6 +9,8 @@ from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer import PoscarImporter
 from numpy.testing import assert_array_equal
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class TestCrystal(TestCase):
     """Test the Crystal class."""
