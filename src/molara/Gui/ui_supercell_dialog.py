@@ -50,9 +50,17 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from typing import Annotated
+    intvec3 = Annotated[Sequence[int], 3]
 
 class Ui_Dialog:
+    """Class for supercell dialog Gui."""
     def setupUi(self, Dialog):
+        """Setup of supercell dialog Gui."""
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
         Dialog.resize(400, 300)
@@ -94,7 +102,14 @@ class Ui_Dialog:
 
     # setupUi
 
+    def set_supercell_dims(self, supercell_dims: intvec3) -> None:
+        """Set supercell dimensions in input boxes."""
+        self.inputSupercell_a.setValue(supercell_dims[0])
+        self.inputSupercell_b.setValue(supercell_dims[1])
+        self.inputSupercell_c.setValue(supercell_dims[2])
+
     def retranslateUi(self, Dialog):
+        """Set labels in dialog."""
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Dialog", None))
         self.labelSupercell_a.setText(
             QCoreApplication.translate("Dialog", "N<sub>a</sub>", None)
