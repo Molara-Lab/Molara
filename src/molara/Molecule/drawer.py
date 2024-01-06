@@ -15,7 +15,6 @@ from molara.Rendering.matrices import (
 )
 from molara.Rendering.sphere import (
     Sphere,
-    calculate_sphere_model_matrix,
 )
 from molara.Tools.mathtools import norm
 
@@ -28,7 +27,7 @@ __copyright__ = "Copyright 2024, Molara"
 class Drawer:
     """Creates a Drawer object."""
 
-    def __init__(self, atoms: list[Atom], bonds: np.ndarray, draw_bonds: bool = True) -> None:
+    def __init__(self, atoms: list[Atom], bonds: np.ndarray, draw_bonds: bool) -> None:
         """Creates a Drawer object."""
         self.subdivisions_sphere = 15
         self.subdivisions_cylinder = 20

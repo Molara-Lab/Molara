@@ -15,7 +15,6 @@ from OpenGL.GL import (
     glBindBuffer,
     glBindVertexArray,
     glBufferData,
-    glDeleteVertexArrays,
     glEnableVertexAttribArray,
     glGenBuffers,
     glGenVertexArrays,

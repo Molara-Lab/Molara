@@ -19,7 +19,6 @@ from molara.Tools.raycasting import select_sphere
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
 
-    from molara.Molecule.molecule import Molecule
     from molara.Molecule.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"

@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from contextlib import suppress
 from typing import TYPE_CHECKING
 
-import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow
 
 from molara.Gui.ui_supercell_dialog import Ui_Dialog

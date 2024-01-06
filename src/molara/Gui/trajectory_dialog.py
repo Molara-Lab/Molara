@@ -2,21 +2,17 @@
 
 from __future__ import annotations
 
-from contextlib import suppress
 from typing import TYPE_CHECKING
 
 import matplotlib as mpl
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from PySide6.QtCore import QTime, QTimer
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import (
     QDialog,
-    QGraphicsScene,
     QMainWindow,
-    QTableWidgetItem,
     QVBoxLayout,
-    QWidget,
 )
 
 from molara.Gui.ui_trajectory import Ui_Dialog

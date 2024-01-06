@@ -7,11 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PySide6.QtWidgets import (
     QDialog,
-    QGraphicsScene,
     QMainWindow,
-    QTableWidgetItem,
-    QVBoxLayout,
-    QWidget,
 )
 
 from molara.Gui.ui_measuring_tool import Ui_measuring_tool

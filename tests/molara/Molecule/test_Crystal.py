@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from unittest import TestCase
 
-import numpy as np
 from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer import PoscarImporter
 from numpy.testing import assert_array_equal

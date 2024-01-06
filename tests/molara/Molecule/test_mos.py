@@ -3,10 +3,8 @@ from __future__ import annotations
 
 from unittest import TestCase
 
-import matplotlib.pyplot as plt
 import numpy as np
 from molara.Molecule.io.importer import GeneralImporter
-from numpy.testing import assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
