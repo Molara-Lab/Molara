@@ -1,13 +1,13 @@
 """A module for the Structure class."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 # if TYPE_CHECKING:
 import numpy as np
 
 from .atom import Atom
 from .drawer import Drawer
+
+__copyright__ = "Copyright 2024, Molara"
 
 
 class Structure:

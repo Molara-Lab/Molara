@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING
 
 import numpy as np
 
-from .atom import element_symbol_to_atomic_number
 from .molecule import *
 from .structure import Structure
 
@@ -16,6 +14,8 @@ if TYPE_CHECKING:
     from typing import Annotated
 
     from numpy.typing import ArrayLike
+
+__copyright__ = "Copyright 2024, Molara"
 
 ONE, TWO, THREE = 1, 2, 3
 

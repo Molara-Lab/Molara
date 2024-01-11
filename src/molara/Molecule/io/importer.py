@@ -1,6 +1,7 @@
 """An importer class for all read in functions."""
 from __future__ import annotations
 
+import locale
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 
     from cclib.data import ccData
 
+__copyright__ = "Copyright 2024, Molara"
 
 bohr_to_angstrom = 5.29177210903e-1
 
@@ -148,7 +150,7 @@ class CoordImporter(MoleculesImporter):
         """Reads the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(self.path) as file:
+        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()  # To skip first row
 
         atomic_numbers = []
@@ -181,7 +183,7 @@ class MoldenImporter(MoleculesImporter):
         """Reads the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(self.path) as file:
+        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()
 
         i = 0
@@ -475,7 +477,7 @@ class PoscarImporter(CrystalImporter):
 
     def load(self) -> Crystal:
         """Creates a Crystal object from a POSCAR file."""
-        with open(self.path) as file:
+        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()
         header_length = 9
         if not len(lines) >= header_length:

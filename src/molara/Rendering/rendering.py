@@ -6,7 +6,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pyrr
 from OpenGL.GL import *
 
 from molara.Rendering.buffers import setup_vao
@@ -15,6 +14,8 @@ from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 if TYPE_CHECKING:
     from molara.Rendering.camera import Camera
+
+__copyright__ = "Copyright 2024, Molara"
 
 
 class Renderer:

@@ -5,6 +5,8 @@ from __future__ import annotations
 import numpy as np
 import pyrr
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Camera:
     """Creates a Camera object.

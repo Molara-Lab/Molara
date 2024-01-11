@@ -8,6 +8,8 @@ import numpy as np
 from Cython.Build import cythonize
 from setuptools import setup
 
+__copyright__ = "Copyright 2024, Molara"
+
 # Modules to be compiled and include_dirs when necessary
 extensions = [
     "src/molara/Rendering/cylinder.pyx",
