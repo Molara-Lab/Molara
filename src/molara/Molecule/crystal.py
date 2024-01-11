@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING
 
 from .atom import element_symbol_to_atomic_number
+
+import numpy as np
+
 from .molecule import *
 from .structure import Structure
 
@@ -23,6 +25,9 @@ if TYPE_CHECKING:
         from ase import Atoms
     except ImportError:
         Atoms = None
+
+__copyright__ = "Copyright 2024, Molara"
+
 
 ONE, TWO, THREE = 1, 2, 3
 

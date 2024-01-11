@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import numpy as np
 
+__copyright__ = "Copyright 2024, Molara"
+
 fact2 = [
     1,
     1,

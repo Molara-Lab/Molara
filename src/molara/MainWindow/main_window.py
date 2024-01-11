@@ -18,6 +18,8 @@ from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
 if TYPE_CHECKING:
     from os import PathLike
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class MainWindow(QMainWindow):
     """Creates a MainWindow object."""

@@ -13,6 +13,8 @@ from OpenGL.GL import (
 )
 from OpenGL.GL.shaders import compileShader
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def compile_shaders() -> GLuint:
     """Compiles the shader program with the given shader source code in glsl.

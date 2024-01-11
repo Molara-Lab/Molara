@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from contextlib import suppress
 from typing import TYPE_CHECKING
 
-import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow
 
 from molara.Gui.ui_supercell_dialog import Ui_Dialog
@@ -15,6 +13,8 @@ if TYPE_CHECKING:
     from typing import Annotated
 
     intvec3 = Annotated[Sequence[int], 3]
+
+__copyright__ = "Copyright 2024, Molara"
 
 
 class SupercellDialog(QDialog):

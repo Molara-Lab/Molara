@@ -9,8 +9,7 @@ import numpy as np
 from molara.Molecule.mos import Mos
 from molara.Molecule.structure import Structure
 
-if TYPE_CHECKING:
-    from numpy.typing import ArrayLike
+__copyright__ = "Copyright 2024, Molara"
 
 
 class Molecule(Structure):

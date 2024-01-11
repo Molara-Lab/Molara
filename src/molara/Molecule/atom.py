@@ -11,6 +11,8 @@ from molara.Molecule.basisset import Basisset
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Atom:
     """Creates an Atom object."""
