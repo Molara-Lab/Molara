@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from .molecule import *
 from .structure import Structure
 
 if TYPE_CHECKING:

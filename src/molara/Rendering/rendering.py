@@ -6,7 +6,25 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from OpenGL.GL import *
+from OpenGL.GL import (
+    GL_ARRAY_BUFFER,
+    GL_COLOR_BUFFER_BIT,
+    GL_DEPTH_BUFFER_BIT,
+    GL_ELEMENT_ARRAY_BUFFER,
+    GL_FALSE,
+    GL_TRIANGLES,
+    GL_UNSIGNED_INT,
+    GLuint,
+    glBindBuffer,
+    glBindVertexArray,
+    glClear,
+    glDeleteBuffers,
+    glDeleteVertexArrays,
+    glDrawElementsInstanced,
+    glGetUniformLocation,
+    glUniform3fv,
+    glUniformMatrix4fv,
+)
 
 from molara.Rendering.buffers import setup_vao
 from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
