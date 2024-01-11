@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
 from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
@@ -20,6 +19,7 @@ if TYPE_CHECKING:
     from os import PathLike
     from typing import Annotated, Any
 
+    from molara.Molecule.crystal import Crystal
     from molara.Molecule.crystals import Crystals
 
     try:
