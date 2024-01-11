@@ -255,6 +255,7 @@ class MoleculeWidget(QOpenGLWidget):
         :param event: The mouse event.
         :return:
         """
+        self.makeCurrent()
         click_position = np.array(
             [
                 (event.x() * 2 - self.width()) / self.width(),
