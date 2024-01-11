@@ -48,6 +48,16 @@ class Crystal(Structure):
         #     SupercellDialog.get_supercell_dims(supercell_dims)
         self.make_supercell(supercell_dims)
 
+    @property
+    def volume_unitcell(self) -> float:
+        """Volume of the unit cell."""
+        return self._volume_unitcell
+
+    @volume_unitcell.setter
+    def volume_unitcell(self) -> None:
+        """Volume of the unit cell."""
+        self._volume_unitcell = float(np.linalg.det(np.array(self.basis_vectors)))
+
     def _fold_coords_into_unitcell(
         self,
         fractional_coords: ArrayLike,
