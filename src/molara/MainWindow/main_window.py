@@ -33,23 +33,29 @@ class MainWindow(QMainWindow):
 
     def set_action_triggers(self) -> None:
         """Connect Triggers of menu actions with the corresponding routines."""
+        # Start
         self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
+        self.ui.quit.triggered.connect(self.close)
+
+        # View
         self.ui.actionReset_View.triggered.connect(self.ui.openGLWidget.reset_view)
         self.ui.actionDraw_Axes.triggered.connect(self.ui.openGLWidget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
             self.ui.openGLWidget.center_molecule,
         )
-        self.ui.quit.triggered.connect(self.close)
-        self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
-        self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionToggle_Bonds.triggered.connect(self.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )
+
+        # Tools
         self.ui.actionMeasure.triggered.connect(
             self.ui.openGLWidget.show_measurement_dialog,
         )
-        self.ui.quit.triggered.connect(self.close)
+
+        self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
+        self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
+        self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""
@@ -77,13 +83,20 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
 
+    def toggle_bonds(self) -> None:
+        """Toggles the bonds on and off."""
+        if self.ui.openGLWidget.structure:
+            self.ui.openGLWidget.structure.toggle_bonds()
+            self.ui.openGLWidget.bonds = not self.ui.openGLWidget.bonds
+            self.ui.openGLWidget.update()
+
     def edit_supercell_dims(self) -> bool:
         """Open dialog window to edit supercell dimensions."""
         if not isinstance(self.ui.openGLWidget.structure, Crystal):
             # insert error message?
             return False
         crystal = self.ui.openGLWidget.structure
-        supercell_dims = [-1, -1, -1]
+        supercell_dims = crystal.supercell_dims
         SupercellDialog.get_supercell_dims(supercell_dims)
         # check if supercell dimensions have successfully been passed (i.e., all are >0)
         if sum(1 for component in supercell_dims if component <= 0):
@@ -115,10 +128,3 @@ class MainWindow(QMainWindow):
             return False
         self.ui.openGLWidget.set_structure(crystal)
         return True
-
-    def toggle_bonds(self) -> None:
-        """Toggles the bonds on and off."""
-        if self.ui.openGLWidget.structure:
-            self.ui.openGLWidget.structure.toggle_bonds()
-            self.ui.openGLWidget.bonds = not self.ui.openGLWidget.bonds
-            self.ui.openGLWidget.update()
