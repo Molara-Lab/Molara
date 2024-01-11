@@ -58,6 +58,16 @@ class Crystal(Structure):
         """Volume of the unit cell."""
         self._volume_unitcell = float(np.linalg.det(np.array(self.basis_vectors)))
 
+    @property
+    def density_unitcell(self) -> float:
+        """Density of the unit cell."""
+        return self._density_unitcell
+
+    @density_unitcell.setter
+    def density_unitcell(self) -> None:
+        """Density of the unit cell."""
+        self._density_unitcell = float(self.molar_mass / self.volume_unitcell)
+
     def _fold_coords_into_unitcell(
         self,
         fractional_coords: ArrayLike,
