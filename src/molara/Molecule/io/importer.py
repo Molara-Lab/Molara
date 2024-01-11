@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import locale
-import re
 from abc import ABC, abstractmethod
 from fnmatch import fnmatch
 from pathlib import Path
@@ -10,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.basisset import Basisset
+from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
 from molara.Molecule.molecule import Molecule
 from molara.Molecule.molecules import Molecules
@@ -21,7 +20,6 @@ if TYPE_CHECKING:
     from os import PathLike
     from typing import Annotated, Any
 
-    from molara.Molecule.crystal import Crystal
     from molara.Molecule.crystals import Crystals
 
     try:
@@ -485,58 +483,3 @@ class GeneralImporter(MoleculesImporter):
     def load(self) -> Molecules | Crystals:
         """Reads the file in self.path and creates a Molecules object."""
         return self._importer.load()
-
-
-class PoscarImporter(CrystalImporter):
-    """Class for importing crystal structures from POSCAR files."""
-
-    def __init__(
-        self,
-        path: PathLike | str,
-        supercell_dims: Annotated[Sequence[int], 3],
-    ) -> None:
-        """instantiate."""
-        super().__init__(path)
-        self.supercell_dims = supercell_dims
-
-    def load(self) -> Crystal:
-        """Creates a Crystal object from a POSCAR file."""
-        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
-            lines = file.readlines()
-        header_length = 9
-        if not len(lines) >= header_length:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
-        species_, numbers_ = lines[5].strip(), lines[6]
-        mode, positions_ = lines[7].strip(), lines[8:]
-        try:
-            scale = float(scale_)
-            latvec_a = [float(component) for component in latvec_a_.split()[:3]]
-            latvec_b = [float(component) for component in latvec_b_.split()[:3]]
-            latvec_c = [float(component) for component in latvec_c_.split()[:3]]
-            species = re.split(r"\s+", species_)
-            numbers = [int(num) for num in numbers_.split()]
-            positions = [np.fromstring(pos, sep=" ").tolist()[:3] for pos in positions_]
-            basis_vectors = [latvec_a, latvec_b, latvec_c]
-        except ValueError as err:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg) from err
-        if len(numbers) != len(species) or len(positions) != sum(numbers):
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        if mode.lower() != "direct":
-            msg = "Currently, Molara can only process direct mode in POSCAR files."
-            raise NotImplementedError(msg)
-        atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-
-        atomic_numbers_extended = []
-        for num, an in zip(numbers, atomic_numbers):
-            atomic_numbers_extended.extend(num * [an])
-
-        return Crystal(
-            atomic_numbers_extended,
-            positions,
-            [scale * np.array(bv, dtype=float) for bv in basis_vectors],
-            self.supercell_dims,
-        )
