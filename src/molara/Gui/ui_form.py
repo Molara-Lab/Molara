@@ -52,7 +52,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from molara.MoleculeWidget.molecule_widget import MoleculeWidget
+from molara.Gui.molecule_widget import MoleculeWidget
 
 
 class Ui_MainWindow(object):

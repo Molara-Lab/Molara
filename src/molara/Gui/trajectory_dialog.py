@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
 from molara.Gui.ui_trajectory import Ui_Dialog
 
 if TYPE_CHECKING:
-    from molara.MainWindow.main_window import MainWindow
+    from molara.Gui.main_window import MainWindow
 
 __copyright__ = "Copyright 2024, Molara"
 

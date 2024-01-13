@@ -4,7 +4,7 @@
         "src/molara/Gui/form.ui",
         "src/molara/Gui/crystalstructure_dialog.ui",
         "src/molara/Gui/supercell_dialog.ui",
-        "src/molara/MoleculeWidget/MoleculeWidget.py",
+        "src/molara/Gui/MoleculeWidget.py",
         "src/molara/Molecule/Molecule.py",
         "src/molara/Gui/trajectory.ui",
         "src/molara/Gui/measuring_tool.ui"
