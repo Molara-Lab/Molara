@@ -135,32 +135,32 @@ class CrystalDialog(QDialog):
         self.ui.inputLatAngle_alpha.setValue(90.0)
         self.ui.inputLatAngle_beta.setValue(90.0)
         self.ui.inputLatAngle_gamma.setValue(120.0)
-        self.ui.inputLatAngle_alpha.setEnabled(False)  # noqa: FBT003
-        self.ui.inputLatAngle_beta.setEnabled(False)  # noqa: FBT003
-        self.ui.inputLatAngle_gamma.setEnabled(False)  # noqa: FBT003
+        self.ui.inputLatAngle_alpha.setEnabled(arg__1=False)
+        self.ui.inputLatAngle_beta.setEnabled(arg__1=False)
+        self.ui.inputLatAngle_gamma.setEnabled(arg__1=False)
 
     def angles_monoclinic(self) -> None:
         """Set lattice angles to 90°, 90°, and <arbitrary> for a monoclinic cell."""
         self.ui.inputLatAngle_alpha.setValue(90.0)
         self.ui.inputLatAngle_gamma.setValue(90.0)
-        self.ui.inputLatAngle_alpha.setEnabled(False)  # noqa: FBT003
-        self.ui.inputLatAngle_beta.setEnabled(True)  # noqa: FBT003
-        self.ui.inputLatAngle_gamma.setEnabled(False)  # noqa: FBT003
+        self.ui.inputLatAngle_alpha.setEnabled(arg__1=False)
+        self.ui.inputLatAngle_beta.setEnabled(arg__1=True)
+        self.ui.inputLatAngle_gamma.setEnabled(arg__1=False)
 
     def angles_orthorhombic(self) -> None:
         """Set lattice angles to 90°, 90°, and 90° for an orthorhombic cell."""
         self.ui.inputLatAngle_alpha.setValue(90.0)
         self.ui.inputLatAngle_beta.setValue(90.0)
         self.ui.inputLatAngle_gamma.setValue(90.0)
-        self.ui.inputLatAngle_alpha.setEnabled(False)  # noqa: FBT003
-        self.ui.inputLatAngle_beta.setEnabled(False)  # noqa: FBT003
-        self.ui.inputLatAngle_gamma.setEnabled(False)  # noqa: FBT003
+        self.ui.inputLatAngle_alpha.setEnabled(arg__1=False)
+        self.ui.inputLatAngle_beta.setEnabled(arg__1=False)
+        self.ui.inputLatAngle_gamma.setEnabled(arg__1=False)
 
     def angles_triclinic(self) -> None:
         """Enable lattice inputs for a triclinic cell."""
-        self.ui.inputLatAngle_alpha.setEnabled(True)  # noqa: FBT003
-        self.ui.inputLatAngle_beta.setEnabled(True)  # noqa: FBT003
-        self.ui.inputLatAngle_gamma.setEnabled(True)  # noqa: FBT003
+        self.ui.inputLatAngle_alpha.setEnabled(arg__1=True)
+        self.ui.inputLatAngle_beta.setEnabled(arg__1=True)
+        self.ui.inputLatAngle_gamma.setEnabled(arg__1=True)
 
     def enable_lattice_constants(self, ids: Sequence[int]) -> None:
         """Enable or disable inputs for lattice constants, depending on crystal system."""
