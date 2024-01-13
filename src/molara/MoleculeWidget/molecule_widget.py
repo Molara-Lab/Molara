@@ -32,7 +32,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.measurement_dialog = MeasurementDialog()
+        self.measurement_dialog = MeasurementDialog(parent)
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
