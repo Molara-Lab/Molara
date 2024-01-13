@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from unittest import TestCase
 
+from molara.Molecule.atom import elements
 from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer import PoscarImporter
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_almost_equal, assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -81,3 +82,11 @@ class TestCrystal(TestCase):
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
+
+    def test_properties(self) -> None:
+        """Test the properties of the crystal."""
+        assert self.crystal.molar_mass == float(
+            (elements[5]["atomic_weight"] + elements[7]["atomic_weight"]) * 2 * 7 * 4,
+        )
+        assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
+        assert_almost_equal(self.crystal.density_unitcell, 3.6229802861472007, decimal=5)
