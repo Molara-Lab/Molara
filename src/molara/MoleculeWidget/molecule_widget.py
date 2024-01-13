@@ -18,6 +18,7 @@ from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
+    from PySide6.QtWidgets import QMainWindow
 
     from molara.Molecule.structure import Structure
 
@@ -27,7 +28,7 @@ __copyright__ = "Copyright 2024, Molara"
 class MoleculeWidget(QOpenGLWidget):
     """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
 
-    def __init__(self, parent: QOpenGLWidget) -> None:
+    def __init__(self, parent: QMainWindow) -> None:
         """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
