@@ -5,6 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from scipy import constants
+
+from molara.Molecule.atom import elements
 
 from .structure import Structure
 
@@ -47,6 +50,9 @@ class Crystal(Structure):
         #     supercell_dims = [1, 1, 1]
         #     SupercellDialog.get_supercell_dims(supercell_dims)
         self.make_supercell(supercell_dims)
+        self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
+        self.volume_unitcell = float(np.linalg.det(np.array(self.basis_vectors)))
+        self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
     def _fold_coords_into_unitcell(
         self,
