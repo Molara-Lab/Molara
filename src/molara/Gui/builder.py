@@ -95,7 +95,7 @@ class BuilderDialog(QDialog):
         """Initializes a molecule and adds the first atom to it."""
         element = self.ui._0Element.text().capitalize()
         at_chrg = element_symbol_to_atomic_number(element)
-        at_chrg_check = True if at_chrg is not None else False 
+        at_chrg_check = self._check_element(at_chrg)
 
         init_xyz = np.zeros([1, 3])
         self.parent().mols.add_molecule(Molecule([at_chrg], init_xyz,draw_bonds=False))
@@ -122,7 +122,7 @@ class BuilderDialog(QDialog):
         at_chrg = element_symbol_to_atomic_number(element)
         dist = float(self.ui._1BondDistance.text())
 
-        at_chrg_check = True if at_chrg is not None else False 
+        at_chrg_check = self._check_element(at_chrg)
         boundary_check = self._check_value(dist)
 
         if boundary_check and at_chrg_check:
@@ -157,8 +157,8 @@ class BuilderDialog(QDialog):
         angle = np.deg2rad(float(self.ui._2BondAngle.text()))
 
         boundary_check = self._check_value(dist,angle)
-        at_chrg_check = True if at_chrg is not None else False 
         atom_selection_check = self._check_selected_atoms(at1_num,at2_num)
+        at_chrg_check = self._check_element(at_chrg)
 
         if boundary_check and atom_selection_check and at_chrg_check:
 
@@ -197,7 +197,7 @@ class BuilderDialog(QDialog):
         boundary_check = self._check_value(dist,angle)
 
         atom_selection_check = self._check_selected_atoms(at1_num,at2_num,at3_num)
-        at_chrg_check = True if at_chrg is not None else False 
+        at_chrg_check = self._check_element(at_chrg)
 
         if boundary_check and atom_selection_check and at_chrg_check:
 
@@ -216,7 +216,6 @@ class BuilderDialog(QDialog):
         
             mol.add_atom(at_chrg, np.squeeze(coord))
 
-            key = str(self.n_atoms+1)
             values = [element,str(dist),str(np.rad2deg(angle)),str(np.rad2deg(dihedral))]
             atoms = [at1_num,at2_num,at3_num]
 
@@ -240,27 +239,40 @@ class BuilderDialog(QDialog):
         args:float:Parameter to check whether threshold is reached.
         threshold:Threshold to be reached.
         """
+        error_msg = "Parameter values are not valid."
         vals_above_threshold = True 
 
         for arg in args: 
             vals_above_threshold = arg>threshold
             if not(vals_above_threshold):
+                self.ui.ErrorMessageBrowser.setText(error_msg)
+
                 break
 
         return vals_above_threshold
     
-    def _check_selected_atoms(*selected_atoms:int)->bool:
+    def _check_selected_atoms(self,*selected_atoms:int)->bool:
         """Checks if all necessary atoms are selected.
         
         params:
         selected_atoms:int:Selected Atoms to check if not -1"""
+        error_msg = "Not enough atoms selected."
         all_selected = True
         for idx in selected_atoms:
             if idx == -1:
-                all_selected = False 
-                break 
+                all_selected = False
+                self.ui.ErrorMessageBrowser.setText(error_msg)
+                break
 
         return all_selected
+    
+    def _check_element(self,at_chrg)->bool:
+        error_msg = "This is not an element."
+        is_element = True 
+        if at_chrg is None:
+            is_element = False 
+            self.ui.ErrorMessageBrowser.setText(error_msg)
+        return is_element
 
     def _extend_z_matrix(self,n_atoms:int):
         self.ui.tableWidget.setRowCount(n_atoms)
