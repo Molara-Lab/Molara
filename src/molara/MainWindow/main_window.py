@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
+
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
@@ -30,6 +31,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
         self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
+
         self.set_action_triggers()
 
     def set_action_triggers(self) -> None:
@@ -49,6 +51,9 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show,
         )
 
+        self.ui.actionBuilder.triggered.connect(
+            self.ui.openGLWidget.show_builder_dialog,
+                                                )
         # Tools
         self.ui.actionMeasure.triggered.connect(
             self.ui.openGLWidget.show_measurement_dialog,
@@ -57,6 +62,7 @@ class MainWindow(QMainWindow):
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
+
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""

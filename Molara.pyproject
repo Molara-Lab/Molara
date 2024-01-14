@@ -8,8 +8,6 @@
         "src/molara/Molecule/Molecule.py",
         "src/molara/Gui/trajectory.ui",
         "src/molara/Gui/measuring_tool.ui",
-        "src/molara/Gui/builder.h",
-        "src/molara/Gui/builder.cpp",
         "src/molara/Gui/builder.ui"
     ]
 }

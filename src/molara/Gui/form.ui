@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -69,6 +69,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionMeasure"/>
+    <addaction name="actionBuilder"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -154,6 +155,11 @@
   <action name="actionSupercell">
    <property name="text">
     <string>Supercell</string>
+   </property>
+  </action>
+  <action name="actionBuilder">
+   <property name="text">
+    <string>Builder</string>
    </property>
   </action>
  </widget>

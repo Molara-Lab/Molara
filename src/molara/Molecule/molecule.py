@@ -6,6 +6,7 @@ import numpy as np
 
 from molara.Molecule.mos import Mos
 from molara.Molecule.structure import Structure
+from .atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -32,13 +33,15 @@ class Molecule(Structure):
         if dummy:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
-        self.atoms = []
+        self.atoms:list[Atom] = []
         self.mos = Mos()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.gen_energy_information(header)
         self.aos: list = []
         super().__init__(atomic_numbers, coordinates, draw_bonds)
+
+        
 
     def gen_energy_information(self, string: str | None) -> None:
         """Reads the energy from the second line."""

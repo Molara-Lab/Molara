@@ -91,6 +91,8 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
+        self.drawer = Drawer(self.atoms, self.bonded_pairs,draw_bonds=True)        
+        self.atomic_numbers = np.append(self.atomic_numbers,atomic_number)
 
     def remove_atom(self, index: int) -> None:
         """Removes an atom from the structure."""

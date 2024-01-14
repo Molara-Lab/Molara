@@ -154,7 +154,7 @@ def element_symbol_to_atomic_number(symbol: str) -> int:
         "Ts": 117,
         "Og": 118,
     }
-    return symbol_to_atomic_number[symbol]
+    return symbol_to_atomic_number.get(symbol,None)
 
 
 elements: dict[int, dict[str, Any]] = {
