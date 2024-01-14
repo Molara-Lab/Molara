@@ -92,8 +92,10 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
+        self.molar_mass += atom.atomic_mass
 
     def remove_atom(self, index: int) -> None:
         """Removes an atom from the structure."""
+        self.molar_mass -= self.atoms[index].atomic_mass
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
