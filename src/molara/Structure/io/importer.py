@@ -8,11 +8,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.molecule import Molecule
-from molara.Molecule.molecules import Molecules
-from molara.Molecule.mos import Mos
+from molara.Structure.atom import element_symbol_to_atomic_number
+from molara.Structure.crystal import Crystal
+from molara.Structure.molecule import Molecule
+from molara.Structure.molecules import Molecules
+from molara.Structure.mos import Mos
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence

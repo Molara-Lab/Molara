@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from molara.Molecule.structures import Structures
+from molara.Structure.structures import Structures
 
 if TYPE_CHECKING:
-    from molara.Molecule.molecule import Molecule
+    from molara.Structure.molecule import Molecule
 
 __copyright__ = "Copyright 2024, Molara"
 

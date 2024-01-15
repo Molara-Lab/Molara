@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
     from PySide6.QtWidgets import QMainWindow
 
-    from molara.Molecule.structure import Structure
+    from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 

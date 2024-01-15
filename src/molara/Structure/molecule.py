@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from molara.Molecule.mos import Mos
-from molara.Molecule.structure import Structure
+from molara.Structure.mos import Mos
+from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 

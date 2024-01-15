@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy import constants
 
-from molara.Molecule.atom import elements
+from molara.Structure.atom import elements
 
 from .structure import Structure
 
