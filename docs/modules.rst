@@ -4,7 +4,7 @@ Molara
 .. toctree::
    :maxdepth: 4
 
-   MoleculeWidget
+   StructureWidget
    Rendering
    molara
    setup

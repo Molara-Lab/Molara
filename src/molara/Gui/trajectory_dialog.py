@@ -97,7 +97,7 @@ class TrajectoryDialog(QDialog):
     def slide_molecule(self) -> None:
         """Updates the molecule and energy plot in dependence of the slider position."""
         index = self.ui.verticalSlider.sliderPosition()
-        self.parent().ui.openGLWidget.delete_molecule()
+        self.parent().ui.openGLWidget.delete_structure()
         self.parent().ui.openGLWidget.set_structure(
             self.parent().mols.get_index_mol(index),
         )
@@ -108,7 +108,7 @@ class TrajectoryDialog(QDialog):
 
         params:
         """
-        self.parent().ui.openGLWidget.delete_molecule()
+        self.parent().ui.openGLWidget.delete_structure()
 
         self.update_energy_plot()
 

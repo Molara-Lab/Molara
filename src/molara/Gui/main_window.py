@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.ui.actionReset_View.triggered.connect(self.ui.openGLWidget.reset_view)
         self.ui.actionDraw_Axes.triggered.connect(self.ui.openGLWidget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
-            self.ui.openGLWidget.center_molecule,
+            self.ui.openGLWidget.center_structure,
         )
         self.ui.actionToggle_Bonds.triggered.connect(self.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(

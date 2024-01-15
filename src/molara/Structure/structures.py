@@ -1,4 +1,4 @@
-"""A Molecules Class to be able to work with several molecules."""
+"""A Structures Class to be able to work with several structures."""
 from __future__ import annotations
 
 from molara.Structure.structure import Structure
