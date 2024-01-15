@@ -37,6 +37,7 @@ class Structure:
             if atomic_number not in self.unique_atomic_numbers:
                 self.unique_atomic_numbers.append(atomic_number)
 
+        self.molar_mass: float = np.sum([atom.atomic_mass for atom in self.atoms])
         self.bonded_pairs = self.calculate_bonds()
         self.draw_bonds = draw_bonds and (self.bonded_pairs[0, 0] != -1)
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
@@ -91,8 +92,10 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
+        self.molar_mass += atom.atomic_mass
 
     def remove_atom(self, index: int) -> None:
         """Removes an atom from the structure."""
+        self.molar_mass -= self.atoms[index].atomic_mass
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
