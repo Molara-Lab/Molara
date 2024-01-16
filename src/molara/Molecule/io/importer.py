@@ -15,9 +15,9 @@ from molara.Molecule.molecules import Molecules
 from molara.Molecule.mos import Mos
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Mapping
     from os import PathLike
-    from typing import Annotated, Any
+    from typing import Any
 
     from molara.Molecule.crystal import Crystal
     from molara.Molecule.crystals import Crystals
@@ -457,7 +457,6 @@ class GeneralImporter(MoleculesImporter):
     def __init__(
         self,
         path: PathLike | str,
-        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
     ) -> None:
         """Tries to determine the file format and calls the correct importer."""
         super().__init__(path)
@@ -469,7 +468,7 @@ class GeneralImporter(MoleculesImporter):
             if suffix:
                 self._importer = self._IMPORTER_BY_SUFFIX[suffix](path)
             elif fnmatch(fname, "*POSCAR*") or fnmatch(fname, "*CONTCAR*"):
-                self._importer = PoscarImporter(path, supercell_dims)
+                self._importer = PoscarImporter(path)
             elif fnmatch(fname, "*.json*") or fnmatch(fname, "*.mson*"):
                 self._importer = PymatgenImporter(path)
         except KeyError:
