@@ -18,6 +18,7 @@ from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
+    from PySide6.QtWidgets import QMainWindow
 
     from molara.Molecule.structure import Structure
 
@@ -27,12 +28,12 @@ __copyright__ = "Copyright 2024, Molara"
 class MoleculeWidget(QOpenGLWidget):
     """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
 
-    def __init__(self, parent: QOpenGLWidget) -> None:
+    def __init__(self, parent: QMainWindow) -> None:
         """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.measurement_dialog = MeasurementDialog()
+        self.measurement_dialog = MeasurementDialog(parent)
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
@@ -255,6 +256,7 @@ class MoleculeWidget(QOpenGLWidget):
         :param event: The mouse event.
         :return:
         """
+        self.makeCurrent()
         click_position = np.array(
             [
                 (event.x() * 2 - self.width()) / self.width(),

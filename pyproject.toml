@@ -79,8 +79,6 @@ select = ["ALL"]
 ignore = [
   "ANN101", # Missing type annotation for `self` in method
   "ERA001", # Found commented-out code
-  "F403",   # {name} used but not defined
-  "F405",   # {name} may be undefined, or defined from star imports
   "FBT001", # Boolean-typed positional argument in function definition
   "FBT002", # Boolean default positional argument in function definition
   "INP001", # File {name} is part or an implicit namespace package. Add an `__init__.py`.
