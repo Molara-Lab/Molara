@@ -12,6 +12,7 @@ from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
+from molara.Molecule.io.exporter import GeneralExporter
 from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
 
 if TYPE_CHECKING:
@@ -36,6 +37,7 @@ class MainWindow(QMainWindow):
         """Connect Triggers of menu actions with the corresponding routines."""
         # Start
         self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
+        self.ui.actionExport.triggered.connect(self.export_structure)
         self.ui.quit.triggered.connect(self.close)
 
         # View
@@ -83,6 +85,19 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
+
+    def export_structure(self) -> None:
+        """Save structure to file."""
+        if not self.ui.openGLWidget.structure:
+            return
+        filename = QFileDialog.getSaveFileName(
+            self,
+            "Export structure to file",
+            ".",
+            "*",
+        )
+        exporter = GeneralExporter(filename[0])
+        exporter.write_structure(self.ui.openGLWidget.structure)
 
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
