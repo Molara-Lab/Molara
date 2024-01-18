@@ -10,7 +10,6 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
-
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Molecule.crystal import Crystal
 from molara.Molecule.io.importer import GeneralImporter, PoscarImporter

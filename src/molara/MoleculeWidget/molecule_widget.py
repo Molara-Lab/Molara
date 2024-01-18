@@ -10,9 +10,8 @@ from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.builder import BuilderDialog
-
+from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
@@ -34,7 +33,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.measurement_dialog = MeasurementDialog()    
+        self.measurement_dialog = MeasurementDialog()
 
         self.renderer = Renderer()
         self.molecule_is_set = False
@@ -135,7 +134,6 @@ class MoleculeWidget(QOpenGLWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         """Starts the rotation or translation of the molecule."""
-            
         if (
             event.button() == Qt.MouseButton.LeftButton
             and event.x() in range(self.width())
@@ -144,7 +142,7 @@ class MoleculeWidget(QOpenGLWidget):
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
                 if self.measurement_dialog.isVisible():
                     self.update_measurement_selected_atoms(event)
-                    
+
                 if self.builder_dialog.isVisible():
                     self.update_builder_selected_atoms(event)
 
@@ -263,7 +261,7 @@ class MoleculeWidget(QOpenGLWidget):
         """Show the builder dialog."""
         self.builder_dialog = BuilderDialog(self)
         self.builder_dialog.show()
-        
+
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.
 
@@ -374,8 +372,7 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
 
-    def clear_builder_selected_atoms(self):
+    def clear_builder_selected_atoms(self)->None:
         """Resets the selected spheres builder spheres."""
         self.builder_selected_spheres: list = [-1] * 3
-        return
 

@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from molara.Molecule.mos import Mos
 from molara.Molecule.structure import Structure
-from .atom import Atom
+
+if TYPE_CHECKING:
+    from molara.Molecule.atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -41,7 +45,7 @@ class Molecule(Structure):
         self.aos: list = []
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
-        
+
 
     def gen_energy_information(self, string: str | None) -> None:
         """Reads the energy from the second line."""

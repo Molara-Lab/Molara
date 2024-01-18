@@ -40,6 +40,7 @@ class Structure:
         self.bonded_pairs = self.calculate_bonds()
         self.draw_bonds = draw_bonds and (self.bonded_pairs[0, 0] != -1)
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
+        self.n_at = len(self.atoms)
 
     def center_coordinates(self) -> None:
         """Centers the structure around the center of mass."""
@@ -91,10 +92,22 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
-        self.drawer = Drawer(self.atoms, self.bonded_pairs,draw_bonds=True)        
+        self.drawer = Drawer(self.atoms, self.bonded_pairs,draw_bonds=True)
         self.atomic_numbers = np.append(self.atomic_numbers,atomic_number)
+        self.n_at += 1
 
     def remove_atom(self, index: int) -> None:
-        """Removes an atom from the structure."""
+        """Removes an atom from the structure.
+        
+        :param:index """
+        draw_bonds = True
         self.atoms.pop(index)
+
         self.bonded_pairs = self.calculate_bonds()
+
+        if self.n_at < 3:
+            draw_bonds = False 
+
+        self.drawer = Drawer(self.atoms, self.bonded_pairs,draw_bonds=draw_bonds)
+        self.atomic_numbers = np.delete(self.atomic_numbers,index)
+        self.n_at -= 1
