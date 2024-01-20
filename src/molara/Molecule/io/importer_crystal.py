@@ -82,12 +82,15 @@ class PoscarImporter(Importer):
     def load(self) -> Crystals:
         """Imports a file and returns the Crystal."""
         try:
+            from monty.io import zopen
             from pymatgen.core import Structure
         except ImportError:
             Structure = None  # noqa: N806
 
         if Structure is not None:
-            structure = Structure.from_file(self.path)
+            with zopen(self.path, "rt", errors="replace") as f:
+                contents = f.read()
+            structure = Structure.from_str(contents, fmt="poscar")
             crystal = Crystal.from_pymatgen(structure)
         else:
             with open(self.path) as file:
