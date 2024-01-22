@@ -126,9 +126,9 @@ class MainWindow(QMainWindow):
         """Reads poscar file and shows the first structure in this file."""
         filename = QFileDialog.getOpenFileName(
             self,
-            caption = "Open POSCAR file",
-            dir = ".",
-            filter = "POSCAR Files (*)",
+            caption="Open POSCAR file",
+            dir=".",
+            filter="POSCAR Files (*)",
         )
 
         supercell_dims = [1, 1, 1]
