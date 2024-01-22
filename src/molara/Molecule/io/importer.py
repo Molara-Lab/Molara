@@ -201,7 +201,7 @@ class MoldenImporter(MoleculesImporter):
                 i += 1
                 while "[" not in lines[i]:
                     i += 1
-                basisset = self.get_basisset(lines[i_start:i])
+                shells, exponents, coefficients = self.get_basisset(lines[i_start:i])
             for sph_key in spherical_harmonics:
                 if sph_key in lines[i]:
                     msg = "Spherical Harmonics not implemented."
@@ -226,12 +226,12 @@ class MoldenImporter(MoleculesImporter):
         )
         molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
         molecules.mols[0].mos.coefficients = np.array(mo_coefficients)
-        for i, atom in enumerate(basisset):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
+        for i in range(len(shells)):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_orbitals(
-                atom["shells"],
-                atom["exponents"],
-                atom["coefficients"],
+                shells[i],
+                exponents[i],
+                coefficients[i],
                 molecules.mols[0].atoms[i].position,
             )
             molecules.mols[0].aos.extend(
@@ -283,54 +283,49 @@ class MoldenImporter(MoleculesImporter):
         i += 2
         coefficients = []
         exponents = []
-        shells = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
-        basisset: list = [
-            {
-                "shells": [],
-                "exponents": [],
-                "coefficients": [],
-            },
-        ]
-        new_basisset_dict: dict = {
-            "shells": [],
-            "exponents": [],
-            "coefficients": [],
-        }
-        words = lines[i].split()
-        while i < len(lines):
-            if not words:  # check if end of gto block
-                while not words:
-                    i += 1
-                    if i == len(lines):
-                        break
-                    words = lines[i].split()
-                if i == len(lines):
-                    break
-                basisset.append(new_basisset_dict)
-                i += 1  # skip line after empty line
-                words = lines[i].split()
-            if words[0] == "sp":
-                msg = "sp type not implemented."
-                raise FileFormatError(msg)
-            if words[0] in shells:
-                basisset[-1]["shells"].append(words[0])
-            i += 1
-            words = lines[i].split()
-            while words and words[0] not in shells:
-                if "D" in words[0]:
-                    words[0] = words[0].replace("D", "E")
-                if "D" in words[1]:
-                    words[1] = words[1].replace("D", "E")
-                exponents.append(float(words[0]))
-                coefficients.append(float(words[1]))
-                i += 1
-                words = lines[i].split()
-            basisset[-1]["exponents"].append(exponents)
-            basisset[-1]["coefficients"].append(coefficients)
-            exponents = []
-            coefficients = []
-
-        return basisset
+        shells = []
+        shells_check = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
+        shells_all = []
+        coefficients_all = []
+        coefficients_shell = []
+        exponents_all = []
+        exponents_shell = []
+        atom_idx = 2
+        first = True
+        for line in lines[2:-1]:
+            words = line.split()
+            if not words:
+                exponents_shell.append(exponents)
+                coefficients_shell.append(coefficients)
+                exponents = []
+                coefficients = []
+                shells_all.append(shells)
+                shells = []
+                exponents_all.append(exponents_shell)
+                exponents_shell = []
+                coefficients_all.append(coefficients_shell)
+                coefficients_shell = []
+                first = True
+                continue
+            if words[0] in shells_check:
+                shells.append(words[0])
+                if not first:
+                    exponents_shell.append(exponents)
+                    coefficients_shell.append(coefficients)
+                    exponents = []
+                    coefficients = []
+                first = False
+                continue
+            if words[0] == f'{atom_idx}':
+                atom_idx += 1
+                continue
+            if "D" in words[0]:
+                words[0] = words[0].replace("D", "E")
+            if "D" in words[1]:
+                words[1] = words[1].replace("D", "E")
+            exponents.append(float(words[0]))
+            coefficients.append(float(words[1]))
+        return shells_all, exponents_all, coefficients_all
 
     def get_mo_coefficients(
         self,
