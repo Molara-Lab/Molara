@@ -70,6 +70,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionMeasure"/>
+    <addaction name="actionDisplay_MOs"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -160,6 +161,11 @@
   <action name="actionExport">
    <property name="text">
     <string>Export</string>
+   </property>
+  </action>
+  <action name="actionDisplay_MOs">
+   <property name="text">
+    <string>Display MOs</string>
    </property>
   </action>
  </widget>
