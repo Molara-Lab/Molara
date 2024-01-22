@@ -53,7 +53,10 @@ class MainWindow(QMainWindow):
 
         # Tools
         self.ui.actionMeasure.triggered.connect(
-            self.ui.openGLWidget.show_measurement_dialog,
+            self.ui.openGLWidget.show_measurement_dialog
+        )
+        self.ui.actionDisplay_MOs.triggered.connect(
+            self.ui.openGLWidget.show_mos_dialog,
         )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)

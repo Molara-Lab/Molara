@@ -11,6 +11,7 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
+from molara.Gui.mos_dialog import MOsDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
@@ -34,6 +35,7 @@ class MoleculeWidget(QOpenGLWidget):
         QOpenGLWidget.__init__(self, parent)
 
         self.measurement_dialog = MeasurementDialog(parent)
+        self.display_mos_dialog = MOsDialog(parent)
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
@@ -249,6 +251,11 @@ class MoleculeWidget(QOpenGLWidget):
         if self.molecule_is_set:
             self.measurement_dialog.ini_labels()
             self.measurement_dialog.show()
+
+    def show_mos_dialog(self) -> None:
+        """Show the measurement dialog."""
+        if self.molecule_is_set:
+            self.display_mos_dialog.show()
 
     def update_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.
