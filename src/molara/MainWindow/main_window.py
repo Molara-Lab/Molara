@@ -126,22 +126,22 @@ class MainWindow(QMainWindow):
         """Reads poscar file and shows the first structure in this file."""
         filename = QFileDialog.getOpenFileName(
             self,
-            "Open POSCAR file",
-            "/home",
-            "POSCAR Files (*)",
+            caption = "Open POSCAR file",
+            dir = ".",
+            filter = "POSCAR Files (*)",
         )
 
         supercell_dims = [1, 1, 1]
 
         importer = PoscarImporter(filename[0], supercell_dims)
-        crystal = importer.load()
+        crystals = importer.load()
 
-        if not isinstance(crystal, Crystals):
-            crystal = crystal.get_current_mol()
+        if not isinstance(crystals, Crystals):
+            crystal = crystals.get_current_mol()
             error_message = crystal[1]
             msg_box = QMessageBox()
             msg_box.setText(error_message)
             msg_box.exec()
             return False
-        self.ui.openGLWidget.set_structure(crystal)
+        self.ui.openGLWidget.set_structure(struct=crystals.get_current_mol())
         return True
