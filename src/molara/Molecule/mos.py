@@ -73,10 +73,10 @@ class Mos:
         while i < len(mo_coefficients):
             shell = sum(aos[i].ijk)
             ao_values = calculate_aos(
-                electron_position,
-                aos[i].position,
-                aos[i].exponents,
-                aos[i].coefficients,
+                np.array(electron_position, dtype=np.float64),
+                np.array(aos[i].position, dtype=np.float64),
+                np.array(aos[i].exponents, dtype=np.float64),
+                np.array(aos[i].coefficients, dtype=np.float64),
                 shell,
             )
             if shell == s:
