@@ -255,7 +255,10 @@ class MoleculeWidget(QOpenGLWidget):
     def show_mos_dialog(self) -> None:
         """Show the measurement dialog."""
         if self.molecule_is_set:
-            self.display_mos_dialog.show()
+            if self.display_mos_dialog.check_if_mos():
+                self.display_mos_dialog.show()
+            else:
+                print("No MOs available.")
 
     def update_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -60,6 +60,8 @@ class Ui_MainWindow(object):
         self.actionSupercell.setObjectName(u"actionSupercell")
         self.actionExport = QAction(MainWindow)
         self.actionExport.setObjectName(u"actionExport")
+        self.actionDisplay_MOs = QAction(MainWindow)
+        self.actionDisplay_MOs.setObjectName(u"actionDisplay_MOs")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -109,6 +111,7 @@ class Ui_MainWindow(object):
         self.menuCrystal.addAction(self.actionCreate_Lattice)
         self.menuCrystal.addAction(self.actionSupercell)
         self.menuTools.addAction(self.actionMeasure)
+        self.menuTools.addAction(self.actionDisplay_MOs)
 
         self.retranslateUi(MainWindow)
 
@@ -134,6 +137,7 @@ class Ui_MainWindow(object):
         self.actionMeasure.setText(QCoreApplication.translate("MainWindow", u"Measure", None))
         self.actionSupercell.setText(QCoreApplication.translate("MainWindow", u"Supercell", None))
         self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export", None))
+        self.actionDisplay_MOs.setText(QCoreApplication.translate("MainWindow", u"Display MOs", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
