@@ -14,6 +14,7 @@ def calculate_aos(
     double[:] atom_coords,
     double[:] exponents,
     double[:] coefficients,
+    double[:] norms,
     int orbital):
     cdef double sqr3 = 1.73205080756887729
     cdef double sqr5 = 2.236067977499789696
@@ -55,23 +56,21 @@ def calculate_aos(
     cdef double[:] uao
     cdef double[3] relative_coords
     cdef double rr, r2, u, dx, dy, dz, dx2, dy2, dz2, dxyz
-    ngto = exponents.shape[0]
+    cdef int ngto = exponents.shape[0]
+    cdef int i, ic
     for i in range(3):
         relative_coords[i] = electron_coords[i] - atom_coords[i]
-    rr = (relative_coords[0] * relative_coords[0] +
-          relative_coords[1] * relative_coords[1] +
-          relative_coords[2] * relative_coords[2])**0.5
-    r2 = rr * rr
+    r2 = (relative_coords[0]**2 +
+          relative_coords[1]**2 +
+          relative_coords[2]**2)
+    u = 0
+    for ic in range(ngto):
+        u += norms[ic] * coefficients[ic] * np.exp(-exponents[ic] * r2)
     if orbital == s:
         uao = np.zeros(1)
-        for ic in range(ngto):
-            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
-            uao[0] = uao[0] + u
+        uao[0] = u
     elif orbital == p:
         uao = np.zeros(3)
-        u = 0
-        for ic in range(ngto):
-            u += coefficients[ic] * np.exp(-exponents[ic] * r2)
         dx = relative_coords[0]
         dy = relative_coords[1]
         dz = relative_coords[2]
@@ -80,9 +79,6 @@ def calculate_aos(
         uao[2] = dz * u
     elif orbital == d:
         uao = np.zeros(6)
-        u = 0
-        for ic in range(ngto):
-            u += coefficients[ic] * np.exp(-exponents[ic] * r2)
         dx = relative_coords[0]
         dx2 = dx * dx
         dy = relative_coords[1]
@@ -98,9 +94,6 @@ def calculate_aos(
         uao[5] = uao[5] + dy * dz * u
     elif orbital == f:
         uao = np.zeros(10)
-        u = 0
-        for ic in range(ngto):
-            u += coefficients[ic] * np.exp(-exponents[ic] * r2)
         dx = relative_coords[0]
         dx2 = dx * dx
         dy = relative_coords[1]
@@ -122,9 +115,6 @@ def calculate_aos(
         uao[fxyz] = uao[fxyz] + dxyz * u
     elif orbital == g:
         uao = np.zeros(15)
-        u = 0
-        for ic in range(ngto):
-            u += coefficients[ic] * np.exp(-exponents[ic] * r2)
         dx = relative_coords[0]
         dx2 = dx * dx
         dy = relative_coords[1]

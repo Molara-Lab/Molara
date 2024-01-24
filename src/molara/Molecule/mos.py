@@ -59,7 +59,7 @@ class Mos:
 
         :param index: index of the mo
         :param aos: list of all the aos
-        :param electron_position: position of the electron
+        :param electron_position: position of the electron in angstrom
         :return: value of the mo
         """
         s = 0
@@ -73,10 +73,11 @@ class Mos:
         while i < len(mo_coefficients):
             shell = sum(aos[i].ijk)
             ao_values = calculate_aos(
-                np.array(electron_position, dtype=np.float64),
-                np.array(aos[i].position, dtype=np.float64),
+                np.array(electron_position, dtype=np.float64) * 1.889726124565062,
+                np.array(aos[i].position, dtype=np.float64) * 1.889726124565062,
                 np.array(aos[i].exponents, dtype=np.float64),
                 np.array(aos[i].coefficients, dtype=np.float64),
+                np.array(aos[i].norms, dtype=np.float64),
                 shell,
             )
             if shell == s:

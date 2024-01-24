@@ -38,6 +38,7 @@ class TestAos(TestCase):
                         self.nuclear_position,
                         self.basisset.orbitals[orb].exponents,
                         self.basisset.orbitals[orb].coefficients,
+                        self.basisset.orbitals[orb].norms,
                         0,
                     ),
                 )
@@ -48,6 +49,7 @@ class TestAos(TestCase):
                         self.nuclear_position,
                         self.basisset.orbitals[orb].exponents,
                         self.basisset.orbitals[orb].coefficients,
+                        self.basisset.orbitals[orb].norms,
                         1,
                     ),
                 )
