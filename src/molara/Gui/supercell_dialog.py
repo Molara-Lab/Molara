@@ -35,7 +35,7 @@ class SupercellDialog(QDialog):
         # by a list that is passed by a Crystal object. The entries of this
         # list are changed in the accept routine, thus changing the original
         # list in the crystal object.
-        self.supercell_dims = [1, 1, 1]
+        self.supercell_dims: intvec3 = [1, 1, 1]
 
     @staticmethod
     def get_supercell_dims(supercell_dims: intvec3) -> bool:
@@ -60,7 +60,5 @@ class SupercellDialog(QDialog):
             self.ui.inputSupercell_b.value(),
             self.ui.inputSupercell_c.value(),
         )
-        self.supercell_dims[0] = dim_a
-        self.supercell_dims[1] = dim_b
-        self.supercell_dims[2] = dim_c
+        self.supercell_dims = [dim_a, dim_b, dim_c]
         self.close()
