@@ -21,8 +21,10 @@ from OpenGL.GL import (
     glDeleteBuffers,
     glDeleteVertexArrays,
     glDrawElementsInstanced,
+    glDrawArraysInstanced,
     glGetUniformLocation,
     glUniform3fv,
+    glGetError,
     glUniformMatrix4fv,
 )
 
@@ -45,6 +47,7 @@ class Renderer:
         self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
         self.spheres: list[dict] = []
         self.cylinders: list[dict] = []
+        self.polygons: list[dict] = []
         self.shader: GLuint = 0
 
     def set_shader(self, shader: GLuint) -> None:
@@ -54,6 +57,69 @@ class Renderer:
         :type shader: pyopengl program
         """
         self.shader = shader
+
+    def draw_polygon(
+        self,
+        vertices: np.ndarray,
+        colors: np.ndarray,
+    ):
+        """Draws one polygon.
+
+        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
+        :param indices: Gives the connectivity of the vertices.
+        :param colors: Colors of the vertices.
+        :return: Returns the index of the polygon in the list of polygons."""
+        n_instances = 1
+        model_matrices = np.array([np.identity(4, dtype=np.float32)]).reshape((1, 4, 4))
+        polygon = {
+            "vao": 0,
+            "n_instances": n_instances,
+            "n_vertices": len(vertices) // 6,
+            "buffers": [],
+        }
+        polygon["vao"], polygon["buffers"] = setup_vao(
+            vertices,
+            None,
+            model_matrices,
+            colors,
+        )
+
+        # get index of new polygon instances in list
+        i_polygon = -1
+        if len(self.polygons) != 0:
+            for i, check_polygon in enumerate(self.polygons):
+                if check_polygon["vao"] == 0:
+                    i_polygon = i
+                    self.polygons[i_polygon] = polygon
+            if i_polygon == -1:
+                i_polygon = len(self.polygons)
+                self.polygons.append(polygon)
+        else:
+            i_polygon = 0
+            self.polygons.append(polygon)
+        return i_polygon
+
+    def remove_polygon(self, i_polygon: int) -> None:
+        """Removes a sphere from the list of spheres.
+
+        :param i_sphere: Index of the sphere to remove.
+        :type i_sphere: int
+        :return:
+        """
+        if i_polygon < len(self.polygons):
+            polygon = self.spheres[i_polygon]
+            if polygon["vao"] != 0:
+                glBindBuffer(GL_ARRAY_BUFFER, 0)
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+                for buffer in polygon["buffers"]:
+                    glDeleteBuffers(1, buffer)
+                glDeleteVertexArrays(1, polygon["vao"])
+            self.polygons[i_polygon] = {
+                "vao": 0,
+                "n_instances": 0,
+                "n_vertices": 0,
+                "buffers": [],
+            }
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -102,7 +168,11 @@ class Renderer:
                     float(lengths[i]),
                     np.array(directions[i], dtype=np.float64),
                 )
-                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+                model_matrices = (
+                    model_matrix
+                    if i == 0
+                    else np.concatenate((model_matrices, model_matrix))
+                )
 
         cylinder = {
             "vao": 0,
@@ -163,7 +233,11 @@ class Renderer:
         else:
             for i in range(n_instances):
                 model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
-                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+                model_matrices = (
+                    model_matrix
+                    if i == 0
+                    else np.concatenate((model_matrices, model_matrix))
+                )
 
         sphere = {
             "vao": 0,
@@ -323,7 +397,9 @@ class Renderer:
         camera_loc = glGetUniformLocation(self.shader, "camera_position")
         view_loc = glGetUniformLocation(self.shader, "view")
 
-        light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
+        light_direction = (
+            -camera.position - camera.up_vector * camera.distance_from_target * 0.5
+        )
         glUniform3fv(light_direction_loc, 1, light_direction)
         glUniform3fv(camera_loc, 1, camera.position)
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)
@@ -363,6 +439,17 @@ class Renderer:
                     GL_UNSIGNED_INT,
                     None,
                     sphere["n_instances"],
+                )
+
+        # Draw polygons
+        for polygon in self.polygons:
+            if polygon["vao"] != 0:
+                glBindVertexArray(polygon["vao"])
+                glDrawArraysInstanced(
+                    GL_TRIANGLES,
+                    0,
+                    polygon["n_vertices"],
+                    polygon["n_instances"],
                 )
 
         # Draw cylinders

@@ -30,14 +30,14 @@ __copyright__ = "Copyright 2024, Molara"
 
 def setup_vao(
     vertices: np.ndarray,
-    indices: np.ndarray,
+    indices: np.ndarray | None,
     model_matrices: np.ndarray,
     colors: np.ndarray,
 ) -> tuple[int, list[int]]:
     """Sets up a vertex attribute object and binds it to the GPU.
 
-    :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
-        rgb are the color values [0,1], and nxnynz are the components of the normal vector.
+    :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates,
+        and nxnynz are the components of the normal vector.
     :type vertices: numpy.array of numpy.float32
     :param indices: Gives the connectivity of the vertices.
     :type indices: numpy.array of numpy.uint32
@@ -76,9 +76,10 @@ def setup_vao(
         ctypes.c_void_p(12),
     )
 
-    ebo = glGenBuffers(1)
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+    if indices is not None:
+        ebo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
 
     # Instance colors
     instance_vbo_color = glGenBuffers(1)
@@ -123,7 +124,10 @@ def setup_vao(
             ctypes.c_void_p(i * 16),
         )
         glVertexAttribDivisor(3 + i, 1)
-    buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
+    if indices is not None:
+        buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
+    else:
+        buffers = [vbo, instance_vbo_color, instance_vbo_model]
     glBindVertexArray(0)
 
     return vao, buffers
