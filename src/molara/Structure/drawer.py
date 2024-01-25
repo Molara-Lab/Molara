@@ -105,9 +105,7 @@ class Drawer:
                 difference = self.atoms[bond[0]].position - self.atoms[bond[1]].position
                 # Calculate the length of the cylinder.
                 length = float(norm(difference)) / 2
-                mid_point = (
-                    self.atoms[bond[0]].position + self.atoms[bond[1]].position
-                ) / 2
+                mid_point = (self.atoms[bond[0]].position + self.atoms[bond[1]].position) / 2
                 # calculate the point 1 quarter between the 2 atoms
                 position_1 = mid_point + difference / 4
                 # calculate the point 3 quarter between the 2 atoms

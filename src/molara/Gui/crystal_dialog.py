@@ -108,13 +108,7 @@ class CrystalDialog(QDialog):
                 c * (cosalpha - cosbeta * cosgamma) / np.sqrt(1.0 - cosgamma**2),
                 c
                 * np.sqrt(
-                    (
-                        1.0
-                        - cosalpha**2
-                        - cosbeta**2
-                        - cosgamma**2
-                        + 2 * cosalpha * cosbeta * cosgamma
-                    )
+                    (1.0 - cosalpha**2 - cosbeta**2 - cosgamma**2 + 2 * cosalpha * cosbeta * cosgamma)
                     / (1.0 - cosgamma**2),
                 ),
             ]

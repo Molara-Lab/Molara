@@ -150,9 +150,7 @@ class CoordImporter(MoleculesImporter):
         """Reads the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(
-            self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
-        ) as file:
+        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()  # To skip first row
 
         atomic_numbers = []
@@ -185,9 +183,7 @@ class MoldenImporter(MoleculesImporter):
         """Reads the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(
-            self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
-        ) as file:
+        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()
 
         i = 0
@@ -481,9 +477,7 @@ class PoscarImporter(CrystalImporter):
 
     def load(self) -> Crystal:
         """Creates a Crystal object from a POSCAR file."""
-        with open(
-            self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
-        ) as file:
+        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()
         header_length = 9
         if not len(lines) >= header_length:

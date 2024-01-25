@@ -100,8 +100,7 @@ class MeasurementDialog(QDialog):
         for i in range(3):
             if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1:
                 d = np.linalg.norm(
-                    structure.atoms[selected_atoms[i]].position
-                    - structure.atoms[selected_atoms[i + 1]].position,
+                    structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position,
                 )
                 distances[i].setText(f"{d.round(3):.3f}")
             else:
@@ -116,19 +115,9 @@ class MeasurementDialog(QDialog):
         """
         angles = [self.ui.a123, self.ui.a234]
         for i in range(2):
-            if (
-                selected_atoms[i] != -1
-                and selected_atoms[i + 1] != -1
-                and selected_atoms[i + 2] != -1
-            ):
-                v1 = (
-                    structure.atoms[selected_atoms[i]].position
-                    - structure.atoms[selected_atoms[i + 1]].position
-                )
-                v2 = (
-                    structure.atoms[selected_atoms[i + 2]].position
-                    - structure.atoms[selected_atoms[i + 1]].position
-                )
+            if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1 and selected_atoms[i + 2] != -1:
+                v1 = structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position
+                v2 = structure.atoms[selected_atoms[i + 2]].position - structure.atoms[selected_atoms[i + 1]].position
                 a = np.arccos(
                     np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
                 )
@@ -144,24 +133,10 @@ class MeasurementDialog(QDialog):
         :return:
         """
         dihedral = self.ui.d1234
-        if (
-            selected_atoms[0] != -1
-            and selected_atoms[1] != -1
-            and selected_atoms[2] != -1
-            and selected_atoms[3] != -1
-        ):
-            ab = (
-                structure.atoms[selected_atoms[1]].position
-                - structure.atoms[selected_atoms[0]].position
-            )
-            bc = (
-                structure.atoms[selected_atoms[2]].position
-                - structure.atoms[selected_atoms[1]].position
-            )
-            cd = (
-                structure.atoms[selected_atoms[3]].position
-                - structure.atoms[selected_atoms[2]].position
-            )
+        if selected_atoms[0] != -1 and selected_atoms[1] != -1 and selected_atoms[2] != -1 and selected_atoms[3] != -1:
+            ab = structure.atoms[selected_atoms[1]].position - structure.atoms[selected_atoms[0]].position
+            bc = structure.atoms[selected_atoms[2]].position - structure.atoms[selected_atoms[1]].position
+            cd = structure.atoms[selected_atoms[3]].position - structure.atoms[selected_atoms[2]].position
             nabc = np.cross(ab, bc)
             nbcd = np.cross(bc, cd)
             t = np.cross(nabc, bc)

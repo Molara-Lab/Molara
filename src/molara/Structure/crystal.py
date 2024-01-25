@@ -50,13 +50,9 @@ class Crystal(Structure):
         #     supercell_dims = [1, 1, 1]
         #     SupercellDialog.get_supercell_dims(supercell_dims)
         self.make_supercell(supercell_dims)
-        self.molar_mass = np.sum(
-            [elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell]
-        )
+        self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
         self.volume_unitcell = float(np.linalg.det(np.array(self.basis_vectors)))
-        self.density_unitcell = float(
-            (self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24
-        )
+        self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
     def _fold_coords_into_unitcell(
         self,
@@ -167,9 +163,7 @@ class Crystal(Structure):
 
         ids_edge_atoms, ids_edge_atom_coords = np.where(_fractional_coords_np == 0)
         extra_atomic_nums = []  # atomic numbers of the newly created atoms
-        extra_fractional_coords = (
-            []
-        )  # fractional coordinates of the newly created atoms
+        extra_fractional_coords = []  # fractional coordinates of the newly created atoms
 
         # iterate over the relevant atoms
         for _id_atom_unique in np.unique(ids_edge_atoms):

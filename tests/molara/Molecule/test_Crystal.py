@@ -21,9 +21,7 @@ class TestCrystal(TestCase):
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
         self.supercell_dims = [2, 7, 4]
-        self.crystal = Crystal(
-            atomic_numbers, coordinates, basis_vectors, self.supercell_dims
-        )
+        self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors, self.supercell_dims)
         supercell_dims = self.crystal.supercell_dims
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
@@ -91,6 +89,4 @@ class TestCrystal(TestCase):
             (elements[5]["atomic_weight"] + elements[7]["atomic_weight"]),
         )
         assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
-        assert_almost_equal(
-            self.crystal.density_unitcell, 3.6229802861472007, decimal=5
-        )
+        assert_almost_equal(self.crystal.density_unitcell, 3.6229802861472007, decimal=5)
