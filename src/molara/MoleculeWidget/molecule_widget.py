@@ -89,8 +89,8 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
 
     def export_snapshot(self) -> None:
-        """ Saves a snapshot of the structure (as png) """
-        pass
+        """Saves a snapshot of the structure (as png)."""
+        self.grabFramebuffer().save("snapshot.png")
 
     def initializeGL(self) -> None:  # noqa: N802
         """Initializes the widget."""
