@@ -18,10 +18,8 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
-
 class BuilderDialog(QDialog):
     """Dialog to ask for information to build molecules."""
-
 
     def __init__(self, parent: QOpenGLWidget = None) -> None:
         """Initializes the ZMatBuilder dialog.
@@ -44,10 +42,10 @@ class BuilderDialog(QDialog):
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(4)
 
-        self.z_matrix:list[dict] = []
+        self.z_matrix: list[dict] = []
 
-        text_data = ["Element","Distance[A]","Angle[°]","Dihedral[°]"]
-        for column,text in enumerate(text_data):
+        text_data = ["Element", "Distance[A]", "Angle[°]", "Dihedral[°]"]
+        for column, text in enumerate(text_data):
             self.ui.tableWidget.setHorizontalHeaderItem(column, QTableWidgetItem(text))
 
     def select_add(self) -> None:
@@ -55,57 +53,55 @@ class BuilderDialog(QDialog):
         self.disable_slot = True
 
         if self.parent().mols.num_mols == 0:
-
-            params,atom_nums = self._get_parameters(0)
+            params, atom_nums = self._get_parameters(0)
 
             self.add_first_atom(params)
 
-            mol:Molecule = self.parent().mols.mols[0]
+            mol: Molecule = self.parent().mols.mols[0]
 
         else:
-            mol:Molecule = self.parent().mols.mols[0]
+            mol = self.parent().mols.mols[0]
 
-            params,atom_nums = self._get_parameters(mol.n_at)
+            params, atom_nums = self._get_parameters(mol.n_at)
 
             if mol.n_at >= 3:  # noqa: PLR2004
-                self.add_nth_atom(mol,params,atom_nums)
+                self.add_nth_atom(mol, params, atom_nums)
 
             elif mol.n_at == 2:  # noqa: PLR2004
-                self.add_third_atom(mol,params,atom_nums)
+                self.add_third_atom(mol, params, atom_nums)
 
             elif mol.n_at == 1:
-                self.add_second_atom(mol,params)
+                self.add_second_atom(mol, params)
 
             self.parent().delete_molecule()
             self.parent().set_structure(mol)
-        
 
-        self.z_matrix.append({"parameter":params,"atom_nums":atom_nums})
+        self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
 
         self._extend_z_matrix(mol)
 
         self.parent().clear_builder_selected_atoms()
 
-        self.disable_slot = False 
+        self.disable_slot = False
 
-    def delete_atom(self):
-
+    def delete_atom(self) -> None:
+        """Deletes an atom from the z-matrix visualization table and z_matrix itself."""
         index = self.ui.tableWidget.currentRow()
 
-        mol:Molecule = self.parent().mols.mols[0]
+        mol: Molecule = self.parent().mols.mols[0]
 
         do_deletion = self._check_z_matrix_deletion(index)
         if do_deletion:
             error_msg = f"Atom {index} will be deleted."
             self.ui.ErrorMessageBrowser.setText(error_msg)
-            self._delete_zmat_row(index,mol.n_at)
+            self._delete_zmat_row(index, mol.n_at)
             self._delete_table_row(index)
             self.parent().mols.mols[0].remove_atom(index=index)
             self.parent().delete_molecule()
             self.parent().set_structure(self.parent().mols.get_current_mol())
 
-    def adapt_z_matrix(self,item):
-
+    def adapt_z_matrix(self, item: QTableWidgetItem) -> None:
+        """Changes the z-matrix in dependence of the visualization table."""
         if not self.disable_slot:
             row = item.row()
             params = self._get_parameters_from_table(row)
@@ -115,69 +111,65 @@ class BuilderDialog(QDialog):
 
             self.z_matrix = []
 
-            self.parent().mols._remove_structure(0)
+            self.parent().mols.remove_molecule(0)
 
             for i in range(len(self.z_matrix_temp)):
-
                 if i == 0:
-
                     params = self.z_matrix_temp[0]["parameter"]
                     atom_nums = self.z_matrix_temp[0]["atom_nums"]
 
                     self.add_first_atom(params)
 
-                    mol:Molecule = self.parent().mols.mols[0]
+                    mol: Molecule = self.parent().mols.mols[0]
 
                 else:
-                    mol:Molecule = self.parent().mols.mols[0]
+                    mol = self.parent().mols.mols[0]
 
                     params = self.z_matrix_temp[i]["parameter"]
                     atom_nums = self.z_matrix_temp[i]["atom_nums"]
 
                     if i >= 3:  # noqa: PLR2004
-                        self.add_nth_atom(mol,params,atom_nums)
+                        self.add_nth_atom(mol, params, atom_nums)
 
                     elif i == 2:  # noqa: PLR2004
-                        self.add_third_atom(mol,params,atom_nums)
+                        self.add_third_atom(mol, params, atom_nums)
 
                     elif i == 1:
-                        self.add_second_atom(mol,params)
-                        
+                        self.add_second_atom(mol, params)
 
-                self.z_matrix.append({"parameter":params,"atom_nums":atom_nums})
+                self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
 
             self.parent().delete_molecule()
-            self.parent().set_structure(mol) 
+            self.parent().set_structure(mol)
 
             self._update_z_matrix(mol)
 
-
-    def _orth(self,vec:np.ndarray, unitvec:np.ndarray)->np.ndarray:
+    def _orth(self, vec: np.ndarray, unitvec: np.ndarray) -> np.ndarray:
         return vec - np.dot(vec, unitvec) * unitvec
 
-    def add_first_atom(self,params:tuple) -> None:
+    def add_first_atom(self, params: tuple) -> None:
         """Initializes a molecule and adds the first atom to it."""
-        element, = params[0]
+        (element,) = params[0]
         at_chrg = element_symbol_to_atomic_number(element)
         at_chrg_check = self._check_element(at_chrg)
 
         init_xyz = np.zeros([1, 3])
-        
-        self.parent().mols.add_molecule(Molecule([at_chrg], init_xyz,draw_bonds=False))
+
+        self.parent().mols.add_molecule(Molecule([at_chrg], init_xyz, draw_bonds=False))
         self.parent().set_structure(self.parent().mols.get_current_mol())
         self.disable_slot = True
         if at_chrg_check:
             self.ui.tableWidget.setRowCount(1)
-            self.ui.tableWidget.setItem(0,0, QTableWidgetItem(element))
+            self.ui.tableWidget.setItem(0, 0, QTableWidgetItem(element))
         self.disable_slot = False
 
-    def add_second_atom(self,mol:Molecule,params:tuple) -> None:
+    def add_second_atom(self, mol: Molecule, params: tuple) -> None:
         """Adds a second atom and deletes the ghost atom needed for the first atom.
 
         params:
         mol:Molecule: The molecule where a second atom shall be added.
         """
-        element,dist= params[:2]
+        element, dist = params[:2]
 
         at_chrg = element_symbol_to_atomic_number(element)
 
@@ -186,67 +178,61 @@ class BuilderDialog(QDialog):
         boundary_check = self._check_value(dist)
 
         if boundary_check and at_chrg_check:
-            coord = np.array([0.0,0.0,dist])
+            coord = np.array([0.0, 0.0, dist])
             mol.add_atom(at_chrg, coord)
             mol.toggle_bonds()
 
-
-    def add_third_atom(self,mol:Molecule,params:tuple,atom_nums:tuple) -> None:
+    def add_third_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
         """Adds a third atom to the molecule.
 
         params:
         mol:Molecule: The molecule where a second atom shall be added.
         """
+        element, dist, angle = params[:3]
 
-        element,dist,angle = params[:3]
+        at1_num: int = atom_nums[0]
 
-        at1_num:int = atom_nums[0]
-
-        at2_num:int = atom_nums[1]
+        at2_num: int = atom_nums[1]
 
         at_chrg = element_symbol_to_atomic_number(element)
 
-        boundary_check = self._check_value(dist,angle)
-        atom_selection_check = self._check_selected_atoms(at1_num,at2_num)
+        boundary_check = self._check_value(dist, angle)
+        atom_selection_check = self._check_selected_atoms(at1_num, at2_num)
         at_chrg_check = self._check_element(at_chrg)
 
         if boundary_check and atom_selection_check and at_chrg_check:
-
             coord = np.array([dist * np.sin(angle), 0, dist * np.cos(angle)])
 
             if at1_num == 1:
                 coord[2] = mol.atoms[at1_num].position[2] - coord[2]
 
-            mol.add_atom(at_chrg,coord)
+            mol.add_atom(at_chrg, coord)
 
-
-    def add_nth_atom(self,mol:Molecule,params:tuple,atom_nums:list) -> None:
+    def add_nth_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
         """Adds an nth atom to the molecule."""
+        element, dist, angle, dihedral = params
 
-        element,dist,angle,dihedral = params
+        at1_num: int = atom_nums[0]
 
-        at1_num:int = atom_nums[0]
+        at2_num: int = atom_nums[1]
 
-        at2_num:int = atom_nums[1]
-
-        at3_num:int = atom_nums[2]
+        at3_num: int = atom_nums[2]
 
         at_chrg = element_symbol_to_atomic_number(element)
 
-        boundary_check = self._check_value(dist,angle)
-        atom_selection_check = self._check_selected_atoms(at1_num,at2_num,at3_num)
+        boundary_check = self._check_value(dist, angle)
+        atom_selection_check = self._check_selected_atoms(at1_num, at2_num, at3_num)
         at_chrg_check = self._check_element(at_chrg)
 
         if boundary_check and atom_selection_check and at_chrg_check:
-
             vec1 = mol.atoms[at2_num].position - mol.atoms[at1_num].position
             length = np.linalg.norm(vec1)
-            vec1 = vec1 / length if length > 0 else np.array([0, 0, 1.])
+            vec1 = vec1 / length if length > 0 else np.array([0, 0, 1.0])
             vec2 = self._orth(mol.atoms[at3_num].position - mol.atoms[at2_num].position, vec1)
-            length =  np.linalg.norm(vec2)
-            vec2 = vec2 / length if length > 0 else np.array([1., 0, 0])
+            length = np.linalg.norm(vec2)
+            vec2 = vec2 / length if length > 0 else np.array([1.0, 0, 0])
             if np.linalg.norm(self._orth(vec2, vec1)) == 0:
-                vec2 = np.array([0, 1., 0])
+                vec2 = np.array([0, 1.0, 0])
             vec3 = np.cross(vec1, vec2)
             vec3 = vec3 / np.linalg.norm(vec3)
             tmp = dist * np.sin(angle)
@@ -254,7 +240,7 @@ class BuilderDialog(QDialog):
             coord += tmp * np.cos(dihedral) * vec2 + tmp * np.sin(dihedral) * vec3
 
             mol.add_atom(at_chrg, np.squeeze(coord))
-            
+
     def _clear_all_text(self) -> None:
         """Clears all text in the zbuilder dialog."""
         for line_edit in [
@@ -265,7 +251,7 @@ class BuilderDialog(QDialog):
         ]:
             line_edit.clear()
 
-    def _check_value(self,*args:float,threshold:float=1e-8)->bool:
+    def _check_value(self, *args: float, threshold: float = 1e-8) -> bool:
         """Checks whether values are larger than a threshold.
 
         args:float:Parameter to check whether threshold is reached.
@@ -275,15 +261,15 @@ class BuilderDialog(QDialog):
         vals_above_threshold = True
 
         for arg in args:
-            vals_above_threshold = arg>threshold
-            if not(vals_above_threshold):
+            vals_above_threshold = arg > threshold
+            if not (vals_above_threshold):
                 self.ui.ErrorMessageBrowser.setText(error_msg)
 
                 break
 
         return vals_above_threshold
 
-    def _check_selected_atoms(self,*selected_atoms:int)->bool:
+    def _check_selected_atoms(self, *selected_atoms: int) -> bool:
         """Checks if all necessary atoms are selected.
 
         params:
@@ -299,7 +285,7 @@ class BuilderDialog(QDialog):
 
         return all_selected
 
-    def _check_element(self,at_chrg:int|None)->bool:
+    def _check_element(self, at_chrg: int | None) -> bool:
         """Checks if the element which should be added exists.
 
         params:
@@ -312,89 +298,88 @@ class BuilderDialog(QDialog):
             self.ui.ErrorMessageBrowser.setText(error_msg)
         return is_element
 
-    def _extend_z_matrix(self,mol:Molecule)->None:
-
-
+    def _extend_z_matrix(self, mol: Molecule) -> None:
         self.ui.tableWidget.setRowCount(mol.n_at)
-        for i,text in enumerate(self.z_matrix[mol.n_at-1]["parameter"]):
+        for i, text in enumerate(self.z_matrix[mol.n_at - 1]["parameter"]):
             if i > 1:
-                text=  np.rad2deg(text)
-            self.ui.tableWidget.setItem(mol.n_at-1,i, QTableWidgetItem(str(text)))
+                temp_text = np.rad2deg(text)
+            self.ui.tableWidget.setItem(mol.n_at - 1, i, QTableWidgetItem(str(temp_text)))
 
-    def _update_z_matrix(self,mol:Molecule):
-        self.disable_slot = True 
+    def _update_z_matrix(self, mol: Molecule) -> None:
+        self.disable_slot = True
         self.ui.tableWidget.setRowCount(mol.n_at)
         for j in range(mol.n_at):
-            for i,text in enumerate(self.z_matrix[j]["parameter"]):
+            for i, text in enumerate(self.z_matrix[j]["parameter"]):
                 if i > 1:
-                    text=  np.rad2deg(text)
-                self.ui.tableWidget.setItem(j,i, QTableWidgetItem(str(text)))
+                    temp_text = np.rad2deg(text)
+                self.ui.tableWidget.setItem(j, i, QTableWidgetItem(str(temp_text)))
         self.disable_slot = False
 
+    def _delete_table_row(self, idx: int) -> None:
+        self.ui.tableWidget.removeRow(idx)
 
-    def _delete_table_row(self,index):
-        self.ui.tableWidget.removeRow(index)
-
-    def _get_parameters(self,nat):
-
-        element = self.ui.Box_0Element.text().capitalize() 
-        dist = float(self.ui.Box_1BondDistance.text())
-        angle = np.deg2rad(float(self.ui.Box_2BondAngle.text()))
-        dihedral = np.deg2rad(float(self.ui.Box_3DihedralAngle.text()))
+    def _get_parameters(self, nat: int) -> tuple[tuple, list]:
+        element: str = self.ui.Box_0Element.text().capitalize()
+        dist: float = float(self.ui.Box_1BondDistance.text())
+        angle: float = np.deg2rad(float(self.ui.Box_2BondAngle.text()))
+        dihedral: float = np.deg2rad(float(self.ui.Box_3DihedralAngle.text()))
         atom_nums = self.parent().builder_selected_spheres
 
-        if nat > 2:
-            params = (element,dist,angle,dihedral)
-        if nat == 2:
-            params = (element,dist,angle)
+        if nat > 2:  # noqa: PLR2004
+            params: (
+                tuple[str, float, float, float] | tuple[str, float, float] | tuple[str, float] | tuple[str, None]
+            ) = (
+                element,
+                dist,
+                angle,
+                dihedral,
+            )
+        if nat == 2:  # noqa: PLR2004
+            params = (element, dist, angle)
         if nat == 1:
-            params = (element,dist)
+            params = (element, dist)
         if nat == 0:
-            params = (element)
+            params = (element, None)
 
-        return params,atom_nums
-    
-    def _get_parameters_from_table(self,row):
+        return params, atom_nums
 
+    def _get_parameters_from_table(self, row: int) -> tuple:
         if row >= 0:
-            element = self.ui.tableWidget.item(row,0).text().capitalize() 
-            params = (element)
+            element = self.ui.tableWidget.item(row, 0).text().capitalize()
+            params = element
         if row >= 1:
-            dist = float(self.ui.tableWidget.item(row,1).text())
-            params = (element,dist)
-        if row >= 2:
-            angle = np.deg2rad(float(self.ui.tableWidget.item(row,2).text()))
-            params = (element,dist,angle)
-        if row >=3:
-            dihedral = np.deg2rad(float(self.ui.tableWidget.item(row,3).text()))
-            params = (element,dist,angle,dihedral)
+            dist = float(self.ui.tableWidget.item(row, 1).text())
+            params = (element, dist)
+        if row >= 2:  # noqa: PLR2004
+            angle = np.deg2rad(float(self.ui.tableWidget.item(row, 2).text()))
+            params = (element, dist, angle)
+        if row >= 3:  # noqa: PLR2004
+            dihedral = np.deg2rad(float(self.ui.tableWidget.item(row, 3).text()))
+            params = (element, dist, angle, dihedral)
 
         return params
-    
-    def _check_z_matrix_deletion(self,index:int):
 
-        do_deletion = True 
+    def _check_z_matrix_deletion(self, index: int) -> bool:
+        do_deletion = True
 
         if index == -1:
             error_msg = "No Atom was chosen to be deleted."
             self.ui.ErrorMessageBrowser.setText(error_msg)
-            do_deletion = False 
+            do_deletion = False
 
         else:
             for entry in self.z_matrix:
                 if index in entry["atom_nums"]:
                     error_msg = f"Cannot be deleted. Atom {index+1} depends on this atom."
-                    do_deletion=False
+                    do_deletion = False
                     self.ui.ErrorMessageBrowser.setText(error_msg)
 
         return do_deletion
-    
 
-    def _delete_zmat_row(self,index:int,nat:int):
-
-        for i in range(index,nat):
-            for j,at_num in enumerate(self.z_matrix[i]["atom_nums"]):
-                if at_num > index and at_num != -1: 
+    def _delete_zmat_row(self, index: int, nat: int) -> None:
+        for i in range(index, nat):
+            for j, at_num in enumerate(self.z_matrix[i]["atom_nums"]):
+                if at_num > index and at_num != -1:
                     self.z_matrix[i]["atom_nums"][j] -= 1
-        
+
         self.z_matrix.pop(index)
