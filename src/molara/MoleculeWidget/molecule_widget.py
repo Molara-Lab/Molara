@@ -257,11 +257,11 @@ class MoleculeWidget(QOpenGLWidget):
         else:
             positions = np.array(
                 [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2], [length, length / 2, 0],
-                 [length, length / 2, length], [0, length / 2, length], [length / 2, length, 0], 
-                 [length / 2, length, length], [length / 2, 0, length], [length, 0, length / 2], 
+                 [length, length / 2, length], [0, length / 2, length], [length / 2, length, 0],
+                 [length / 2, length, length], [length / 2, 0, length], [length, 0, length / 2],
                  [length, length, length / 2], [0, length, length / 2]], dtype=np.float32,
             )
-            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 0], [0, 1, 0], [0, 1, 0], 
+            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 0], [0, 1, 0], [0, 1, 0],
                                    [1, 0, 0], [1, 0, 0], [1, 0, 0], [0, 0, 1], [0, 0, 1], [0, 0, 1]],
                                    dtype=np.float32)
             colors = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
