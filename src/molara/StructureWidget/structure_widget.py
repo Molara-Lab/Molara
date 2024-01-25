@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
-class MoleculeWidget(QOpenGLWidget):
+class StructureWidget(QOpenGLWidget):
     """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
 
     def __init__(self, parent: QMainWindow) -> None:
@@ -277,20 +277,30 @@ class MoleculeWidget(QOpenGLWidget):
         if selected_sphere != -1:
             if -1 in self.selected_spheres:
                 if selected_sphere in self.selected_spheres:
-                    self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                    self.structure.drawer.atom_colors[
+                        selected_sphere
+                    ] = self.old_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
                     ].copy()
-                    self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
+                    self.selected_spheres[
+                        self.selected_spheres.index(selected_sphere)
+                    ] = -1
                 else:
-                    self.selected_spheres[self.selected_spheres.index(-1)] = selected_sphere
+                    self.selected_spheres[
+                        self.selected_spheres.index(-1)
+                    ] = selected_sphere
                     self.old_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
                     ] = self.structure.drawer.atom_colors[selected_sphere].copy()
-                    self.structure.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
+                    self.structure.drawer.atom_colors[
+                        selected_sphere
+                    ] = self.new_sphere_colors[
                         self.selected_spheres.index(selected_sphere)
                     ].copy()
             elif selected_sphere in self.selected_spheres:
-                self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                self.structure.drawer.atom_colors[
+                    selected_sphere
+                ] = self.old_sphere_colors[
                     self.selected_spheres.index(selected_sphere)
                 ].copy()
                 self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
