@@ -256,14 +256,16 @@ class MoleculeWidget(QOpenGLWidget):
             self.axes = [-1, -1]
         else:
             positions = np.array(
-                [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2], [length, length / 2, 0], [length, length / 2, length],
-                [0, length / 2, length], [length / 2, length, 0], [length / 2, length, length], [length / 2, 0, length],
-                [length, 0, length / 2], [length, length, length / 2], [0, length, length / 2]],dtype=np.float32,
+                [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2], [length, length / 2, 0],
+                 [length, length / 2, length], [0, length / 2, length], [length / 2, length, 0], 
+                 [length / 2, length, length], [length / 2, 0, length], [length, 0, length / 2], 
+                 [length, length, length / 2], [0, length, length / 2]], dtype=np.float32,
             )
-            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 0], [0, 1, 0], [0, 1, 0], [1, 0, 0], [1, 0, 0],
-                                   [1, 0, 0], [0, 0, 1], [0, 0, 1], [0, 0, 1]], dtype=np.float32)
-            colors = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
-                            [0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype=np.float32)
+            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 0], [0, 1, 0], [0, 1, 0], 
+                                   [1, 0, 0], [1, 0, 0], [1, 0, 0], [0, 0, 1], [0, 0, 1], [0, 0, 1]],
+                                   dtype=np.float32)
+            colors = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+                               [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype=np.float32)
             radii = np.array([radius] * 12, dtype=np.float32)
             lengths = np.array([length] * 12, dtype=np.float32)
             self.axes[0] = self.renderer.draw_cylinders(
