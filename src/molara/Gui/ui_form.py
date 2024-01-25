@@ -52,7 +52,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from molara.StructureWidget.structure_widget import MoleculeWidget
+from molara.StructureWidget.structure_widget import StructureWidget
 
 
 class Ui_MainWindow(object):
@@ -98,7 +98,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.openGLWidget = MoleculeWidget(self.centralwidget)
+        self.openGLWidget = StructureWidget(self.centralwidget)
         self.openGLWidget.setObjectName("openGLWidget")
 
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
