@@ -88,6 +88,10 @@ class MoleculeWidget(QOpenGLWidget):
             self.set_vertex_attribute_objects()
         self.update()
 
+    def export_snapshot(self) -> None:
+        """ Saves a snapshot of the structure (as png) """
+        pass
+
     def initializeGL(self) -> None:  # noqa: N802
         """Initializes the widget."""
         glClearColor(1, 1, 1, 1.0)
