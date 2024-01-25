@@ -9,6 +9,7 @@ from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glV
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from PySide6.QtWidgets import QFileDialog
 
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Rendering.camera import Camera
@@ -90,7 +91,13 @@ class MoleculeWidget(QOpenGLWidget):
 
     def export_snapshot(self) -> None:
         """Saves a snapshot of the structure (as png)."""
-        self.grabFramebuffer().save("snapshot.png")
+        filename = QFileDialog.getSaveFileName(
+            self,
+            "Export structure to file",
+            ".",
+            "*.png",
+        )
+        self.grabFramebuffer().save(filename[0])
 
     def initializeGL(self) -> None:  # noqa: N802
         """Initializes the widget."""
