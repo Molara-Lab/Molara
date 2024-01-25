@@ -58,6 +58,7 @@ dev = [
 ]
 crystal = [
     "pymatgen",
+    "ase",
 ]
 
 [project.scripts]
