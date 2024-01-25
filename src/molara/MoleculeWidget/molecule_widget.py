@@ -274,7 +274,8 @@ class MoleculeWidget(QOpenGLWidget):
             self.structure.drawer.atom_positions,
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
-        if selected_sphere != -1:
+        # check if an atom has been clicked or not
+        if selected_sphere != -1:  # an atom has been clicked
             if -1 in self.selected_spheres:
                 if selected_sphere in self.selected_spheres:
                     self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
@@ -294,6 +295,15 @@ class MoleculeWidget(QOpenGLWidget):
                     self.selected_spheres.index(selected_sphere)
                 ].copy()
                 self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
+        elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
+            for selected_sphere_i in self.selected_spheres:
+                if selected_sphere_i == -1:
+                    continue
+                self.structure.drawer.atom_colors[selected_sphere_i] = self.old_sphere_colors[
+                    self.selected_spheres.index(selected_sphere_i)
+                ].copy()
+            for i in range(4):
+                self.selected_spheres[i] = -1
 
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
