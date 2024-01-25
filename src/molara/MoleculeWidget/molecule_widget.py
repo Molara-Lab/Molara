@@ -295,7 +295,7 @@ class MoleculeWidget(QOpenGLWidget):
                     self.selected_spheres.index(selected_sphere)
                 ].copy()
                 self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
-        elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # no atom has been clicked
+        elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
             for selected_sphere_i in self.selected_spheres:
                 if selected_sphere_i == -1:
                     continue
