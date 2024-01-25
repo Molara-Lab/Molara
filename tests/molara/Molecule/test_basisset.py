@@ -63,7 +63,9 @@ class TestBasisset(TestCase):
         assert_array_almost_equal_nulp(overlap_matrix, self.correct_matrix, 2)
 
 
-def hermite_coefs(i: int, j: int, t: int, qx: float, a: float, b: float) -> float:  # noqa: PLR0913
+def hermite_coefs(
+    i: int, j: int, t: int, qx: float, a: float, b: float
+) -> float:  # noqa: PLR0913
     """Recursive definition of Hermite Gaussian coefficients.
 
     Returns a float.
