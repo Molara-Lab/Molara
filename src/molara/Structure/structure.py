@@ -11,7 +11,7 @@ __copyright__ = "Copyright 2024, Molara"
 
 
 class Structure:
-    """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
+    """Base class for a structure with a set of atoms. Structure and Crystal inherit from this."""
 
     def __init__(
         self,

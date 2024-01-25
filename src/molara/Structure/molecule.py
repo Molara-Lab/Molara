@@ -1,17 +1,17 @@
-"""This module contains the Molecule class."""
+"""This module contains the Structure class."""
 
 from __future__ import annotations
 
 import numpy as np
 
-from molara.Molecule.mos import Mos
-from molara.Molecule.structure import Structure
+from molara.Structure.mos import Mos
+from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 
 
 class Molecule(Structure):
-    """Creates a new Molecule object."""
+    """Creates a new Structure object."""
 
     def __init__(  # noqa: PLR0913
         self,
@@ -21,7 +21,7 @@ class Molecule(Structure):
         dummy: bool = False,
         draw_bonds: bool = True,
     ) -> None:
-        """Creates a new Molecule object.
+        """Creates a new Structure object.
 
         params:
         atomic_numbers:np.ndarray: atomic numbers of a atoms

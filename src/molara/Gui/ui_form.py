@@ -19,7 +19,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QGridLayout, QMainWindow, QMenu,
     QMenuBar, QSizePolicy, QStatusBar, QWidget)
 
-from molara.MoleculeWidget.molecule_widget import MoleculeWidget
+from molara.StructureWidget.molecule_widget import MoleculeWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -119,7 +119,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
         self.action_xyz.setText(QCoreApplication.translate("MainWindow", u".xyz", None))
-        self.actionCenter_Molecule.setText(QCoreApplication.translate("MainWindow", u"Center Molecule", None))
+        self.actionCenter_Molecule.setText(QCoreApplication.translate("MainWindow", u"Center Structure", None))
         self.actionReset_View.setText(QCoreApplication.translate("MainWindow", u"Reset View", None))
         self.actionto_x_axis.setText(QCoreApplication.translate("MainWindow", u"to x axis", None))
         self.actionto_y_axis.setText(QCoreApplication.translate("MainWindow", u"to y axis", None))

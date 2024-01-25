@@ -5,14 +5,14 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from molara.Molecule.atom import elements
+from molara.Structure.atom import elements
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from os import PathLike
     from typing import Any
 
-    from molara.Molecule.structure import Structure
+    from molara.Structure.structure import Structure
 
 
 __copyright__ = "Copyright 2024, Molara"

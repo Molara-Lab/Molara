@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from unittest import TestCase
 
-from molara.Molecule.atom import elements
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.io.importer import PoscarImporter
+from molara.Structure.atom import elements
+from molara.Structure.crystal import Crystal
+from molara.Structure.io.importer import PoscarImporter
 from numpy.testing import assert_almost_equal, assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"

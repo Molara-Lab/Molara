@@ -1,4 +1,4 @@
-"""This module contains the MoleculeWidget class, which is a subclass of QOpenGLWidget."""
+"""This module contains the StructureWidget class, which is a subclass of QOpenGLWidget."""
 
 from __future__ import annotations
 
@@ -20,16 +20,16 @@ if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
     from PySide6.QtWidgets import QMainWindow
 
-    from molara.Molecule.structure import Structure
+    from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 
 
 class MoleculeWidget(QOpenGLWidget):
-    """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
+    """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
 
     def __init__(self, parent: QMainWindow) -> None:
-        """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
+        """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
