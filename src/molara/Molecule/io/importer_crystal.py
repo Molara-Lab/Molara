@@ -125,8 +125,7 @@ class PoscarImporter(Importer):
                 raise FileFormatError(msg)
             # For cartesian coordinates, convert to fractional coordinates
             if mode.lower().startswith("c"):
-                for idx, position in enumerate(positions):
-                    positions[idx] = np.dot(np.linalg.inv(basis_vectors).T, position).tolist()
+                positions = [np.dot(np.linalg.inv(basis_vectors).T, position).tolist() for position in positions]
             atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
 
             atomic_numbers_extended = []
