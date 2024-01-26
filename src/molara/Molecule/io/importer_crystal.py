@@ -100,8 +100,10 @@ class PoscarImporter(Importer):
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg)
             scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
-            species_, numbers_ = lines[5].strip(), lines[6]
-            mode, positions_ = lines[7].strip(), lines[8:]
+            species_ = lines[5].strip()
+            numbers_ = lines[6]
+            mode = lines[7].strip()
+            positions_ = lines[8:]
             try:
                 scale = float(scale_)
                 latvec_a = [float(component) for component in latvec_a_.split()[:3]]
@@ -114,12 +116,14 @@ class PoscarImporter(Importer):
             except ValueError as err:
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg) from err
-            if len(numbers) != len(species) or len(positions) != sum(numbers):
+            if len(numbers) != len(species) or len(positions) != sum(numbers) or not mode.lower().startswith(("d", "c")):
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg)
-            if mode.lower() != "direct":
-                msg = "Currently, Molara can only process direct mode in POSCAR files."
-                raise NotImplementedError(msg)
+            if mode.lower().startswith("c"):
+                print("Test")
+                positions = np.dot(np.linalg.inv(basis_vectors), positions).tolist()
+                #sg = "Currently, Molara can only process direct mode in POSCAR files."
+                #raise NotImplementedError(msg)
             atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
 
             atomic_numbers_extended = []
