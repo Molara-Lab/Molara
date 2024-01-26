@@ -116,14 +116,17 @@ class PoscarImporter(Importer):
             except ValueError as err:
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg) from err
-            if len(numbers) != len(species) or len(positions) != sum(numbers) or not mode.lower().startswith(("d", "c")):
+            if (
+                len(numbers) != len(species)
+                or len(positions) != sum(numbers)
+                or not mode.lower().startswith(("d", "c"))  # Either cartesian or direct coords
+            ):
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg)
+            # For cartesian coordinates, convert to fractional coordinates
             if mode.lower().startswith("c"):
-                print("Test")
-                positions = np.dot(np.linalg.inv(basis_vectors), positions).tolist()
-                #sg = "Currently, Molara can only process direct mode in POSCAR files."
-                #raise NotImplementedError(msg)
+                for idx, position in enumerate(positions):
+                    positions[idx] = np.dot(np.linalg.inv(basis_vectors).T, position).tolist()
             atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
 
             atomic_numbers_extended = []
