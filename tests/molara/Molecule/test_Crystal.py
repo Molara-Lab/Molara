@@ -76,7 +76,7 @@ class TestCrystal(TestCase):
         supercell_dims = self.supercell_dims
         importer = PoscarImporter("examples/POSCAR/boron_nitride", supercell_dims)
         self.crystals_from_POSCAR_c = importer.load()
-        self.crystal_from_POSCAR_c = self.crystals_from_POSCAR.get_current_mol()
+        self.crystal_from_POSCAR_c = self.crystals_from_POSCAR_c.get_current_mol()
 
         assert_array_equal(
             self.crystal_from_POSCAR_c.fractional_coords_supercell,
