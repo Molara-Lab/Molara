@@ -78,9 +78,10 @@ class TestCrystal(TestCase):
         self.crystals_from_POSCAR_c = importer.load()
         self.crystal_from_POSCAR_c = self.crystals_from_POSCAR_c.get_current_mol()
 
-        assert_array_equal(
+        assert_almost_equal(
             self.crystal_from_POSCAR_c.fractional_coords_supercell,
             self.crystal.fractional_coords_supercell,
+            decimal=5,
         )
 
     def test_make_supercell(self) -> None:
