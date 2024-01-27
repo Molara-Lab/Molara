@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
 import numpy as np
+from scipy import constants
 
-from .molecule import *
+from molara.Molecule.atom import element_symbol_to_atomic_number, elements
+
 from .structure import Structure
 
 if TYPE_CHECKING:
@@ -15,7 +18,17 @@ if TYPE_CHECKING:
 
     from numpy.typing import ArrayLike
 
+    try:
+        from pymatgen.core import Structure as Pmgstructure
+    except ImportError:
+        pmgstructure = None
+    try:
+        from ase import Atoms
+    except ImportError:
+        Atoms = None
+
 __copyright__ = "Copyright 2024, Molara"
+
 
 ONE, TWO, THREE = 1, 2, 3
 
@@ -38,16 +51,20 @@ class Crystal(Structure):
         atomic_nums: Sequence[int],
         coords: Sequence[Sequence[float]],
         basis_vectors: Sequence[Sequence[float]] | ArrayLike,
-        supercell_dims: Annotated[Sequence[int], 3],
+        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
     ) -> None:
         """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors."""
         self.atomic_nums_unitcell = atomic_nums
         self.coords_unitcell = self._fold_coords_into_unitcell(coords)
         self.basis_vectors = basis_vectors
+        self.energy = 0.0  # TD: implement energy calculation
         # if supercell_dims is None:
         #     supercell_dims = [1, 1, 1]
         #     SupercellDialog.get_supercell_dims(supercell_dims)
         self.make_supercell(supercell_dims)
+        self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
+        self.volume_unitcell = float(np.linalg.det(np.array(self.basis_vectors)))
+        self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
     def _fold_coords_into_unitcell(
         self,
@@ -213,6 +230,71 @@ class Crystal(Structure):
             else:
                 raise (ValueError)
         return extra_atomic_nums, extra_fractional_coords
+
+    @classmethod
+    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
+        """Creates a Crystal object from a POSCAR file."""
+        with open(file_path) as file:
+            lines = file.readlines()
+        header_length = 9
+        if not len(lines) >= header_length:
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg)
+        scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
+        species_, numbers_ = lines[5].strip(), lines[6]
+        mode, positions_ = lines[7].strip(), lines[8:]
+        try:
+            scale = float(scale_)
+            latvec_a = [float(vec) for vec in latvec_a_.split()]
+            latvec_b = [float(vec) for vec in latvec_b_.split()]
+            latvec_c = [float(vec) for vec in latvec_c_.split()]
+            species = re.split(r"\s+", species_)
+            numbers = [int(num) for num in numbers_.split()]
+            positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
+            basis_vectors = [latvec_a, latvec_b, latvec_c]
+        except ValueError as err:
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg) from err
+        if len(numbers) != len(species) or len(positions) != sum(numbers):
+            msg = "Error: faulty formatting of the POSCAR file."
+            raise ValueError(msg)
+        if mode.lower() != "direct":
+            msg = "Currently, Molara can only process direct mode in POSCAR files."
+            raise NotImplementedError(msg)
+        atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
+
+        atomic_numbers_extended = []
+        for num, an in zip(numbers, atomic_numbers):
+            atomic_numbers_extended.extend(num * [an])
+
+        return cls(
+            atomic_numbers_extended,
+            positions,
+            [scale * np.array(bv, dtype=float) for bv in basis_vectors],
+        )
+
+    @classmethod
+    def from_pymatgen(cls: type[Crystal], structure: Pmgstructure) -> Crystal:
+        """Creates a Crystal object from a pymatgen.Structure object."""
+        return cls(
+            structure.atomic_numbers,
+            structure.frac_coords,
+            structure.lattice.matrix,
+        )
+
+    @classmethod
+    def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:
+        """Creates a Crystal object from an ase.Atoms object."""
+        assert atoms.get_pbc().all(), (
+            "You are attempting to create a crystal from a non-periodic ase.Atoms object. "
+            "For non-periodic systems, use Molecule.from_ase(). "
+            "Partially periodic systems are not supported yet."
+        )
+        return cls(
+            atoms.get_atomic_numbers(),
+            atoms.get_scaled_positions(),
+            atoms.get_cell(),
+        )
 
     def copy(self) -> Crystal:
         """Returns a copy of the Crystal object."""

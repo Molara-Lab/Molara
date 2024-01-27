@@ -19,6 +19,7 @@ from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
+    from PySide6.QtWidgets import QMainWindow
 
     from molara.Molecule.structure import Structure
 
@@ -28,13 +29,12 @@ __copyright__ = "Copyright 2024, Molara"
 class MoleculeWidget(QOpenGLWidget):
     """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
 
-    def __init__(self, parent: QOpenGLWidget) -> None:
+    def __init__(self, parent: QMainWindow) -> None:
         """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget."""
         self.parent = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.measurement_dialog = MeasurementDialog()
-
+        self.measurement_dialog = MeasurementDialog(parent)
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
@@ -268,6 +268,7 @@ class MoleculeWidget(QOpenGLWidget):
         :param event: The mouse event.
         :return:
         """
+        self.makeCurrent()
         click_position = np.array(
             [
                 (event.x() * 2 - self.width()) / self.width(),
@@ -305,6 +306,15 @@ class MoleculeWidget(QOpenGLWidget):
                     self.measuremnt_selected_spheres.index(selected_sphere)
                 ].copy()
                 self.measuremnt_selected_spheres[self.measuremnt_selected_spheres.index(selected_sphere)] = -1
+        elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
+            for selected_sphere_i in self.measuremnt_selected_spheres:
+                if selected_sphere_i == -1:
+                    continue
+                self.structure.drawer.atom_colors[selected_sphere_i] = self.old_sphere_colors[
+                    self.measuremnt_selected_spheres.index(selected_sphere_i)
+                ].copy()
+            for i in range(4):
+                self.measuremnt_selected_spheres[i] = -1
 
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
@@ -371,8 +381,6 @@ class MoleculeWidget(QOpenGLWidget):
         )
         self.update()
 
-
-    def clear_builder_selected_atoms(self)->None:
+    def clear_builder_selected_atoms(self) -> None:
         """Resets the selected spheres builder spheres."""
-        self.builder_selected_spheres: list = [-1] * 3
-
+        self.builder_selected_spheres = [-1] * 3

@@ -301,8 +301,8 @@ class BuilderDialog(QDialog):
     def _extend_z_matrix(self, mol: Molecule) -> None:
         self.ui.tableWidget.setRowCount(mol.n_at)
         for i, text in enumerate(self.z_matrix[mol.n_at - 1]["parameter"]):
-            if i > 1:
-                temp_text = np.rad2deg(text)
+            temp_text = np.rad2deg(text) if i > 1 else text
+
             self.ui.tableWidget.setItem(mol.n_at - 1, i, QTableWidgetItem(str(temp_text)))
 
     def _update_z_matrix(self, mol: Molecule) -> None:
@@ -310,8 +310,8 @@ class BuilderDialog(QDialog):
         self.ui.tableWidget.setRowCount(mol.n_at)
         for j in range(mol.n_at):
             for i, text in enumerate(self.z_matrix[j]["parameter"]):
-                if i > 1:
-                    temp_text = np.rad2deg(text)
+                temp_text = np.rad2deg(text) if i > 1 else text
+
                 self.ui.tableWidget.setItem(j, i, QTableWidgetItem(str(temp_text)))
         self.disable_slot = False
 
