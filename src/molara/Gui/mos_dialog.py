@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 
 from molara.Gui.ui_mos_dialog import Ui_MOs_dialog
 from molara.Eval.marchingcubes import marching_cubes
+from molara.Eval.mos import calculate_mo_cartesian
 
 if TYPE_CHECKING:
     from molara.Molecule.structure import Structure
@@ -53,10 +54,28 @@ class MOsDialog(QDialog):
         self.mcubes()
 
     def mcubes(self):
-        iso = 0.2
-        origin = np.array([-0.5, -0.5, -1.5])
+        iso = 0.08
+        orbital = 16
+        orbital_exponents = []
+        orbital_coefficients = []
+        orbital_norms = []
+        orbital_positions = []
+        orbital_ijks = []
+        for ao in self.aos:
+            orbital_exponents.append(ao.exponents)
+            orbital_coefficients.append(ao.coefficients)
+            orbital_norms.append(ao.norms)
+            orbital_positions.append(ao.position)
+            orbital_ijks.append(ao.ijk)
+        orbital_exponents = np.array(orbital_exponents)
+        orbital_coefficients = np.array(orbital_coefficients)
+        orbital_norms = np.array(orbital_norms)
+        orbital_positions = np.array(orbital_positions)
+        orbital_ijks = np.array(orbital_ijks)
+        print(self.mos.coefficients)
+        origin = np.array([-5, -1, -5])
         size = -2 * origin.copy()
-        voxel_number = np.array([20, 20, 50])
+        voxel_number = np.array([70, 14, 70])
         voxel_size = np.array(
             [
                 [size[0] / (voxel_number[0] - 1), 0, 0],
@@ -64,7 +83,9 @@ class MOsDialog(QDialog):
                 [0, 0, size[2] / (voxel_number[2] - 1)],
             ]
         )
+        mo_coefficients = self.mos.coefficients[orbital]
         self.parent().parent().ui.openGLWidget.update()
+        aos_values = np.zeros(15)
         cube = np.zeros(voxel_number)
         for i in range(voxel_number[0]):
             for j in range(voxel_number[1]):
@@ -72,9 +93,16 @@ class MOsDialog(QDialog):
                     position = origin + np.array([i, j, k]) * size / (
                         voxel_number - np.array([1, 1, 1])
                     )
-                    cube[i, j, k] = self.mos.calculate_mo_cartesian(
-                        5, self.aos, position
-                    )
+                    cube[i, j, k] = calculate_mo_cartesian(
+                                position * 1.889726124565062,
+                                orbital_positions * 1.889726124565062,
+                                orbital_coefficients,
+                                orbital_exponents,
+                                orbital_norms,
+                                orbital_ijks,
+                                mo_coefficients,
+                                aos_values,
+                            )
         vertices1, vertices2 = marching_cubes(
             cube, iso, origin, voxel_size, voxel_number
         )
@@ -100,7 +128,7 @@ class MOsDialog(QDialog):
             idx = np.random.randint(0, high=len(self.atoms))
             r = np.array(self.atoms[idx].position, dtype=np.float32)
             r = np.array([0, 0, 0], dtype=np.float32)
-            vals.append(self.mos.calculate_mo_cartesian(orb, self.aos, r))
+            vals.append(self.mos.get_mo_value(orb, self.aos, r))
             pos.append(r)
             if vals[-1] > 0:
                 colors.append(np.array([1, 0, 0], dtype=np.float32))
@@ -109,7 +137,7 @@ class MOsDialog(QDialog):
             radii.append([0.1 * abs(vals[-1])])
             for i in range(steps):
                 r = np.array(pos[-1]) + (np.random.rand(3) * 2 - 1) * step_size
-                val = self.mos.calculate_mo_cartesian(orb, self.aos, r)
+                val = self.mos.get_mo_value(orb, self.aos, r)
                 if val**2 > vals[-1] ** 2:
                     vals.append(val)
                     pos.append(r)

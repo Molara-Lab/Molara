@@ -1,7 +1,5 @@
 """This module serves the calculation of atomic orbitals."""
 
-import numpy as np
-cimport numpy as npc
 from cython.parallel import prange
 from cython import boundscheck, exceptval
 from cython import nogil
@@ -9,16 +7,19 @@ from cython import nogil
 __copyright__ = "Copyright 2024, Molara"
 
 
-def calculate_aos(
+cpdef int calculate_aos(
     double[:] electron_coords,
     double[:] atom_coords,
     double[:] exponents,
     double[:] coefficients,
     double[:] norms,
-    int orbital):
+    int orbital,
+    double[:] uao) nogil:
+
     cdef double sqr3 = 1.73205080756887729
     cdef double sqr5 = 2.236067977499789696
     cdef double sqr7 = 2.645751311064591
+    cdef double e = 2.718281828459045
 
     cdef int s = 0
     cdef int p = 1
@@ -53,7 +54,6 @@ def calculate_aos(
     cdef int gyyxz = 13
     cdef int gzzxy = 14
 
-    cdef double[:] uao
     cdef double[3] relative_coords
     cdef double rr, r2, u, dx, dy, dz, dx2, dy2, dz2, dxyz
     cdef int ngto = exponents.shape[0]
@@ -64,13 +64,11 @@ def calculate_aos(
           relative_coords[1]**2 +
           relative_coords[2]**2)
     u = 0
-    for ic in range(ngto):
-        u += norms[ic] * coefficients[ic] * np.exp(-exponents[ic] * r2)
+    for ic in prange(ngto):
+        u += norms[ic] * coefficients[ic] * e**(-exponents[ic] * r2)
     if orbital == s:
-        uao = np.zeros(1)
         uao[0] = u
     elif orbital == p:
-        uao = np.zeros(3)
         dx = relative_coords[0]
         dy = relative_coords[1]
         dz = relative_coords[2]
@@ -78,7 +76,6 @@ def calculate_aos(
         uao[1] = dy * u
         uao[2] = dz * u
     elif orbital == d:
-        uao = np.zeros(6)
         dx = relative_coords[0]
         dx2 = dx * dx
         dy = relative_coords[1]
@@ -93,7 +90,6 @@ def calculate_aos(
         uao[4] = uao[4] + dx * dz * u
         uao[5] = uao[5] + dy * dz * u
     elif orbital == f:
-        uao = np.zeros(10)
         dx = relative_coords[0]
         dx2 = dx * dx
         dy = relative_coords[1]
@@ -114,7 +110,6 @@ def calculate_aos(
         u = sqr3 * u
         uao[fxyz] = uao[fxyz] + dxyz * u
     elif orbital == g:
-        uao = np.zeros(15)
         dx = relative_coords[0]
         dx2 = dx * dx
         dy = relative_coords[1]
@@ -140,7 +135,4 @@ def calculate_aos(
         uao[gxxyz] = uao[gxxyz] + dx * dxyz * u
         uao[gyyxz] = uao[gyyxz] + dy * dxyz * u
         uao[gzzxy] = uao[gzzxy] + dz * dxyz * u
-    else:
-        msg = "(calculate_aos): wrong GTO"
-        raise TypeError(msg)
-    return np.array(uao, dtype=np.float64)
+    return 0

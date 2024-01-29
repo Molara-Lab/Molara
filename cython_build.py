@@ -17,7 +17,9 @@ extensions = [
     "src/molara/Rendering/matrices.pyx",
     "src/molara/Tools/mathtools.pyx",
     "src/molara/Tools/raycasting.pyx",
+    #"src/molara/Eval/aos.pxd",
     "src/molara/Eval/aos.pyx",
+    "src/molara/Eval/mos.pyx",
 ]
 
 

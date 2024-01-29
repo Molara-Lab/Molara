@@ -49,7 +49,7 @@ class Mos:
             self.occupations = []
         self.coefficients: np.ndarray = np.array([])
 
-    def calculate_mo_cartesian(  # noqa: C901
+    def get_mo_value(  # noqa: C901
         self,
         index: int,
         aos: list[Orbital],
@@ -70,15 +70,17 @@ class Mos:
         mo = 0
         mo_coefficients = self.coefficients[index]
         i = 0
+        ao_values = np.zeros(15)
         while i < len(mo_coefficients):
             shell = sum(aos[i].ijk)
-            ao_values = calculate_aos(
+            calculate_aos(
                 np.array(electron_position, dtype=np.float64) * 1.889726124565062,
                 np.array(aos[i].position, dtype=np.float64) * 1.889726124565062,
                 np.array(aos[i].exponents, dtype=np.float64),
                 np.array(aos[i].coefficients, dtype=np.float64),
                 np.array(aos[i].norms, dtype=np.float64),
                 shell,
+                ao_values,
             )
             if shell == s:
                 mo += mo_coefficients[i] * ao_values[0]
@@ -102,4 +104,5 @@ class Mos:
             else:
                 msg = f"The shell {shell} type is not supported."
                 raise TypeError(msg)
+            print(mo, i)
         return mo
