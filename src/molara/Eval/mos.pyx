@@ -3,7 +3,11 @@
 from molara.Eval.aos cimport calculate_aos
 from cython.parallel import prange
 from cython.cimports.molara.Eval.aos import calculate_aos
+from cython import boundscheck, exceptval
 
+
+@exceptval(check=False)
+@boundscheck(False)
 cpdef double calculate_mo_cartesian(
         double[:] electron_position,
         double[:,:] orbital_position,
@@ -37,19 +41,19 @@ cpdef double calculate_mo_cartesian(
             if shell == s:
                 mo_value += mo_coefficients[mo_index] * aos_values[0]
             if shell == p:
-                for i in range(3):
+                for i in prange(3):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 2
             if shell == d:
-                for i in range(6):
+                for i in prange(6):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 5
             if shell == f:
-                for i in range(10):
+                for i in prange(10):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 9
             if shell == g:
-                for i in range(15):
+                for i in prange(15):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 14
         else:

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+import time
 from PySide6.QtWidgets import (
     QDialog,
     QMainWindow,
@@ -13,6 +14,7 @@ from PySide6.QtWidgets import (
 from molara.Gui.ui_mos_dialog import Ui_MOs_dialog
 from molara.Eval.marchingcubes import marching_cubes
 from molara.Eval.mos import calculate_mo_cartesian
+from molara.Eval.generate_voxel_grid import generate_voxel_grid
 
 if TYPE_CHECKING:
     from molara.Molecule.structure import Structure
@@ -56,26 +58,36 @@ class MOsDialog(QDialog):
     def mcubes(self):
         iso = 0.08
         orbital = 16
-        orbital_exponents = []
-        orbital_coefficients = []
-        orbital_norms = []
-        orbital_positions = []
-        orbital_ijks = []
+
+        max_length = 0
         for ao in self.aos:
-            orbital_exponents.append(ao.exponents)
-            orbital_coefficients.append(ao.coefficients)
-            orbital_norms.append(ao.norms)
-            orbital_positions.append(ao.position)
-            orbital_ijks.append(ao.ijk)
-        orbital_exponents = np.array(orbital_exponents)
-        orbital_coefficients = np.array(orbital_coefficients)
-        orbital_norms = np.array(orbital_norms)
-        orbital_positions = np.array(orbital_positions)
-        orbital_ijks = np.array(orbital_ijks)
-        print(self.mos.coefficients)
-        origin = np.array([-5, -1, -5])
-        size = -2 * origin.copy()
-        voxel_number = np.array([70, 14, 70])
+            if len(ao.exponents) > max_length:
+                max_length = len(ao.exponents)
+        orbital_exponents = np.zeros((len(self.aos), max_length), dtype=np.float64)
+        orbital_coefficients = np.zeros((len(self.aos), max_length), dtype=np.float64)
+        orbital_norms = np.zeros((len(self.aos), max_length), dtype=np.float64)
+        orbital_positions = np.zeros((len(self.aos), 3), dtype=np.float64)
+        orbital_ijks = np.zeros((len(self.aos), 3), dtype=np.int64)
+        for ao_index, ao in enumerate(self.aos):
+            for i in range(len(ao.exponents)):
+                orbital_exponents[ao_index, i] = ao.exponents[i]
+                orbital_coefficients[ao_index, i] = ao.coefficients[i]
+                orbital_norms[ao_index, i] = ao.norms[i]
+            orbital_positions[ao_index, :] = ao.position
+            orbital_ijks[ao_index, :] = ao.ijk
+        # origin = np.array([-1, -1, -1.5])
+        # direction = np.array([[1, 0, 0],
+        #                          [0, 1, 0],
+        #                         [0, 0, 1],], dtype=np.float64)
+        # size = -2 * origin.copy()
+        # voxel_number = np.array([40, 40, 60], dtype=np.int32)
+        origin = np.array([-1, -1, -2])
+        direction = np.array([[1, 0, 0],
+                                 [0, 1, 0],
+                                [0, 0, 1],], dtype=np.float64)
+        size = np.array([4, 2, 5])
+        voxel_number = np.array([140, 28, 140], dtype=np.int32)
+
         voxel_size = np.array(
             [
                 [size[0] / (voxel_number[0] - 1), 0, 0],
@@ -83,29 +95,30 @@ class MOsDialog(QDialog):
                 [0, 0, size[2] / (voxel_number[2] - 1)],
             ]
         )
+        voxel_size_ = np.array([size[0] / (voxel_number[0] - 1),
+                                size[1] / (voxel_number[1] - 1),
+                                size[2] / (voxel_number[2] - 1)], dtype=np.float64)
         mo_coefficients = self.mos.coefficients[orbital]
         self.parent().parent().ui.openGLWidget.update()
-        aos_values = np.zeros(15)
-        cube = np.zeros(voxel_number)
-        for i in range(voxel_number[0]):
-            for j in range(voxel_number[1]):
-                for k in range(voxel_number[2]):
-                    position = origin + np.array([i, j, k]) * size / (
-                        voxel_number - np.array([1, 1, 1])
-                    )
-                    cube[i, j, k] = calculate_mo_cartesian(
-                                position * 1.889726124565062,
-                                orbital_positions * 1.889726124565062,
-                                orbital_coefficients,
-                                orbital_exponents,
-                                orbital_norms,
-                                orbital_ijks,
-                                mo_coefficients,
-                                aos_values,
-                            )
-        vertices1, vertices2 = marching_cubes(
-            cube, iso, origin, voxel_size, voxel_number
+
+        print(voxel_size_)
+
+        t1 = time.time()
+        temp = generate_voxel_grid(
+            np.array(origin, dtype=np.float64),
+            direction,
+            voxel_size_,
+            voxel_number,
+            self.aos,
+            mo_coefficients,
         )
+        t2 = time.time()
+        vertices1, vertices2 = marching_cubes(
+            temp, iso, origin, voxel_size, voxel_number
+        )
+        t3 = time.time()
+        print("new_voxel: ", t2 - t1)
+        print("marching: ", t3 - t2)
         self.parent().parent().ui.openGLWidget.renderer.draw_polygon(
             vertices1, np.array([[1, 0, 0]], dtype=np.float32)
         )
