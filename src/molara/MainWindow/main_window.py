@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         # Start
         self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
         self.ui.actionExport.triggered.connect(self.export_structure)
+        self.ui.actionExport_Snapshot.triggered.connect(self.ui.openGLWidget.export_snapshot)
         self.ui.quit.triggered.connect(self.close)
 
         # View

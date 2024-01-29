@@ -62,6 +62,8 @@ class Ui_MainWindow(object):
         self.actionBuilder.setObjectName(u"actionBuilder")
         self.actionExport = QAction(MainWindow)
         self.actionExport.setObjectName(u"actionExport")
+        self.actionExport_Snapshot = QAction(MainWindow)
+        self.actionExport_Snapshot.setObjectName(u"actionExport_Snapshot")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -96,6 +98,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuCrystal.menuAction())
         self.menuFile.addAction(self.actionImport)
         self.menuFile.addAction(self.actionExport)
+        self.menuFile.addAction(self.actionExport_Snapshot)
         self.menuFile.addAction(self.quit)
         self.menuEdit.addAction(self.actionCenter_Molecule)
         self.menuEdit.addAction(self.actionReset_View)
@@ -138,9 +141,11 @@ class Ui_MainWindow(object):
         self.actionSupercell.setText(QCoreApplication.translate("MainWindow", u"Supercell", None))
         self.actionBuilder.setText(QCoreApplication.translate("MainWindow", u"Builder", None))
         self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export", None))
+        self.actionExport_Snapshot.setText(QCoreApplication.translate("MainWindow", u"Export Snapshot", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
     # retranslateUi
+
