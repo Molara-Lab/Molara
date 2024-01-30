@@ -71,6 +71,19 @@ class TestCrystal(TestCase):
             self.crystal.coords_unitcell,
         )
 
+    def test_from_poscar_cartesian(self) -> None:
+        """Test the creation of a crystal from a POSCAR file with cartesian coords."""
+        supercell_dims = self.supercell_dims
+        importer = PoscarImporter("examples/POSCAR/boron_nitride_cartesian", supercell_dims)
+        self.crystals_from_POSCAR_c = importer.load()
+        self.crystal_from_POSCAR_c = self.crystals_from_POSCAR_c.get_current_mol()
+
+        assert_almost_equal(
+            self.crystal_from_POSCAR_c.fractional_coords_supercell,
+            self.crystal.fractional_coords_supercell,
+            decimal=5,
+        )
+
     def test_make_supercell(self) -> None:
         """Test the supercell generation."""
         supercell_dims = [3, 3, 3]
