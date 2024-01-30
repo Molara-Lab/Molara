@@ -119,12 +119,12 @@ class PoscarImporter(Importer):
             if (
                 len(numbers) != len(species)
                 or len(positions) != sum(numbers)
-                or not mode.lower().startswith(("d", "c"))  # Either cartesian or direct coords
+                or not mode.lower().startswith(("d", "c", "k"))  # Either cartesian or direct coords
             ):
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg)
             # For cartesian coordinates, convert to fractional coordinates
-            if mode.lower().startswith("c"):
+            if mode.lower().startswith(("c", "k")):
                 positions = [np.dot(np.linalg.inv(basis_vectors).T, position).tolist() for position in positions]
             atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
 
