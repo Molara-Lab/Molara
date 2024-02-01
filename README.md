@@ -8,6 +8,7 @@ cd Molara
 You first need to create a virtual environment and activate it in order to install molara as follows:
 ```
 python -m venv venv
+source venv/bin/activate
 pip install cython numpy setuptools
 python -m cython_build build_ext --inplace
 pip install -e .
