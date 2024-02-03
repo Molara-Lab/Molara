@@ -11,8 +11,10 @@ from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
-from molara.Structure.crystal import Crystal
-from molara.Structure.io.importer import GeneralImporter, PoscarImporter
+from molara.Molecule.crystal import Crystal
+from molara.Molecule.crystals import Crystals
+from molara.Molecule.io.exporter import GeneralExporter
+from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -30,12 +32,15 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
         self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
+
         self.set_action_triggers()
 
     def set_action_triggers(self) -> None:
         """Connect Triggers of menu actions with the corresponding routines."""
         # Start
         self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
+        self.ui.actionExport.triggered.connect(self.export_structure)
+        self.ui.actionExport_Snapshot.triggered.connect(self.ui.openGLWidget.export_snapshot)
         self.ui.quit.triggered.connect(self.close)
 
         # View
@@ -49,6 +54,9 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show,
         )
 
+        self.ui.actionBuilder.triggered.connect(
+            self.ui.openGLWidget.show_builder_dialog,
+        )
         # Tools
         self.ui.actionMeasure.triggered.connect(
             self.ui.openGLWidget.show_measurement_dialog,
@@ -84,6 +92,19 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
 
+    def export_structure(self) -> None:
+        """Save structure to file."""
+        if not self.ui.openGLWidget.structure:
+            return
+        filename = QFileDialog.getSaveFileName(
+            self,
+            "Export structure to file",
+            ".",
+            "*",
+        )
+        exporter = GeneralExporter(filename[0])
+        exporter.write_structure(self.ui.openGLWidget.structure)
+
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
         if self.ui.openGLWidget.structure:
@@ -110,21 +131,22 @@ class MainWindow(QMainWindow):
         """Reads poscar file and shows the first structure in this file."""
         filename = QFileDialog.getOpenFileName(
             self,
-            "Open POSCAR file",
-            "/home",
-            "POSCAR Files (*)",
+            caption="Open POSCAR file",
+            dir=".",
+            filter="POSCAR Files (*)",
         )
 
         supercell_dims = [1, 1, 1]
 
         importer = PoscarImporter(filename[0], supercell_dims)
-        crystal = importer.load()
+        crystals = importer.load()
 
-        if not isinstance(crystal, Crystal):
+        if not isinstance(crystals, Crystals):
+            crystal = crystals.get_current_mol()
             error_message = crystal[1]
             msg_box = QMessageBox()
             msg_box.setText(error_message)
             msg_box.exec()
             return False
-        self.ui.openGLWidget.set_structure(crystal)
+        self.ui.openGLWidget.set_structure(struct=crystals.get_current_mol())
         return True

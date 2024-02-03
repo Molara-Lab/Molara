@@ -7,6 +7,7 @@
         "src/molara/Gui/structure_widget.py",
         "src/molara/Structure/molecule.py",
         "src/molara/Gui/trajectory.ui",
-        "src/molara/Gui/measuring_tool.ui"
+        "src/molara/Gui/measuring_tool.ui",
+        "src/molara/Gui/builder.ui"
     ]
 }

@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -34,6 +34,8 @@
      <string>File</string>
     </property>
     <addaction name="actionImport"/>
+    <addaction name="actionExport"/>
+    <addaction name="actionExport_Snapshot"/>
     <addaction name="quit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -69,6 +71,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionMeasure"/>
+    <addaction name="actionBuilder"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -154,6 +157,19 @@
   <action name="actionSupercell">
    <property name="text">
     <string>Supercell</string>
+   </property>
+  </action>
+  <action name="actionBuilder">
+   <property name="text">
+    <string>Builder</string>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export</string>
+   </property>
+  </action>
+  <action name="actionExport_Snapshot">
+   <property name="text">
+    <string>Export Snapshot</string>
    </property>
   </action>
  </widget>
