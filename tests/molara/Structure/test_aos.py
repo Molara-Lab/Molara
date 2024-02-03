@@ -5,7 +5,7 @@ from unittest import TestCase
 
 import numpy as np
 from molara.Eval.aos import calculate_aos
-from molara.Molecule.io.importer import GeneralImporter
+from molara.Structure.io.importer import GeneralImporter
 
 __copyright__ = "Copyright 2024, Molara"
 

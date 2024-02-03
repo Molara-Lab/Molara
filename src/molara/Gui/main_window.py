@@ -11,10 +11,10 @@ from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.crystals import Crystals
-from molara.Molecule.io.exporter import GeneralExporter
-from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
+from molara.Structure.crystal import Crystal
+from molara.Structure.crystals import Crystals
+from molara.Structure.io.exporter import GeneralExporter
+from molara.Structure.io.importer import GeneralImporter, PoscarImporter
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
         self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
+
         self.set_action_triggers()
 
     def set_action_triggers(self) -> None:
@@ -46,13 +47,16 @@ class MainWindow(QMainWindow):
         self.ui.actionReset_View.triggered.connect(self.ui.openGLWidget.reset_view)
         self.ui.actionDraw_Axes.triggered.connect(self.ui.openGLWidget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
-            self.ui.openGLWidget.center_molecule,
+            self.ui.openGLWidget.center_structure,
         )
         self.ui.actionToggle_Bonds.triggered.connect(self.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )
 
+        self.ui.actionBuilder.triggered.connect(
+            self.ui.openGLWidget.show_builder_dialog,
+        )
         # Tools
         self.ui.actionMeasure.triggered.connect(
             self.ui.openGLWidget.show_measurement_dialog,

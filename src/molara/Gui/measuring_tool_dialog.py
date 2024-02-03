@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 from molara.Gui.ui_measuring_tool import Ui_measuring_tool
 
 if TYPE_CHECKING:
-    from molara.Molecule.structure import Structure
+    from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 

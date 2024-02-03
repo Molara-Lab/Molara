@@ -19,7 +19,7 @@ from molara.Rendering.sphere import (
 from molara.Tools.mathtools import norm
 
 if TYPE_CHECKING:
-    from molara.Molecule.atom import Atom
+    from molara.Structure.atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -78,15 +78,13 @@ class Drawer:
 
         :return:
         """
-        i = 0
-        for atom in self.atoms:
+        for i, atom in enumerate(self.atoms):
             if i != 0:
                 self.atom_colors = np.concatenate(
                     (self.atom_colors, np.array([atom.cpk_color], dtype=np.float32)),
                 )
             else:
                 self.atom_colors = np.array([self.atoms[0].cpk_color], dtype=np.float32)
-            i += 1
         self.atom_colors = np.array(self.atom_colors, dtype=np.float32)
 
     def set_cylinder_props(self) -> None:

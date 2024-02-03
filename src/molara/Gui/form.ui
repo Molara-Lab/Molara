@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="MoleculeWidget" name="openGLWidget"/>
+     <widget class="StructureWidget" name="openGLWidget"/>
     </item>
    </layout>
   </widget>
@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -71,6 +71,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionMeasure"/>
+    <addaction name="actionBuilder"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -158,6 +159,9 @@
     <string>Supercell</string>
    </property>
   </action>
+  <action name="actionBuilder">
+   <property name="text">
+    <string>Builder</string>
   <action name="actionExport">
    <property name="text">
     <string>Export</string>
@@ -171,9 +175,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MoleculeWidget</class>
+   <class>StructureWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">molara/MoleculeWidget/molecule_widget</header>
+   <header location="global">molara/StructureWidget/structure_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

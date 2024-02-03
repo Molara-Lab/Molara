@@ -1,21 +1,19 @@
-"""A Molecules Class to be able to work with several molecules."""
+"""A Crystals Class to be able to work with several crystals."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from molara.Molecule.structures import Structures
-
 if TYPE_CHECKING:
-    from molara.Molecule.molecule import Molecule
+    from molara.Structure.crystal import Crystal
 
-__copyright__ = "Copyright 2024, Molara"
+from molara.Structure.structures import Structures
 
 
-class Molecules(Structures):
-    """A class to store and manipulate a list of Molecules."""
+class Crystals(Structures):
+    """A class to store and manipulate a list of Crystals."""
 
     def __init__(self) -> None:
-        """Initializes the Molecules Class."""
+        """Initializes the Crystals Class."""
         super().__init__()
         self.energies: list = []
 
@@ -27,11 +25,15 @@ class Molecules(Structures):
         self.get_index_mol = self._get_structure_by_id
         self.set_next_mol = self._set_next_structure
         self.set_previous_mol = self._set_previous_structure
-        self.remove_molecule = self._remove_structure
+        self.remove_crystal = self._remove_structure
+
+    def _get_current_structure(self) -> Crystal:
+        """Returns the current structure."""
+        return self._structures[self._structure_id]
 
     @property
     def num_mols(self) -> int:
-        """Number of molecules."""
+        """Number of crystals."""
         return self._num_structures
 
     @property
@@ -39,7 +41,7 @@ class Molecules(Structures):
         """Index of currently displayed molecule."""
         return self._structure_id
 
-    def add_molecule(self, mol: Molecule) -> None:
-        """Add a new molecules to list of molecules."""
+    def add_crystal(self, mol: Crystal) -> None:
+        """Add a new crystals to list of crystals."""
         self._add_structure(mol)
         self.energies.append(mol.energy)

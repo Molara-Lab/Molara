@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from molara.Molecule.basisset import Basisset
+from molara.Structure.basisset import Basisset
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
@@ -154,7 +154,7 @@ def element_symbol_to_atomic_number(symbol: str) -> int:
         "Ts": 117,
         "Og": 118,
     }
-    return symbol_to_atomic_number[symbol]
+    return symbol_to_atomic_number.get(symbol, 0)
 
 
 elements: dict[int, dict[str, Any]] = {
