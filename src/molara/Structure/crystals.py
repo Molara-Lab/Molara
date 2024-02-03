@@ -4,9 +4,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from molara.Molecule.crystal import Crystal
+    from molara.Structure.crystal import Crystal
 
-from molara.Molecule.structures import Structures
+from molara.Structure.structures import Structures
 
 
 class Crystals(Structures):
