@@ -11,10 +11,10 @@ from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.crystals import Crystals
-from molara.Molecule.io.exporter import GeneralExporter
-from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
+from molara.Structure.crystal import Crystal
+from molara.Structure.crystals import Crystals
+from molara.Structure.io.exporter import GeneralExporter
+from molara.Structure.io.importer import GeneralImporter, PoscarImporter
 
 if TYPE_CHECKING:
     from os import PathLike

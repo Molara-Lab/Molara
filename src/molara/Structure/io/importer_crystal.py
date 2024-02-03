@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
 import numpy as np
-from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.crystals import Crystals
+from molara.Structure.atom import element_symbol_to_atomic_number
+from molara.Structure.crystal import Crystal
+from molara.Structure.crystals import Crystals
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

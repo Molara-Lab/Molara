@@ -8,9 +8,9 @@ import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
 
 from molara.Gui.ui_builder import Ui_builder
-from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.molecule import Molecule
-from molara.Molecule.molecules import Molecules
+from molara.Structure.atom import element_symbol_to_atomic_number
+from molara.Structure.molecule import Molecule
+from molara.Structure.molecules import Molecules
 
 if TYPE_CHECKING:
     from PySide6.QtOpenGLWidgets import QOpenGLWidget

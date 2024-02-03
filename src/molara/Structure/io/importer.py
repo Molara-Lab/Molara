@@ -9,8 +9,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Structure.atom import element_symbol_to_atomic_number
-from molara.Molecule.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
-from molara.Structure.crystal import Crystal
+from molara.Structure.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
 from molara.Structure.mos import Mos
