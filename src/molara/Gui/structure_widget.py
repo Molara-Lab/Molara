@@ -11,8 +11,6 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QFileDialog
 
-from molara.Gui.builder import BuilderDialog
-from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
@@ -32,10 +30,9 @@ class StructureWidget(QOpenGLWidget):
 
     def __init__(self, parent: QMainWindow) -> None:
         """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
-        self.parent = parent  # type: ignore[method-assign, assignment]
+        self.main_window = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.measurement_dialog = MeasurementDialog(parent)
         self.renderer = Renderer()
         self.structure_is_set = False
         self.vertex_attribute_objects = [-1]
@@ -119,7 +116,7 @@ class StructureWidget(QOpenGLWidget):
         """Draws the scene."""
         self.renderer.draw_scene(self.camera, self.bonds)
 
-    def set_vertex_attribute_objects(self) -> None:
+    def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Sets the vertex attribute objects of the structure."""
         self.makeCurrent()
         self.renderer.update_atoms_vao(
@@ -133,7 +130,7 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.cylinder.indices,
             self.structure.drawer.cylinder_model_matrices,
             self.structure.drawer.cylinder_colors,
-        )
+        ) if update_bonds else None
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""
@@ -151,10 +148,10 @@ class StructureWidget(QOpenGLWidget):
             and event.y() in range(self.height())
         ):
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
-                if self.measurement_dialog.isVisible():
+                if self.main_window.measurement_dialog.isVisible():
                     self.update_measurement_selected_atoms(event)
 
-                if self.builder_dialog.isVisible():
+                if self.main_window.builder_dialog.isVisible():
                     self.update_builder_selected_atoms(event)
 
             else:
@@ -262,17 +259,6 @@ class StructureWidget(QOpenGLWidget):
             self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
         self.update()
 
-    def show_measurement_dialog(self) -> None:
-        """Show the measurement dialog."""
-        if self.structure_is_set:
-            self.measurement_dialog.ini_labels()
-            self.measurement_dialog.show()
-
-    def show_builder_dialog(self) -> None:
-        """Show the builder dialog."""
-        self.builder_dialog = BuilderDialog(self)
-        self.builder_dialog.show()
-
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.
 
@@ -318,14 +304,7 @@ class StructureWidget(QOpenGLWidget):
                 ].copy()
                 self.measuremnt_selected_spheres[self.measuremnt_selected_spheres.index(selected_sphere)] = -1
         elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
-            for selected_sphere_i in self.measuremnt_selected_spheres:
-                if selected_sphere_i == -1:
-                    continue
-                self.structure.drawer.atom_colors[selected_sphere_i] = self.old_sphere_colors[
-                    self.measuremnt_selected_spheres.index(selected_sphere_i)
-                ].copy()
-            for i in range(4):
-                self.measuremnt_selected_spheres[i] = -1
+            self.unselect_all_atoms()
 
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
@@ -334,10 +313,24 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_colors,
         )
         self.update()
-        self.measurement_dialog.display_metrics(
+        self.main_window.measurement_dialog.display_metrics(
             self.structure,
             self.measuremnt_selected_spheres,
         )
+
+    def unselect_all_atoms(self) -> None:
+        """Unselect all selected atoms."""
+        for selected_sphere_i in self.measuremnt_selected_spheres:
+            if selected_sphere_i == -1:
+                continue
+            color = self.old_sphere_colors[
+                self.measuremnt_selected_spheres.index(selected_sphere_i)
+            ].copy()
+            self.structure.drawer.atom_colors[selected_sphere_i] = color
+        for i in range(4):
+            self.measuremnt_selected_spheres[i] = -1
+        self.set_vertex_attribute_objects(update_bonds=False)
+        self.update()
 
     def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
         """Returns the selected atoms.

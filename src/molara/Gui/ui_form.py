@@ -68,7 +68,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.openGLWidget = StructureWidget(self.centralwidget)
+        self.openGLWidget = StructureWidget(MainWindow)# self.centralwidget)
         self.openGLWidget.setObjectName("openGLWidget")
 
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
