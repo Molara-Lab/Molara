@@ -68,11 +68,18 @@ class Camera:
         """Resets the camera."""
         self.width = width
         self.height = height
-        self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
-        self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
-        self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
+        self.set_position(
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, -1.0],
+        )
+
+    def set_position(self, position: list[float], up_vector: list[float], right_vector: list[float]) -> None:
+        """Set camera position and orientation."""
+        self.position = pyrr.Vector3(position, dtype=np.float32)
+        self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
+        self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
         self.distance_from_target = 5.0
-        self.zoom_sensitivity = 0.15
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
 

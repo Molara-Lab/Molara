@@ -44,6 +44,9 @@ class MainWindow(QMainWindow):
 
         # View
         self.ui.actionReset_View.triggered.connect(self.ui.openGLWidget.reset_view)
+        self.ui.actionto_x_axis.triggered.connect(self.ui.openGLWidget.set_view_to_x_axis)
+        self.ui.actionto_y_axis.triggered.connect(self.ui.openGLWidget.set_view_to_y_axis)
+        self.ui.actionto_z_axis.triggered.connect(self.ui.openGLWidget.set_view_to_z_axis)
         self.ui.actionDraw_Axes.triggered.connect(self.ui.openGLWidget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
             self.ui.openGLWidget.center_molecule,
