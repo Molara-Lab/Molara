@@ -36,6 +36,8 @@ class MoleculeWidget(QOpenGLWidget):
         QOpenGLWidget.__init__(self, parent)
 
         self.measurement_dialog = MeasurementDialog(parent)
+        self.builder_dialog = BuilderDialog(self)
+
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
@@ -270,7 +272,6 @@ class MoleculeWidget(QOpenGLWidget):
 
     def show_builder_dialog(self) -> None:
         """Show the builder dialog."""
-        self.builder_dialog = BuilderDialog(self)
         self.builder_dialog.show()
 
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
