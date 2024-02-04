@@ -323,9 +323,7 @@ class StructureWidget(QOpenGLWidget):
         for selected_sphere_i in self.measuremnt_selected_spheres:
             if selected_sphere_i == -1:
                 continue
-            color = self.old_sphere_colors[
-                self.measuremnt_selected_spheres.index(selected_sphere_i)
-            ].copy()
+            color = self.old_sphere_colors[self.measuremnt_selected_spheres.index(selected_sphere_i)].copy()
             self.structure.drawer.atom_colors[selected_sphere_i] = color
         for i in range(4):
             self.measuremnt_selected_spheres[i] = -1
