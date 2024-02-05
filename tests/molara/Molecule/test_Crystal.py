@@ -104,3 +104,17 @@ class TestCrystal(TestCase):
         )
         assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
         assert_almost_equal(self.crystal.density_unitcell, 3.6229802861472007, decimal=5)
+
+    def test_copy(self) -> None:
+        """Test the copy method."""
+        copy = self.crystal.copy()
+        assert_array_equal(copy.atomic_nums_unitcell, self.crystal.atomic_nums_unitcell)
+        assert_array_equal(copy.coords_unitcell, self.crystal.coords_unitcell)
+        assert_array_equal(copy.basis_vectors, self.crystal.basis_vectors)
+        assert_array_equal(copy.supercell_dims, self.crystal.supercell_dims)
+        assert_array_equal(copy.atomic_nums_supercell, self.crystal.atomic_nums_supercell)
+        assert_array_equal(copy.fractional_coords_supercell, self.crystal.fractional_coords_supercell)
+        assert_array_equal(copy.cartesian_coordinates_supercell, self.crystal.cartesian_coordinates_supercell)
+        assert copy.molar_mass == self.crystal.molar_mass
+        assert copy.volume_unitcell == self.crystal.volume_unitcell
+        assert copy.density_unitcell == self.crystal.density_unitcell
