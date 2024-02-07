@@ -105,7 +105,8 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-    def center_coordinates(self):
+    def center_coordinates(self) -> None:
+        """Reset camera translation such that center of structure is in center of view."""
         self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.last_translation = self.translation
         self.update()
