@@ -113,15 +113,15 @@ class Camera:
         self.initial_position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.initial_up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.initial_right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
-        if axis=="x":
+        if axis == "x":
             rotation_axis = pyrr.Vector3([0, 1, 0], dtype=np.float32)
-            rotation_angle = 0.
-        elif axis=="y":
+            rotation_angle = 0.0
+        elif axis == "y":
             rotation_axis = pyrr.Vector3([0, 0, 1], dtype=np.float32)
-            rotation_angle = np.pi/2.
-        elif axis=="z":
+            rotation_angle = np.pi / 2.0
+        elif axis == "z":
             rotation_axis = pyrr.Vector3([0, 1, 0], dtype=np.float32)
-            rotation_angle = np.pi/2.
+            rotation_angle = np.pi / 2.0
         self.rotation = pyrr.Quaternion() * pyrr.Quaternion.from_axis_rotation(
             rotation_axis,
             rotation_angle,
