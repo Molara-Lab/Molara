@@ -79,7 +79,6 @@ class Camera:
         self.position = pyrr.Vector3(position, dtype=np.float32)
         self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
-        self.distance_from_target = 5.0
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
 
@@ -105,6 +104,11 @@ class Camera:
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
+
+    def center_coordinates(self):
+        self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.last_translation = self.translation
+        self.update()
 
     def set_distance_from_target(self, num_steps: int) -> None:
         """Set the distance between the camera and its target.
