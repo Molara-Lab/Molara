@@ -42,6 +42,14 @@ class Structure:
         self.draw_bonds = draw_bonds and (self.bonded_pairs[0, 0] != -1)
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
 
+    def copy(self) -> Structure:
+        """Creates a copy of the structure."""
+        return type(self)(
+            self.atomic_numbers,
+            np.array([atom.position for atom in self.atoms]),
+            self.draw_bonds,
+        )
+
     def center_coordinates(self) -> None:
         """Centers the structure around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
