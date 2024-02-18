@@ -126,12 +126,12 @@ class TrajectoryDialog(QDialog):
 
     def initial_energy_plot(self) -> None:
         """Plot the energies of the molecules in the molecules object."""
-        self.energy_plot, = self.sc.axes.plot(
+        (self.energy_plot,) = self.sc.axes.plot(
             np.arange(self.parent().mols.num_mols),
             self.parent().mols.energies,
             "x-",
         )
-        self.current_energy_plot, = self.sc.axes.plot(
+        (self.current_energy_plot,) = self.sc.axes.plot(
             self.parent().mols.mol_index,
             self.parent().mols.energies[self.parent().mols.mol_index],
             "o",
@@ -139,7 +139,7 @@ class TrajectoryDialog(QDialog):
         self.sc.axes.set_xlabel(r"steps")
         self.sc.axes.set_ylabel(r"energy$\,/\,\mathrm{eV}$")
         self.sc.fig.tight_layout()
-        self.sc.fig.subplots_adjust(bottom=.22, right=.99)
+        self.sc.fig.subplots_adjust(bottom=0.22, right=0.99)
 
     def update_energy_plot(self) -> None:
         """Update the energy plot, where the current structure is shown in a different color."""
