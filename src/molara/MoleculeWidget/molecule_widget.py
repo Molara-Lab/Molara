@@ -67,6 +67,24 @@ class MoleculeWidget(QOpenGLWidget):
         self.camera.reset(self.width(), self.height())
         self.update()
 
+    def set_view_to_x_axis(self) -> None:
+        """Set view angle parallel to x-axis."""
+        self.camera.center_coordinates()
+        self.camera.set_rotation("x")
+        self.update()
+
+    def set_view_to_y_axis(self) -> None:
+        """Set view angle parallel to y-axis."""
+        self.camera.center_coordinates()
+        self.camera.set_rotation("y")
+        self.update()
+
+    def set_view_to_z_axis(self) -> None:
+        """Set view angle parallel to z-axis."""
+        self.camera.center_coordinates()
+        self.camera.set_rotation("z")
+        self.update()
+
     def delete_molecule(self) -> None:
         """Delete molecule and reset vertex attributes."""
         self.vertex_attribute_objects = []
@@ -86,6 +104,7 @@ class MoleculeWidget(QOpenGLWidget):
         """Centers the molecule in the widget."""
         if self.molecule_is_set:
             self.structure.center_coordinates()
+            self.camera.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
 
@@ -106,8 +125,9 @@ class MoleculeWidget(QOpenGLWidget):
         glEnable(GL_MULTISAMPLE)
         self.renderer.set_shader(compile_shaders())
 
-    def resizeGL(self, width: int, height: int) -> None:  # noqa: ARG002, N802
+    def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         """Resizes the widget."""
+        self.camera.width, self.camera.height = width, height
         glViewport(0, 0, self.width(), self.height())
         self.camera.calculate_projection_matrix(self.width(), self.height())
         self.update()

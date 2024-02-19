@@ -68,11 +68,17 @@ class Camera:
         """Resets the camera."""
         self.width = width
         self.height = height
-        self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
-        self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
-        self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
-        self.distance_from_target = 5.0
-        self.zoom_sensitivity = 0.15
+        self.set_position(
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, -1.0],
+        )
+
+    def set_position(self, position: list[float], up_vector: list[float], right_vector: list[float]) -> None:
+        """Set camera position and orientation."""
+        self.position = pyrr.Vector3(position, dtype=np.float32)
+        self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
+        self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
 
@@ -98,6 +104,36 @@ class Camera:
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
+
+    def set_rotation(self, axis: str) -> None:
+        """Align the camera rotation with one of the major axes ("x", "y", "z").
+
+        :param axis: specifies along which axis camera view shall be aligned.
+        """
+        self.initial_position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
+        self.initial_up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
+        self.initial_right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
+        if axis == "x":
+            rotation_axis = pyrr.Vector3([0, 1, 0], dtype=np.float32)
+            rotation_angle = 0.0
+        elif axis == "y":
+            rotation_axis = pyrr.Vector3([0, 0, 1], dtype=np.float32)
+            rotation_angle = np.pi / 2.0
+        elif axis == "z":
+            rotation_axis = pyrr.Vector3([0, 1, 0], dtype=np.float32)
+            rotation_angle = np.pi / 2.0
+        self.rotation = pyrr.Quaternion() * pyrr.Quaternion.from_axis_rotation(
+            rotation_axis,
+            rotation_angle,
+        )
+        self.last_rotation = self.rotation
+        self.update()
+
+    def center_coordinates(self) -> None:
+        """Reset camera translation such that center of structure is in center of view."""
+        self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        self.last_translation = self.translation
+        self.update()
 
     def set_distance_from_target(self, num_steps: int) -> None:
         """Set the distance between the camera and its target.
