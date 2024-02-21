@@ -22,8 +22,9 @@ class TestCrystal(TestCase):
         self.basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
         self.supercell_dims = [2, 7, 4]
         self.crystal = Crystal(self.atomic_numbers, self.coordinates, self.basis_vectors, self.supercell_dims)
-        
+
     def test_setup(self) -> None:
+        """Test the result of the setUp routine."""
         supercell_dims = self.crystal.supercell_dims
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
