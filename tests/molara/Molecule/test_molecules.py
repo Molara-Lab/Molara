@@ -7,6 +7,7 @@ from unittest import TestCase
 import numpy as np
 from molara.Molecule.atom import Atom
 from molara.Molecule.molecule import Molecule
+from molara.Molecule.molecules import Molecules
 from numpy.testing import assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
@@ -15,10 +16,10 @@ __copyright__ = "Copyright 2024, Molara"
 class TestMolecules(TestCase):
     """Test the Molecules class."""
 
-    def test_setup(self) -> None:
+    def setUp(self) -> None:
         """Set up a molecules object."""
         # Pentane
-        num_atoms_pentane = 17
+        self.num_atoms_pentane = 17
         xyz_data_pentane = np.array(
             [
                 [6, -0.06119, -0.14438, -0.09006],
@@ -40,12 +41,12 @@ class TestMolecules(TestCase):
                 [1, -2.57051, -0.50852, -1.61872],
             ],
         )
-        atomic_numbers_pentane = np.array(xyz_data_pentane[:, 0], dtype=int)
-        coordinates_pentane = xyz_data_pentane[:, 1:]
-        self.pentane = Molecule(atomic_numbers_pentane, coordinates_pentane)
+        self.atomic_nums_pentane = np.array(xyz_data_pentane[:, 0], dtype=int)
+        self.coords_pentane = xyz_data_pentane[:, 1:]
+        self.pentane = Molecule(self.atomic_nums_pentane, self.coords_pentane)
 
         # Glucose
-        num_atoms_glucose = 12
+        self.num_atoms_glucose = 12
         xyz_data_glucose = np.array(
             [
                 [6, 35.884, 30.895, 49.120],
@@ -62,23 +63,78 @@ class TestMolecules(TestCase):
                 [8, 39.261, 32.018, 46.920],
             ],
         )
-        atomic_numbers_glucose = np.array(xyz_data_glucose[:, 0], dtype=int)
-        coordinates_glucose = xyz_data_glucose[:, 1:]
-        self.glucose = Molecule(atomic_numbers_glucose, coordinates_glucose)
+        self.atomic_nums_glucose = np.array(xyz_data_glucose[:, 0], dtype=int)
+        self.coords_glucose = xyz_data_glucose[:, 1:]
+        self.glucose = Molecule(self.atomic_nums_glucose, self.coords_glucose)
 
-        assert self.pentane.draw_bonds
-        assert len(self.pentane.atoms) == num_atoms_pentane
-        for atom_i in self.pentane.atoms:
-            assert isinstance(atom_i, Atom)
-        assert_array_equal(self.pentane.atomic_numbers, atomic_numbers_pentane)
-        assert_array_equal(self.pentane.unique_atomic_numbers, [6, 1])
+        # Molecules object
+        self.molecules = Molecules()
+        self.molecules.add_molecule(self.pentane)
+        self.molecules.add_molecule(self.glucose)
+        self.num_molecules = 2
 
-        assert self.glucose.draw_bonds
-        assert len(self.glucose.atoms) == num_atoms_glucose
-        for atom_i in self.glucose.atoms:
+    def test_setup(self) -> None:
+        """Test the result of the setUp routine."""
+        # test pentane
+        pentane, num_atoms_pentane = self.pentane, self.num_atoms_pentane
+        atomic_nums_pentane, coords_pentane = self.atomic_nums_pentane, self.coords_pentane
+        assert pentane.draw_bonds
+        assert len(pentane.atoms) == num_atoms_pentane
+        for atom_i, atomic_num_i, coords_i in zip(pentane.atoms, atomic_nums_pentane, coords_pentane):
             assert isinstance(atom_i, Atom)
-        assert_array_equal(self.glucose.atomic_numbers, atomic_numbers_glucose)
-        assert_array_equal(self.glucose.unique_atomic_numbers, [6, 8])
+            assert atom_i.atomic_number == atomic_num_i
+            assert_array_equal(atom_i.position, coords_i)
+        assert_array_equal(pentane.atomic_numbers, atomic_nums_pentane)
+        assert_array_equal(pentane.unique_atomic_numbers, [6, 1])
+
+        # test glucose
+        glucose, num_atoms_glucose = self.glucose, self.num_atoms_glucose
+        atomic_nums_glucose, coords_glucose = self.atomic_nums_glucose, self.coords_glucose
+        assert glucose.draw_bonds
+        assert len(glucose.atoms) == num_atoms_glucose
+        for atom_i, atomic_num_i, coords_i in zip(glucose.atoms, atomic_nums_glucose, coords_glucose):
+            assert isinstance(atom_i, Atom)
+            assert atom_i.atomic_number == atomic_num_i
+            assert_array_equal(atom_i.position, coords_i)
+        assert_array_equal(glucose.atomic_numbers, atomic_nums_glucose)
+        assert_array_equal(glucose.unique_atomic_numbers, [6, 8])
+
+        # test molecules object
+        assert self.molecules.num_mols == self.num_molecules
+        #     first molecule: pentane
+        assert self.molecules.mol_index == 0
+        molecules_pentane = self.molecules.get_current_mol()
+        assert isinstance(molecules_pentane, Molecule)
+        assert molecules_pentane.draw_bonds
+        assert len(molecules_pentane.atoms) == self.num_atoms_pentane
+        for atom_i, atomic_num_i, coords_i in zip(molecules_pentane.atoms, atomic_nums_pentane, coords_pentane):
+            assert isinstance(atom_i, Atom)
+            assert atom_i.atomic_number == atomic_num_i
+            assert_array_equal(atom_i.position, coords_i)
+        assert_array_equal(molecules_pentane.atomic_numbers, atomic_nums_pentane)
+        assert_array_equal(molecules_pentane.unique_atomic_numbers, [6, 1])
+        #     second molecule: glucose
+        self.molecules.set_next_mol()
+        assert self.molecules.mol_index == 1
+        molecules_glucose = self.molecules.get_current_mol()
+        assert isinstance(molecules_glucose, Molecule)
+        assert molecules_glucose.draw_bonds
+        assert len(molecules_glucose.atoms) == self.num_atoms_glucose
+        for atom_i, atomic_num_i, coords_i in zip(molecules_glucose.atoms, atomic_nums_glucose, coords_glucose):
+            assert isinstance(atom_i, Atom)
+            assert atom_i.atomic_number == atomic_num_i
+            assert_array_equal(atom_i.position, coords_i)
+        assert_array_equal(molecules_glucose.atomic_numbers, atomic_nums_glucose)
+        assert_array_equal(molecules_glucose.unique_atomic_numbers, [6, 8])
+        #    test switching to next / previous molecule
+        self.molecules.set_previous_mol()
+        assert self.molecules.mol_index == 0
+        self.molecules.set_next_mol()
+        assert self.molecules.mol_index == 1
+        self.molecules.set_next_mol()
+        assert self.molecules.mol_index == 0
+        self.molecules.set_previous_mol()
+        assert self.molecules.mol_index == 1
 
     # def test_copy(self) -> None:
     #     """Test the copy method."""
