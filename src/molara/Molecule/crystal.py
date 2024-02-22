@@ -35,6 +35,7 @@ ONE, TWO, THREE = 1, 2, 3
 
 class Crystal(Structure):
     """Class that represents a crystal supercell."""
+
     def __init__(
         self,
         atomic_nums: Sequence[int],
