@@ -17,19 +17,22 @@ class TestCrystal(TestCase):
 
     def setUp(self) -> None:
         """Set up a crystal."""
-        atomic_numbers = [5, 7]
-        coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
-        basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
+        self.atomic_numbers = [5, 7]
+        self.coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
+        self.basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
         self.supercell_dims = [2, 7, 4]
-        self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors, self.supercell_dims)
+        self.crystal = Crystal(self.atomic_numbers, self.coordinates, self.basis_vectors, self.supercell_dims)
+
+    def test_setup(self) -> None:
+        """Test the result of the setUp routine."""
         supercell_dims = self.crystal.supercell_dims
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
-        assert_array_equal(self.crystal.basis_vectors, basis_vectors)
-        assert_array_equal(self.crystal.atomic_nums_unitcell, atomic_numbers)
-        assert_array_equal(self.crystal.coords_unitcell, coordinates)
+        assert_array_equal(self.crystal.basis_vectors, self.basis_vectors)
+        assert_array_equal(self.crystal.atomic_nums_unitcell, self.atomic_numbers)
+        assert_array_equal(self.crystal.coords_unitcell, self.coordinates)
 
     def test_from_poscar(self) -> None:
         """Test the creation of a crystal from a POSCAR file."""
@@ -104,3 +107,17 @@ class TestCrystal(TestCase):
         )
         assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
         assert_almost_equal(self.crystal.density_unitcell, 3.6229802861472007, decimal=5)
+
+    def test_copy(self) -> None:
+        """Test the copy method."""
+        copy = self.crystal.copy()
+        assert_array_equal(copy.atomic_nums_unitcell, self.crystal.atomic_nums_unitcell)
+        assert_array_equal(copy.coords_unitcell, self.crystal.coords_unitcell)
+        assert_array_equal(copy.basis_vectors, self.crystal.basis_vectors)
+        assert_array_equal(copy.supercell_dims, self.crystal.supercell_dims)
+        assert_array_equal(copy.atomic_nums_supercell, self.crystal.atomic_nums_supercell)
+        assert_array_equal(copy.fractional_coords_supercell, self.crystal.fractional_coords_supercell)
+        assert_array_equal(copy.cartesian_coordinates_supercell, self.crystal.cartesian_coordinates_supercell)
+        assert copy.molar_mass == self.crystal.molar_mass
+        assert copy.volume_unitcell == self.crystal.volume_unitcell
+        assert copy.density_unitcell == self.crystal.density_unitcell

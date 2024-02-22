@@ -18,7 +18,11 @@ class Atom:
     """Creates an Atom object."""
 
     def __init__(self, atomic_number: int, position: ArrayLike) -> None:
-        """Creates an Atom object."""
+        """Creates an Atom object.
+
+        :param atomic_number: atomic number (nuclear charge number) of the atom
+        :param position: cartesian coordinates of atom location
+        """
         self.symbol = elements[atomic_number]["symbol"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]
@@ -39,7 +43,10 @@ class Atom:
 
 
 def element_symbol_to_atomic_number(symbol: str) -> int:
-    """Define a dictionary mapping element symbols to atomic numbers."""
+    """Define a dictionary mapping element symbols to atomic numbers.
+
+    :param symbol: atomic symbol (element) of the atom
+    """
     symbol_to_atomic_number = {
         "H": 1,
         "He": 2,
