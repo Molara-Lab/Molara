@@ -31,7 +31,7 @@ class CrystalDialog(QDialog):
     def __init__(self, parent: QMainWindow = None) -> None:
         """Creates a CrystalDialog object.
 
-        :param parent: main window should be passed as parent
+        :param parent: parent widget (main window)
         """
         super().__init__(
             parent,
