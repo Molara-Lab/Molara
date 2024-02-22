@@ -28,7 +28,12 @@ class Drawer:
     """Creates a Drawer object."""
 
     def __init__(self, atoms: list[Atom], bonds: np.ndarray, draw_bonds: bool) -> None:
-        """Creates a Drawer object."""
+        """Creates a Drawer object.
+
+        :param atoms: list of atoms to be drawn
+        :param bonds: list ids of bonded atoms
+        :param draw_bonds: bool that specifies whether bonds shall be drawn (as cylinders)
+        """
         self.subdivisions_sphere = 15
         self.subdivisions_cylinder = 20
         self.sphere = Sphere(self.subdivisions_sphere)
@@ -250,8 +255,8 @@ class Drawer:
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
     """Calculates the model matrix for a cylinder between two atoms.
 
-    :param atom1: Atom1
-    :param atom2: Atom2
+    :param atom1: first Atom
+    :param atom2: second Atom
     :return: Model matrix for the cylinder between atom1 and atom2.
     """
     radius = 0.075

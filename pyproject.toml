@@ -75,8 +75,8 @@ exclude = ["tests", "tests.*"]
 exclude = ["ui_*",]
 target-version = "py39"
 line-length = 120
-select = ["ALL"]
-ignore = [
+lint.select = ["ALL"]
+lint.ignore = [
   "ANN101", # Missing type annotation for `self` in method
   "ERA001", # Found commented-out code
   "FBT001", # Boolean-typed positional argument in function definition
@@ -86,8 +86,8 @@ ignore = [
   "PTH123", # `open()` should be replaced by `Path.open()`
   "S101",   # Use of assert detected
   ]
-pydocstyle.convention = "google"
-isort.required-imports = ["from __future__ import annotations"]
+lint.pydocstyle.convention = "google"
+lint.isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
 exclude = ["ui_*"]

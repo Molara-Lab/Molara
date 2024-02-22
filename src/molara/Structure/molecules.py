@@ -40,6 +40,9 @@ class Molecules(Structures):
         return self._structure_id
 
     def add_molecule(self, mol: Molecule) -> None:
-        """Add a new molecules to list of molecules."""
+        """Add a new molecules to list of molecules.
+
+        :param mol: Molecule object to be added
+        """
         self._add_structure(mol)
         self.energies.append(mol.energy)

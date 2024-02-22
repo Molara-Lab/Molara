@@ -21,10 +21,9 @@ class Structure:
     ) -> None:
         """Creates a new Structure object.
 
-        params:
-        atomic_numbers:np.ndarray: atomic numbers of a atoms
-        coordinates:np.ndarray: coordinates of the atoms
-        header:str: header from the imported file
+        :param atomic_numbers:np.ndarray: atomic numbers of a atoms
+        :param coordinates:np.ndarray: coordinates of the atoms
+        :param header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms = []
@@ -42,6 +41,14 @@ class Structure:
         self.draw_bonds = draw_bonds and (self.bonded_pairs[0, 0] != -1)
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
+
+    def copy(self) -> Structure:
+        """Creates a copy of the structure."""
+        return type(self)(
+            self.atomic_numbers,
+            np.array([atom.position for atom in self.atoms]),
+            self.draw_bonds,
+        )
 
     def center_coordinates(self) -> None:
         """Centers the structure around the center of mass."""
@@ -89,7 +96,11 @@ class Structure:
         self.draw_bonds = not self.draw_bonds
 
     def add_atom(self, atomic_number: int, coordinate: np.ndarray) -> None:
-        """Adds an atom to the structure."""
+        """Adds an atom to the structure.
+
+        :param atomic_number: atomic number (nuclear charge number) of the atom
+        :param coordinate: cartesian coordinates of atom location
+        """
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
@@ -99,8 +110,12 @@ class Structure:
         self.molar_mass += atom.atomic_mass
 
     def remove_atom(self, index: int) -> None:
-        """Removes an atom from the structure."""
+        """Removes an atom from the structure.
+
+        :param index: list index of the atom that shall be removed
+        """
         self.n_at -= 1
+
         self.molar_mass -= self.atoms[index].atomic_mass
 
         self.atoms.pop(index)
