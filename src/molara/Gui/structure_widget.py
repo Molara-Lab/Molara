@@ -11,8 +11,6 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QFileDialog
 
-from molara.Gui.builder import BuilderDialog
-from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
@@ -37,9 +35,6 @@ class StructureWidget(QOpenGLWidget):
         """
         self.main_window = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
-
-        self.measurement_dialog = MeasurementDialog(parent)
-        self.builder_dialog = BuilderDialog(self)
 
         self.renderer = Renderer()
         self.structure_is_set = False
@@ -186,10 +181,10 @@ class StructureWidget(QOpenGLWidget):
             and event.y() in range(self.height())
         ):
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
-                if self.measurement_dialog.isVisible():
+                if self.main_window.measurement_dialog.isVisible():
                     self.update_measurement_selected_atoms(event)
 
-                if self.builder_dialog.isVisible():
+                if self.main_window.builder_dialog.isVisible():
                     self.update_builder_selected_atoms(event)
 
             else:
@@ -311,12 +306,12 @@ class StructureWidget(QOpenGLWidget):
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
         if self.molecule_is_set:
-            self.measurement_dialog.ini_labels()
-            self.measurement_dialog.show()
+            self.main_window.measurement_dialog.ini_labels()
+            self.main_window.measurement_dialog.show()
 
     def show_builder_dialog(self) -> None:
         """Show the builder dialog."""
-        self.builder_dialog.show()
+        self.main_window.builder_dialog.show()
 
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.
@@ -379,7 +374,7 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_colors,
         )
         self.update()
-        self.measurement_dialog.display_metrics(
+        self.main_window.measurement_dialog.display_metrics(
             self.structure,
             self.measurement_selected_spheres,
         )
