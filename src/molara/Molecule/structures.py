@@ -26,7 +26,7 @@ class Structures:
     def _get_structure_by_id(self, structure_id: int) -> Structure:
         """Return a structure of the list of structure by a given index.
 
-        param: index: int.
+        :param structure_id: list index of the structure that shall be returned
         """
         self._structure_id = structure_id
         return self._structures[self._structure_id]
@@ -46,7 +46,7 @@ class Structures:
     def _add_structure(self, struct: Structure) -> None:
         """Adds a structure to the list of structures.
 
-        param: struct: Structure.
+        :param struct: Structure object to be added to the list
         """
         if not isinstance(struct, Structure):
             msg = "The given structure is not a Structure object."
@@ -56,6 +56,6 @@ class Structures:
     def _remove_structure(self, structure_id: int) -> None:
         """Removes a structure from the list of structures.
 
-        param: id: int.
+        :param structure_id: list index of the structure that shall be removed
         """
         self._structures.pop(structure_id)

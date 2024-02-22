@@ -25,7 +25,10 @@ class SupercellDialog(QDialog):
     """
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Creates a CrystalDialog object."""
+        """Creates a CrystalDialog object.
+
+        :param parent: parent widget (main window)
+        """
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
@@ -39,13 +42,19 @@ class SupercellDialog(QDialog):
 
     @staticmethod
     def get_supercell_dims(supercell_dims: intvec3) -> bool:
-        """Opens dialog for supercell size specification."""
+        """Opens dialog for supercell size specification.
+
+        :param supercell_dims: supercell dimensions (e.g. [2, 4, 3] for 2x4x3 supercell)
+        """
         dialog = SupercellDialog()
         dialog.set_supercell_dims(supercell_dims)
         return dialog.exec()
 
     def set_supercell_dims(self, supercell_dims: intvec3) -> None:
-        """Set supercell dimensions."""
+        """Set supercell dimensions.
+
+        :param supercell_dims: supercell dimensions (e.g. [2, 4, 3] for 2x4x3 supercell)
+        """
         self.supercell_dims = supercell_dims
         self.ui.set_supercell_dims(self.supercell_dims)
 

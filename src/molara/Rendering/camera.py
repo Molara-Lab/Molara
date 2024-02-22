@@ -9,14 +9,14 @@ __copyright__ = "Copyright 2024, Molara"
 
 
 class Camera:
-    """Creates a Camera object.
-
-    :param width: Width of the opengl widget.
-    :param height: Height of the opengl widget.
-    """
+    """Creates a Camera object."""
 
     def __init__(self, width: float, height: float) -> None:
-        """Creates a Camera object."""
+        """Creates a Camera object.
+
+        :param width: Width of the opengl widget.
+        :param height: Height of the opengl widget.
+        """
         self.fov = 45.0
         self.width = width
         self.height = height
@@ -65,7 +65,11 @@ class Camera:
         )
 
     def reset(self, width: float, height: float) -> None:
-        """Resets the camera."""
+        """Resets the camera.
+
+        :param width: Width of the opengl widget.
+        :param height: Height of the opengl widget.
+        """
         self.width = width
         self.height = height
         self.set_position(
@@ -75,7 +79,12 @@ class Camera:
         )
 
     def set_position(self, position: list[float], up_vector: list[float], right_vector: list[float]) -> None:
-        """Set camera position and orientation."""
+        """Set camera position and orientation.
+
+        :param position: coordinates of camera position
+        :param up_vector: vector indicating which direction is upward for the camera
+        :param right_vector: vector indicating which direction is right for the camera
+        """
         self.position = pyrr.Vector3(position, dtype=np.float32)
         self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
@@ -138,7 +147,8 @@ class Camera:
     def set_distance_from_target(self, num_steps: int) -> None:
         """Set the distance between the camera and its target.
 
-        :param zoom: Factor that is multiplied with the normalized camera position vector and the current distance
+        :param num_steps: Number of zoom steps. From this, factor is calculated that is multiplied
+            with the normalized camera position vector and the current distance
             between the camera and the target.
         """
         zoom_factor = 1.0
@@ -151,7 +161,10 @@ class Camera:
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def update(self, save: bool = False) -> None:
-        """Updates the camera position and orientation."""
+        """Updates the camera position and orientation.
+
+        :param save: specifies whether updated camera orientation shall be saved as new reference
+        """
         self.up_vector = self.rotation * self.initial_up_vector
         self.right_vector = self.rotation * self.initial_right_vector
         self.position = self.rotation * self.initial_position * self.distance_from_target + self.translation

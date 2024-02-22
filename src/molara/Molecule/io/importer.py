@@ -43,7 +43,11 @@ class FileFormatError(FileImporterError):
 class MoleculesImporter(ABC):
     """Base class for importers loading molecules from files."""
 
-    def __init__(self, path: PathLike | str) -> None:  # noqa: D107
+    def __init__(self, path: PathLike | str) -> None:
+        """Instantiate MoleculesImporter object.
+
+        :param path: input file path
+        """
         super().__init__()
 
         self.path = Path(path)
@@ -58,7 +62,11 @@ class MoleculesImporter(ABC):
 class CrystalImporter(ABC):
     """Base class for importers loading molecules from files."""
 
-    def __init__(self, path: PathLike | str) -> None:  # noqa: D107
+    def __init__(self, path: PathLike | str) -> None:
+        """Instantiate CrystalImporter object.
+
+        :param path: input file path
+        """
         super().__init__()
 
         self.path = Path(path)
@@ -387,7 +395,11 @@ class MoldenImporter(MoleculesImporter):
 class QmImporter(MoleculesImporter):
     """importer for output files of various quantum chemistry programs."""
 
-    def __init__(self, path: PathLike | str) -> None:  # noqa: D107
+    def __init__(self, path: PathLike | str) -> None:
+        """Instantiate QmImporter object.
+
+        :param path: input file path
+        """
         import cclib
 
         super().__init__(path)
@@ -415,6 +427,10 @@ class QmImporter(MoleculesImporter):
         self,
         cclib_data: ccData,
     ) -> np.ndarray | None:
+        """Convert cclib energy to hartree.
+
+        :param cclib_data: cclib data
+        """
         # conversion factor used by the cclib package
         cclib_ev_in_hartree = 27.21138505
 
@@ -428,6 +444,10 @@ class QmImporter(MoleculesImporter):
         return energy
 
     def _get_geometries(self, cclib_data: ccData) -> list[Molecule]:
+        """Extract geometries from cclib data.
+
+        :param cclib_data: cclib data
+        """
         try:
             atoms = cclib_data.atomnos
 
@@ -458,7 +478,10 @@ class GeneralImporter(MoleculesImporter):
         self,
         path: PathLike | str,
     ) -> None:
-        """Tries to determine the file format and calls the correct importer."""
+        """Instantiate GeneralImporter object.
+
+        :param path: input file path
+        """
         super().__init__(path)
 
         suffix = self.path.suffix

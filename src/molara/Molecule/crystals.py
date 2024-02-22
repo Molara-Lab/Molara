@@ -41,7 +41,10 @@ class Crystals(Structures):
         """Index of currently displayed molecule."""
         return self._structure_id
 
-    def add_crystal(self, mol: Crystal) -> None:
-        """Add a new crystals to list of crystals."""
-        self._add_structure(mol)
-        self.energies.append(mol.energy)
+    def add_crystal(self, crystal: Crystal) -> None:
+        """Add a new crystals to list of crystals.
+
+        :param crystal: Crystal object to be added to Crystals object
+        """
+        self._add_structure(crystal)
+        self.energies.append(crystal.energy)
