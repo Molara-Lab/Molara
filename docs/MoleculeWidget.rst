@@ -1,21 +1,21 @@
-MoleculeWidget package
+StructureWidget package
 ======================
 
 Submodules
 ----------
 
-MoleculeWidget.Molecule module
+StructureWidget.Molecule module
 ------------------------------
 
-.. automodule:: MoleculeWidget.Molecule
+.. automodule:: StructureWidget.Molecule
    :members:
    :undoc-members:
    :show-inheritance:
 
-MoleculeWidget.MoleculeWidget module
+StructureWidget.StructureWidget module
 ------------------------------------
 
-.. automodule:: MoleculeWidget.MoleculeWidget
+.. automodule:: StructureWidget.StructureWidget
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ MoleculeWidget.MoleculeWidget module
 Module contents
 ---------------
 
-.. automodule:: MoleculeWidget
+.. automodule:: StructureWidget
    :members:
    :undoc-members:
    :show-inheritance:

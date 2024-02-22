@@ -19,7 +19,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QGridLayout, QMainWindow, QMenu,
     QMenuBar, QSizePolicy, QStatusBar, QWidget)
 
-from molara.MoleculeWidget.molecule_widget import MoleculeWidget
+from molara.Gui.structure_widget import StructureWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -67,9 +67,9 @@ class Ui_MainWindow(object):
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.openGLWidget = MoleculeWidget(self.centralwidget)
-        self.openGLWidget.setObjectName(u"openGLWidget")
+        self.gridLayout.setObjectName("gridLayout")
+        self.openGLWidget = StructureWidget(self.centralwidget)
+        self.openGLWidget.setObjectName("openGLWidget")
 
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
 

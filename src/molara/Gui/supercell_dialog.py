@@ -69,5 +69,8 @@ class SupercellDialog(QDialog):
             self.ui.inputSupercell_b.value(),
             self.ui.inputSupercell_c.value(),
         )
-        self.supercell_dims = [dim_a, dim_b, dim_c]
+        # the purpose of the single assign of the elements is not to overwrite the list object.
+        self.supercell_dims[0] = dim_a
+        self.supercell_dims[1] = dim_b
+        self.supercell_dims[2] = dim_c
         self.close()

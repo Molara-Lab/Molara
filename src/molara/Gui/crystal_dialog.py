@@ -9,8 +9,8 @@ import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 
 from molara.Gui.ui_crystalstructure_dialog import UiCrystalDialog
-from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.crystal import Crystal
+from molara.Structure.atom import element_symbol_to_atomic_number
+from molara.Structure.crystal import Crystal
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

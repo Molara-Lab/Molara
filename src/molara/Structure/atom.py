@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from molara.Molecule.basisset import Basisset
+from molara.Structure.basisset import Basisset
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
