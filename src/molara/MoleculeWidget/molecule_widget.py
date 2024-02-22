@@ -86,7 +86,7 @@ class MoleculeWidget(QOpenGLWidget):
             self.bonds = True
         self.molecule_is_set = True
         self.center_molecule()
-        
+
     def center_molecule(self) -> None:
         """Centers the molecule in the widget."""
         if self.molecule_is_set:

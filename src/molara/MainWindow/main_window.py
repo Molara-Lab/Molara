@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
-from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
