@@ -26,7 +26,10 @@ class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Creates a MainWindow object."""
+        """Creates a MainWindow object.
+
+        :param parent: parent widget
+        """
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -80,7 +83,10 @@ class MainWindow(QMainWindow):
         self.load_molecules(file_name)
 
     def load_molecules(self, path: PathLike | str) -> None:
-        """Load the molecules from path."""
+        """Load the molecules from path.
+
+        :param path: input file path
+        """
         importer = GeneralImporter(path)
         self.mols = importer.load()
 
