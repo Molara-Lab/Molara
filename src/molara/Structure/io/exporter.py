@@ -30,20 +30,29 @@ class StructureExporter(ABC):
     """Base class for structure exporters."""
 
     def __init__(self, path: PathLike | str) -> None:
-        """Instantiate object."""
+        """Instantiate object.
+
+        :param path: output file path
+        """
         super().__init__()
         self.path = Path(path)
 
     @abstractmethod
     def write_structure(self, structure: Structure) -> None:
-        """Writes the structure in some given format into the output file."""
+        """Writes the structure in some given format into the output file.
+
+        :param structure: Structure object to be exported to file
+        """
 
 
 class XyzExporter(StructureExporter):
     """Export xyz files."""
 
     def write_structure(self, structure: Structure) -> None:
-        """Write given structure into file with xyz format."""
+        """Write given structure into file with xyz format.
+
+        :param structure: Structure object to be exported to xyz-file
+        """
         lines = [
             elements[atom.atomic_number]["symbol"]
             + "  "
@@ -64,7 +73,10 @@ class GeneralExporter(StructureExporter):
     }
 
     def __init__(self, path: PathLike | str) -> None:
-        """Tries to determine the file format and calls the correct exporter."""
+        """Tries to determine the file format and calls the correct exporter.
+
+        :param path: output file path
+        """
         super().__init__(path)
 
         suffix = self.path.suffix
@@ -79,5 +91,8 @@ class GeneralExporter(StructureExporter):
                 raise FileFormatError(msg) from err
 
     def write_structure(self, structure: Structure) -> None:
-        """Write given structure into file with given format."""
+        """Write given structure into file with given format.
+
+        :param structure: Structure object to be exported to file
+        """
         return self._importer.write_structure(structure)

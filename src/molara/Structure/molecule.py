@@ -28,11 +28,10 @@ class Molecule(Structure):
     ) -> None:
         """Creates a new Molecule object.
 
-        params:
-        atomic_numbers:np.ndarray: atomic numbers of a atoms
-        coordinates:np.ndarray: coordinates of the molecule
-        header:str: header from the imported file
-        dummy: bool: a dummy object.
+        :param atomic_numbers:np.ndarray: atomic numbers of a atoms
+        :param coordinates:np.ndarray: coordinates of the molecule
+        :param header:str: header from the imported file
+        :param dummy: bool: a dummy object.
         """
         if dummy:
             self.dummy = True
@@ -46,7 +45,10 @@ class Molecule(Structure):
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
     def gen_energy_information(self, string: str | None) -> None:
-        """Reads the energy from the second line."""
+        """Reads the energy from the second line.
+
+        :param string: file header from which energy info is extracted
+        """
         self.energy = 0.0
 
         if isinstance(string, str):

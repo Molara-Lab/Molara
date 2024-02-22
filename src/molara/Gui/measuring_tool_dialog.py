@@ -24,8 +24,7 @@ class MeasurementDialog(QDialog):
     def __init__(self, parent: QMainWindow) -> None:
         """Initializes the measurement dialog.
 
-        params:
-        parent: MainWindow: The widget of the MainWindow.
+        :param parent: the MainWindow widget
         """
         super().__init__(
             parent,

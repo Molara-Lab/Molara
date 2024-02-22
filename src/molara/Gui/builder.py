@@ -37,6 +37,7 @@ class BuilderDialog(QDialog):
         self.ui.tableWidget.itemChanged.connect(self.adapt_z_matrix)
 
         self.ui.tableWidget.acceptDrops()
+
         self.parent().mols = Molecules()
 
         self.ui.tableWidget.setRowCount(0)
@@ -149,7 +150,7 @@ class BuilderDialog(QDialog):
 
     def add_first_atom(self, params: tuple) -> None:
         """Initializes a molecule and adds the first atom to it."""
-        (element,) = params[0]
+        element, _ = params
         at_chrg = element_symbol_to_atomic_number(element)
         at_chrg_check = self._check_element(at_chrg)
 
@@ -164,12 +165,12 @@ class BuilderDialog(QDialog):
         self.disable_slot = False
 
     def add_second_atom(self, mol: Molecule, params: tuple) -> None:
-        """Adds a second atom and deletes the ghost atom needed for the first atom.
+        """Adds a second atom.
 
         params:
         mol:Molecule: The molecule where a second atom shall be added.
         """
-        element, dist = params[:2]
+        element, dist = params
 
         at_chrg = element_symbol_to_atomic_number(element)
 
@@ -188,7 +189,7 @@ class BuilderDialog(QDialog):
         params:
         mol:Molecule: The molecule where a second atom shall be added.
         """
-        element, dist, angle = params[:3]
+        element, dist, angle = params
 
         at1_num: int = atom_nums[0]
 
@@ -205,6 +206,8 @@ class BuilderDialog(QDialog):
 
             if at1_num == 1:
                 coord[2] = mol.atoms[at1_num].position[2] - coord[2]
+            else:
+                coord[2] = mol.atoms[at1_num].position[2] + coord[2]
 
             mol.add_atom(at_chrg, coord)
 
@@ -299,11 +302,14 @@ class BuilderDialog(QDialog):
         return is_element
 
     def _extend_z_matrix(self, mol: Molecule) -> None:
+        self.disable_slot = True
         self.ui.tableWidget.setRowCount(mol.n_at)
         for i, text in enumerate(self.z_matrix[mol.n_at - 1]["parameter"]):
             temp_text = np.rad2deg(text) if i > 1 else text
+            if text is not None:
+                self.ui.tableWidget.setItem(mol.n_at - 1, i, QTableWidgetItem(str(temp_text)))
 
-            self.ui.tableWidget.setItem(mol.n_at - 1, i, QTableWidgetItem(str(temp_text)))
+        self.disable_slot = False
 
     def _update_z_matrix(self, mol: Molecule) -> None:
         self.disable_slot = True
@@ -311,8 +317,9 @@ class BuilderDialog(QDialog):
         for j in range(mol.n_at):
             for i, text in enumerate(self.z_matrix[j]["parameter"]):
                 temp_text = np.rad2deg(text) if i > 1 else text
+                if text is not None:
+                    self.ui.tableWidget.setItem(j, i, QTableWidgetItem(str(temp_text)))
 
-                self.ui.tableWidget.setItem(j, i, QTableWidgetItem(str(temp_text)))
         self.disable_slot = False
 
     def _delete_table_row(self, idx: int) -> None:
@@ -326,38 +333,40 @@ class BuilderDialog(QDialog):
         atom_nums = self.parent().builder_selected_spheres
 
         if nat > 2:  # noqa: PLR2004
-            params: (
-                tuple[str, float, float, float] | tuple[str, float, float] | tuple[str, float] | tuple[str, None]
-            ) = (
+            return (
                 element,
                 dist,
                 angle,
                 dihedral,
-            )
+            ), atom_nums
         if nat == 2:  # noqa: PLR2004
-            params = (element, dist, angle)
+            return (element, dist, angle), atom_nums
         if nat == 1:
-            params = (element, dist)
-        if nat == 0:
-            params = (element, None)
-
-        return params, atom_nums
+            return (element, dist), atom_nums
+        # if nat == 0:
+        return (element, None), atom_nums
 
     def _get_parameters_from_table(self, row: int) -> tuple:
         if row >= 0:
-            element = self.ui.tableWidget.item(row, 0).text().capitalize()
-            params = element
+            element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
         if row >= 1:
             dist = float(self.ui.tableWidget.item(row, 1).text())
-            params = (element, dist)
         if row >= 2:  # noqa: PLR2004
             angle = np.deg2rad(float(self.ui.tableWidget.item(row, 2).text()))
-            params = (element, dist, angle)
         if row >= 3:  # noqa: PLR2004
             dihedral = np.deg2rad(float(self.ui.tableWidget.item(row, 3).text()))
-            params = (element, dist, angle, dihedral)
 
-        return params
+        match row:
+            case 0:
+                return (element, None)
+            case 1:
+                return (element, dist)
+            case 2:
+                return (element, dist, angle)
+            case other:  # noqa: F841
+                return (element, dist, angle, dihedral)
+
+        return None
 
     def _check_z_matrix_deletion(self, index: int) -> bool:
         do_deletion = True

@@ -38,15 +38,14 @@ class MplCanvas(FigureCanvasQTAgg):
     ) -> None:
         """Initializes a Figure by generating a subplot.
 
-        params:
-        parent: MainWindow: The widget of the MainWindow
-        width: int: Width of the figure
-        height: int: Height of the figure
-        dpi: int: MISSING INFORMATION.
+        :param parent: MainWindow: The widget of the MainWindow
+        :param width: int: Width of the figure
+        :param height: int: Height of the figure
+        :param dpi: int: MISSING INFORMATION.
         """
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        super().__init__(fig)
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = self.fig.add_subplot(111)
+        super().__init__(self.fig)
 
 
 class TrajectoryDialog(QDialog):
@@ -55,8 +54,7 @@ class TrajectoryDialog(QDialog):
     def __init__(self, parent: QMainWindow = None) -> None:
         """Initializes the trajectory dialog.
 
-        params:
-        parent: MainWindow: The widget of the MainWindow.
+        :param parent: parent widget (main window)
         """
         super().__init__(
             parent,
@@ -69,6 +67,11 @@ class TrajectoryDialog(QDialog):
         self.ui.PrevButton.clicked.connect(self.get_prev_mol)
         self.ui.NextButton.clicked.connect(self.get_next_mol)
         self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
+
+        layout = QVBoxLayout(self.ui.widget)
+        self.sc = MplCanvas(self, width=5, height=4, dpi=100)
+        layout.addWidget(self.sc)
+        self.ui.widget.setLayout(layout)
 
     def show_trajectory(self) -> None:
         """Shows the all molecules in the current Molecules class automatically."""
@@ -104,11 +107,8 @@ class TrajectoryDialog(QDialog):
         self.update_energy_plot()
 
     def update_molecule(self) -> None:
-        """Update molecule and delete old molecule.
-
-        params:
-        """
-        self.parent().ui.openGLWidget.delete_structure()
+        """Update molecule and delete old molecule."""
+        self.parent().ui.openGLWidget.delete_molecule()
 
         self.update_energy_plot()
 
@@ -121,35 +121,24 @@ class TrajectoryDialog(QDialog):
 
     def initial_energy_plot(self) -> None:
         """Plot the energies of the molecules in the molecules object."""
-        self.sc = MplCanvas(self, width=5, height=4, dpi=100)
-
-        self.sc.axes.plot(
+        (self.energy_plot,) = self.sc.axes.plot(
             np.arange(self.parent().mols.num_mols),
             self.parent().mols.energies,
             "x-",
         )
-        self.sc.axes.plot(
+        (self.current_energy_plot,) = self.sc.axes.plot(
             self.parent().mols.mol_index,
             self.parent().mols.energies[self.parent().mols.mol_index],
             "o",
         )
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.sc)
-
-        self.ui.widget.setLayout(layout)
+        self.sc.axes.set_xlabel(r"steps")
+        self.sc.axes.set_ylabel(r"energy$\,/\,\mathrm{eV}$")
+        self.sc.fig.tight_layout()
+        self.sc.fig.subplots_adjust(bottom=0.22, right=0.99)
 
     def update_energy_plot(self) -> None:
         """Update the energy plot, where the current structure is shown in a different color."""
-        self.sc.axes.cla()
-        self.sc.axes.plot(
-            np.arange(self.parent().mols.num_mols),
-            self.parent().mols.energies,
-            "x-",
-        )
-        self.sc.axes.plot(
-            self.parent().mols.mol_index,
-            self.parent().mols.energies[self.parent().mols.mol_index],
-            "o",
-        )
+        energies, mol_index = self.parent().mols.energies, self.parent().mols.mol_index
+        self.current_energy_plot.set_xdata(mol_index)
+        self.current_energy_plot.set_ydata(energies[mol_index])
         self.sc.draw()

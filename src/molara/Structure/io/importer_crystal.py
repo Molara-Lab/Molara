@@ -28,7 +28,10 @@ class Importer(ABC):
     """Base class for all importers."""
 
     def __init__(self, path: PathLike | str) -> None:
-        """Initializes the Importer object."""
+        """Initializes the Importer object.
+
+        :param path: input file path
+        """
         super().__init__()
 
         self.path = Path(path)
@@ -46,7 +49,10 @@ class PymatgenImporter(Importer):
     """
 
     def __init__(self, path: PathLike | str) -> None:
-        """Initializes the Importer object."""
+        """Initializes the Importer object.
+
+        :param path: input file path
+        """
         super().__init__(path)
 
     def load(self) -> Crystals:
@@ -75,7 +81,11 @@ class PoscarImporter(Importer):
         path: PathLike | str,
         supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
     ) -> None:
-        """Initializes the Importer object."""
+        """Initializes the Importer object.
+
+        :param path: input file path
+        :param supercell_dims: side lengths of the supercell in terms of the cell constants
+        """
         super().__init__(path)
         self.supercell_dims = supercell_dims
 
@@ -148,7 +158,10 @@ class VasprunImporter(Importer):
     """import crystal files."""
 
     def __init__(self, path: PathLike | str) -> None:
-        """Initializes the Importer object."""
+        """Initializes the Importer object.
+
+        :param path: input file path
+        """
         super().__init__(path)
 
     def load(self) -> Crystals:
