@@ -53,13 +53,13 @@ class Structure:
     def center_coordinates(self) -> None:
         """Centers the structure around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
-        center = np.average(
+        self.center = np.average(
             coordinates,
             weights=[atom.atomic_mass for atom in self.atoms],
             axis=0,
         )
         for _i, atom in enumerate(self.atoms):
-            position = atom.position - center
+            position = atom.position - self.center
             atom.set_position(position)
         self.drawer.set_atoms(self.atoms)
         self.drawer.set_atom_translation_matrices()
