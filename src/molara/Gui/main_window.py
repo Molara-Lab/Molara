@@ -7,9 +7,7 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
-from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
-from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
@@ -40,8 +38,6 @@ class MainWindow(QMainWindow):
         # instantiate dialog windows, pass main window as parent.
         self.trajectory_dialog = TrajectoryDialog(self)
         self.crystal_dialog = CrystalDialog(self)
-        self.measurement_dialog = MeasurementDialog(self)
-        self.builder_dialog = BuilderDialog(self)
 
         self.set_action_triggers()
 
@@ -69,7 +65,7 @@ class MainWindow(QMainWindow):
 
         # Tools
         self.ui.actionBuilder.triggered.connect(
-            self.show_builder_dialog,
+            self.structure_widget.show_builder_dialog,
         )
         self.ui.actionMeasure.triggered.connect(
             self.show_measurement_dialog,

@@ -24,12 +24,11 @@ class BuilderDialog(QDialog):
     def __init__(self, parent: QOpenGLWidget = None) -> None:
         """Initializes the ZMatBuilder dialog.
 
-        params:
-        parent: MainWindow: The widget of the MainWindow.
+        :param parent: QOpenGLWidget: The structure widget.
         """
         super().__init__(
             parent,
-        )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
+        )  # structure widget is passed as a parent
         self.ui = Ui_builder()
         self.ui.setupUi(self)
         self.ui.AddAtomButton.clicked.connect(self.select_add)
@@ -102,7 +101,10 @@ class BuilderDialog(QDialog):
             self.parent().set_structure(self.parent().mols.get_current_mol())
 
     def adapt_z_matrix(self, item: QTableWidgetItem) -> None:
-        """Changes the z-matrix in dependence of the visualization table."""
+        """Changes the z-matrix in dependence of the visualization table.
+
+        :param item: passed item from the visualization table
+        """
         if not self.disable_slot:
             row = item.row()
             params = self._get_parameters_from_table(row)
@@ -149,7 +151,10 @@ class BuilderDialog(QDialog):
         return vec - np.dot(vec, unitvec) * unitvec
 
     def add_first_atom(self, params: tuple) -> None:
-        """Initializes a molecule and adds the first atom to it."""
+        """Initializes a molecule and adds the first atom to it.
+
+        :param params: parameters that are passed for the first atom
+        """
         element, _ = params
         at_chrg = element_symbol_to_atomic_number(element)
         at_chrg_check = self._check_element(at_chrg)
@@ -167,8 +172,7 @@ class BuilderDialog(QDialog):
     def add_second_atom(self, mol: Molecule, params: tuple) -> None:
         """Adds a second atom.
 
-        params:
-        mol:Molecule: The molecule where a second atom shall be added.
+        :param mol: The molecule where a second atom shall be added.
         """
         element, dist = params
 
@@ -183,36 +187,41 @@ class BuilderDialog(QDialog):
             mol.add_atom(at_chrg, coord)
             mol.toggle_bonds()
 
-    def add_third_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
+    def add_third_atom(self, mol: Molecule, params: tuple, atom_ids: list) -> None:
         """Adds a third atom to the molecule.
 
-        params:
-        mol:Molecule: The molecule where a second atom shall be added.
+        :param mol: The molecule where a second atom shall be added.
+        :param params: atom parameters (element, distance to selected atom, angle to selected bond)
         """
         element, dist, angle = params
 
-        at1_num: int = atom_nums[0]
+        at1_id: int = atom_ids[0]
 
-        at2_num: int = atom_nums[1]
+        at2_id: int = atom_ids[1]
 
         at_chrg = element_symbol_to_atomic_number(element)
 
         boundary_check = self._check_value(dist, angle)
-        atom_selection_check = self._check_selected_atoms(at1_num, at2_num)
+        atom_selection_check = self._check_selected_atoms(at1_id, at2_id)
         at_chrg_check = self._check_element(at_chrg)
 
         if boundary_check and atom_selection_check and at_chrg_check:
             coord = np.array([dist * np.sin(angle), 0, dist * np.cos(angle)])
 
-            if at1_num == 1:
-                coord[2] = mol.atoms[at1_num].position[2] - coord[2]
+            if at1_id == 1:
+                coord[2] = mol.atoms[at1_id].position[2] - coord[2]
             else:
-                coord[2] = mol.atoms[at1_num].position[2] + coord[2]
+                coord[2] = mol.atoms[at1_id].position[2] + coord[2]
 
             mol.add_atom(at_chrg, coord)
 
     def add_nth_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
-        """Adds an nth atom to the molecule."""
+        """Adds an nth atom to the molecule.
+
+        :param mol: The molecule where an nth atom shall be added.
+        :param params: atom parameters (element, distance to selected atom, angle to selected bond)
+
+        """
         element, dist, angle, dihedral = params
 
         at1_num: int = atom_nums[0]
