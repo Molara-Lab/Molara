@@ -38,11 +38,10 @@ class MplCanvas(FigureCanvasQTAgg):
     ) -> None:
         """Initializes a Figure by generating a subplot.
 
-        params:
-        parent: MainWindow: The widget of the MainWindow
-        width: int: Width of the figure
-        height: int: Height of the figure
-        dpi: int: MISSING INFORMATION.
+        :param parent: MainWindow: The widget of the MainWindow
+        :param width: int: Width of the figure
+        :param height: int: Height of the figure
+        :param dpi: int: MISSING INFORMATION.
         """
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
@@ -55,8 +54,7 @@ class TrajectoryDialog(QDialog):
     def __init__(self, parent: QMainWindow = None) -> None:
         """Initializes the trajectory dialog.
 
-        params:
-        parent: MainWindow: The widget of the MainWindow.
+        :param parent: parent widget (main window)
         """
         super().__init__(
             parent,
@@ -109,10 +107,7 @@ class TrajectoryDialog(QDialog):
         self.update_energy_plot()
 
     def update_molecule(self) -> None:
-        """Update molecule and delete old molecule.
-
-        params:
-        """
+        """Update molecule and delete old molecule."""
         self.parent().ui.openGLWidget.delete_molecule()
 
         self.update_energy_plot()
