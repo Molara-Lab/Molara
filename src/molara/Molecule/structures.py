@@ -39,9 +39,7 @@ class Structures:
     def _set_previous_structure(self) -> None:
         """Returns the previous structure of the list of structure."""
         self._structure_id -= 1
-
-        if self._structure_id < 0:
-            self._structure_id = self._num_structures - 1
+        self._structure_id %= self._num_structures
 
     def _add_structure(self, struct: Structure) -> None:
         """Adds a structure to the list of structures.
