@@ -29,7 +29,10 @@ class CrystalDialog(QDialog):
     """
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Creates a CrystalDialog object."""
+        """Creates a CrystalDialog object.
+
+        :param parent: main window should be passed as parent
+        """
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
@@ -122,12 +125,18 @@ class CrystalDialog(QDialog):
         self.parent().ui.openGLWidget.set_structure(mycrystal)  # type: ignore[attr-defined]
 
     def bc_equals_a(self, value: float) -> None:
-        """Set b and c lattice constants equal to a."""
+        """Set b and c lattice constants equal to a.
+
+        :param value: value of lattice constant 'a'
+        """
         self.ui.inputLatConst_b.setValue(value)
         self.ui.inputLatConst_c.setValue(value)
 
     def b_equals_a(self, value: float) -> None:
-        """Set b lattice constant equal to a."""
+        """Set b lattice constant equal to a.
+
+        :param value: value of lattice constant 'a'
+        """
         self.ui.inputLatConst_b.setValue(value)
 
     def angles_hexagonal(self) -> None:
@@ -163,20 +172,29 @@ class CrystalDialog(QDialog):
         self.ui.inputLatAngle_gamma.setEnabled(True)
 
     def enable_lattice_constants(self, ids: Sequence[int]) -> None:
-        """Enable or disable inputs for lattice constants, depending on crystal system."""
+        """Enable or disable inputs for lattice constants, depending on crystal system.
+
+        :param ids: list that contains ids of inputs that shall be enabled
+        """
         aid, bid, cid = 0, 1, 2
         self.ui.inputLatConst_a.setEnabled(aid in ids)
         self.ui.inputLatConst_b.setEnabled(bid in ids)
         self.ui.inputLatConst_c.setEnabled(cid in ids)
 
     def hide_space_groups(self, hide: Sequence[bool]) -> None:
-        """Hide space-group entries depending on crystal system."""
+        """Hide space-group entries depending on crystal system.
+
+        :param hide: list of bools that specify which space-group entries should be hidden
+        """
         view = self.ui.selectSpaceGroup.view()
         for i, hide_i in enumerate(hide):
             view.setRowHidden(i, hide_i)
 
     def change_crystal_system(self, value: str) -> None:
-        """Changes the crystal system."""
+        """Changes the crystal system.
+
+        :param value: name of the crystal system
+        """
         self.crystal_system = value
         select_space_group = self.ui.selectSpaceGroup
         if value == "Cubic":
