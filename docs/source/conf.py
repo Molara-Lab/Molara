@@ -8,12 +8,8 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html#project-informatio
 """
 from __future__ import annotations
 
-import os
-import sys
 
 __copyright__ = "Copyright 2024, Molara"
-
-sys.path.insert(0, os.path.abspath(".."))
 
 project = "Molara"
 project_copyright = "2023, Michel Heinz"
@@ -22,7 +18,10 @@ author = "Michel Heinz"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.todo",
+              "sphinx.ext.autodoc",
+              "sphinx.ext.autosummary",
+              "myst_parser",]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
