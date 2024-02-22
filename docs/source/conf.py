@@ -8,7 +8,6 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html#project-informatio
 """
 from __future__ import annotations
 
-
 __copyright__ = "Copyright 2024, Molara"
 
 project = "Molara"
@@ -21,7 +20,7 @@ author = "Michel Heinz"
 extensions = ["sphinx.ext.todo",
               "sphinx.ext.autodoc",
               "sphinx.ext.autosummary",
-              "myst_parser",]
+              "myst_parser"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
