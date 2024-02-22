@@ -35,7 +35,7 @@ class StructureWidget(QOpenGLWidget):
 
         :param parent: parent widget (main window)
         """
-        self.parent = parent  # type: ignore[method-assign, assignment]
+        self.main_window = parent  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
         self.measurement_dialog = MeasurementDialog(parent)
@@ -94,7 +94,7 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def delete_structure(self) -> None:
-        """Delete molecule and reset vertex attributes."""
+        """Delete structure and reset vertex attributes."""
         self.vertex_attribute_objects = []
         self.update()
 
@@ -151,7 +151,7 @@ class StructureWidget(QOpenGLWidget):
         """Draws the scene."""
         self.renderer.draw_scene(self.camera, self.bonds)
 
-    def set_vertex_attribute_objects(self) -> None:
+    def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Sets the vertex attribute objects of the structure."""
         self.makeCurrent()
         self.renderer.update_atoms_vao(
@@ -165,7 +165,7 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.cylinder.indices,
             self.structure.drawer.cylinder_model_matrices,
             self.structure.drawer.cylinder_colors,
-        )
+        ) if update_bonds else None
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""
@@ -176,7 +176,7 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        """Starts the rotation or translation of the molecule.
+        """Starts the rotation or translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -186,10 +186,10 @@ class StructureWidget(QOpenGLWidget):
             and event.y() in range(self.height())
         ):
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
-                if self.measurement_dialog.isVisible():
+                if self.main_window.measurement_dialog.isVisible():
                     self.update_measurement_selected_atoms(event)
 
-                if self.builder_dialog.isVisible():
+                if self.main_window.builder_dialog.isVisible():
                     self.update_builder_selected_atoms(event)
 
             else:
@@ -210,7 +210,7 @@ class StructureWidget(QOpenGLWidget):
             self.click_position = np.copy(self.position)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        """Rotates or translates the molecule.
+        """Rotates or translates the structure.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -239,7 +239,7 @@ class StructureWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        """Stops the rotation or translation of the molecule.
+        """Stops the rotation or translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -310,7 +310,7 @@ class StructureWidget(QOpenGLWidget):
 
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
-        if self.structure_is_set:
+        if self.molecule_is_set:
             self.measurement_dialog.ini_labels()
             self.measurement_dialog.show()
 
@@ -379,10 +379,22 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_colors,
         )
         self.update()
-        self.measurement_dialog.display_metrics(
+        self.main_window.measurement_dialog.display_metrics(
             self.structure,
             self.measurement_selected_spheres,
         )
+
+    def unselect_all_atoms(self) -> None:
+        """Unselect all selected atoms."""
+        for selected_sphere_i in self.measurement_selected_spheres:
+            if selected_sphere_i == -1:
+                continue
+            color = self.old_sphere_colors[self.measurement_selected_spheres.index(selected_sphere_i)].copy()
+            self.structure.drawer.atom_colors[selected_sphere_i] = color
+        for i in range(4):
+            self.measurement_selected_spheres[i] = -1
+        self.set_vertex_attribute_objects(update_bonds=False)
+        self.update()
 
     def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
         """Returns the selected atoms.
