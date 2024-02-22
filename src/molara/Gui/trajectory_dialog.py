@@ -108,7 +108,7 @@ class TrajectoryDialog(QDialog):
 
     def update_molecule(self) -> None:
         """Update molecule and delete old molecule."""
-        self.parent().ui.openGLWidget.delete_molecule()
+        self.parent().ui.openGLWidget.delete_structure()
 
         self.update_energy_plot()
 

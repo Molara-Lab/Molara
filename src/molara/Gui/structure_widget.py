@@ -11,6 +11,8 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QFileDialog
 
+from molara.Gui.builder import BuilderDialog
+from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
