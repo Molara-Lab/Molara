@@ -259,6 +259,8 @@ class Crystal(Structure):
             latvec_c = [float(vec) for vec in latvec_c_.split()]
             species = re.split(r"\s+", species_)
             numbers = [int(num) for num in numbers_.split()]
+            if len(positions_) == sum(numbers) * 2 + 1:
+                positions_ = positions_[0 : sum(numbers)]
             positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
             basis_vectors = [latvec_a, latvec_b, latvec_c]
         except ValueError as err:
