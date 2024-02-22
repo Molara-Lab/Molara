@@ -386,13 +386,13 @@ class StructureWidget(QOpenGLWidget):
 
     def unselect_all_atoms(self) -> None:
         """Unselect all selected atoms."""
-        for selected_sphere_i in self.measuremnt_selected_spheres:
+        for selected_sphere_i in self.measurement_selected_spheres:
             if selected_sphere_i == -1:
                 continue
-            color = self.old_sphere_colors[self.measuremnt_selected_spheres.index(selected_sphere_i)].copy()
+            color = self.old_sphere_colors[self.measurement_selected_spheres.index(selected_sphere_i)].copy()
             self.structure.drawer.atom_colors[selected_sphere_i] = color
         for i in range(4):
-            self.measuremnt_selected_spheres[i] = -1
+            self.measurement_selected_spheres[i] = -1
         self.set_vertex_attribute_objects(update_bonds=False)
         self.update()
 
