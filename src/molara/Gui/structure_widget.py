@@ -31,7 +31,7 @@ class StructureWidget(QOpenGLWidget):
     """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
 
     def __init__(self, parent: QMainWindow) -> None:
-        """Creates a MoleculeWidget object, which is a subclass of QOpenGLWidget.
+        """Creates a StructureWidget object, which is a subclass of QOpenGLWidget.
 
         :param parent: parent widget (main window)
         """
