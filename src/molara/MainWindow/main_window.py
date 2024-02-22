@@ -35,6 +35,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
         self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
+
         self.set_action_triggers()
 
     def set_action_triggers(self) -> None:
@@ -59,6 +60,9 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show,
         )
 
+        self.ui.actionBuilder.triggered.connect(
+            self.ui.openGLWidget.show_builder_dialog,
+        )
         # Tools
         self.ui.actionMeasure.triggered.connect(
             self.ui.openGLWidget.show_measurement_dialog,

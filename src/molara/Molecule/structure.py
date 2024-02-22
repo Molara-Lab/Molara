@@ -40,6 +40,7 @@ class Structure:
         self.bonded_pairs = self.calculate_bonds()
         self.draw_bonds = draw_bonds and (self.bonded_pairs[0, 0] != -1)
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
+        self.n_at = len(self.atoms)
 
     def copy(self) -> Structure:
         """Creates a copy of the structure."""
@@ -103,6 +104,9 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
+        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=True)
+        self.atomic_numbers = np.append(self.atomic_numbers, atomic_number)
+        self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
     def remove_atom(self, index: int) -> None:
@@ -110,6 +114,16 @@ class Structure:
 
         :param index: list index of the atom that shall be removed
         """
+        self.n_at -= 1
+
         self.molar_mass -= self.atoms[index].atomic_mass
+
         self.atoms.pop(index)
+
         self.bonded_pairs = self.calculate_bonds()
+
+        if self.n_at < 3:  # noqa: PLR2004
+            draw_bonds = False
+
+        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=draw_bonds)
+        self.atomic_numbers = np.delete(self.atomic_numbers, index)

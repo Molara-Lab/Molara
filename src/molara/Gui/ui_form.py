@@ -58,6 +58,8 @@ class Ui_MainWindow(object):
         self.actionMeasure.setObjectName(u"actionMeasure")
         self.actionSupercell = QAction(MainWindow)
         self.actionSupercell.setObjectName(u"actionSupercell")
+        self.actionBuilder = QAction(MainWindow)
+        self.actionBuilder.setObjectName(u"actionBuilder")
         self.actionExport = QAction(MainWindow)
         self.actionExport.setObjectName(u"actionExport")
         self.actionExport_Snapshot = QAction(MainWindow)
@@ -112,6 +114,7 @@ class Ui_MainWindow(object):
         self.menuCrystal.addAction(self.actionCreate_Lattice)
         self.menuCrystal.addAction(self.actionSupercell)
         self.menuTools.addAction(self.actionMeasure)
+        self.menuTools.addAction(self.actionBuilder)
 
         self.retranslateUi(MainWindow)
 
@@ -136,6 +139,7 @@ class Ui_MainWindow(object):
         self.actionToggle_Bonds.setText(QCoreApplication.translate("MainWindow", u"Toggle Bonds", None))
         self.actionMeasure.setText(QCoreApplication.translate("MainWindow", u"Measure", None))
         self.actionSupercell.setText(QCoreApplication.translate("MainWindow", u"Supercell", None))
+        self.actionBuilder.setText(QCoreApplication.translate("MainWindow", u"Builder", None))
         self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export", None))
         self.actionExport_Snapshot.setText(QCoreApplication.translate("MainWindow", u"Export Snapshot", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))

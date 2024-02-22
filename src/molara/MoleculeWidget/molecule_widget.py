@@ -11,6 +11,7 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QFileDialog
 
+from molara.Gui.builder import BuilderDialog
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
@@ -38,6 +39,8 @@ class MoleculeWidget(QOpenGLWidget):
         QOpenGLWidget.__init__(self, parent)
 
         self.measurement_dialog = MeasurementDialog(parent)
+        self.builder_dialog = BuilderDialog(self)
+
         self.renderer = Renderer()
         self.molecule_is_set = False
         self.vertex_attribute_objects = [-1]
@@ -56,7 +59,9 @@ class MoleculeWidget(QOpenGLWidget):
         self.bonds = True
         self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
-        self.selected_spheres: list = [-1] * 4
+        self.measurement_selected_spheres: list = [-1] * 4
+        self.builder_selected_spheres: list = [-1] * 3
+
         self.old_sphere_colors: list = [np.ndarray] * 4
         self.new_sphere_colors: list = [
             np.array([1, 0, 0], dtype=np.float32),
@@ -182,7 +187,11 @@ class MoleculeWidget(QOpenGLWidget):
         ):
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
                 if self.measurement_dialog.isVisible():
-                    self.update_selected_atoms(event)
+                    self.update_measurement_selected_atoms(event)
+
+                if self.builder_dialog.isVisible():
+                    self.update_builder_selected_atoms(event)
+
             else:
                 self.rotate = True
                 if self.translate is True:
@@ -305,7 +314,11 @@ class MoleculeWidget(QOpenGLWidget):
             self.measurement_dialog.ini_labels()
             self.measurement_dialog.show()
 
-    def update_selected_atoms(self, event: QMouseEvent) -> None:
+    def show_builder_dialog(self) -> None:
+        """Show the builder dialog."""
+        self.builder_dialog.show()
+
+    def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.
 
         :param event: mouse event (such as left click, right click...)
@@ -329,36 +342,35 @@ class MoleculeWidget(QOpenGLWidget):
             self.structure.drawer.atom_positions,
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
-        # check if an atom has been clicked or not
-        if selected_sphere != -1:  # an atom has been clicked
-            if -1 in self.selected_spheres:
-                if selected_sphere in self.selected_spheres:
+        if selected_sphere != -1:
+            if -1 in self.measurement_selected_spheres:
+                if selected_sphere in self.measurement_selected_spheres:
                     self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
-                        self.selected_spheres.index(selected_sphere)
+                        self.measurement_selected_spheres.index(selected_sphere)
                     ].copy()
-                    self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
+                    self.measurement_selected_spheres[self.measurement_selected_spheres.index(selected_sphere)] = -1
                 else:
-                    self.selected_spheres[self.selected_spheres.index(-1)] = selected_sphere
+                    self.measurement_selected_spheres[self.measurement_selected_spheres.index(-1)] = selected_sphere
                     self.old_sphere_colors[
-                        self.selected_spheres.index(selected_sphere)
+                        self.measurement_selected_spheres.index(selected_sphere)
                     ] = self.structure.drawer.atom_colors[selected_sphere].copy()
                     self.structure.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
-                        self.selected_spheres.index(selected_sphere)
+                        self.measurement_selected_spheres.index(selected_sphere)
                     ].copy()
-            elif selected_sphere in self.selected_spheres:
+            elif selected_sphere in self.measurement_selected_spheres:
                 self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
-                    self.selected_spheres.index(selected_sphere)
+                    self.measurement_selected_spheres.index(selected_sphere)
                 ].copy()
-                self.selected_spheres[self.selected_spheres.index(selected_sphere)] = -1
+                self.measurement_selected_spheres[self.measurement_selected_spheres.index(selected_sphere)] = -1
         elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
-            for selected_sphere_i in self.selected_spheres:
+            for selected_sphere_i in self.measurement_selected_spheres:
                 if selected_sphere_i == -1:
                     continue
                 self.structure.drawer.atom_colors[selected_sphere_i] = self.old_sphere_colors[
-                    self.selected_spheres.index(selected_sphere_i)
+                    self.measurement_selected_spheres.index(selected_sphere_i)
                 ].copy()
             for i in range(4):
-                self.selected_spheres[i] = -1
+                self.measurement_selected_spheres[i] = -1
 
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
@@ -369,5 +381,62 @@ class MoleculeWidget(QOpenGLWidget):
         self.update()
         self.measurement_dialog.display_metrics(
             self.structure,
-            self.selected_spheres,
+            self.measurement_selected_spheres,
         )
+
+    def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
+        """Returns the selected atoms.
+
+        :param event: The mouse event.
+        :return:
+        """
+        click_position = np.array(
+            [
+                (event.x() * 2 - self.width()) / self.width(),
+                (event.y() * 2 - self.height()) / self.height(),
+            ],
+            dtype=np.float32,
+        )
+        selected_sphere = select_sphere(
+            click_position,
+            self.camera.position,
+            self.camera.view_matrix_inv,
+            self.camera.projection_matrix_inv,
+            self.camera.fov,
+            self.height() / self.width(),
+            self.structure.drawer.atom_positions,
+            self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
+        )
+
+        if selected_sphere != -1:
+            if -1 in self.builder_selected_spheres:
+                if selected_sphere in self.builder_selected_spheres:
+                    self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                        self.builder_selected_spheres.index(selected_sphere)
+                    ].copy()
+                    self.builder_selected_spheres[self.builder_selected_spheres.index(selected_sphere)] = -1
+                else:
+                    self.builder_selected_spheres[self.builder_selected_spheres.index(-1)] = selected_sphere
+                    self.old_sphere_colors[
+                        self.builder_selected_spheres.index(selected_sphere)
+                    ] = self.structure.drawer.atom_colors[selected_sphere].copy()
+                    self.structure.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
+                        self.builder_selected_spheres.index(selected_sphere)
+                    ].copy()
+            elif selected_sphere in self.builder_selected_spheres:
+                self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
+                    self.builder_selected_spheres.index(selected_sphere)
+                ].copy()
+                self.builder_selected_spheres[self.builder_selected_spheres.index(selected_sphere)] = -1
+
+        self.renderer.update_atoms_vao(
+            self.structure.drawer.sphere.vertices,
+            self.structure.drawer.sphere.indices,
+            self.structure.drawer.sphere_model_matrices,
+            self.structure.drawer.atom_colors,
+        )
+        self.update()
+
+    def clear_builder_selected_atoms(self) -> None:
+        """Resets the selected spheres builder spheres."""
+        self.builder_selected_spheres = [-1] * 3
