@@ -93,7 +93,7 @@ class StructureWidget(QOpenGLWidget):
         self.camera.set_rotation("z")
         self.update()
 
-    def delete_molecule(self) -> None:
+    def delete_structure(self) -> None:
         """Delete molecule and reset vertex attributes."""
         self.vertex_attribute_objects = []
         self.update()
