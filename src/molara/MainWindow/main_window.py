@@ -33,7 +33,6 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
         self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
-        self.builder_dialog = BuilderDialog(self)  # pass widget as parent
 
         self.set_action_triggers()
 
