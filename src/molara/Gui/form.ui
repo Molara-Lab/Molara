@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="MoleculeWidget" name="openGLWidget"/>
+     <widget class="StructureWidget" name="openGLWidget"/>
     </item>
    </layout>
   </widget>
@@ -175,9 +175,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MoleculeWidget</class>
+   <class>StructureWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">molara/MoleculeWidget/molecule_widget</header>
+   <header location="global">molara/StructureWidget/structure_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

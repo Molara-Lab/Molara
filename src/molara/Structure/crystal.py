@@ -1,4 +1,4 @@
-"""This module contains the Crystal class, which is a subclass of Molecule."""
+"""This module contains the Crystal class, which is a subclass of Structure."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy import constants
 
-from molara.Molecule.atom import element_symbol_to_atomic_number, elements
+from molara.Structure.atom import element_symbol_to_atomic_number, elements
 
 from .structure import Structure
 

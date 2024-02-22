@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.Molecule.mos import Mos
-from molara.Molecule.structure import Structure
+from molara.Structure.mos import Mos
+from molara.Structure.structure import Structure
 
 if TYPE_CHECKING:
     from molara.Molecule.atom import Atom
