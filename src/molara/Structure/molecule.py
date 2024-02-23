@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import numpy as np
 
 from molara.Structure.mos import Mos
 from molara.Structure.structure import Structure
 
-if TYPE_CHECKING:
-    from molara.Molecule.atom import Atom
-
 __copyright__ = "Copyright 2024, Molara"
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from molara.Structure.atom import Atom
 
 
 class Molecule(Structure):

@@ -1,12 +1,17 @@
 """A module for the Structure class."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 # if TYPE_CHECKING:
 import numpy as np
 
 from .atom import Atom
 from .drawer import Drawer
 
+if TYPE_CHECKING:
+    from molara.Structure.crystal import Crystal
+    from molara.Structure.molecule import Molecule
 __copyright__ = "Copyright 2024, Molara"
 
 
@@ -14,7 +19,7 @@ class Structure:
     """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
 
     def __init__(
-        self,
+        self:Molecule|Crystal,
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
         draw_bonds: bool = True,
@@ -42,7 +47,7 @@ class Structure:
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
 
-    def copy(self) -> Structure:
+    def copy(self:Molecule|Crystal) -> Structure:
         """Creates a copy of the structure."""
         return type(self)(
             self.atomic_numbers,
@@ -50,7 +55,7 @@ class Structure:
             self.draw_bonds,
         )
 
-    def center_coordinates(self) -> None:
+    def center_coordinates(self:Molecule|Crystal) -> None:
         """Centers the structure around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(
@@ -69,7 +74,7 @@ class Structure:
             self.drawer.set_cylinder_model_matrices()
         self.drawer.set_atom_model_matrices()
 
-    def calculate_bonds(self) -> np.ndarray:
+    def calculate_bonds(self:Molecule|Crystal) -> np.ndarray:
         """Calculates the bonded pairs of atoms."""
         bonded_pairs = []
 
@@ -109,7 +114,7 @@ class Structure:
         self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
-    def remove_atom(self, index: int) -> None:
+    def remove_atom(self:Molecule|Crystal, index: int) -> None:
         """Removes an atom from the structure.
 
         :param index: list index of the atom that shall be removed
@@ -122,8 +127,6 @@ class Structure:
 
         self.bonded_pairs = self.calculate_bonds()
 
-        if self.n_at < 3:  # noqa: PLR2004
-            draw_bonds = False
+        self.drawer = Drawer(self.atoms, self.bonded_pairs,draw_bonds=True)
 
-        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=draw_bonds)
         self.atomic_numbers = np.delete(self.atomic_numbers, index)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -14,6 +15,9 @@ from molara.Structure.molecules import Molecules
 
 if TYPE_CHECKING:
     from PySide6.QtWidgets import QMainWindow
+
+    from molara.Gui.main_window import MainWindow
+    from molara.Gui.structure_widget import StructureWidget
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -37,17 +41,21 @@ class BuilderDialog(QDialog):
 
         self.ui.tableWidget.acceptDrops()
 
-        self.main_window = self.parent()
-        self.structure_widget = self.parent().structure_widget
+        self.main_window:MainWindow = self.parent()
+        self.structure_widget:StructureWidget = self.parent().structure_widget
 
         self.main_window.mols = Molecules()
 
         self.ui.tableWidget.setRowCount(0)
-        self.ui.tableWidget.setColumnCount(4)
+        self.ui.tableWidget.setColumnCount(7)
 
         self.z_matrix: list[dict] = []
 
-        text_data = ["Element", "Distance[A]", "Angle[°]", "Dihedral[°]"]
+        column_widths = [55,40,70,40,70,40,70]
+        for col,width in enumerate(column_widths):
+            self.ui.tableWidget.setColumnWidth(col,width)
+
+        text_data = ["Element","At. 1","Distance[A]","At. 2", "Angle[°]","At. 3","Dihedral[°]"]
         for column, text in enumerate(text_data):
             self.ui.tableWidget.setHorizontalHeaderItem(column, QTableWidgetItem(text))
 
@@ -62,18 +70,20 @@ class BuilderDialog(QDialog):
         else:
             mol = self.main_window.mols.mols[0]
             params, atom_nums = self._get_parameters(mol.n_at)
-            if mol.n_at >= 3:  # noqa: PLR2004
-                self.add_nth_atom(mol, params, atom_nums)
-            elif mol.n_at == 2:  # noqa: PLR2004
-                self.add_third_atom(mol, params, atom_nums)
-            elif mol.n_at == 1:
-                self.add_second_atom(mol, params)
-            # self.structure_widget.delete_structure()
+
+            match mol.n_at:
+                case 1:
+                    self.add_second_atom(mol, params)
+                case 2:
+                    self.add_third_atom(mol, params, atom_nums)
+                case _:
+                    self.add_nth_atom(mol, params, atom_nums)
+
 
         self.structure_widget.set_structure(mol)
         self.structure_widget.update()
         self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
-        self._extend_z_matrix(mol)
+        self._set_z_matrix_row(mol,mol.n_at-1)
         self.structure_widget.clear_builder_selected_atoms()
         self.disable_slot = False
 
@@ -98,10 +108,18 @@ class BuilderDialog(QDialog):
 
         :param item: passed item from the visualization table
         """
-        if not self.disable_slot:
-            row = item.row()
-            params = self._get_parameters_from_table(row)
+        if self.disable_slot:
+            return
 
+        row = item.row()
+
+        params = self._get_parameters_from_table(row)
+
+        if params is None:
+            error_msg = "Incorrect input type."
+            self.ui.ErrorMessageBrowser.setText(error_msg)
+            self._set_z_matrix_row(self.main_window.mols.mols[0],row)
+        else:
             self.z_matrix[row]["parameter"] = params
             self.z_matrix_temp = self.z_matrix.copy()
 
@@ -110,6 +128,7 @@ class BuilderDialog(QDialog):
             self.main_window.mols.remove_molecule(0)
 
             for i in range(len(self.z_matrix_temp)):
+
                 if i == 0:
                     params = self.z_matrix_temp[0]["parameter"]
                     atom_nums = self.z_matrix_temp[0]["atom_nums"]
@@ -134,6 +153,12 @@ class BuilderDialog(QDialog):
             self._update_z_matrix(mol)
 
     def _orth(self, vec: np.ndarray, unitvec: np.ndarray) -> np.ndarray:
+        """Orthogonalize the vector.
+
+        :param vec: vector to orthogonalize
+        :param unitvec: unitvector
+
+        """
         return vec - np.dot(vec, unitvec) * unitvec
 
     def add_first_atom(self, params: tuple) -> None:
@@ -275,18 +300,35 @@ class BuilderDialog(QDialog):
         """
         error_msg = "This is not an element."
         is_element = True
-        if at_chrg is None:
+        if at_chrg == 0:
             is_element = False
             self.ui.ErrorMessageBrowser.setText(error_msg)
         return is_element
 
-    def _extend_z_matrix(self, mol: Molecule) -> None:
+    def _set_z_matrix_row(self, mol: Molecule,row:int) -> None:
+
         self.disable_slot = True
+        param_rows = [0,2,4,6]
+        atom_id_rows = [0,1,3,5]
+
         self.ui.tableWidget.setRowCount(mol.n_at)
-        for i, text in enumerate(self.z_matrix[mol.n_at - 1]["parameter"]):
-            temp_text = np.rad2deg(text) if i > 1 else text
+
+        for i, text in enumerate(self.z_matrix[row]["parameter"]):
+
             if text is not None:
-                self.ui.tableWidget.setItem(mol.n_at - 1, i, QTableWidgetItem(str(temp_text)))
+
+                match i:
+                    case 0:
+                        temp_text = text
+                    case 1:
+                        temp_text = f"{text:.2f}"
+                    case _:
+                        temp_text = f"{np.rad2deg(text):.2f}"
+
+                self.ui.tableWidget.setItem(row, param_rows[i], QTableWidgetItem(temp_text))
+                if param_rows[i] != 0:
+                    atom_id = self.z_matrix[row]["atom_nums"][i-1]
+                    self.ui.tableWidget.setItem(row, atom_id_rows[i], QTableWidgetItem(str(atom_id+1)))
 
         self.disable_slot = False
 
@@ -294,10 +336,7 @@ class BuilderDialog(QDialog):
         self.disable_slot = True
         self.ui.tableWidget.setRowCount(mol.n_at)
         for j in range(mol.n_at):
-            for i, text in enumerate(self.z_matrix[j]["parameter"]):
-                temp_text = np.rad2deg(text) if i > 1 else text
-                if text is not None:
-                    self.ui.tableWidget.setItem(j, i, QTableWidgetItem(str(temp_text)))
+            self._set_z_matrix_row(mol,j)
 
         self.disable_slot = False
 
@@ -311,41 +350,54 @@ class BuilderDialog(QDialog):
         dihedral: float = np.deg2rad(float(self.ui.Box_3DihedralAngle.text()))
         atom_nums = self.structure_widget.builder_selected_spheres
 
-        if nat > 2:  # noqa: PLR2004
-            return (
-                element,
-                dist,
-                angle,
-                dihedral,
-            ), atom_nums
-        if nat == 2:  # noqa: PLR2004
-            return (element, dist, angle), atom_nums
-        if nat == 1:
-            return (element, dist), atom_nums
-        # if nat == 0:
-        return (element, None), atom_nums
+        match nat:
+            case 0:
+                return (element, None), []
+            case 1:
+                return (element, dist), [0]
+            case 2:
+                return (element, dist, angle), atom_nums
+            case _:
+                return (
+                    element,
+                    dist,
+                    angle,
+                    dihedral,
+                ), atom_nums
 
-    def _get_parameters_from_table(self, row: int) -> tuple:
+    def _get_parameters_from_table(self, row: int) -> tuple|None:
+
+        param_type_validity = True
+
         if row >= 0:
             element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
+            param_type_validity = bool(element_symbol_to_atomic_number(element))
+
         if row >= 1:
-            dist = float(self.ui.tableWidget.item(row, 1).text())
-        if row >= 2:  # noqa: PLR2004
-            angle = np.deg2rad(float(self.ui.tableWidget.item(row, 2).text()))
-        if row >= 3:  # noqa: PLR2004
-            dihedral = np.deg2rad(float(self.ui.tableWidget.item(row, 3).text()))
+            dist = self.ui.tableWidget.item(row, 2).text()
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dist))
+
+        if row >= 2: #noqa: PLR2004
+            angle = self.ui.tableWidget.item(row, 4).text()
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", angle))
+
+        if row >= 3: #noqa: PLR2004
+            dihedral = self.ui.tableWidget.item(row, 6).text()
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral))
+
+        if not param_type_validity:
+            return None
 
         match row:
             case 0:
                 return (element, None)
             case 1:
-                return (element, dist)
+                return (element, float(dist))
             case 2:
-                return (element, dist, angle)
-            case other:  # noqa: F841
-                return (element, dist, angle, dihedral)
+                return (element, float(dist), np.deg2rad(float(angle)))
+            case _:
+                return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
 
-        return None
 
     def _check_z_matrix_deletion(self, index: int) -> bool:
         do_deletion = True
