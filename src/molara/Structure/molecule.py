@@ -9,11 +9,6 @@ from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from molara.Structure.atom import Atom
-
 
 class Molecule(Structure):
     """Creates a new Molecule object."""
@@ -36,7 +31,7 @@ class Molecule(Structure):
         if dummy:
             self.dummy = True
         self.atomic_numbers = np.array(atomic_numbers)
-        self.atoms: list[Atom] = []
+        self.atoms: list = []
         self.mos = Mos()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20

@@ -11,7 +11,7 @@ class Structures:
 
     def __init__(self) -> None:
         """Initializes the Structures Class."""
-        self._structures: list[Structure] = []
+        self._structures: list = []
         self._structure_id = 0
 
     @property

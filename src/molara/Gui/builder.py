@@ -41,8 +41,8 @@ class BuilderDialog(QDialog):
 
         self.ui.tableWidget.acceptDrops()
 
-        self.main_window:MainWindow = self.parent()
-        self.structure_widget:StructureWidget = self.parent().structure_widget
+        self.main_window: MainWindow = self.parent()
+        self.structure_widget: StructureWidget = self.parent().structure_widget
 
         self.main_window.mols = Molecules()
 
@@ -51,17 +51,18 @@ class BuilderDialog(QDialog):
 
         self.z_matrix: list[dict] = []
 
-        column_widths = [55,40,70,40,70,40,70]
-        for col,width in enumerate(column_widths):
-            self.ui.tableWidget.setColumnWidth(col,width)
+        column_widths = [55, 40, 70, 40, 70, 40, 70]
+        for col, width in enumerate(column_widths):
+            self.ui.tableWidget.setColumnWidth(col, width)
 
-        text_data = ["Element","At. 1","Distance[A]","At. 2", "Angle[°]","At. 3","Dihedral[°]"]
+        text_data = ["Element", "At. 1", "Distance[A]", "At. 2", "Angle[°]", "At. 3", "Dihedral[°]"]
         for column, text in enumerate(text_data):
             self.ui.tableWidget.setHorizontalHeaderItem(column, QTableWidgetItem(text))
 
     def select_add(self) -> None:
         """Selects the add procedure. Depends on the number of atoms in the molecule."""
         self.disable_slot = True
+        self.err = False
 
         if self.main_window.mols.num_mols == 0:
             params, atom_nums = self._get_parameters(0)
@@ -79,12 +80,13 @@ class BuilderDialog(QDialog):
                 case _:
                     self.add_nth_atom(mol, params, atom_nums)
 
+        if not self.err:
+            self.structure_widget.set_structure(mol)
+            self.structure_widget.update()
+            self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
+            self._set_z_matrix_row(mol, mol.n_at - 1)
+            self.structure_widget.clear_builder_selected_atoms()
 
-        self.structure_widget.set_structure(mol)
-        self.structure_widget.update()
-        self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
-        self._set_z_matrix_row(mol,mol.n_at-1)
-        self.structure_widget.clear_builder_selected_atoms()
         self.disable_slot = False
 
     def delete_atom(self) -> None:
@@ -115,10 +117,10 @@ class BuilderDialog(QDialog):
 
         params = self._get_parameters_from_table(row)
 
-        if params is None:
+        if params[0] is None:
             error_msg = "Incorrect input type."
             self.ui.ErrorMessageBrowser.setText(error_msg)
-            self._set_z_matrix_row(self.main_window.mols.mols[0],row)
+            self._set_z_matrix_row(self.main_window.mols.mols[0], row)
         else:
             self.z_matrix[row]["parameter"] = params
             self.z_matrix_temp = self.z_matrix.copy()
@@ -128,7 +130,6 @@ class BuilderDialog(QDialog):
             self.main_window.mols.remove_molecule(0)
 
             for i in range(len(self.z_matrix_temp)):
-
                 if i == 0:
                     params = self.z_matrix_temp[0]["parameter"]
                     atom_nums = self.z_matrix_temp[0]["atom_nums"]
@@ -231,7 +232,6 @@ class BuilderDialog(QDialog):
         atom_selection_check = self._check_selected_atoms(at1_num, at2_num, at3_num)
         at_chrg_check = self._check_element(at_chrg)
 
-
         if boundary_check and atom_selection_check and at_chrg_check:
             vec1 = mol.atoms[at2_num].position - mol.atoms[at1_num].position
             length = np.linalg.norm(vec1)
@@ -272,7 +272,7 @@ class BuilderDialog(QDialog):
             vals_above_threshold = arg > threshold
             if not (vals_above_threshold):
                 self.ui.ErrorMessageBrowser.setText(error_msg)
-
+                self.err = True
                 break
 
         return vals_above_threshold
@@ -289,6 +289,7 @@ class BuilderDialog(QDialog):
             if idx == -1:
                 all_selected = False
                 self.ui.ErrorMessageBrowser.setText(error_msg)
+                self.err = True
                 break
 
         return all_selected
@@ -304,20 +305,19 @@ class BuilderDialog(QDialog):
         if at_chrg == 0:
             is_element = False
             self.ui.ErrorMessageBrowser.setText(error_msg)
+            self.err = True
+
         return is_element
 
-    def _set_z_matrix_row(self, mol: Molecule,row:int) -> None:
-
+    def _set_z_matrix_row(self, mol: Molecule, row: int) -> None:
         self.disable_slot = True
-        param_rows = [0,2,4,6]
-        atom_id_rows = [0,1,3,5]
+        param_rows = [0, 2, 4, 6]
+        atom_id_rows = [0, 1, 3, 5]
 
         self.ui.tableWidget.setRowCount(mol.n_at)
 
         for i, text in enumerate(self.z_matrix[row]["parameter"]):
-
             if text is not None:
-
                 match i:
                     case 0:
                         temp_text = text
@@ -328,8 +328,8 @@ class BuilderDialog(QDialog):
 
                 self.ui.tableWidget.setItem(row, param_rows[i], QTableWidgetItem(temp_text))
                 if param_rows[i] != 0:
-                    atom_id = self.z_matrix[row]["atom_nums"][i-1]
-                    self.ui.tableWidget.setItem(row, atom_id_rows[i], QTableWidgetItem(str(atom_id+1)))
+                    atom_id = self.z_matrix[row]["atom_nums"][i - 1]
+                    self.ui.tableWidget.setItem(row, atom_id_rows[i], QTableWidgetItem(str(atom_id + 1)))
 
         self.disable_slot = False
 
@@ -337,7 +337,7 @@ class BuilderDialog(QDialog):
         self.disable_slot = True
         self.ui.tableWidget.setRowCount(mol.n_at)
         for j in range(mol.n_at):
-            self._set_z_matrix_row(mol,j)
+            self._set_z_matrix_row(mol, j)
 
         self.disable_slot = False
 
@@ -366,8 +366,7 @@ class BuilderDialog(QDialog):
                     dihedral,
                 ), atom_nums
 
-    def _get_parameters_from_table(self, row: int) -> tuple|None:
-
+    def _get_parameters_from_table(self, row: int) -> tuple:
         param_type_validity = True
 
         if row >= 0:
@@ -378,16 +377,16 @@ class BuilderDialog(QDialog):
             dist = self.ui.tableWidget.item(row, 2).text()
             param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dist))
 
-        if row >= 2: #noqa: PLR2004
+        if row >= 2:  # noqa: PLR2004
             angle = self.ui.tableWidget.item(row, 4).text()
             param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", angle))
 
-        if row >= 3: #noqa: PLR2004
+        if row >= 3:  # noqa: PLR2004
             dihedral = self.ui.tableWidget.item(row, 6).text()
             param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral))
 
         if not param_type_validity:
-            return None
+            return (None,)
 
         match row:
             case 0:
@@ -398,7 +397,6 @@ class BuilderDialog(QDialog):
                 return (element, float(dist), np.deg2rad(float(angle)))
             case _:
                 return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
-
 
     def _check_z_matrix_deletion(self, index: int) -> bool:
         do_deletion = True
