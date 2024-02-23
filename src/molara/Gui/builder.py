@@ -231,6 +231,7 @@ class BuilderDialog(QDialog):
         atom_selection_check = self._check_selected_atoms(at1_num, at2_num, at3_num)
         at_chrg_check = self._check_element(at_chrg)
 
+
         if boundary_check and atom_selection_check and at_chrg_check:
             vec1 = mol.atoms[at2_num].position - mol.atoms[at1_num].position
             length = np.linalg.norm(vec1)
