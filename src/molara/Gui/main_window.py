@@ -7,7 +7,9 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
+from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
+from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
@@ -18,6 +20,8 @@ from molara.Structure.io.importer import GeneralImporter, PoscarImporter
 
 if TYPE_CHECKING:
     from os import PathLike
+
+    from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -33,13 +37,19 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.structure_widget = self.ui.openGLWidget
 
         # instantiate dialog windows, pass main window as parent.
         self.trajectory_dialog = TrajectoryDialog(self)
         self.crystal_dialog = CrystalDialog(self)
+        self.measurement_dialog = MeasurementDialog(self)
+        self.builder_dialog = BuilderDialog(self)
 
         self.set_action_triggers()
+
+    @property
+    def structure_widget(self) -> QOpenGLWidget:
+        """Returns the StructureWidget (openGLWidget)."""
+        return self.ui.openGLWidget
 
     def set_action_triggers(self) -> None:
         """Connect Triggers of menu actions with the corresponding routines."""

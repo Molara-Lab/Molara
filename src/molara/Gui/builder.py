@@ -13,7 +13,7 @@ from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
 
 if TYPE_CHECKING:
-    from PySide6.QtOpenGLWidgets import QOpenGLWidget
+    from PySide6.QtWidgets import QMainWindow
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -21,7 +21,7 @@ __copyright__ = "Copyright 2024, Molara"
 class BuilderDialog(QDialog):
     """Dialog to ask for information to build molecules."""
 
-    def __init__(self, parent: QOpenGLWidget = None) -> None:
+    def __init__(self, parent: QMainWindow = None) -> None:
         """Initializes the ZMatBuilder dialog.
 
         :param parent: QOpenGLWidget: The structure widget.
@@ -37,7 +37,10 @@ class BuilderDialog(QDialog):
 
         self.ui.tableWidget.acceptDrops()
 
-        self.parent().mols = Molecules()
+        self.main_window = self.parent()
+        self.structure_widget = self.parent().structure_widget
+
+        self.main_window.mols = Molecules()
 
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(4)
@@ -52,43 +55,33 @@ class BuilderDialog(QDialog):
         """Selects the add procedure. Depends on the number of atoms in the molecule."""
         self.disable_slot = True
 
-        if self.parent().mols.num_mols == 0:
+        if self.main_window.mols.num_mols == 0:
             params, atom_nums = self._get_parameters(0)
-
             self.add_first_atom(params)
-
-            mol: Molecule = self.parent().mols.mols[0]
-
+            mol: Molecule = self.main_window.mols.mols[0]
         else:
-            mol = self.parent().mols.mols[0]
-
+            mol = self.main_window.mols.mols[0]
             params, atom_nums = self._get_parameters(mol.n_at)
-
             if mol.n_at >= 3:  # noqa: PLR2004
                 self.add_nth_atom(mol, params, atom_nums)
-
             elif mol.n_at == 2:  # noqa: PLR2004
                 self.add_third_atom(mol, params, atom_nums)
-
             elif mol.n_at == 1:
                 self.add_second_atom(mol, params)
+            # self.structure_widget.delete_structure()
 
-            self.parent().delete_structure()
-            self.parent().set_structure(mol)
-
+        self.structure_widget.set_structure(mol)
+        self.structure_widget.update()
         self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
-
         self._extend_z_matrix(mol)
-
-        self.parent().clear_builder_selected_atoms()
-
+        self.structure_widget.clear_builder_selected_atoms()
         self.disable_slot = False
 
     def delete_atom(self) -> None:
         """Deletes an atom from the z-matrix visualization table and z_matrix itself."""
         index = self.ui.tableWidget.currentRow()
 
-        mol: Molecule = self.parent().mols.mols[0]
+        mol: Molecule = self.main_window.mols.mols[0]
 
         do_deletion = self._check_z_matrix_deletion(index)
         if do_deletion:
@@ -96,9 +89,9 @@ class BuilderDialog(QDialog):
             self.ui.ErrorMessageBrowser.setText(error_msg)
             self._delete_zmat_row(index, mol.n_at)
             self._delete_table_row(index)
-            self.parent().mols.mols[0].remove_atom(index=index)
-            self.parent().delete_structure()
-            self.parent().set_structure(self.parent().mols.get_current_mol())
+            self.main_window.mols.mols[0].remove_atom(index=index)
+            self.structure_widget.delete_structure()
+            self.structure_widget.set_structure(self.main_window.mols.get_current_mol())
 
     def adapt_z_matrix(self, item: QTableWidgetItem) -> None:
         """Changes the z-matrix in dependence of the visualization table.
@@ -114,36 +107,29 @@ class BuilderDialog(QDialog):
 
             self.z_matrix = []
 
-            self.parent().mols.remove_molecule(0)
+            self.main_window.mols.remove_molecule(0)
 
             for i in range(len(self.z_matrix_temp)):
                 if i == 0:
                     params = self.z_matrix_temp[0]["parameter"]
                     atom_nums = self.z_matrix_temp[0]["atom_nums"]
-
                     self.add_first_atom(params)
-
-                    mol: Molecule = self.parent().mols.mols[0]
-
+                    mol: Molecule = self.main_window.mols.mols[0]
                 else:
-                    mol = self.parent().mols.mols[0]
-
+                    mol = self.main_window.mols.mols[0]
                     params = self.z_matrix_temp[i]["parameter"]
                     atom_nums = self.z_matrix_temp[i]["atom_nums"]
-
                     if i >= 3:  # noqa: PLR2004
                         self.add_nth_atom(mol, params, atom_nums)
-
                     elif i == 2:  # noqa: PLR2004
                         self.add_third_atom(mol, params, atom_nums)
-
                     elif i == 1:
                         self.add_second_atom(mol, params)
 
                 self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
 
-            self.parent().delete_structure()
-            self.parent().set_structure(mol)
+            self.structure_widget.delete_structure()
+            self.structure_widget.set_structure(mol)
 
             self._update_z_matrix(mol)
 
@@ -161,8 +147,7 @@ class BuilderDialog(QDialog):
 
         init_xyz = np.zeros([1, 3])
 
-        self.parent().mols.add_molecule(Molecule([at_chrg], init_xyz, draw_bonds=False))
-        self.parent().set_structure(self.parent().mols.get_current_mol())
+        self.main_window.mols.add_molecule(Molecule([at_chrg], init_xyz, draw_bonds=False))
         self.disable_slot = True
         if at_chrg_check:
             self.ui.tableWidget.setRowCount(1)
@@ -175,13 +160,9 @@ class BuilderDialog(QDialog):
         :param mol: The molecule where a second atom shall be added.
         """
         element, dist = params
-
         at_chrg = element_symbol_to_atomic_number(element)
-
         at_chrg_check = self._check_element(at_chrg)
-
         boundary_check = self._check_value(dist)
-
         if boundary_check and at_chrg_check:
             coord = np.array([0.0, 0.0, dist])
             mol.add_atom(at_chrg, coord)
@@ -194,25 +175,19 @@ class BuilderDialog(QDialog):
         :param params: atom parameters (element, distance to selected atom, angle to selected bond)
         """
         element, dist, angle = params
-
         at1_id: int = atom_ids[0]
-
         at2_id: int = atom_ids[1]
-
         at_chrg = element_symbol_to_atomic_number(element)
-
         boundary_check = self._check_value(dist, angle)
         atom_selection_check = self._check_selected_atoms(at1_id, at2_id)
         at_chrg_check = self._check_element(at_chrg)
 
         if boundary_check and atom_selection_check and at_chrg_check:
             coord = np.array([dist * np.sin(angle), 0, dist * np.cos(angle)])
-
             if at1_id == 1:
                 coord[2] = mol.atoms[at1_id].position[2] - coord[2]
             else:
                 coord[2] = mol.atoms[at1_id].position[2] + coord[2]
-
             mol.add_atom(at_chrg, coord)
 
     def add_nth_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
@@ -223,15 +198,10 @@ class BuilderDialog(QDialog):
 
         """
         element, dist, angle, dihedral = params
-
         at1_num: int = atom_nums[0]
-
         at2_num: int = atom_nums[1]
-
         at3_num: int = atom_nums[2]
-
         at_chrg = element_symbol_to_atomic_number(element)
-
         boundary_check = self._check_value(dist, angle)
         atom_selection_check = self._check_selected_atoms(at1_num, at2_num, at3_num)
         at_chrg_check = self._check_element(at_chrg)
@@ -339,7 +309,7 @@ class BuilderDialog(QDialog):
         dist: float = float(self.ui.Box_1BondDistance.text())
         angle: float = np.deg2rad(float(self.ui.Box_2BondAngle.text()))
         dihedral: float = np.deg2rad(float(self.ui.Box_3DihedralAngle.text()))
-        atom_nums = self.parent().builder_selected_spheres
+        atom_nums = self.structure_widget.builder_selected_spheres
 
         if nat > 2:  # noqa: PLR2004
             return (
