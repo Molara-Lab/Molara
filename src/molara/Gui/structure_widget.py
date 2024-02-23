@@ -186,10 +186,10 @@ class StructureWidget(QOpenGLWidget):
             and event.y() in range(self.height())
         ):
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
-                if self.main_window.measurement_dialog.isVisible():
+                if self.measurement_dialog.isVisible():
                     self.update_measurement_selected_atoms(event)
 
-                if self.main_window.builder_dialog.isVisible():
+                if self.builder_dialog.isVisible():
                     self.update_builder_selected_atoms(event)
 
             else:
@@ -379,7 +379,7 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_colors,
         )
         self.update()
-        self.main_window.measurement_dialog.display_metrics(
+        self.measurement_dialog.display_metrics(
             self.structure,
             self.measurement_selected_spheres,
         )
