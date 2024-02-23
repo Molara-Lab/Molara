@@ -337,35 +337,31 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_positions,
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
+
+        def measurement_select_sphere(sphere_id: int) -> None:
+            id_in_selection = self.measurement_selected_spheres.index(-1)
+            self.measurement_selected_spheres[id_in_selection] = sphere_id
+            self.old_sphere_colors[id_in_selection] = self.structure.drawer.atom_colors[sphere_id].copy()
+            self.structure.drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+
+        def measurement_unselect_sphere(sphere_id: int) -> None:
+            id_in_selection = self.measurement_selected_spheres.index(sphere_id)
+            self.structure.drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
+            self.measurement_selected_spheres[id_in_selection] = -1
+
         if selected_sphere != -1:
             if -1 in self.measurement_selected_spheres:
                 if selected_sphere in self.measurement_selected_spheres:
-                    self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
-                        self.measurement_selected_spheres.index(selected_sphere)
-                    ].copy()
-                    self.measurement_selected_spheres[self.measurement_selected_spheres.index(selected_sphere)] = -1
+                    measurement_unselect_sphere(selected_sphere)
                 else:
-                    self.measurement_selected_spheres[self.measurement_selected_spheres.index(-1)] = selected_sphere
-                    self.old_sphere_colors[
-                        self.measurement_selected_spheres.index(selected_sphere)
-                    ] = self.structure.drawer.atom_colors[selected_sphere].copy()
-                    self.structure.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
-                        self.measurement_selected_spheres.index(selected_sphere)
-                    ].copy()
+                    measurement_select_sphere(selected_sphere)
             elif selected_sphere in self.measurement_selected_spheres:
-                self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
-                    self.measurement_selected_spheres.index(selected_sphere)
-                ].copy()
-                self.measurement_selected_spheres[self.measurement_selected_spheres.index(selected_sphere)] = -1
+                measurement_unselect_sphere(selected_sphere)
         elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
             for selected_sphere_i in self.measurement_selected_spheres:
                 if selected_sphere_i == -1:
                     continue
-                self.structure.drawer.atom_colors[selected_sphere_i] = self.old_sphere_colors[
-                    self.measurement_selected_spheres.index(selected_sphere_i)
-                ].copy()
-            for i in range(4):
-                self.measurement_selected_spheres[i] = -1
+                measurement_unselect_sphere(selected_sphere_i)
 
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
@@ -379,24 +375,14 @@ class StructureWidget(QOpenGLWidget):
             self.measurement_selected_spheres,
         )
 
-    def unselect_all_atoms(self) -> None:
-        """Unselect all selected atoms."""
-        for selected_sphere_i in self.measurement_selected_spheres:
-            if selected_sphere_i == -1:
-                continue
-            color = self.old_sphere_colors[self.measurement_selected_spheres.index(selected_sphere_i)].copy()
-            self.structure.drawer.atom_colors[selected_sphere_i] = color
-        for i in range(4):
-            self.measurement_selected_spheres[i] = -1
-        self.set_vertex_attribute_objects(update_bonds=False)
-        self.update()
-
     def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
         """Returns the selected atoms.
 
         :param event: The mouse event.
         :return:
         """
+        self.makeCurrent()
+
         click_position = np.array(
             [
                 (event.x() * 2 - self.width()) / self.width(),
@@ -415,26 +401,25 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
 
+        def builder_select_sphere(sphere_id: int) -> None:
+            id_in_selection = self.builder_selected_spheres.index(-1)
+            self.builder_selected_spheres[id_in_selection] = sphere_id
+            self.old_sphere_colors[id_in_selection] = self.structure.drawer.atom_colors[sphere_id].copy()
+            self.structure.drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+
+        def builder_unselect_sphere(sphere_id: int) -> None:
+            id_in_selection = self.builder_selected_spheres.index(sphere_id)
+            self.structure.drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
+            self.builder_selected_spheres[id_in_selection] = -1
+
         if selected_sphere != -1:
             if -1 in self.builder_selected_spheres:
                 if selected_sphere in self.builder_selected_spheres:
-                    self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
-                        self.builder_selected_spheres.index(selected_sphere)
-                    ].copy()
-                    self.builder_selected_spheres[self.builder_selected_spheres.index(selected_sphere)] = -1
+                    builder_unselect_sphere(selected_sphere)
                 else:
-                    self.builder_selected_spheres[self.builder_selected_spheres.index(-1)] = selected_sphere
-                    self.old_sphere_colors[
-                        self.builder_selected_spheres.index(selected_sphere)
-                    ] = self.structure.drawer.atom_colors[selected_sphere].copy()
-                    self.structure.drawer.atom_colors[selected_sphere] = self.new_sphere_colors[
-                        self.builder_selected_spheres.index(selected_sphere)
-                    ].copy()
+                    builder_select_sphere(selected_sphere)
             elif selected_sphere in self.builder_selected_spheres:
-                self.structure.drawer.atom_colors[selected_sphere] = self.old_sphere_colors[
-                    self.builder_selected_spheres.index(selected_sphere)
-                ].copy()
-                self.builder_selected_spheres[self.builder_selected_spheres.index(selected_sphere)] = -1
+                builder_unselect_sphere(selected_sphere)
 
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
@@ -442,6 +427,18 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.sphere_model_matrices,
             self.structure.drawer.atom_colors,
         )
+        self.update()
+
+    def unselect_all_atoms(self) -> None:
+        """Unselect all selected atoms."""
+        for selected_sphere_i in self.measurement_selected_spheres:
+            if selected_sphere_i == -1:
+                continue
+            color = self.old_sphere_colors[self.measurement_selected_spheres.index(selected_sphere_i)].copy()
+            self.structure.drawer.atom_colors[selected_sphere_i] = color
+        for i in range(4):
+            self.measurement_selected_spheres[i] = -1
+        self.set_vertex_attribute_objects(update_bonds=False)
         self.update()
 
     def clear_builder_selected_atoms(self) -> None:

@@ -57,34 +57,24 @@ class BuilderDialog(QDialog):
 
         if self.main_window.mols.num_mols == 0:
             params, atom_nums = self._get_parameters(0)
-
             self.add_first_atom(params)
-
             mol: Molecule = self.main_window.mols.mols[0]
-
         else:
             mol = self.main_window.mols.mols[0]
-
             params, atom_nums = self._get_parameters(mol.n_at)
-
             if mol.n_at >= 3:  # noqa: PLR2004
                 self.add_nth_atom(mol, params, atom_nums)
-
             elif mol.n_at == 2:  # noqa: PLR2004
                 self.add_third_atom(mol, params, atom_nums)
-
             elif mol.n_at == 1:
                 self.add_second_atom(mol, params)
+            # self.structure_widget.delete_structure()
 
-            self.structure_widget.delete_structure()
-            self.structure_widget.set_structure(mol)
-
+        self.structure_widget.set_structure(mol)
+        self.structure_widget.update()
         self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
-
         self._extend_z_matrix(mol)
-
         self.structure_widget.clear_builder_selected_atoms()
-
         self.disable_slot = False
 
     def delete_atom(self) -> None:
@@ -123,23 +113,16 @@ class BuilderDialog(QDialog):
                 if i == 0:
                     params = self.z_matrix_temp[0]["parameter"]
                     atom_nums = self.z_matrix_temp[0]["atom_nums"]
-
                     self.add_first_atom(params)
-
                     mol: Molecule = self.main_window.mols.mols[0]
-
                 else:
                     mol = self.main_window.mols.mols[0]
-
                     params = self.z_matrix_temp[i]["parameter"]
                     atom_nums = self.z_matrix_temp[i]["atom_nums"]
-
                     if i >= 3:  # noqa: PLR2004
                         self.add_nth_atom(mol, params, atom_nums)
-
                     elif i == 2:  # noqa: PLR2004
                         self.add_third_atom(mol, params, atom_nums)
-
                     elif i == 1:
                         self.add_second_atom(mol, params)
 
@@ -165,7 +148,6 @@ class BuilderDialog(QDialog):
         init_xyz = np.zeros([1, 3])
 
         self.main_window.mols.add_molecule(Molecule([at_chrg], init_xyz, draw_bonds=False))
-        self.structure_widget.set_structure(self.main_window.mols.get_current_mol())
         self.disable_slot = True
         if at_chrg_check:
             self.ui.tableWidget.setRowCount(1)
@@ -178,13 +160,9 @@ class BuilderDialog(QDialog):
         :param mol: The molecule where a second atom shall be added.
         """
         element, dist = params
-
         at_chrg = element_symbol_to_atomic_number(element)
-
         at_chrg_check = self._check_element(at_chrg)
-
         boundary_check = self._check_value(dist)
-
         if boundary_check and at_chrg_check:
             coord = np.array([0.0, 0.0, dist])
             mol.add_atom(at_chrg, coord)
@@ -197,25 +175,19 @@ class BuilderDialog(QDialog):
         :param params: atom parameters (element, distance to selected atom, angle to selected bond)
         """
         element, dist, angle = params
-
         at1_id: int = atom_ids[0]
-
         at2_id: int = atom_ids[1]
-
         at_chrg = element_symbol_to_atomic_number(element)
-
         boundary_check = self._check_value(dist, angle)
         atom_selection_check = self._check_selected_atoms(at1_id, at2_id)
         at_chrg_check = self._check_element(at_chrg)
 
         if boundary_check and atom_selection_check and at_chrg_check:
             coord = np.array([dist * np.sin(angle), 0, dist * np.cos(angle)])
-
             if at1_id == 1:
                 coord[2] = mol.atoms[at1_id].position[2] - coord[2]
             else:
                 coord[2] = mol.atoms[at1_id].position[2] + coord[2]
-
             mol.add_atom(at_chrg, coord)
 
     def add_nth_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
@@ -226,15 +198,10 @@ class BuilderDialog(QDialog):
 
         """
         element, dist, angle, dihedral = params
-
         at1_num: int = atom_nums[0]
-
         at2_num: int = atom_nums[1]
-
         at3_num: int = atom_nums[2]
-
         at_chrg = element_symbol_to_atomic_number(element)
-
         boundary_check = self._check_value(dist, angle)
         atom_selection_check = self._check_selected_atoms(at1_num, at2_num, at3_num)
         at_chrg_check = self._check_element(at_chrg)
