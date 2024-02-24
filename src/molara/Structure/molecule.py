@@ -34,6 +34,7 @@ class Molecule(Structure):
         """
         if dummy:
             self.dummy = True
+
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms: list[Atom] = []
         self.mos = Mos()

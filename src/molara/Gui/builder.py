@@ -67,12 +67,14 @@ class BuilderDialog(QDialog):
         if self.main_window.mols.num_mols == 0:
             params, atom_nums = self._get_parameters(0)
             self.add_first_atom(params)
-            mol: Molecule = self.main_window.mols.mols[0]
+            mol = self.main_window.mols.mols[0]
         else:
             mol = self.main_window.mols.mols[0]
             params, atom_nums = self._get_parameters(mol.n_at)
 
             match mol.n_at:
+                case 0:
+                    self.add_first_atom(params)
                 case 1:
                     self.add_second_atom(mol, params)
                 case 2:
@@ -93,17 +95,30 @@ class BuilderDialog(QDialog):
         """Deletes an atom from the z-matrix visualization table and z_matrix itself."""
         index = self.ui.tableWidget.currentRow()
 
-        mol: Molecule = self.main_window.mols.mols[0]
+        mol = self.main_window.mols.mols[0]
 
         do_deletion = self._check_z_matrix_deletion(index)
-        if do_deletion:
-            error_msg = f"Atom {index} will be deleted."
-            self.ui.ErrorMessageBrowser.setText(error_msg)
-            self._delete_zmat_row(index, mol.n_at)
-            self._delete_table_row(index)
-            self.main_window.mols.mols[0].remove_atom(index=index)
-            self.structure_widget.delete_structure()
-            self.structure_widget.set_structure(self.main_window.mols.get_current_mol())
+
+        if not do_deletion:
+            return
+
+        error_msg = f"Atom {index+1} will be deleted."
+        self.ui.ErrorMessageBrowser.setText(error_msg)
+        self._delete_zmat_row(index, mol.n_at)
+        self._delete_table_row(index)
+
+        if mol.n_at <= 2:  # noqa: PLR2004
+            mol.draw_bonds = False
+
+        mol.remove_atom(index=index)
+
+        self.structure_widget.delete_structure()
+
+        if mol.n_at > 0:
+            self.structure_widget.set_structure(mol)
+        else:
+            self.main_window.mols.remove_molecule(0)
+            self.structure_widget.update()
 
     def adapt_z_matrix(self, item: QTableWidgetItem) -> None:
         """Changes the z-matrix in dependence of the visualization table.
@@ -191,8 +206,8 @@ class BuilderDialog(QDialog):
         boundary_check = self._check_value(dist)
         if boundary_check and at_chrg_check:
             coord = np.array([0.0, 0.0, dist])
-            mol.add_atom(at_chrg, coord)
             mol.toggle_bonds()
+            mol.add_atom(at_chrg, coord)
 
     def add_third_atom(self, mol: Molecule, params: tuple, atom_ids: list) -> None:
         """Adds a third atom to the molecule.

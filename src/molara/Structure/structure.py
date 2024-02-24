@@ -128,6 +128,9 @@ class Structure:
         self.n_at -= 1
         self.molar_mass -= self.atoms[index].atomic_mass
         self.atoms.pop(index)
-        self.bonded_pairs = self.calculate_bonds()
-        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
+
+        if self.n_at != 0:
+            self.bonded_pairs = self.calculate_bonds()
+            self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
+
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
