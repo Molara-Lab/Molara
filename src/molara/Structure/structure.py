@@ -1,20 +1,26 @@
 """A module for the Structure class."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 # if TYPE_CHECKING:
 import numpy as np
 
-from .atom import Atom
-from .drawer import Drawer
+from molara.Structure.atom import Atom
+from molara.Structure.drawer import Drawer
 
 __copyright__ = "Copyright 2024, Molara"
+
+if TYPE_CHECKING:
+    from molara.Structure.crystal import Crystal
+    from molara.Structure.molecule import Molecule
 
 
 class Structure:
     """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
 
     def __init__(
-        self,
+        self: Structure | Crystal | Molecule,
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
         draw_bonds: bool = True,
@@ -42,7 +48,7 @@ class Structure:
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
 
-    def copy(self) -> Structure:
+    def copy(self: Structure | Crystal | Molecule) -> Structure:
         """Creates a copy of the structure."""
         return type(self)(
             self.atomic_numbers,
@@ -50,7 +56,7 @@ class Structure:
             self.draw_bonds,
         )
 
-    def center_coordinates(self) -> None:
+    def center_coordinates(self: Structure | Crystal | Molecule) -> None:
         """Centers the structure around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(
@@ -69,7 +75,7 @@ class Structure:
             self.drawer.set_cylinder_model_matrices()
         self.drawer.set_atom_model_matrices()
 
-    def calculate_bonds(self) -> np.ndarray:
+    def calculate_bonds(self: Structure | Crystal | Molecule) -> np.ndarray:
         """Calculates the bonded pairs of atoms."""
         bonded_pairs = []
 
@@ -91,11 +97,16 @@ class Structure:
 
         return np.array([[-1, -1]], dtype=np.int_)
 
-    def toggle_bonds(self) -> None:
+    def toggle_bonds(self: Structure | Crystal | Molecule) -> None:
         """Toggles the bonds on and off."""
         self.draw_bonds = not self.draw_bonds
 
-    def add_atom(self, atomic_number: int, coordinate: np.ndarray) -> None:
+    def add_atom(
+        self: Structure | Crystal | Molecule,
+        atomic_number: int,
+        coordinate: np.ndarray,
+        draw_bonds: bool = True,
+    ) -> None:
         """Adds an atom to the structure.
 
         :param atomic_number: atomic number (nuclear charge number) of the atom
@@ -104,24 +115,20 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
-        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=True)
+        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=draw_bonds)
         self.atomic_numbers = np.append(self.atomic_numbers, atomic_number)
         self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
-    def remove_atom(self, index: int) -> None:
+    def remove_atom(self: Structure | Crystal | Molecule, index: int, draw_bonds: bool = True) -> None:
         """Removes an atom from the structure.
 
         :param index: list index of the atom that shall be removed
+        :param draw_bons: boolean to define if bonds shall be shown
         """
         self.n_at -= 1
-
         self.molar_mass -= self.atoms[index].atomic_mass
-
         self.atoms.pop(index)
-
         self.bonded_pairs = self.calculate_bonds()
-
-        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=True)
-
+        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=draw_bonds)
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
