@@ -105,7 +105,6 @@ class Structure:
         self: Structure | Crystal | Molecule,
         atomic_number: int,
         coordinate: np.ndarray,
-        draw_bonds: bool = True,
     ) -> None:
         """Adds an atom to the structure.
 
@@ -115,12 +114,12 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
-        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=draw_bonds)
+        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
         self.atomic_numbers = np.append(self.atomic_numbers, atomic_number)
         self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
-    def remove_atom(self: Structure | Crystal | Molecule, index: int, draw_bonds: bool = True) -> None:
+    def remove_atom(self: Structure | Crystal | Molecule, index: int) -> None:
         """Removes an atom from the structure.
 
         :param index: list index of the atom that shall be removed
@@ -130,5 +129,5 @@ class Structure:
         self.molar_mass -= self.atoms[index].atomic_mass
         self.atoms.pop(index)
         self.bonded_pairs = self.calculate_bonds()
-        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=draw_bonds)
+        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
