@@ -69,6 +69,7 @@ class TrajectoryDialog(QDialog):
         self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
 
         self.timer = QTimer(self)
+        self.timer.setInterval(40)
         self.timer.timeout.connect(self.get_next_mol)
 
         layout = QVBoxLayout(self.ui.widget)
@@ -78,6 +79,9 @@ class TrajectoryDialog(QDialog):
 
     def show_trajectory(self) -> None:
         """Shows the all molecules in the current Molecules class automatically."""
+        if not self.parent().mols.num_mols > 1:
+            return
+
         if self.ui.checkBox.isChecked():
             self.timer.start()
 
@@ -86,6 +90,9 @@ class TrajectoryDialog(QDialog):
 
     def get_next_mol(self) -> None:
         """Calls molecules object to get the next molecule and update it in the GUI."""
+        if not self.parent().mols.num_mols > 1:
+            return
+
         val = self.parent().mols.mol_index
         self.ui.verticalSlider.setValue(val + 1)
         self.parent().mols.set_next_mol()
@@ -93,6 +100,9 @@ class TrajectoryDialog(QDialog):
 
     def get_prev_mol(self) -> None:
         """Calls molecules object to get the previous molecule and update it in the GUI."""
+        if not self.parent().mols.num_mols > 1:
+            return
+
         val = self.parent().mols.mol_index
         self.ui.verticalSlider.setValue(val - 1)
         self.parent().mols.set_previous_mol()
@@ -104,20 +114,23 @@ class TrajectoryDialog(QDialog):
 
     def slide_molecule(self) -> None:
         """Updates the molecule and energy plot in dependence of the slider position."""
+        if not self.parent().mols.num_mols > 1:
+            return
+
         index = self.ui.verticalSlider.sliderPosition()
-        self.parent().ui.openGLWidget.delete_structure()
-        self.parent().ui.openGLWidget.set_structure(
+        self.parent().structure_widget.delete_structure()
+        self.parent().structure_widget.set_structure(
             self.parent().mols.get_mol_by_id(index),
         )
         self.update_energy_plot()
 
     def update_molecule(self) -> None:
         """Update molecule and delete old molecule."""
-        self.parent().ui.openGLWidget.delete_structure()
+        self.parent().structure_widget.delete_structure()
 
         self.update_energy_plot()
 
-        self.parent().ui.openGLWidget.set_structure(
+        self.parent().structure_widget.set_structure(
             self.parent().mols.get_current_mol(),
         )
 

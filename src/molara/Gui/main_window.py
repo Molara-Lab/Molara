@@ -17,6 +17,7 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.io.exporter import GeneralExporter
 from molara.Structure.io.importer import GeneralImporter, PoscarImporter
+from molara.Structure.molecules import Molecules
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -43,6 +44,8 @@ class MainWindow(QMainWindow):
         self.crystal_dialog = CrystalDialog(self)
         self.measurement_dialog = MeasurementDialog(self)
         self.builder_dialog = BuilderDialog(self)
+
+        self.mols = Molecules()
 
         self.set_action_triggers()
 
