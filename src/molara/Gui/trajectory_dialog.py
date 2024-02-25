@@ -109,18 +109,16 @@ class TrajectoryDialog(QDialog):
     def update_molecule(self) -> None:
         """Update molecule and delete old molecule."""
         self.parent().ui.openGLWidget.delete_structure()
-
         self.update_energy_plot()
-
         self.parent().ui.openGLWidget.set_structure(
             self.parent().mols.get_current_mol(),
         )
-
         if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
             self.timer.stop()
 
     def initial_energy_plot(self) -> None:
         """Plot the energies of the molecules in the molecules object."""
+        self.sc.axes.cla()
         (self.energy_plot,) = self.sc.axes.plot(
             np.arange(self.parent().mols.num_mols),
             self.parent().mols.energies,
@@ -135,6 +133,7 @@ class TrajectoryDialog(QDialog):
         self.sc.axes.set_ylabel(r"energy$\,/\,\mathrm{eV}$")
         self.sc.fig.tight_layout()
         self.sc.fig.subplots_adjust(bottom=0.22, right=0.99)
+        self.sc.draw()
 
     def update_energy_plot(self) -> None:
         """Update the energy plot, where the current structure is shown in a different color."""
