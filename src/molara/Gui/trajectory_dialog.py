@@ -68,6 +68,9 @@ class TrajectoryDialog(QDialog):
         self.ui.NextButton.clicked.connect(self.get_next_mol)
         self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
 
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.get_next_mol)
+
         layout = QVBoxLayout(self.ui.widget)
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
         layout.addWidget(self.sc)
@@ -76,20 +79,22 @@ class TrajectoryDialog(QDialog):
     def show_trajectory(self) -> None:
         """Shows the all molecules in the current Molecules class automatically."""
         if self.ui.checkBox.isChecked():
-            self.timer = QTimer(self)
             self.timer.start()
-            self.timer.timeout.connect(self.get_next_mol)
 
         else:
             self.timer.stop()
 
     def get_next_mol(self) -> None:
         """Calls molecules object to get the next molecule and update it in the GUI."""
+        val = self.parent().mols.mol_index
+        self.ui.verticalSlider.setValue(val + 1)
         self.parent().mols.set_next_mol()
         self.update_molecule()
 
     def get_prev_mol(self) -> None:
         """Calls molecules object to get the previous molecule and update it in the GUI."""
+        val = self.parent().mols.mol_index
+        self.ui.verticalSlider.setValue(val - 1)
         self.parent().mols.set_previous_mol()
         self.update_molecule()
 
@@ -102,7 +107,7 @@ class TrajectoryDialog(QDialog):
         index = self.ui.verticalSlider.sliderPosition()
         self.parent().ui.openGLWidget.delete_structure()
         self.parent().ui.openGLWidget.set_structure(
-            self.parent().mols.get_index_mol(index),
+            self.parent().mols.get_mol_by_id(index),
         )
         self.update_energy_plot()
 
