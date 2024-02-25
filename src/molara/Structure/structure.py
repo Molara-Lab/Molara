@@ -137,7 +137,6 @@ class Structure:
         """Removes an atom from the structure.
 
         :param index: list index of the atom that shall be removed
-        :param draw_bons: boolean to define if bonds shall be shown
         """
         self.n_at -= 1
         self.molar_mass -= self.atoms[index].atomic_mass
