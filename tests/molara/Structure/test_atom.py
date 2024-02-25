@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
-from molara.Structure.atom import Atom
+from molara.Structure.atom import Atom, element_symbol_to_atomic_number, elements
+from molara.Structure.basisset import Basisset
 from numpy.testing import assert_array_equal
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -35,31 +40,80 @@ class TestAtom(TestCase):
 
     def test_setup(self) -> None:
         """Test the setup of the atom objects."""
+        # values for comparison
+        #     atomic numbers
         z_h, z_c, z_sr, z_n, z_nd, z_li, z_o, z_ar = 1, 6, 38, 7, 60, 3, 8, 18
-        assert self.hydrogen.atomic_number == z_h
-        assert self.hydrogen.symbol == "H"
-        assert_array_equal(self.hydrogen.position, self.position_hydrogen)
-        assert self.carbon.atomic_number == z_c
-        assert self.carbon.symbol == "C"
-        assert_array_equal(self.carbon.position, self.position_carbon)
-        assert self.strontium.atomic_number == z_sr
-        assert self.strontium.symbol == "Sr"
-        assert_array_equal(self.strontium.position, self.position_strontium)
-        assert self.nitrogen.atomic_number == z_n
-        assert self.nitrogen.symbol == "N"
-        assert_array_equal(self.nitrogen.position, self.position_nitrogen)
-        assert self.neodymium.atomic_number == z_nd
-        assert self.neodymium.symbol == "Nd"
-        assert_array_equal(self.neodymium.position, self.position_neodymium)
-        assert self.lithium.atomic_number == z_li
-        assert self.lithium.symbol == "Li"
-        assert_array_equal(self.lithium.position, self.position_lithium)
-        assert self.oxygen.atomic_number == z_o
-        assert self.oxygen.symbol == "O"
-        assert_array_equal(self.oxygen.position, self.position_oxygen)
-        assert self.argon.atomic_number == z_ar
-        assert self.argon.symbol == "Ar"
-        assert_array_equal(self.argon.position, self.position_argon)
+        #     atomic masses
+        (molmass_h, molmass_c, molmass_sr, molmass_n, molmass_nd, molmass_li, molmass_o, molmass_ar) = (
+            1.008,  # h
+            12.011,  # c
+            87.62,  # sr
+            14.0067,  # n
+            144.24,  # nd
+            6.94,  # li
+            15.999,  # o
+            39.948,  # ar
+        )
+        #     electronegativities
+        (elneg_h, elneg_c, elneg_sr, elneg_n, elneg_nd, elneg_li, elneg_o, elneg_ar) = (
+            2.2,  # h
+            2.55,  # c
+            0.95,  # sr
+            3.04,  # n
+            1.14,  # nd
+            0.98,  # li
+            3.44,  # o
+            None,  # ar
+        )
+        (vdwrad_h, vdwrad_c, vdwrad_sr, vdwrad_n, vdwrad_nd, vdwrad_li, vdwrad_o, vdwrad_ar) = (
+            1.20,  # h
+            1.70,  # c
+            2.49,  # sr
+            1.55,  # n
+            2.45,  # nd
+            1.82,  # li
+            1.52,  # o
+            1.88,  # ar
+        )
+
+        def general_attribute_tests(
+            my_atom: Atom,
+            symbol: str,
+            atomic_number: int,
+        ) -> None:
+            assert my_atom.symbol == symbol
+            assert my_atom.atomic_number == atomic_number
+            assert isinstance(my_atom.basis_set, Basisset)
+
+        def special_attribute_tests(
+            my_atom: Atom,
+            position: ArrayLike,
+            atomic_mass: float,
+            electronegativity: float,
+            vdw_radius: float,
+        ) -> None:
+            assert my_atom.atomic_mass == atomic_mass
+            assert my_atom.electronegativity == electronegativity
+            assert my_atom.vdw_radius == vdw_radius
+            assert isinstance(my_atom.position, np.ndarray)
+            assert_array_equal(my_atom.position, position)
+
+        general_attribute_tests(self.hydrogen, "H", z_h)
+        special_attribute_tests(self.hydrogen, self.position_hydrogen, molmass_h, elneg_h, vdwrad_h)
+        general_attribute_tests(self.carbon, "C", z_c)
+        special_attribute_tests(self.carbon, self.position_carbon, molmass_c, elneg_c, vdwrad_c)
+        general_attribute_tests(self.strontium, "Sr", z_sr)
+        special_attribute_tests(self.strontium, self.position_strontium, molmass_sr, elneg_sr, vdwrad_sr)
+        general_attribute_tests(self.nitrogen, "N", z_n)
+        special_attribute_tests(self.nitrogen, self.position_nitrogen, molmass_n, elneg_n, vdwrad_n)
+        general_attribute_tests(self.neodymium, "Nd", z_nd)
+        special_attribute_tests(self.neodymium, self.position_neodymium, molmass_nd, elneg_nd, vdwrad_nd)
+        general_attribute_tests(self.lithium, "Li", z_li)
+        special_attribute_tests(self.lithium, self.position_lithium, molmass_li, elneg_li, vdwrad_li)
+        general_attribute_tests(self.oxygen, "O", z_o)
+        special_attribute_tests(self.oxygen, self.position_oxygen, molmass_o, elneg_o, vdwrad_o)
+        general_attribute_tests(self.argon, "Ar", z_ar)
+        special_attribute_tests(self.argon, self.position_argon, molmass_ar, elneg_ar, vdwrad_ar)
 
     def test_set_position(self) -> None:
         """Test the routine for changing an atom's coordinates."""
@@ -79,3 +133,24 @@ class TestAtom(TestCase):
         assert_array_equal(self.oxygen.position, self.position_argon)
         self.argon.set_position(self.position_hydrogen)
         assert_array_equal(self.argon.position, self.position_hydrogen)
+
+    def test_element_symbol_to_atomic_number(self) -> None:
+        """Test the routine that converts element symbols to atomic numbers (i.e., nuclear charge numbers)."""
+        # test some elements directly
+        z_h, z_he, z_c, z_n, z_o, z_f, z_s, z_tc, z_rn, z_sb = 1, 2, 6, 7, 8, 9, 16, 43, 86, 51
+        assert element_symbol_to_atomic_number("H") == z_h
+        assert element_symbol_to_atomic_number("He") == z_he
+        assert element_symbol_to_atomic_number("C") == z_c
+        assert element_symbol_to_atomic_number("N") == z_n
+        assert element_symbol_to_atomic_number("O") == z_o
+        assert element_symbol_to_atomic_number("F") == z_f
+        assert element_symbol_to_atomic_number("S") == z_s
+        assert element_symbol_to_atomic_number("Tc") == z_tc
+        assert element_symbol_to_atomic_number("Rn") == z_rn
+        assert element_symbol_to_atomic_number("Sb") == z_sb
+        # test all elements for consistency
+        for i in elements:
+            element_i = elements[i]
+            symbol = element_i["symbol"]
+            atomic_number = element_i["atomic_number"]
+            assert element_symbol_to_atomic_number(symbol) == atomic_number
