@@ -13,26 +13,28 @@ from numpy.testing import assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
+
 class TestAtom(TestCase):
     """Test the Atom class."""
+
     def setUp(self) -> None:
         """Set up an Atom object."""
-        self.position_hydrogen = [ .1324354657,  .0897867564,  .1029384756]
-        self.position_carbon = [-.1324354657, -.0897867564,  .1029384756]
-        self.position_strontium = [ .1324354657,  .0897867564, -.1029384756]
-        self.position_nitrogen = np.array([ .7564534231,  .4657687980,  .6574839201])
-        self.position_neodymium = np.array([-.7564534231,  .4657687980, -.6574839201])
-        self.position_lithium = np.array([-.7564534231, -.4657687980, -.6574839201])
-        self.position_oxygen = [0., 0., 0.]
+        self.position_hydrogen = [0.1324354657, 0.0897867564, 0.1029384756]
+        self.position_carbon = [-0.1324354657, -0.0897867564, 0.1029384756]
+        self.position_strontium = [0.1324354657, 0.0897867564, -0.1029384756]
+        self.position_nitrogen = np.array([0.7564534231, 0.4657687980, 0.6574839201])
+        self.position_neodymium = np.array([-0.7564534231, 0.4657687980, -0.6574839201])
+        self.position_lithium = np.array([-0.7564534231, -0.4657687980, -0.6574839201])
+        self.position_oxygen = [0.0, 0.0, 0.0]
         self.position_argon = [123, 45, 67]
-        self.hydrogen  = Atom(1, self.position_hydrogen)
-        self.carbon    = Atom(6, self.position_carbon)
+        self.hydrogen = Atom(1, self.position_hydrogen)
+        self.carbon = Atom(6, self.position_carbon)
         self.strontium = Atom(38, self.position_strontium)
-        self.nitrogen  = Atom(7, self.position_nitrogen)
+        self.nitrogen = Atom(7, self.position_nitrogen)
         self.neodymium = Atom(60, self.position_neodymium)
-        self.lithium   = Atom(3, self.position_lithium)
-        self.oxygen    = Atom(8, self.position_oxygen)
-        self.argon     = Atom(18, self.position_argon)
+        self.lithium = Atom(3, self.position_lithium)
+        self.oxygen = Atom(8, self.position_oxygen)
+        self.argon = Atom(18, self.position_argon)
 
     def test_setup(self) -> None:
         """Test the setup of the atom objects."""
