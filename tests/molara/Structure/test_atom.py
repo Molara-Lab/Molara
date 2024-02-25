@@ -8,9 +8,6 @@ import numpy as np
 from molara.Structure.atom import Atom
 from numpy.testing import assert_array_equal
 
-# from molara.Structure.molecule import Molecule
-# from molara.Structure.molecules import Molecules
-
 __copyright__ = "Copyright 2024, Molara"
 
 
