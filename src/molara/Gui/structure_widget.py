@@ -18,7 +18,7 @@ from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
-    from PySide6.QtWidgets import QMainWindow
+    from PySide6.QtWidgets import QWidget
 
     from molara.Structure.structure import Structure
 
@@ -28,12 +28,13 @@ __copyright__ = "Copyright 2024, Molara"
 class StructureWidget(QOpenGLWidget):
     """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
 
-    def __init__(self, parent: QMainWindow) -> None:
+    def __init__(self, parent: QWidget) -> None:
         """Creates a StructureWidget object, which is a subclass of QOpenGLWidget.
 
-        :param parent: parent widget (main window)
+        :param parent: parent widget (main window's central widget)
         """
-        self.main_window = parent  # type: ignore[method-assign, assignment]
+        self.central_widget = parent
+        self.main_window = self.central_widget.parent()  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
         self.renderer = Renderer()
