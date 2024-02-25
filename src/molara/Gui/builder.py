@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, ParamSpec, TypeVar
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
@@ -20,7 +20,23 @@ if TYPE_CHECKING:
     from molara.Gui.main_window import MainWindow
     from molara.Gui.structure_widget import StructureWidget
 
+T = TypeVar("T")
+P = ParamSpec("P")
+
 __copyright__ = "Copyright 2024, Molara"
+
+
+def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
+    """Toggles the disable slot variable to circumvent recursivity."""
+
+    def wrapper(self: BuilderDialog, *args: P.args, **kwargs: P.kwargs) -> None:
+        if self.disable_slot:
+            return
+        self.disable_slot = True
+        func(self, *args, **kwargs)
+        self.disable_slot = False
+
+    return wrapper
 
 
 class BuilderDialog(QDialog):
@@ -46,11 +62,16 @@ class BuilderDialog(QDialog):
         self.structure_widget: StructureWidget = self.parent().structure_widget
 
         self.main_window.mols = Molecules()
+        self.z_matrix: list[dict] = []
 
+        self.disable_slot: bool = False
+
+        self._initialize_table()
+
+    def _initialize_table(self) -> None:
+        """Initalizes the table of the builder."""
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(7)
-
-        self.z_matrix: list[dict] = []
 
         column_widths = [55, 40, 70, 40, 70, 40, 70]
         for col, width in enumerate(column_widths):
@@ -60,14 +81,16 @@ class BuilderDialog(QDialog):
         for column, text in enumerate(text_data):
             self.ui.tableWidget.setHorizontalHeaderItem(column, QTableWidgetItem(text))
 
+    @toggle_slot
     def select_add(self) -> None:
         """Selects the add procedure. Depends on the number of atoms in the molecule."""
-        self.disable_slot = True
         self.err = False
         self.colliding_idx = None
 
         if self.main_window.mols.num_mols == 0:
             params, atom_nums = self._get_parameters(0)
+
+            self.disable_slot = False
             self.add_first_atom(params)
             mol = self.main_window.mols.mols[0]
         else:
@@ -84,14 +107,13 @@ class BuilderDialog(QDialog):
                 case _:
                     self.add_nth_atom(mol, params, atom_nums)
 
+        self.disable_slot = False
         if not self.err and self.colliding_idx is None:
             self.structure_widget.set_structure(mol)
             self.structure_widget.update()
             self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
             self._set_z_matrix_row(mol.n_at, mol.n_at - 1)
             self.structure_widget.clear_builder_selected_atoms()
-
-        self.disable_slot = False
 
     def delete_atom(self) -> None:
         """Deletes an atom from the z-matrix visualization table and z_matrix itself."""
@@ -122,15 +144,16 @@ class BuilderDialog(QDialog):
             self.main_window.mols.remove_molecule(0)
             self.structure_widget.update()
 
+    @toggle_slot
     def adapt_z_matrix(self, item: QTableWidgetItem) -> None:
         """Changes the z-matrix in dependence of the visualization table.
 
         :param item: passed item from the visualization table
         """
-        if self.disable_slot:
-            return
-
         row = item.row()
+
+        self.disable_slot = False
+        self._clear_upper_table_entries(self.main_window.mols.mols[0].n_at)
 
         self.colliding_idx = None
 
@@ -154,6 +177,7 @@ class BuilderDialog(QDialog):
                 if i == 0:
                     params = self.z_matrix[0]["parameter"]
                     atom_nums = self.z_matrix[0]["atom_nums"]
+                    self.disable_slot = False
                     self.add_first_atom(params)
                     mol: Molecule = self.main_window.mols.mols[0]
                 else:
@@ -175,12 +199,13 @@ class BuilderDialog(QDialog):
 
             self.structure_widget.delete_structure()
             self.structure_widget.set_structure(mol)
+
             self._update_z_matrix(mol.n_at)
 
             self.colliding_idx = None
 
     def _orth(self, vec: np.ndarray, unitvec: np.ndarray) -> np.ndarray:
-        """Orthogonalize the vector.
+        """Calculate a vector that is orthogonal to the two given vectors.
 
         :param vec: vector to orthogonalize
         :param unitvec: unitvector
@@ -188,6 +213,7 @@ class BuilderDialog(QDialog):
         """
         return vec - np.dot(vec, unitvec) * unitvec
 
+    @toggle_slot
     def add_first_atom(self, params: tuple) -> None:
         """Initializes a molecule and adds the first atom to it.
 
@@ -200,11 +226,9 @@ class BuilderDialog(QDialog):
         init_xyz = np.zeros([1, 3])
 
         self.main_window.mols.add_molecule(Molecule([at_chrg], init_xyz, draw_bonds=False))
-        self.disable_slot = True
         if at_chrg_check:
             self.ui.tableWidget.setRowCount(1)
             self.ui.tableWidget.setItem(0, 0, QTableWidgetItem(element))
-        self.disable_slot = False
 
     def add_second_atom(self, mol: Molecule, params: tuple) -> None:
         """Adds a second atom.
@@ -295,7 +319,7 @@ class BuilderDialog(QDialog):
         """Checks whether values are larger than a threshold.
 
         :param args: Parameter to check whether threshold is reached.
-        :param threshold:Threshold to be reached.
+        :param threshold: Threshold to be reached.
         """
         error_msg = "Parameter values are not valid."
         vals_above_threshold = True
@@ -312,7 +336,7 @@ class BuilderDialog(QDialog):
     def _check_selected_atoms(self, *selected_atoms: int) -> bool:
         """Checks if all necessary atoms are selected.
 
-        :param selected_atoms:int:Selected Atoms to check if not -1
+        :param selected_atoms:int: Selected Atoms to check if not -1
         """
         error_msg = "Not enough atoms selected."
         all_selected = True
@@ -328,7 +352,7 @@ class BuilderDialog(QDialog):
     def _check_element(self, at_chrg: int | None) -> bool:
         """Checks if the element which should be added exists.
 
-        :param at_charg:atomic charge which is None if not an element.
+        :param at_charg: atomic charge which is None if not an element.
         """
         error_msg = "This is not an element."
         is_element = True
@@ -339,13 +363,13 @@ class BuilderDialog(QDialog):
 
         return is_element
 
+    @toggle_slot
     def _set_z_matrix_row(self, tot_row: int, row: int) -> None:
         """Sets a z matrix row in the table in builder dialog.
 
         :param tot_row: Total number of rows
         :param row: The idx of the row to be changed
         """
-        self.disable_slot = True
         param_rows = [0, 2, 4, 6]
         atom_id_rows = [0, 1, 3, 5]
 
@@ -366,19 +390,14 @@ class BuilderDialog(QDialog):
                     atom_id = self.z_matrix[row]["atom_nums"][i - 1]
                     self.ui.tableWidget.setItem(row, atom_id_rows[i], QTableWidgetItem(str(atom_id + 1)))
 
-        self.disable_slot = False
-
     def _update_z_matrix(self, tot_row: int) -> None:
         """Update the complete z-matrix table.
 
         :param tot_row: Total number of rows
         """
-        self.disable_slot = True
         self.ui.tableWidget.setRowCount(tot_row)
         for j in range(tot_row):
             self._set_z_matrix_row(tot_row, j)
-
-        self.disable_slot = False
 
     def _delete_table_row(self, idx: int) -> None:
         """Deletes a row from the table.
@@ -387,10 +406,10 @@ class BuilderDialog(QDialog):
         """
         self.ui.tableWidget.removeRow(idx)
 
-    def _get_parameters(self, nat: int) -> tuple[tuple, list]:
+    def _get_parameters(self, num_atoms: int) -> tuple[tuple, list]:
         """Return the parameter from the input boxes.
 
-        :param nat: Current number of atoms of the molecule.
+        :param num_atoms: Current number of atoms of the molecule.
         """
         element: str = self.ui.Box_0Element.text().capitalize()
         dist: float = float(self.ui.Box_1BondDistance.text())
@@ -398,7 +417,7 @@ class BuilderDialog(QDialog):
         dihedral: float = np.deg2rad(float(self.ui.Box_3DihedralAngle.text()))
         atom_nums = self.structure_widget.builder_selected_spheres
 
-        match nat:
+        match num_atoms:
             case 0:
                 return (element, None), []
             case 1:
@@ -471,15 +490,31 @@ class BuilderDialog(QDialog):
 
         return do_deletion
 
-    def _delete_zmat_row(self, idx: int, nat: int) -> None:
+    def _delete_zmat_row(self, idx: int, num_atoms: int) -> None:
         """Deletes an entry in the z-matrix.
 
         :param idx: Index of the row to be deleted
-        :param nat: Total number of atoms in the molecule.
+        :param num_atoms: Total number of atoms in the molecule.
         """
-        for i in range(idx, nat):
+        for i in range(idx, num_atoms):
             for j, at_num in enumerate(self.z_matrix[i]["atom_nums"]):
                 if at_num > idx and at_num != -1:
                     self.z_matrix[i]["atom_nums"][j] -= 1
 
         self.z_matrix.pop(idx)
+
+    @toggle_slot
+    def _clear_upper_table_entries(self, number_of_rows: int) -> None:
+        """Clears the unnecessary table entries if there is some input."""
+        first_row = 0
+        second_row = 1
+        third_row = 2
+        if number_of_rows > first_row:
+            for col in range(1, 6):
+                self.ui.tableWidget.setItem(first_row, col, QTableWidgetItem(""))
+        if number_of_rows > second_row:
+            for col in range(3, 6):
+                self.ui.tableWidget.setItem(second_row, col, QTableWidgetItem(""))
+        if number_of_rows > third_row:
+            for col in range(5, 6):
+                self.ui.tableWidget.setItem(third_row, col, QTableWidgetItem(""))

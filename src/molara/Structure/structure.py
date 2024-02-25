@@ -27,8 +27,8 @@ class Structure:
     ) -> None:
         """Creates a new Structure object.
 
-        :param atomic_numbers:np.ndarray: atomic numbers of a atoms
-        :param coordinates:np.ndarray: coordinates of the atoms
+        :param atomic_numbers: np.ndarray: atomic numbers of a atoms
+        :param coordinates: np.ndarray: coordinates of the atoms
         :param header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
@@ -59,7 +59,7 @@ class Structure:
     def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
         """Computes if the given coordinate is equal to the coordinate of an existing atom.
 
-        Return None is no atom collides.
+        Return None if no atom collides.
 
         :param coordinate: Coordinate to check whether they are equal to position of an atom
         """
