@@ -89,7 +89,7 @@ class TestAtom(TestCase):
             my_atom: Atom,
             position: ArrayLike,
             atomic_mass: float,
-            electronegativity: float,
+            electronegativity: float | None,
             vdw_radius: float,
         ) -> None:
             assert my_atom.atomic_mass == atomic_mass
