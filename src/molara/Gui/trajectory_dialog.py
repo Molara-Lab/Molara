@@ -162,6 +162,7 @@ class TrajectoryDialog(QDialog):
         self.sc.draw()
 
     def reset(self) -> None:
+        """Clear the energy plot, update slider range."""
         self.sc.axes.cla()
         self.sc.draw()
         self.set_slider_range()
