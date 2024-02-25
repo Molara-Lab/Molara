@@ -56,6 +56,20 @@ class Structure:
             self.draw_bonds,
         )
 
+    def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
+        """Computes if the given coordinate is equal to the coordinate of an existing atom.
+
+        Return None is no atom collides.
+
+        :param coordinate: Coordinate to check whether they are equal to position of an atom
+        """
+        dist_threshold = 1e-10
+        for i, atom in enumerate(self.atoms):
+            dist = np.linalg.norm(atom.position - coordinate)
+            if dist < dist_threshold:
+                return i
+        return None
+
     def center_coordinates(self: Structure | Crystal | Molecule) -> None:
         """Centers the structure around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])

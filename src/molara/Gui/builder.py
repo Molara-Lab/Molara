@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -63,6 +64,7 @@ class BuilderDialog(QDialog):
         """Selects the add procedure. Depends on the number of atoms in the molecule."""
         self.disable_slot = True
         self.err = False
+        self.colliding_idx = None
 
         if self.main_window.mols.num_mols == 0:
             params, atom_nums = self._get_parameters(0)
@@ -82,11 +84,11 @@ class BuilderDialog(QDialog):
                 case _:
                     self.add_nth_atom(mol, params, atom_nums)
 
-        if not self.err:
+        if not self.err and self.colliding_idx is None:
             self.structure_widget.set_structure(mol)
             self.structure_widget.update()
             self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
-            self._set_z_matrix_row(mol, mol.n_at - 1)
+            self._set_z_matrix_row(mol.n_at, mol.n_at - 1)
             self.structure_widget.clear_builder_selected_atoms()
 
         self.disable_slot = False
@@ -130,30 +132,34 @@ class BuilderDialog(QDialog):
 
         row = item.row()
 
+        self.colliding_idx = None
+
         params = self._get_parameters_from_table(row)
 
         if params[0] is None:
             error_msg = "Incorrect input type."
             self.ui.ErrorMessageBrowser.setText(error_msg)
-            self._set_z_matrix_row(self.main_window.mols.mols[0], row)
-        else:
-            self.z_matrix[row]["parameter"] = params
-            self.z_matrix_temp = self.z_matrix.copy()
+            self._set_z_matrix_row(self.main_window.mols.mols[0].n_at, row)
 
-            self.z_matrix = []
+        else:
+            self.z_matrix_temp = deepcopy(self.z_matrix)
+
+            self.z_matrix[row]["parameter"] = params
+
+            mol_temp = self.main_window.mols.mols[0]
 
             self.main_window.mols.remove_molecule(0)
 
-            for i in range(len(self.z_matrix_temp)):
+            for i in range(len(self.z_matrix)):
                 if i == 0:
-                    params = self.z_matrix_temp[0]["parameter"]
-                    atom_nums = self.z_matrix_temp[0]["atom_nums"]
+                    params = self.z_matrix[0]["parameter"]
+                    atom_nums = self.z_matrix[0]["atom_nums"]
                     self.add_first_atom(params)
                     mol: Molecule = self.main_window.mols.mols[0]
                 else:
                     mol = self.main_window.mols.mols[0]
-                    params = self.z_matrix_temp[i]["parameter"]
-                    atom_nums = self.z_matrix_temp[i]["atom_nums"]
+                    params = self.z_matrix[i]["parameter"]
+                    atom_nums = self.z_matrix[i]["atom_nums"]
                     if i >= 3:  # noqa: PLR2004
                         self.add_nth_atom(mol, params, atom_nums)
                     elif i == 2:  # noqa: PLR2004
@@ -161,12 +167,17 @@ class BuilderDialog(QDialog):
                     elif i == 1:
                         self.add_second_atom(mol, params)
 
-                self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
+                if self.colliding_idx is not None:
+                    mol = mol_temp
+                    self.z_matrix = self.z_matrix_temp
+                    self.main_window.mols.mols[0] = mol_temp
+                    break
 
             self.structure_widget.delete_structure()
             self.structure_widget.set_structure(mol)
+            self._update_z_matrix(mol.n_at)
 
-            self._update_z_matrix(mol)
+            self.colliding_idx = None
 
     def _orth(self, vec: np.ndarray, unitvec: np.ndarray) -> np.ndarray:
         """Orthogonalize the vector.
@@ -229,6 +240,7 @@ class BuilderDialog(QDialog):
                 coord[2] = mol.atoms[at1_id].position[2] - coord[2]
             else:
                 coord[2] = mol.atoms[at1_id].position[2] + coord[2]
+
             mol.add_atom(at_chrg, coord)
 
     def add_nth_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
@@ -262,7 +274,12 @@ class BuilderDialog(QDialog):
             coord = mol.atoms[at1_num].position + dist * np.cos(angle) * vec1
             coord += tmp * np.cos(dihedral) * vec2 + tmp * np.sin(dihedral) * vec3
 
-            mol.add_atom(at_chrg, np.squeeze(coord))
+            self.colliding_idx = mol.compute_collision(coord)
+            if self.colliding_idx is None:
+                mol.add_atom(at_chrg, np.squeeze(coord))
+            else:
+                error_msg = f"The atom would collide with atom {self.colliding_idx+1}"
+                self.ui.ErrorMessageBrowser.setText(error_msg)
 
     def _clear_all_text(self) -> None:
         """Clears all text in the zbuilder dialog."""
@@ -277,8 +294,8 @@ class BuilderDialog(QDialog):
     def _check_value(self, *args: float, threshold: float = 1e-8) -> bool:
         """Checks whether values are larger than a threshold.
 
-        args:float:Parameter to check whether threshold is reached.
-        threshold:Threshold to be reached.
+        :param args: Parameter to check whether threshold is reached.
+        :param threshold:Threshold to be reached.
         """
         error_msg = "Parameter values are not valid."
         vals_above_threshold = True
@@ -295,8 +312,7 @@ class BuilderDialog(QDialog):
     def _check_selected_atoms(self, *selected_atoms: int) -> bool:
         """Checks if all necessary atoms are selected.
 
-        params:
-        selected_atoms:int:Selected Atoms to check if not -1
+        :param selected_atoms:int:Selected Atoms to check if not -1
         """
         error_msg = "Not enough atoms selected."
         all_selected = True
@@ -312,8 +328,7 @@ class BuilderDialog(QDialog):
     def _check_element(self, at_chrg: int | None) -> bool:
         """Checks if the element which should be added exists.
 
-        params:
-        at_charg:atomic charge which is None if not an element.
+        :param at_charg:atomic charge which is None if not an element.
         """
         error_msg = "This is not an element."
         is_element = True
@@ -324,12 +339,17 @@ class BuilderDialog(QDialog):
 
         return is_element
 
-    def _set_z_matrix_row(self, mol: Molecule, row: int) -> None:
+    def _set_z_matrix_row(self, tot_row: int, row: int) -> None:
+        """Sets a z matrix row in the table in builder dialog.
+
+        :param tot_row: Total number of rows
+        :param row: The idx of the row to be changed
+        """
         self.disable_slot = True
         param_rows = [0, 2, 4, 6]
         atom_id_rows = [0, 1, 3, 5]
 
-        self.ui.tableWidget.setRowCount(mol.n_at)
+        self.ui.tableWidget.setRowCount(tot_row)
 
         for i, text in enumerate(self.z_matrix[row]["parameter"]):
             if text is not None:
@@ -348,18 +368,30 @@ class BuilderDialog(QDialog):
 
         self.disable_slot = False
 
-    def _update_z_matrix(self, mol: Molecule) -> None:
+    def _update_z_matrix(self, tot_row: int) -> None:
+        """Update the complete z-matrix table.
+
+        :param tot_row: Total number of rows
+        """
         self.disable_slot = True
-        self.ui.tableWidget.setRowCount(mol.n_at)
-        for j in range(mol.n_at):
-            self._set_z_matrix_row(mol, j)
+        self.ui.tableWidget.setRowCount(tot_row)
+        for j in range(tot_row):
+            self._set_z_matrix_row(tot_row, j)
 
         self.disable_slot = False
 
     def _delete_table_row(self, idx: int) -> None:
+        """Deletes a row from the table.
+
+        :param idx: Index of the row to be deleted
+        """
         self.ui.tableWidget.removeRow(idx)
 
     def _get_parameters(self, nat: int) -> tuple[tuple, list]:
+        """Return the parameter from the input boxes.
+
+        :param nat: Current number of atoms of the molecule.
+        """
         element: str = self.ui.Box_0Element.text().capitalize()
         dist: float = float(self.ui.Box_1BondDistance.text())
         angle: float = np.deg2rad(float(self.ui.Box_2BondAngle.text()))
@@ -382,23 +414,28 @@ class BuilderDialog(QDialog):
                 ), atom_nums
 
     def _get_parameters_from_table(self, row: int) -> tuple:
+        """Returns the parameter of a specified row in the table.
+
+        :param row: Index of the row of interest.
+        """
         param_type_validity = True
 
         if row >= 0:
             element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
-            param_type_validity = bool(element_symbol_to_atomic_number(element))
+            param_type_validity = bool(re.match("^[A-Z]", element))
+            param_type_validity = bool(element_symbol_to_atomic_number(element)) and param_type_validity
 
         if row >= 1:
             dist = self.ui.tableWidget.item(row, 2).text()
-            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dist))
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dist)) and param_type_validity
 
         if row >= 2:  # noqa: PLR2004
             angle = self.ui.tableWidget.item(row, 4).text()
-            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", angle))
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", angle)) and param_type_validity
 
         if row >= 3:  # noqa: PLR2004
             dihedral = self.ui.tableWidget.item(row, 6).text()
-            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral))
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral)) and param_type_validity
 
         if not param_type_validity:
             return (None,)
@@ -413,27 +450,36 @@ class BuilderDialog(QDialog):
             case _:
                 return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
 
-    def _check_z_matrix_deletion(self, index: int) -> bool:
+    def _check_z_matrix_deletion(self, idx: int) -> bool:
+        """Checks if the deletion of the z-matrix entry is valid.
+
+        :param idx: Index of the row to be deleted
+        """
         do_deletion = True
 
-        if index == -1:
+        if idx == -1:
             error_msg = "No Atom was chosen to be deleted."
             self.ui.ErrorMessageBrowser.setText(error_msg)
             do_deletion = False
 
         else:
             for entry in self.z_matrix:
-                if index in entry["atom_nums"]:
-                    error_msg = f"Cannot be deleted. Atom {index+1} depends on this atom."
+                if idx in entry["atom_nums"]:
+                    error_msg = f"Cannot be deleted. Atom {idx+1} depends on this atom."
                     do_deletion = False
                     self.ui.ErrorMessageBrowser.setText(error_msg)
 
         return do_deletion
 
-    def _delete_zmat_row(self, index: int, nat: int) -> None:
-        for i in range(index, nat):
+    def _delete_zmat_row(self, idx: int, nat: int) -> None:
+        """Deletes an entry in the z-matrix.
+
+        :param idx: Index of the row to be deleted
+        :param nat: Total number of atoms in the molecule.
+        """
+        for i in range(idx, nat):
             for j, at_num in enumerate(self.z_matrix[i]["atom_nums"]):
-                if at_num > index and at_num != -1:
+                if at_num > idx and at_num != -1:
                     self.z_matrix[i]["atom_nums"][j] -= 1
 
-        self.z_matrix.pop(index)
+        self.z_matrix.pop(idx)
