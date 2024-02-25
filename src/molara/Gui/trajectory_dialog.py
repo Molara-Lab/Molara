@@ -160,3 +160,8 @@ class TrajectoryDialog(QDialog):
         self.current_energy_plot.set_xdata(mol_index)
         self.current_energy_plot.set_ydata(energies[mol_index])
         self.sc.draw()
+
+    def reset(self) -> None:
+        self.sc.axes.cla()
+        self.sc.draw()
+        self.set_slider_range()

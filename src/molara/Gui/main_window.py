@@ -113,9 +113,15 @@ class MainWindow(QMainWindow):
         self.structure_widget.set_structure(self.mols.get_current_mol())
 
         if self.mols.num_mols > 1:
+            self.ui.actionOpen_Trajectory_Dialog.setEnabled(True)
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
+            return
+
+        self.trajectory_dialog.reset()
+        self.trajectory_dialog.close()
+        self.ui.actionOpen_Trajectory_Dialog.setEnabled(False)
 
     def export_structure(self) -> None:
         """Save structure to file."""
