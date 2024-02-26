@@ -63,10 +63,16 @@ class TrajectoryDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
-        self.ui.checkBox.stateChanged.connect(self.show_trajectory)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.get_next_mol)
+        self.timer.setInterval(40)
+
+        # self.ui.checkBox.stateChanged.connect(self.show_trajectory)
+        self.ui.playStopButton.clicked.connect(self.show_trajectory)
         self.ui.PrevButton.clicked.connect(self.get_prev_mol)
         self.ui.NextButton.clicked.connect(self.get_next_mol)
         self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
+        self.ui.speedDial.valueChanged.connect(self.change_speed)
 
         layout = QVBoxLayout(self.ui.widget)
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
@@ -75,13 +81,12 @@ class TrajectoryDialog(QDialog):
 
     def show_trajectory(self) -> None:
         """Shows the all molecules in the current Molecules class automatically."""
-        if self.ui.checkBox.isChecked():
-            self.timer = QTimer(self)
-            self.timer.start()
-            self.timer.timeout.connect(self.get_next_mol)
-
-        else:
+        if self.timer.isActive():
             self.timer.stop()
+            self.ui.playStopButton.setText("Play")
+            return
+        self.timer.start()
+        self.ui.playStopButton.setText("Stop")
 
     def get_next_mol(self) -> None:
         """Calls molecules object to get the next molecule and update it in the GUI."""
@@ -115,9 +120,18 @@ class TrajectoryDialog(QDialog):
         self.parent().ui.openGLWidget.set_structure(
             self.parent().mols.get_current_mol(),
         )
-
         if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
             self.timer.stop()
+            self.ui.playStopButton.setText("Play")
+
+    def change_speed(self, value: int) -> None:
+        """Change speed (/ time interval) of trajectory animation.
+
+        :param value: value that is passed from the speed dial
+        """
+        min_interval = 1
+        max_interval = 500
+        self.timer.setInterval(min_interval * (max_interval / min_interval) ** (value * 0.001))
 
     def initial_energy_plot(self) -> None:
         """Plot the energies of the molecules in the molecules object."""
