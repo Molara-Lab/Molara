@@ -228,6 +228,8 @@ class CrystalDialog(QDialog):
             self.enable_lattice_constants([0, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
+            self.ui.inputLatConst_a.valueChanged.connect(self.b_equals_a)
+            self.b_equals_a(self.ui.inputLatConst_a.value())
             self.angles_hexagonal()
         elif value == "Monoclinic":
             self.hide_space_groups([False, True, True, True])
