@@ -197,9 +197,9 @@ class CrystalDialog(QDialog):
         """
         self.crystal_system = value
         select_space_group = self.ui.selectSpaceGroup
+        select_space_group.setCurrentIndex(0)
         if value == "Cubic":
             self.hide_space_groups([False, False, True, True])
-            select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
@@ -208,7 +208,6 @@ class CrystalDialog(QDialog):
             self.angles_orthorhombic()
         elif value == "Tetragonal":
             self.hide_space_groups([False, True, False, True])
-            select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
@@ -217,14 +216,12 @@ class CrystalDialog(QDialog):
             self.angles_orthorhombic()
         elif value == "Orthorhombic":
             self.hide_space_groups([False, True, True, False])
-            select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0, 1, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
             self.angles_orthorhombic()
         elif value == "Hexagonal":
             self.hide_space_groups([False, True, True, True])
-            select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
@@ -233,14 +230,12 @@ class CrystalDialog(QDialog):
             self.angles_hexagonal()
         elif value == "Monoclinic":
             self.hide_space_groups([False, True, True, True])
-            select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0, 1, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
             self.angles_monoclinic()
         elif value == "Triclinic":
             self.hide_space_groups([False, True, True, True])
-            select_space_group.setCurrentIndex(0)
             self.enable_lattice_constants([0, 1, 2])
             with suppress(Exception):
                 self.ui.inputLatConst_a.valueChanged.disconnect()
