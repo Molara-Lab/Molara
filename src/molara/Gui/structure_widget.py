@@ -90,7 +90,7 @@ class StructureWidget(QOpenGLWidget):
 
     def delete_structure(self) -> None:
         """Delete structure and reset vertex attributes."""
-        self.vertex_attribute_objects = []
+        self.vertex_attribute_objects = [-1]
         self.update()
 
     def set_structure(self, struct: Structure) -> None:
