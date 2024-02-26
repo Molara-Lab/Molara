@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 
 RIGHTANGLE = 90.0
+ENABLED, DISABLED = True, False
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -47,6 +48,9 @@ class CrystalDialog(QDialog):
         self.ui.buttonAddAtom.clicked.connect(self.add_atom)
         self.ui.pushButton.clicked.connect(self.reset)
         self.ui.listAtoms.setColumnCount(4)
+        select_space_group = self.ui.selectSpaceGroup
+        select_space_group.setCurrentIndex(0)
+        self.hide_space_groups([False, True, True, True])
 
     def reset(self) -> None:
         """Resets the dialog."""
@@ -144,32 +148,32 @@ class CrystalDialog(QDialog):
         self.ui.inputLatAngle_alpha.setValue(90.0)
         self.ui.inputLatAngle_beta.setValue(90.0)
         self.ui.inputLatAngle_gamma.setValue(120.0)
-        self.ui.inputLatAngle_alpha.setEnabled(False)
-        self.ui.inputLatAngle_beta.setEnabled(False)
-        self.ui.inputLatAngle_gamma.setEnabled(False)
+        self.ui.inputLatAngle_alpha.setEnabled(DISABLED)
+        self.ui.inputLatAngle_beta.setEnabled(DISABLED)
+        self.ui.inputLatAngle_gamma.setEnabled(DISABLED)
 
     def angles_monoclinic(self) -> None:
         """Set lattice angles to 90°, 90°, and <arbitrary> for a monoclinic cell."""
         self.ui.inputLatAngle_alpha.setValue(90.0)
         self.ui.inputLatAngle_gamma.setValue(90.0)
-        self.ui.inputLatAngle_alpha.setEnabled(False)
-        self.ui.inputLatAngle_beta.setEnabled(True)
-        self.ui.inputLatAngle_gamma.setEnabled(False)
+        self.ui.inputLatAngle_alpha.setEnabled(DISABLED)
+        self.ui.inputLatAngle_beta.setEnabled(ENABLED)
+        self.ui.inputLatAngle_gamma.setEnabled(DISABLED)
 
     def angles_orthorhombic(self) -> None:
         """Set lattice angles to 90°, 90°, and 90° for an orthorhombic cell."""
         self.ui.inputLatAngle_alpha.setValue(90.0)
         self.ui.inputLatAngle_beta.setValue(90.0)
         self.ui.inputLatAngle_gamma.setValue(90.0)
-        self.ui.inputLatAngle_alpha.setEnabled(False)
-        self.ui.inputLatAngle_beta.setEnabled(False)
-        self.ui.inputLatAngle_gamma.setEnabled(False)
+        self.ui.inputLatAngle_alpha.setEnabled(DISABLED)
+        self.ui.inputLatAngle_beta.setEnabled(DISABLED)
+        self.ui.inputLatAngle_gamma.setEnabled(DISABLED)
 
     def angles_triclinic(self) -> None:
         """Enable lattice inputs for a triclinic cell."""
-        self.ui.inputLatAngle_alpha.setEnabled(True)
-        self.ui.inputLatAngle_beta.setEnabled(True)
-        self.ui.inputLatAngle_gamma.setEnabled(True)
+        self.ui.inputLatAngle_alpha.setEnabled(ENABLED)
+        self.ui.inputLatAngle_beta.setEnabled(ENABLED)
+        self.ui.inputLatAngle_gamma.setEnabled(ENABLED)
 
     def enable_lattice_constants(self, ids: Sequence[int]) -> None:
         """Enable or disable inputs for lattice constants, depending on crystal system.
@@ -180,6 +184,14 @@ class CrystalDialog(QDialog):
         self.ui.inputLatConst_a.setEnabled(aid in ids)
         self.ui.inputLatConst_b.setEnabled(bid in ids)
         self.ui.inputLatConst_c.setEnabled(cid in ids)
+        with suppress(Exception):
+            self.ui.inputLatConst_a.valueChanged.disconnect()
+        if cid in ids and bid not in ids:
+            self.ui.inputLatConst_a.valueChanged.connect(self.b_equals_a)
+            self.b_equals_a(self.ui.inputLatConst_a.value())
+        elif cid not in ids and bid not in ids:
+            self.ui.inputLatConst_a.valueChanged.connect(self.bc_equals_a)
+            self.bc_equals_a(self.ui.inputLatConst_a.value())
 
     def hide_space_groups(self, hide: Sequence[bool]) -> None:
         """Hide space-group entries depending on crystal system.
@@ -196,47 +208,27 @@ class CrystalDialog(QDialog):
         :param value: name of the crystal system
         """
         self.crystal_system = value
-        select_space_group = self.ui.selectSpaceGroup
-        select_space_group.setCurrentIndex(0)
         if value == "Cubic":
-            self.hide_space_groups([False, False, True, True])
+            # self.hide_space_groups([False, False, True, True])
             self.enable_lattice_constants([0])
-            with suppress(Exception):
-                self.ui.inputLatConst_a.valueChanged.disconnect()
-            self.ui.inputLatConst_a.valueChanged.connect(self.bc_equals_a)
-            self.bc_equals_a(self.ui.inputLatConst_a.value())
             self.angles_orthorhombic()
         elif value == "Tetragonal":
-            self.hide_space_groups([False, True, False, True])
+            # self.hide_space_groups([False, True, False, True])
             self.enable_lattice_constants([0, 2])
-            with suppress(Exception):
-                self.ui.inputLatConst_a.valueChanged.disconnect()
-            self.ui.inputLatConst_a.valueChanged.connect(self.b_equals_a)
-            self.b_equals_a(self.ui.inputLatConst_a.value())
             self.angles_orthorhombic()
         elif value == "Orthorhombic":
-            self.hide_space_groups([False, True, True, False])
+            # self.hide_space_groups([False, True, True, False])
             self.enable_lattice_constants([0, 1, 2])
-            with suppress(Exception):
-                self.ui.inputLatConst_a.valueChanged.disconnect()
             self.angles_orthorhombic()
         elif value == "Hexagonal":
-            self.hide_space_groups([False, True, True, True])
+            # self.hide_space_groups([False, True, True, True])
             self.enable_lattice_constants([0, 2])
-            with suppress(Exception):
-                self.ui.inputLatConst_a.valueChanged.disconnect()
-            self.ui.inputLatConst_a.valueChanged.connect(self.b_equals_a)
-            self.b_equals_a(self.ui.inputLatConst_a.value())
             self.angles_hexagonal()
         elif value == "Monoclinic":
-            self.hide_space_groups([False, True, True, True])
+            # self.hide_space_groups([False, True, True, True])
             self.enable_lattice_constants([0, 1, 2])
-            with suppress(Exception):
-                self.ui.inputLatConst_a.valueChanged.disconnect()
             self.angles_monoclinic()
         elif value == "Triclinic":
-            self.hide_space_groups([False, True, True, True])
+            # self.hide_space_groups([False, True, True, True])
             self.enable_lattice_constants([0, 1, 2])
-            with suppress(Exception):
-                self.ui.inputLatConst_a.valueChanged.disconnect()
             self.angles_triclinic()
