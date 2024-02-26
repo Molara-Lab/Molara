@@ -9,10 +9,9 @@ import numpy as np
 from molara.Structure.mos import Mos
 from molara.Structure.structure import Structure
 
-if TYPE_CHECKING:
-    from molara.Molecule.atom import Atom
-
 __copyright__ = "Copyright 2024, Molara"
+if TYPE_CHECKING:
+    from molara.Structure.atom import Atom
 
 
 class Molecule(Structure):
@@ -35,6 +34,7 @@ class Molecule(Structure):
         """
         if dummy:
             self.dummy = True
+
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms: list[Atom] = []
         self.mos = Mos()
