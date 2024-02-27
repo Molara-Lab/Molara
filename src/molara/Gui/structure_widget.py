@@ -280,8 +280,8 @@ class StructureWidget(QOpenGLWidget):
                 [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
                 dtype=np.float32,
             )
-            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
-            colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            directions = np.eye(3, dtype=np.float32)
+            colors = np.eye(3, dtype=np.float32)
             radii = np.array([radius] * 3, dtype=np.float32)
             lengths = np.array([length] * 3, dtype=np.float32)
             self.axes[0] = self.renderer.draw_cylinders(
