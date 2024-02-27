@@ -316,57 +316,92 @@ class MoleculeWidget(QOpenGLWidget):
             positions = np.array(
                 [
                     [basis_vectors_matrix[0][0] / 2, basis_vectors_matrix[0][1] / 2, basis_vectors_matrix[0][2] / 2],
-                    [basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[1][0],
-                     basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[1][1],
-                     basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[1][2]],
-                    [basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[2][0],
-                     basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[2][1],
-                     basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[2][2]],
-                    [basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[1][0] + basis_vectors_matrix[2][0],
-                     basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[1][1] + basis_vectors_matrix[2][1],
-                     basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[1][2] + basis_vectors_matrix[2][2]],
+                    [
+                        basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[1][0],
+                        basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[1][1],
+                        basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[1][2],
+                    ],
+                    [
+                        basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[2][0],
+                        basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[2][1],
+                        basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[2][2],
+                    ],
+                    [
+                        basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[1][0] + basis_vectors_matrix[2][0],
+                        basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[1][1] + basis_vectors_matrix[2][1],
+                        basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[1][2] + basis_vectors_matrix[2][2],
+                    ],
                     [basis_vectors_matrix[1][0] / 2, basis_vectors_matrix[1][1] / 2, basis_vectors_matrix[1][2] / 2],
-                    [basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[0][0],
-                     basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[0][1],
-                     basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[0][2]],
-                    [basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[2][0],
-                     basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[2][1],
-                     basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[2][2]],
-                    [basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[0][0] + basis_vectors_matrix[2][0],
-                     basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[0][1] + basis_vectors_matrix[2][1],
-                     basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[0][2] + basis_vectors_matrix[2][2]],
+                    [
+                        basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[0][0],
+                        basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[0][1],
+                        basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[0][2],
+                    ],
+                    [
+                        basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[2][0],
+                        basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[2][1],
+                        basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[2][2],
+                    ],
+                    [
+                        basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[0][0] + basis_vectors_matrix[2][0],
+                        basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[0][1] + basis_vectors_matrix[2][1],
+                        basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[0][2] + basis_vectors_matrix[2][2],
+                    ],
                     [basis_vectors_matrix[2][0] / 2, basis_vectors_matrix[2][1] / 2, basis_vectors_matrix[2][2] / 2],
-                    [basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[1][0],
-                     basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[1][1],
-                     basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[1][2]],
-                    [basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[0][0],
-                     basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[0][1],
-                     basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[0][2]],
-                    [basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[1][0] + basis_vectors_matrix[0][0],
-                     basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[1][1] + basis_vectors_matrix[0][1],
-                     basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[1][2] + basis_vectors_matrix[0][2]],
+                    [
+                        basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[1][0],
+                        basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[1][1],
+                        basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[1][2],
+                    ],
+                    [
+                        basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[0][0],
+                        basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[0][1],
+                        basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[0][2],
+                    ],
+                    [
+                        basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[1][0] + basis_vectors_matrix[0][0],
+                        basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[1][1] + basis_vectors_matrix[0][1],
+                        basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[1][2] + basis_vectors_matrix[0][2],
+                    ],
                 ],
                 dtype=np.float32,
             )
             positions -= self.structure.center
-            directions_1 = np.array([basis_vectors_matrix[0][0],
-                                     basis_vectors_matrix[0][1],
-                                     basis_vectors_matrix[0][2]], dtype=np.float32)
-            directions_2 = np.array([basis_vectors_matrix[1][0],
-                                     basis_vectors_matrix[1][1],
-                                     basis_vectors_matrix[1][2]], dtype=np.float32)
-            directions_3 = np.array([basis_vectors_matrix[2][0],
-                                     basis_vectors_matrix[2][1],
-                                     basis_vectors_matrix[2][2]], dtype=np.float32)
-            directions = np.block([[directions_1], [directions_1], [directions_1], [directions_1],
-                                   [directions_2], [directions_2], [directions_2], [directions_2],
-                                   [directions_3], [directions_3], [directions_3], [directions_3]])
+            directions_1 = np.array(
+                [basis_vectors_matrix[0][0], basis_vectors_matrix[0][1], basis_vectors_matrix[0][2]], dtype=np.float32
+            )
+            directions_2 = np.array(
+                [basis_vectors_matrix[1][0], basis_vectors_matrix[1][1], basis_vectors_matrix[1][2]], dtype=np.float32
+            )
+            directions_3 = np.array(
+                [basis_vectors_matrix[2][0], basis_vectors_matrix[2][1], basis_vectors_matrix[2][2]], dtype=np.float32
+            )
+            directions = np.block(
+                [
+                    [directions_1],
+                    [directions_1],
+                    [directions_1],
+                    [directions_1],
+                    [directions_2],
+                    [directions_2],
+                    [directions_2],
+                    [directions_2],
+                    [directions_3],
+                    [directions_3],
+                    [directions_3],
+                    [directions_3],
+                ]
+            )
             colors = np.array([0, 0, 0] * 12, dtype=np.float32)
             radii = np.array([radius] * 12, dtype=np.float32)
-            lengths = np.concatenate((np.array([np.linalg.norm(basis_vectors_matrix[0])] * 4, dtype=np.float32),
-                                      np.array([np.linalg.norm(basis_vectors_matrix[1])] * 4, dtype=np.float32),
-                                      np.array([np.linalg.norm(basis_vectors_matrix[2])] * 4, dtype=np.float32)),
-                                      axis=None)
+            lengths = np.concatenate(
+                (
+                    np.array([np.linalg.norm(basis_vectors_matrix[0])] * 4, dtype=np.float32),
+                    np.array([np.linalg.norm(basis_vectors_matrix[1])] * 4, dtype=np.float32),
+                    np.array([np.linalg.norm(basis_vectors_matrix[2])] * 4, dtype=np.float32),
+                ),
+                axis=None,
+            )
             self.box[0] = self.renderer.draw_cylinders(
                 positions,
                 directions,
