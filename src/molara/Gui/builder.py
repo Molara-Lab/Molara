@@ -69,7 +69,7 @@ class BuilderDialog(QDialog):
         self._initialize_table()
 
     def _initialize_table(self) -> None:
-        """Initalizes the table of the builder."""
+        """Initializes the table of the builder."""
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(7)
 
