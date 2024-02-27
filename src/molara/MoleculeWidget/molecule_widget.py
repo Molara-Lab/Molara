@@ -368,13 +368,16 @@ class MoleculeWidget(QOpenGLWidget):
             )
             positions -= self.structure.center
             directions_1 = np.array(
-                [basis_vectors_matrix[0][0], basis_vectors_matrix[0][1], basis_vectors_matrix[0][2]], dtype=np.float32,
+                [basis_vectors_matrix[0][0], basis_vectors_matrix[0][1], basis_vectors_matrix[0][2]],
+                dtype=np.float32,
             )
             directions_2 = np.array(
-                [basis_vectors_matrix[1][0], basis_vectors_matrix[1][1], basis_vectors_matrix[1][2]], dtype=np.float32,
+                [basis_vectors_matrix[1][0], basis_vectors_matrix[1][1], basis_vectors_matrix[1][2]],
+                dtype=np.float32,
             )
             directions_3 = np.array(
-                [basis_vectors_matrix[2][0], basis_vectors_matrix[2][1], basis_vectors_matrix[2][2]], dtype=np.float32,
+                [basis_vectors_matrix[2][0], basis_vectors_matrix[2][1], basis_vectors_matrix[2][2]],
+                dtype=np.float32,
             )
             directions = np.block(
                 [
