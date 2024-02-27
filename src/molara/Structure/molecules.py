@@ -24,7 +24,7 @@ class Molecules(Structures):
 
         # aliases for routines from Structure
         self.get_current_mol = self._get_current_structure
-        self.get_index_mol = self._get_structure_by_id
+        self.get_mol_by_id = self._get_structure_by_id
         self.set_next_mol = self._set_next_structure
         self.set_previous_mol = self._set_previous_structure
 

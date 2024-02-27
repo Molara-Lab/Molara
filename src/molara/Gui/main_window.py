@@ -17,6 +17,7 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.io.exporter import GeneralExporter
 from molara.Structure.io.importer import GeneralImporter, PoscarImporter
+from molara.Structure.molecules import Molecules
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -43,6 +44,8 @@ class MainWindow(QMainWindow):
         self.crystal_dialog = CrystalDialog(self)
         self.measurement_dialog = MeasurementDialog(self)
         self.builder_dialog = BuilderDialog(self)
+
+        self.mols = Molecules()
 
         self.set_action_triggers()
 
@@ -110,9 +113,15 @@ class MainWindow(QMainWindow):
         self.structure_widget.set_structure(self.mols.get_current_mol())
 
         if self.mols.num_mols > 1:
+            self.ui.actionOpen_Trajectory_Dialog.setEnabled(True)
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
+            return
+
+        self.trajectory_dialog.reset()
+        self.trajectory_dialog.close()
+        self.ui.actionOpen_Trajectory_Dialog.setEnabled(False)
 
     def export_structure(self) -> None:
         """Save structure to file."""
