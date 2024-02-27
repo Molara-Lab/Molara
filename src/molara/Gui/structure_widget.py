@@ -18,7 +18,7 @@ from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
-    from PySide6.QtWidgets import QMainWindow
+    from PySide6.QtWidgets import QWidget
 
     from molara.Structure.structure import Structure
 
@@ -28,12 +28,13 @@ __copyright__ = "Copyright 2024, Molara"
 class StructureWidget(QOpenGLWidget):
     """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
 
-    def __init__(self, parent: QMainWindow) -> None:
+    def __init__(self, parent: QWidget) -> None:
         """Creates a StructureWidget object, which is a subclass of QOpenGLWidget.
 
-        :param parent: parent widget (main window)
+        :param parent: parent widget (main window's central widget)
         """
-        self.main_window = parent  # type: ignore[method-assign, assignment]
+        self.central_widget = parent
+        self.main_window = self.central_widget.parent()  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
         self.renderer = Renderer()
@@ -90,7 +91,7 @@ class StructureWidget(QOpenGLWidget):
 
     def delete_structure(self) -> None:
         """Delete structure and reset vertex attributes."""
-        self.vertex_attribute_objects = []
+        self.vertex_attribute_objects = [-1]
         self.update()
 
     def set_structure(self, struct: Structure) -> None:
@@ -279,8 +280,8 @@ class StructureWidget(QOpenGLWidget):
                 [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
                 dtype=np.float32,
             )
-            directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
-            colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+            directions = np.eye(3, dtype=np.float32)
+            colors = np.eye(3, dtype=np.float32)
             radii = np.array([radius] * 3, dtype=np.float32)
             lengths = np.array([length] * 3, dtype=np.float32)
             self.axes[0] = self.renderer.draw_cylinders(

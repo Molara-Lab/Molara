@@ -162,6 +162,8 @@
   <action name="actionBuilder">
    <property name="text">
     <string>Builder</string>
+   </property>
+  </action>
   <action name="actionExport">
    <property name="text">
     <string>Export</string>
@@ -177,7 +179,7 @@
   <customwidget>
    <class>StructureWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">molara/StructureWidget/structure_widget</header>
+   <header location="global">molara/Gui/structure_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

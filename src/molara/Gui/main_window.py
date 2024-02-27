@@ -22,7 +22,7 @@ from molara.Structure.molecules import Molecules
 if TYPE_CHECKING:
     from os import PathLike
 
-    from PySide6.QtOpenGLWidgets import QOpenGLWidget
+    from molara.Gui.structure_widget import StructureWidget
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
         self.set_action_triggers()
 
     @property
-    def structure_widget(self) -> QOpenGLWidget:
+    def structure_widget(self) -> StructureWidget:
         """Returns the StructureWidget (openGLWidget)."""
         return self.ui.openGLWidget
 
