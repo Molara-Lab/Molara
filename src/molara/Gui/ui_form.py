@@ -146,6 +146,6 @@ class Ui_MainWindow(object):
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
-        self.actionAdd_unit_cell_boundaries.setText(QCoreApplication.translate("MainWindow", u"The Box", None))
+        self.actionAdd_unit_cell_boundaries.setText(QCoreApplication.translate("MainWindow", u"Toggle Unit Cell Boundaries", None))
     # retranslateUi
 

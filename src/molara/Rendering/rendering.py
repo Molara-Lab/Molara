@@ -206,8 +206,8 @@ class Renderer:
                 glBindBuffer(GL_ARRAY_BUFFER, 0)
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
                 for buffer in cylinder["buffers"]:
-                    glDeleteBuffers(1, buffer)
-                glDeleteVertexArrays(1, cylinder["vao"])
+                    glDeleteBuffers(1, [buffer])
+                glDeleteVertexArrays(1, [cylinder["vao"]])
             self.cylinders[i_cylinder] = {
                 "vao": 0,
                 "n_instances": 0,
@@ -228,8 +228,8 @@ class Renderer:
                 glBindBuffer(GL_ARRAY_BUFFER, 0)
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
                 for buffer in sphere["buffers"]:
-                    glDeleteBuffers(1, buffer)
-                glDeleteVertexArrays(1, sphere["vao"])
+                    glDeleteBuffers(1, [buffer])
+                glDeleteVertexArrays(1, [sphere["vao"]])
             self.spheres[i_sphere] = {
                 "vao": 0,
                 "n_instances": 0,
