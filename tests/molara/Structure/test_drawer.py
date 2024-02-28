@@ -9,6 +9,7 @@ from molara.Rendering.cylinder import Cylinder
 from molara.Rendering.sphere import Sphere
 from molara.Structure.atom import Atom
 from molara.Structure.drawer import Drawer
+from numpy.testing import assert_array_equal
 
 
 class TestDrawer(TestCase):
@@ -33,6 +34,7 @@ class TestDrawer(TestCase):
                 [8, 37.155, 30.858, 48.364],
                 [8, 39.261, 32.018, 46.920],
             ],
+            dtype=np.float32,
         )
         self.atomic_nums_glucose = np.array(xyz_data_glucose[:, 0], dtype=int)
         self.coords_glucose = xyz_data_glucose[:, 1:]
@@ -55,17 +57,27 @@ class TestDrawer(TestCase):
     def test_setup(self) -> None:
         """Test the Drawer setup."""
         subdivisions_sphere = 15
-        subdivisions_cylinder = 15
+        subdivisions_cylinder = 20
         assert self.drawer_glucose.subdivisions_sphere == subdivisions_sphere
         assert self.drawer_glucose.subdivisions_cylinder == subdivisions_cylinder
         assert isinstance(self.drawer_glucose.sphere, Sphere)
         assert isinstance(self.drawer_glucose.cylinder, Cylinder)
         assert isinstance(self.drawer_glucose.atoms, list)
-        for atom_i in self.drawer_glucose.atoms:
-            assert isinstance(atom_i, Atom)
         assert isinstance(self.drawer_glucose.atom_positions, np.ndarray)
         assert isinstance(self.drawer_glucose.atom_colors, np.ndarray)
         assert isinstance(self.drawer_glucose.atom_scales, np.ndarray)
         assert self.drawer_glucose.atom_positions.shape == (self.num_atoms_glucose, 3)
         assert self.drawer_glucose.atom_colors.shape == (self.num_atoms_glucose, 3)
         assert self.drawer_glucose.atom_scales.shape == (self.num_atoms_glucose, 3)
+        for atom_i_drawer, pos_i_drawer, atom_i_test, atomic_num_i_test, pos_i_test in zip(
+            self.drawer_glucose.atoms,
+            self.drawer_glucose.atom_positions,
+            self.atoms_glucose,
+            self.atomic_nums_glucose,
+            self.coords_glucose,
+        ):
+            assert isinstance(atom_i_drawer, Atom)
+            assert atom_i_drawer == atom_i_test
+            assert atom_i_drawer.atomic_number == atomic_num_i_test
+            assert_array_equal(pos_i_drawer, pos_i_test)
+            assert_array_equal(pos_i_drawer, atom_i_drawer.position)
