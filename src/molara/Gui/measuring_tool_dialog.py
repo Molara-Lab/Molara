@@ -5,9 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from PySide6.QtGui import QBrush, QColor
 from PySide6.QtWidgets import (
     QDialog,
     QMainWindow,
+    QTableWidgetItem,
 )
 
 from molara.Gui.ui_measuring_tool import Ui_measuring_tool
@@ -33,6 +35,30 @@ class MeasurementDialog(QDialog):
 
         self.ui = Ui_measuring_tool()
         self.ui.setupUi(self)
+
+        self.ui.tableWidget.setColumnCount(4)
+        self.ui.tableWidget.setRowCount(4)
+        self.ui.tableWidget_2.setRowCount(2)
+
+        colors = [
+            "#f00",
+            "#0d0",
+            "#00f",
+            "#cc0",
+        ]
+        for i, color in enumerate(colors):
+            brush = QBrush(QColor(color))
+            item_horizontal = QTableWidgetItem(rf"Atom {i+1}")
+            item_horizontal.setForeground(brush)
+            item_vertical = QTableWidgetItem(rf"{i+1}")
+            item_vertical.setForeground(brush)
+            self.ui.tableWidget.setHorizontalHeaderItem(i, item_horizontal)
+            self.ui.tableWidget.setVerticalHeaderItem(i, item_vertical)
+
+        item123 = QTableWidgetItem("\u2222 123")
+        item234 = QTableWidgetItem("\u2222 234")
+        self.ui.tableWidget_2.setVerticalHeaderItem(0, item123)
+        self.ui.tableWidget_2.setVerticalHeaderItem(1, item234)
 
     def ini_labels(self) -> None:
         """Initializes the labels."""
@@ -105,6 +131,16 @@ class MeasurementDialog(QDialog):
                 distances[i].setText(f"{d.round(3):.3f}")
             else:
                 distances[i].setText("")
+
+        for i in range(4):
+            for k in range(i + 1, 4):
+                if selected_atoms[i] == -1 or selected_atoms[k] == -1:
+                    self.ui.tableWidget.setItem(i, k, QTableWidgetItem(""))
+                    continue
+                d = np.linalg.norm(
+                    structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[k]].position,
+                )
+                self.ui.tableWidget.setItem(i, k, QTableWidgetItem(f"{d.round(3):.3f}"))
 
     def display_angles(self, structure: Structure, selected_atoms: list) -> None:
         """Display the angles in the table.
