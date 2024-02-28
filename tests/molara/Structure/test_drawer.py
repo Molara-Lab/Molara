@@ -1,0 +1,71 @@
+"""Test the Atom class."""
+
+from __future__ import annotations
+
+from unittest import TestCase
+
+import numpy as np
+from molara.Rendering.cylinder import Cylinder
+from molara.Rendering.sphere import Sphere
+from molara.Structure.atom import Atom
+from molara.Structure.drawer import Drawer
+
+
+class TestDrawer(TestCase):
+    """Test the Drawer class."""
+
+    def setUp(self) -> None:
+        """Set up drawer object(s)."""
+        # Glucose
+        self.num_atoms_glucose = 12
+        xyz_data_glucose = np.array(
+            [
+                [6, 35.884, 30.895, 49.120],
+                [6, 36.177, 29.853, 50.124],
+                [6, 37.296, 30.296, 51.074],
+                [6, 38.553, 30.400, 50.259],
+                [6, 38.357, 31.290, 49.044],
+                [6, 39.559, 31.209, 48.082],
+                [8, 34.968, 30.340, 48.234],
+                [8, 34.923, 29.775, 50.910],
+                [8, 37.441, 29.265, 52.113],
+                [8, 39.572, 30.954, 51.086],
+                [8, 37.155, 30.858, 48.364],
+                [8, 39.261, 32.018, 46.920],
+            ],
+        )
+        self.atomic_nums_glucose = np.array(xyz_data_glucose[:, 0], dtype=int)
+        self.coords_glucose = xyz_data_glucose[:, 1:]
+        self.atoms_glucose = [
+            Atom(atomic_num_i, pos_i) for atomic_num_i, pos_i in zip(self.atomic_nums_glucose, self.coords_glucose)
+        ]
+        # no bonds for now
+        self.bonds_glucose = np.array(
+            [
+                [[-1]],
+            ],
+        )
+        draw_bonds = False
+        self.drawer_glucose = Drawer(
+            self.atoms_glucose,
+            self.bonds_glucose,
+            draw_bonds,
+        )
+
+    def test_setup(self) -> None:
+        """Test the Drawer setup."""
+        subdivisions_sphere = 15
+        subdivisions_cylinder = 15
+        assert self.drawer_glucose.subdivisions_sphere == subdivisions_sphere
+        assert self.drawer_glucose.subdivisions_cylinder == subdivisions_cylinder
+        assert isinstance(self.drawer_glucose.sphere, Sphere)
+        assert isinstance(self.drawer_glucose.cylinder, Cylinder)
+        assert isinstance(self.drawer_glucose.atoms, list)
+        for atom_i in self.drawer_glucose.atoms:
+            assert isinstance(atom_i, Atom)
+        assert isinstance(self.drawer_glucose.atom_positions, np.ndarray)
+        assert isinstance(self.drawer_glucose.atom_colors, np.ndarray)
+        assert isinstance(self.drawer_glucose.atom_scales, np.ndarray)
+        assert self.drawer_glucose.atom_positions.shape == (self.num_atoms_glucose, 3)
+        assert self.drawer_glucose.atom_colors.shape == (self.num_atoms_glucose, 3)
+        assert self.drawer_glucose.atom_scales.shape == (self.num_atoms_glucose, 3)
