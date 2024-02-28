@@ -82,6 +82,13 @@ class TestDrawer(TestCase):
             assert_array_equal(pos_i_drawer, pos_i_test)
             assert_array_equal(pos_i_drawer, atom_i_drawer.position)
 
+        assert isinstance(self.drawer_glucose.sphere_model_matrices, np.ndarray)
+        assert isinstance(self.drawer_glucose.sphere_translation_matrices, np.ndarray)
+        assert isinstance(self.drawer_glucose.sphere_scale_matrices, np.ndarray)
+        assert self.drawer_glucose.sphere_model_matrices.shape == (self.num_atoms_glucose, 4, 4)
+        assert self.drawer_glucose.sphere_translation_matrices.shape == (self.num_atoms_glucose, 4, 4)
+        assert self.drawer_glucose.sphere_scale_matrices.shape == (self.num_atoms_glucose, 4, 4)
+
     def test_reset_atom_model_matrices(self) -> None:
         """Test resets of model matrices for the spheres."""
         self.drawer_glucose.reset_atom_model_matrices()
