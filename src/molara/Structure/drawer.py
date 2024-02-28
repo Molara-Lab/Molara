@@ -24,6 +24,9 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
+NO_BONDS = np.array([[-1, -1]], dtype=np.int_)
+
+
 class Drawer:
     """Creates a Drawer object."""
 
@@ -41,31 +44,55 @@ class Drawer:
         self.sphere_model_matrices = np.array([], dtype=np.float32)
         self.sphere_translation_matrices: list | np.ndarray = []
         self.sphere_scale_matrices: list | np.ndarray = []
+
+        self.atom_positions: list | np.ndarray = []
+        self.atom_colors: np.ndarray = np.array([], dtype=np.float32)
+        self.atom_scales: list | np.ndarray = []
+        self.update_atoms(atoms)
+
         self.cylinder_scale_matrices: list | np.ndarray = []
         self.cylinder_rotation_matrices: list | np.ndarray = []
         self.cylinder_translation_matrices: list | np.ndarray = []
         self.cylinder_model_matrices = np.array([], dtype=np.float32)
         self.cylinder_colors: list | np.ndarray = np.array([], dtype=np.float32)
-        self.atoms = atoms
-        self.bonds = bonds
-        self.atom_positions: list | np.ndarray = []
-        self.atom_colors: np.ndarray = np.array([], dtype=np.float32)
-        self.atom_scales: list | np.ndarray = []
         self.cylinder_positions: list | np.ndarray = []
         self.cylinder_directions: list | np.ndarray = []
         self.cylinder_dimensions: list | np.ndarray = []
 
-        self.set_atom_colors()
-        self.set_atom_positions()
-        self.set_atom_scales()
-        self.set_atom_scale_matrices()
+        self.bonds = NO_BONDS
+        self.update_bonds(bonds, draw_bonds)
+
+    @property
+    def has_bonds(self) -> bool:
+        """Specifies whether drawer has been passed any bonds to draw."""
+        return self.bonds[0][0] != -1
+
+    def update_atoms(self, atoms: list[Atom] | None = None) -> None:
+        """Update the bonds and/or bond matrices of the drawer."""
+        if atoms is not None:
+            self.atoms = atoms
+            self.set_atom_colors()
+            self.set_atom_positions()
+            self.set_atom_scales()
+            self.set_atom_scale_matrices()
         self.set_atom_translation_matrices()
         self.set_atom_model_matrices()
 
-        if self.bonds[0, 0] != -1 and draw_bonds:
+    def update_bonds(self, bonds: np.ndarray | None = None, draw_bonds: bool = True) -> None:
+        """Update the bonds and/or bond matrices of the drawer."""
+        self.draw_bonds = draw_bonds
+
+        if bonds is not None:
+            self.bonds = bonds
+
+        if not self.draw_bonds:
+            return
+
+        if self.has_bonds:
             self.set_cylinder_props()
-            self.set_cylinder_scale_matrices()
-            self.set_cylinder_rotation_matrices()
+            if bonds is not None:
+                self.set_cylinder_scale_matrices()
+                self.set_cylinder_rotation_matrices()
             self.set_cylinder_translation_matrices()
             self.set_cylinder_model_matrices()
 

@@ -71,7 +71,7 @@ class MainWindow(QMainWindow):
         self.ui.actionCenter_Molecule.triggered.connect(
             self.structure_widget.center_structure,
         )
-        self.ui.actionToggle_Bonds.triggered.connect(self.toggle_bonds)
+        self.ui.actionToggle_Bonds.triggered.connect(self.structure_widget.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )
@@ -135,13 +135,6 @@ class MainWindow(QMainWindow):
         )
         exporter = GeneralExporter(filename[0])
         exporter.write_structure(self.structure_widget.structure)
-
-    def toggle_bonds(self) -> None:
-        """Toggles the bonds on and off."""
-        if self.structure_widget.structure:
-            self.structure_widget.structure.toggle_bonds()
-            self.structure_widget.bonds = not self.structure_widget.bonds
-            self.structure_widget.update()
 
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""

@@ -52,7 +52,6 @@ class StructureWidget(QOpenGLWidget):
         self.position = np.zeros(2)
         self.old_position = np.zeros(2)
         self.contour = False
-        self.bonds = True
         self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
         self.measurement_selected_spheres: list = [-1] * 4
@@ -65,6 +64,13 @@ class StructureWidget(QOpenGLWidget):
             np.array([0, 0, 1], dtype=np.float32),
             np.array([1, 1, 0], dtype=np.float32),
         ]
+
+    @property
+    def bonds(self) -> bool:
+        """Specifies whether bonds should be drawn (returns False if no bonds present whatsoever)."""
+        if self.structure_is_set:
+            return self.structure.draw_bonds and self.structure.has_bonds
+        return False
 
     def reset_view(self) -> None:
         """Resets the view of the structure to the initial view."""
@@ -100,10 +106,6 @@ class StructureWidget(QOpenGLWidget):
         :param struct: Structure object that shall be drawn
         """
         self.structure = struct
-        if self.structure.bonded_pairs[0, 0] == -1:
-            self.bonds = False
-        else:
-            self.bonds = True
         self.structure_is_set = True
         self.center_structure()
 
@@ -303,6 +305,13 @@ class StructureWidget(QOpenGLWidget):
             radii = np.array([radius] * 4, dtype=np.float32)
             self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
         self.update()
+
+    def toggle_bonds(self) -> None:
+        """Toggles the bonds on and off."""
+        if self.structure:
+            self.structure.toggle_bonds()
+            self.set_vertex_attribute_objects()
+            self.update()
 
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""

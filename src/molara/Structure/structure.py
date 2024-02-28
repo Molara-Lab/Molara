@@ -15,6 +15,8 @@ if TYPE_CHECKING:
     from molara.Structure.crystal import Crystal
     from molara.Structure.molecule import Molecule
 
+NO_BONDS = np.array([[-1, -1]], dtype=np.int_)
+
 
 class Structure:
     """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
@@ -43,8 +45,14 @@ class Structure:
                 self.unique_atomic_numbers.append(atomic_number)
 
         self.molar_mass: float = np.sum([atom.atomic_mass for atom in self.atoms])
-        self.bonded_pairs = self.calculate_bonds()
-        self.draw_bonds = draw_bonds and (self.bonded_pairs[0, 0] != -1)
+
+        self.draw_bonds = draw_bonds
+        self.bonded_pairs = NO_BONDS
+        self.bonds_calculated = False
+        if self.draw_bonds:
+            self.bonded_pairs = self.calculate_bonds()
+            self.bonds_calculated = True
+
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
 
@@ -81,13 +89,10 @@ class Structure:
         for _i, atom in enumerate(self.atoms):
             position = atom.position - center
             atom.set_position(position)
-        self.drawer.set_atoms(self.atoms)
-        self.drawer.set_atom_translation_matrices()
+
+        self.drawer.update_atoms(self.atoms)
         if self.draw_bonds:
-            self.drawer.set_cylinder_props()
-            self.drawer.set_cylinder_translation_matrices()
-            self.drawer.set_cylinder_model_matrices()
-        self.drawer.set_atom_model_matrices()
+            self.drawer.update_bonds()
 
     def calculate_bonds(self: Structure | Crystal | Molecule) -> np.ndarray:
         """Calculates the bonded pairs of atoms."""
@@ -109,11 +114,24 @@ class Structure:
         if bonded_pairs:
             return np.array(bonded_pairs)
 
-        return np.array([[-1, -1]], dtype=np.int_)
+        return NO_BONDS
+
+    @property
+    def has_bonds(self) -> bool:
+        """Specifies whether structure contains any bonds that could be displayed."""
+        return self.bonded_pairs[0][0] != -1
 
     def toggle_bonds(self: Structure | Crystal | Molecule) -> None:
         """Toggles the bonds on and off."""
         self.draw_bonds = not self.draw_bonds
+        if not self.draw_bonds:
+            return
+        if not self.bonds_calculated:
+            self.bonded_pairs = self.calculate_bonds()
+            self.bonds_calculated = True
+            self.drawer.update_bonds(self.bonded_pairs, self.draw_bonds)
+            return
+        self.drawer.update_bonds()
 
     def add_atom(
         self: Structure | Crystal | Molecule,
