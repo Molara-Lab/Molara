@@ -81,3 +81,21 @@ class TestDrawer(TestCase):
             assert atom_i_drawer.atomic_number == atomic_num_i_test
             assert_array_equal(pos_i_drawer, pos_i_test)
             assert_array_equal(pos_i_drawer, atom_i_drawer.position)
+
+    def test_reset_atom_model_matrices(self) -> None:
+        """Test resets of model matrices for the spheres."""
+        self.drawer_glucose.reset_atom_model_matrices()
+        assert isinstance(self.drawer_glucose.sphere_model_matrices, np.ndarray)
+        assert_array_equal(self.drawer_glucose.sphere_model_matrices, np.array([], dtype=np.float32))
+
+    def test_reset_cylinders_model_matrices(self) -> None:
+        """Test resets of model matrices for the cylinders."""
+        self.drawer_glucose.reset_cylinders_model_matrices()
+        assert isinstance(self.drawer_glucose.cylinder_model_matrices, np.ndarray)
+        assert_array_equal(self.drawer_glucose.cylinder_model_matrices, np.array([], dtype=np.float32))
+
+    def test_reset_atom_colors(self) -> None:
+        """Test resets of the colors for the spheres."""
+        self.drawer_glucose.reset_atom_colors()
+        assert isinstance(self.drawer_glucose.atom_colors, np.ndarray)
+        assert_array_equal(self.drawer_glucose.atom_colors, np.array([], dtype=np.float32))
