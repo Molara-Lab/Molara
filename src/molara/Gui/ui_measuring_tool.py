@@ -168,7 +168,13 @@ class Ui_measuring_tool(object):
         self.label.setGeometry(QRect(450, 280, 58, 16))
         self.tableWidget_2 = QTableWidget(measuring_tool)
         self.tableWidget_2.setObjectName(u"tableWidget_2")
-        self.tableWidget_2.setGeometry(QRect(450, 320, 381, 192))
+        self.tableWidget_2.setGeometry(QRect(450, 320, 271, 192))
+        self.tableWidget_3 = QTableWidget(measuring_tool)
+        self.tableWidget_3.setObjectName(u"tableWidget_3")
+        self.tableWidget_3.setGeometry(QRect(450, 60, 256, 192))
+        self.label_2 = QLabel(measuring_tool)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setGeometry(QRect(450, 20, 91, 16))
 
         self.retranslateUi(measuring_tool)
 
@@ -221,5 +227,6 @@ class Ui_measuring_tool(object):
         self.fix_4.setText(QCoreApplication.translate("measuring_tool", u"z", None))
         self.fix.setText(QCoreApplication.translate("measuring_tool", u"Coordinates in [\u00c5]:", None))
         self.label.setText(QCoreApplication.translate("measuring_tool", u"Angles:", None))
+        self.label_2.setText(QCoreApplication.translate("measuring_tool", u"Atom Positions", None))
     # retranslateUi
 

@@ -39,6 +39,7 @@ class MeasurementDialog(QDialog):
         self.ui.tableWidget.setColumnCount(4)
         self.ui.tableWidget.setRowCount(4)
         self.ui.tableWidget_2.setRowCount(2)
+        self.ui.tableWidget_2.setColumnCount(1)
 
         colors = [
             "#f00",
@@ -59,6 +60,7 @@ class MeasurementDialog(QDialog):
         item234 = QTableWidgetItem("\u2222 234")
         self.ui.tableWidget_2.setVerticalHeaderItem(0, item123)
         self.ui.tableWidget_2.setVerticalHeaderItem(1, item234)
+        self.ui.tableWidget_2.setHorizontalHeaderItem(0, QTableWidgetItem("Angle"))
 
     def ini_labels(self) -> None:
         """Initializes the labels."""
@@ -158,8 +160,10 @@ class MeasurementDialog(QDialog):
                     np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
                 )
                 angles[i].setText(f"{np.degrees(a).round(1):.3f}")
+                self.ui.tableWidget_2.setItem(i, 0, QTableWidgetItem(f"{np.degrees(a).round(1):.3f}" + " \u00b0"))
             else:
                 angles[i].setText("")
+                self.ui.tableWidget_2.setItem(i, 0, QTableWidgetItem(""))
 
     def display_dihedral(self, structure: Structure, selected_atoms: list) -> None:
         """Display the dihedral in the table.

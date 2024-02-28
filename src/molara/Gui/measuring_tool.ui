@@ -625,9 +625,32 @@
     <rect>
      <x>450</x>
      <y>320</y>
-     <width>381</width>
+     <width>271</width>
      <height>192</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget_3">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>60</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>20</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Atom Positions</string>
    </property>
   </widget>
  </widget>
