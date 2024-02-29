@@ -1,4 +1,5 @@
 """Test the aos module."""
+
 from __future__ import annotations
 
 from unittest import TestCase
