@@ -75,18 +75,23 @@ class MOsDialog(QDialog):
                 orbital_norms[ao_index, i] = ao.norms[i]
             orbital_positions[ao_index, :] = ao.position
             orbital_ijks[ao_index, :] = ao.ijk
-        # origin = np.array([-1, -1, -1.5])
-        # direction = np.array([[1, 0, 0],
-        #                          [0, 1, 0],
-        #                         [0, 0, 1],], dtype=np.float64)
-        # size = -2 * origin.copy()
-        # voxel_number = np.array([40, 40, 60], dtype=np.int32)
-        origin = np.array([-1, -1, -2])
+        origin = np.array([-1, -1, -1.5])
         direction = np.array([[1, 0, 0],
                                  [0, 1, 0],
                                 [0, 0, 1],], dtype=np.float64)
-        size = np.array([4, 2, 5])
-        voxel_number = np.array([140, 28, 140], dtype=np.int32)
+        size = np.array([5, 2, 5])
+        voxel_number = np.array([30, 12, 30], dtype=np.int32)
+        # origin = np.array([-1.2, -1.2, -2.4])
+        # direction = np.array(
+        #     [
+        #         [1, 0, 0],
+        #         [0, 1, 0],
+        #         [0, 0, 1],
+        #     ],
+        #     dtype=np.float64,
+        # )
+        # size = np.array([2.4, 2.4, 4.8])
+        # voxel_number = np.array([20,20,40], dtype=np.int32)
 
         voxel_size = np.array(
             [
@@ -95,9 +100,14 @@ class MOsDialog(QDialog):
                 [0, 0, size[2] / (voxel_number[2] - 1)],
             ]
         )
-        voxel_size_ = np.array([size[0] / (voxel_number[0] - 1),
-                                size[1] / (voxel_number[1] - 1),
-                                size[2] / (voxel_number[2] - 1)], dtype=np.float64)
+        voxel_size_ = np.array(
+            [
+                size[0] / (voxel_number[0] - 1),
+                size[1] / (voxel_number[1] - 1),
+                size[2] / (voxel_number[2] - 1),
+            ],
+            dtype=np.float64,
+        )
         mo_coefficients = self.mos.coefficients[orbital]
         self.parent().parent().ui.openGLWidget.update()
 
