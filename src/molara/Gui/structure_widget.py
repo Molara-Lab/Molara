@@ -447,3 +447,9 @@ class StructureWidget(QOpenGLWidget):
     def clear_builder_selected_atoms(self) -> None:
         """Resets the selected spheres builder spheres."""
         self.builder_selected_spheres = [-1] * 3
+
+    def TEST(self) -> None:
+        """Test function."""
+        print("Wirklich Doof!")
+        self.makeCurrent()
+        self.renderer.draw_spheres(np.array([[0,0,0],[1,0,0]],dtype=np.float32), np.array([1,0.5],dtype=np.float32), np.array([[255,0,0],[0,0,255]],dtype=np.float32), 25)

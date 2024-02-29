@@ -158,13 +158,16 @@ class Renderer:
         """
         n_instances = len(positions)
         sphere_mesh = Sphere(subdivisions)
+        print("IN:")
+        print(positions[0], radii[0])
         if n_instances == 1:
             model_matrices = calculate_sphere_model_matrix(positions[0], radii[0])
         else:
             for i in range(n_instances):
                 model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
                 model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
-
+        print("Out:")
+        print(model_matrices)
         sphere = {
             "vao": 0,
             "n_instances": n_instances,
@@ -192,6 +195,71 @@ class Renderer:
             i_sphere = 0
             self.spheres.append(sphere)
         return i_sphere
+
+
+    def draw_box(
+        self,
+        positions: np.ndarray,
+        width: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+    ) -> int:
+        """Draws one or multiple spheres.
+
+        If only one sphere is drawn, the positions, radii and colors are given
+        as np.ndarray containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple
+        spheres are drawn, the positions, radii and colors are given as np.ndarray containing multiple arrays, for
+        instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
+
+        :param positions: Positions of the spheres.
+        :type positions: numpy.array of numpy.float32
+        :param radii: Radii of the spheres.
+        :type radii: numpy.array of numpy.float32
+        :param colors: Colors of the spheres.
+        :type colors: numpy.array of numpy.float32
+        :param subdivisions: Number of subdivisions of the sphere.
+        :type subdivisions: int
+        :return: Returns the index of the sphere in the list of spheres.
+        """
+        n_instances = len(positions)
+        sphere_mesh = Sphere(subdivisions)
+        if n_instances == 1:
+            # model_matrices = calculate_sphere_model_matrix(positions[0], radii[0])
+            pass
+        else:
+            for i in range(n_instances):
+                #model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
+                #  model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+                pass
+
+        sphere = {
+            "vao": 0,
+            "n_instances": n_instances,
+            "n_vertices": len(sphere_mesh.vertices),
+            "buffers": [],
+        }
+        # sphere["vao"], sphere["buffers"] = setup_vao(
+        #     sphere_mesh.vertices,
+        #     sphere_mesh.indices,
+        #     model_matrices,
+        #     colors,
+        # )
+
+        # get index of new sphere instances in list
+        # i_sphere = -1
+        # if len(self.spheres) != 0:
+        #     for i, check_sphere in enumerate(self.spheres):
+        #         if check_sphere["vao"] == 0:
+        #             i_sphere = i
+        #             self.spheres[i_sphere] = sphere
+        #     if i_sphere == -1:
+        #         i_sphere = len(self.spheres)
+        #         self.spheres.append(sphere)
+        # else:
+        #     i_sphere = 0
+        #     self.spheres.append(sphere)
+        # return i_sphere
+
 
     def remove_cylinder(self, i_cylinder: int) -> None:
         """Removes a cylinder from the list of cylinders.

@@ -88,14 +88,21 @@ class MainWindow(QMainWindow):
         )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
+        self.ui.action_TEST.triggered.connect(self.TEST)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
+        self.ui.action_TEST.triggered.connect(self.structure_widget.TEST)
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""
         file_name = sys.argv[1]
 
         self.load_molecules(file_name)
+
+    def TEST(self) ->None:
+        """Test function."""
+        print("TEST")
+
 
     def show_file_open_dialog(self) -> None:
         """Select a file in the file open dialog."""
