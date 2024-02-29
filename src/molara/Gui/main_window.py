@@ -90,6 +90,7 @@ class MainWindow(QMainWindow):
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
+        self.ui.actionAdd_unit_cell_boundaries.triggered.connect(self.ui.openGLWidget.add_unit_cell_boundaries)
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""
