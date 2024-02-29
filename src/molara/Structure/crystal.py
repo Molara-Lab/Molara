@@ -285,16 +285,14 @@ class Crystal(Structure):
         )
 
     @classmethod
-    def from_pymatgen(cls: type[Crystal], structure: Pmgstructure) -> Crystal:
+    def from_pymatgen(
+        cls: type[Crystal], structure: Pmgstructure, supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
+    ) -> Crystal:
         """Creates a Crystal object from a pymatgen.Structure object.
 
         :param structure: pymatgen.Structure object
         """
-        return cls(
-            structure.atomic_numbers,
-            structure.frac_coords,
-            structure.lattice.matrix,
-        )
+        return cls(structure.atomic_numbers, structure.frac_coords, structure.lattice.matrix, supercell_dims)
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:
