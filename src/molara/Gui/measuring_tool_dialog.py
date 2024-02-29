@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtGui import QBrush, QColor
-from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidgetItem
+from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
 
 from molara.Gui.ui_measuring_tool import Ui_measuring_tool
 
@@ -42,57 +42,73 @@ class MeasurementDialog(QDialog):
         self.ui.tablePositions.setColumnCount(5)
         self.ui.tablePositions.setRowCount(4)
 
+        def set_resize_modes(obj: QHeaderView, modes: list) -> None:
+            for i, mode in enumerate(modes):
+                obj.setSectionResizeMode(i, mode)
+
+        def set_horizontal_items(obj: QTableWidget, items: list[QTableWidgetItem]) -> None:
+            for i, item in enumerate(items):
+                obj.setHorizontalHeaderItem(i, item)
+
+        def set_vertical_items(obj: QTableWidget, items: list[QTableWidgetItem]) -> None:
+            for i, item in enumerate(items):
+                obj.setVerticalHeaderItem(i, item)
+
+        def color_item(text: str, color: str) -> None:
+            brush = QBrush(QColor(color))
+            item = QTableWidgetItem(text)
+            item.setForeground(brush)
+            return item
+
+        fixed, resize, stretch = QHeaderView.Fixed, QHeaderView.ResizeToContents, QHeaderView.Stretch
+
         header_positions = self.ui.tablePositions.horizontalHeader()
         sidelabels_positions = self.ui.tablePositions.verticalHeader()
-        header_positions.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header_positions.setSectionResizeMode(1, QHeaderView.Stretch)
-        header_positions.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header_positions.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        header_positions.setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        sidelabels_positions.setSectionResizeMode(0, QHeaderView.Fixed)
-        sidelabels_positions.setSectionResizeMode(1, QHeaderView.Fixed)
-        sidelabels_positions.setSectionResizeMode(2, QHeaderView.Fixed)
-        sidelabels_positions.setSectionResizeMode(3, QHeaderView.Fixed)
-
         header_distances = self.ui.tableDistances.horizontalHeader()
-        header_distances.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header_distances.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header_distances.setSectionResizeMode(2, QHeaderView.Stretch)
-
         header_angles = self.ui.tableAngles.horizontalHeader()
-        header_angles.setSectionResizeMode(0, QHeaderView.Stretch)
 
-        colors = [
-            "#f00",
-            "#0d0",
-            "#00f",
-            "#cc0",
-        ]
-        for i, color in enumerate(colors[1:]):
-            brush = QBrush(QColor(color))
-            item_horizontal = QTableWidgetItem(rf"Atom {i+2}")
-            item_horizontal.setForeground(brush)
-            self.ui.tableDistances.setHorizontalHeaderItem(i, item_horizontal)
-        for i, color in enumerate(colors[:-1]):
-            brush = QBrush(QColor(color))
-            item_vertical = QTableWidgetItem(rf"Atom {i+1}")
-            item_vertical.setForeground(brush)
-            self.ui.tableDistances.setVerticalHeaderItem(i, item_vertical)
+        set_resize_modes(header_positions, [resize, stretch, resize, resize, resize])
+        set_resize_modes(sidelabels_positions, [fixed, fixed, fixed, stretch])
+        set_resize_modes(header_distances, [resize, resize, stretch])
+        set_resize_modes(header_angles, [stretch])
+
+        colors = ["#f00", "#0d0", "#00f", "#cc0"]
+        items_distance_horizontal = [color_item(rf"Atom {i+2}", color_i) for i, color_i in enumerate(colors[1:])]
+        items_distance_vertical = [color_item(rf"Atom {i+1}", color_i) for i, color_i in enumerate(colors[:-1])]
+        # for i, brush in enumerate(brushes[1:]):
+        #     item_horizontal = QTableWidgetItem(rf"Atom {i+2}")
+        #     item_horizontal.setForeground(brush)
+        #     self.ui.tableDistances.setHorizontalHeaderItem(i, item_horizontal)
+        # for i, brush in enumerate(brushes[:-1]):
+        #     item_vertical = QTableWidgetItem(rf"Atom {i+1}")
+        #     item_vertical.setForeground(brush)
+        #     self.ui.tableDistances.setVerticalHeaderItem(i, item_vertical)
+
+        set_horizontal_items(self.ui.tableDistances, items_distance_horizontal)
+        set_vertical_items(self.ui.tableDistances, items_distance_vertical)
 
         item123 = QTableWidgetItem("\u2222 123")
         item234 = QTableWidgetItem("\u2222 234")
         item1234 = QTableWidgetItem("\u2222 1234")
         itemheader = QTableWidgetItem("Angle")
-        self.ui.tableAngles.setHorizontalHeaderItem(0, itemheader)
-        self.ui.tableAngles.setVerticalHeaderItem(0, item123)
-        self.ui.tableAngles.setVerticalHeaderItem(1, item234)
-        self.ui.tableAngles.setVerticalHeaderItem(2, item1234)
+        set_horizontal_items(self.ui.tableAngles, [itemheader])
+        # self.ui.tableAngles.setHorizontalHeaderItem(0, itemheader)
+        # self.ui.tableAngles.setVerticalHeaderItem(0, item123)
+        # self.ui.tableAngles.setVerticalHeaderItem(1, item234)
+        # self.ui.tableAngles.setVerticalHeaderItem(2, item1234)
+        set_vertical_items(self.ui.tableAngles, [item123, item234, item1234])
 
-        self.ui.tablePositions.setHorizontalHeaderItem(0, QTableWidgetItem("symbol"))
-        self.ui.tablePositions.setHorizontalHeaderItem(1, QTableWidgetItem("name"))
-        self.ui.tablePositions.setHorizontalHeaderItem(2, QTableWidgetItem("x"))
-        self.ui.tablePositions.setHorizontalHeaderItem(3, QTableWidgetItem("y"))
-        self.ui.tablePositions.setHorizontalHeaderItem(4, QTableWidgetItem("z"))
+        set_horizontal_items(
+            self.ui.tablePositions,
+            [
+                QTableWidgetItem("symbol"),
+                QTableWidgetItem("name"),
+                QTableWidgetItem("x"),
+                QTableWidgetItem("y"),
+                QTableWidgetItem("z"),
+            ],
+        )
+
         for i, color in enumerate(colors):
             brush = QBrush(QColor(color))
             item = QTableWidgetItem(rf"Atom {i+1}")
@@ -183,6 +199,9 @@ class MeasurementDialog(QDialog):
             a_deg = a_deg - 360
         a_deg = -a_deg
         self.ui.tableAngles.setItem(2, 0, QTableWidgetItem(f"{a_deg:.3f}" + " \u00b0"))
+
+    def reset(self) -> None:
+        """Reset the measurement dialog (unselect atoms and clear the tables)."""
 
     def reject(self) -> None:
         """Function that is called when dialog window is closed."""
