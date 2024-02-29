@@ -7,17 +7,22 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
+from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
+from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.crystals import Crystals
-from molara.Molecule.io.exporter import GeneralExporter
-from molara.Molecule.io.importer import GeneralImporter, PoscarImporter
+from molara.Structure.crystal import Crystal
+from molara.Structure.crystals import Crystals
+from molara.Structure.io.exporter import GeneralExporter
+from molara.Structure.io.importer import GeneralImporter, PoscarImporter
+from molara.Structure.molecules import Molecules
 
 if TYPE_CHECKING:
     from os import PathLike
+
+    from molara.Gui.structure_widget import StructureWidget
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -33,26 +38,38 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.trajectory_dialog = TrajectoryDialog(self)  # pass widget as parent
-        self.crystal_dialog = CrystalDialog(self)  # pass widget as parent
+
+        # instantiate dialog windows, pass main window as parent.
+        self.trajectory_dialog = TrajectoryDialog(self)
+        self.crystal_dialog = CrystalDialog(self)
+        self.measurement_dialog = MeasurementDialog(self)
+        self.builder_dialog = BuilderDialog(self)
+
+        self.mols = Molecules()
+
         self.set_action_triggers()
+
+    @property
+    def structure_widget(self) -> StructureWidget:
+        """Returns the StructureWidget (openGLWidget)."""
+        return self.ui.openGLWidget
 
     def set_action_triggers(self) -> None:
         """Connect Triggers of menu actions with the corresponding routines."""
         # Start
         self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
         self.ui.actionExport.triggered.connect(self.export_structure)
-        self.ui.actionExport_Snapshot.triggered.connect(self.ui.openGLWidget.export_snapshot)
+        self.ui.actionExport_Snapshot.triggered.connect(self.structure_widget.export_snapshot)
         self.ui.quit.triggered.connect(self.close)
 
         # View
-        self.ui.actionReset_View.triggered.connect(self.ui.openGLWidget.reset_view)
-        self.ui.actionto_x_axis.triggered.connect(self.ui.openGLWidget.set_view_to_x_axis)
-        self.ui.actionto_y_axis.triggered.connect(self.ui.openGLWidget.set_view_to_y_axis)
-        self.ui.actionto_z_axis.triggered.connect(self.ui.openGLWidget.set_view_to_z_axis)
-        self.ui.actionDraw_Axes.triggered.connect(self.ui.openGLWidget.toggle_axes)
+        self.ui.actionReset_View.triggered.connect(self.structure_widget.reset_view)
+        self.ui.actionto_x_axis.triggered.connect(self.structure_widget.set_view_to_x_axis)
+        self.ui.actionto_y_axis.triggered.connect(self.structure_widget.set_view_to_y_axis)
+        self.ui.actionto_z_axis.triggered.connect(self.structure_widget.set_view_to_z_axis)
+        self.ui.actionDraw_Axes.triggered.connect(self.structure_widget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
-            self.ui.openGLWidget.center_molecule,
+            self.structure_widget.center_structure,
         )
         self.ui.actionToggle_Bonds.triggered.connect(self.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
@@ -60,8 +77,11 @@ class MainWindow(QMainWindow):
         )
 
         # Tools
+        self.ui.actionBuilder.triggered.connect(
+            self.structure_widget.show_builder_dialog,
+        )
         self.ui.actionMeasure.triggered.connect(
-            self.ui.openGLWidget.show_measurement_dialog,
+            self.show_measurement_dialog,
         )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
@@ -91,16 +111,22 @@ class MainWindow(QMainWindow):
         importer = GeneralImporter(path)
         self.mols = importer.load()
 
-        self.ui.openGLWidget.set_structure(self.mols.get_current_mol())
+        self.structure_widget.set_structure(self.mols.get_current_mol())
 
         if self.mols.num_mols > 1:
+            self.ui.actionOpen_Trajectory_Dialog.setEnabled(True)
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
+            return
+
+        self.trajectory_dialog.reset()
+        self.trajectory_dialog.close()
+        self.ui.actionOpen_Trajectory_Dialog.setEnabled(False)
 
     def export_structure(self) -> None:
         """Save structure to file."""
-        if not self.ui.openGLWidget.structure:
+        if not self.structure_widget.structure:
             return
         filename = QFileDialog.getSaveFileName(
             self,
@@ -109,28 +135,38 @@ class MainWindow(QMainWindow):
             "*",
         )
         exporter = GeneralExporter(filename[0])
-        exporter.write_structure(self.ui.openGLWidget.structure)
+        exporter.write_structure(self.structure_widget.structure)
 
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
-        if self.ui.openGLWidget.structure:
-            self.ui.openGLWidget.structure.toggle_bonds()
-            self.ui.openGLWidget.bonds = not self.ui.openGLWidget.bonds
-            self.ui.openGLWidget.update()
+        if self.structure_widget.structure:
+            self.structure_widget.structure.toggle_bonds()
+            self.structure_widget.bonds = not self.structure_widget.bonds
+            self.structure_widget.update()
+
+    def show_measurement_dialog(self) -> None:
+        """Show the measurement dialog."""
+        if self.structure_widget.structure_is_set:
+            self.measurement_dialog.ini_labels()
+            self.measurement_dialog.show()
+
+    def show_builder_dialog(self) -> None:
+        """Show the builder dialog."""
+        self.builder_dialog.show()
 
     def edit_supercell_dims(self) -> bool:
         """Open dialog window to edit supercell dimensions."""
-        if not isinstance(self.ui.openGLWidget.structure, Crystal):
+        if not isinstance(self.structure_widget.structure, Crystal):
             # insert error message?
             return False
-        crystal = self.ui.openGLWidget.structure
+        crystal = self.structure_widget.structure
         supercell_dims = crystal.supercell_dims
         SupercellDialog.get_supercell_dims(supercell_dims)
         # check if supercell dimensions have successfully been passed (i.e., all are >0)
         if sum(1 for component in supercell_dims if component <= 0):
             return False
         crystal.make_supercell(supercell_dims)
-        self.ui.openGLWidget.set_structure(crystal)
+        self.structure_widget.set_structure(crystal)
         return True
 
     def show_poscar(self) -> bool:
@@ -154,5 +190,5 @@ class MainWindow(QMainWindow):
             msg_box.setText(error_message)
             msg_box.exec()
             return False
-        self.ui.openGLWidget.set_structure(struct=crystals.get_current_mol())
+        self.structure_widget.set_structure(struct=crystals.get_current_mol())
         return True

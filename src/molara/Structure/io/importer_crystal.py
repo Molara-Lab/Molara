@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
 import numpy as np
-from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.crystals import Crystals
+from molara.Structure.atom import element_symbol_to_atomic_number
+from molara.Structure.crystal import Crystal
+from molara.Structure.crystals import Crystals
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -121,6 +121,8 @@ class PoscarImporter(Importer):
                 latvec_c = [float(component) for component in latvec_c_.split()[:3]]
                 species = re.split(r"\s+", species_)
                 numbers = [int(num) for num in numbers_.split()]
+                if len(positions_) == sum(numbers) * 2 + 1:
+                    positions_ = positions_[0 : sum(numbers)]
                 positions = [np.fromstring(pos, sep=" ").tolist()[:3] for pos in positions_]
                 basis_vectors = [latvec_a, latvec_b, latvec_c]
             except ValueError as err:

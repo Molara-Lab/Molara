@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 from molara.Gui.ui_measuring_tool import Ui_measuring_tool
 
 if TYPE_CHECKING:
-    from molara.Molecule.structure import Structure
+    from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -21,7 +21,7 @@ __copyright__ = "Copyright 2024, Molara"
 class MeasurementDialog(QDialog):
     """Dialog for displaying measurements."""
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow) -> None:
         """Initializes the measurement dialog.
 
         :param parent: the MainWindow widget
@@ -29,6 +29,7 @@ class MeasurementDialog(QDialog):
         super().__init__(
             parent,
         )
+        self.main_window = parent
 
         self.ui = Ui_measuring_tool()
         self.ui.setupUi(self)
@@ -147,3 +148,8 @@ class MeasurementDialog(QDialog):
             dihedral.setText(f"{a_deg.round(1):.3f}")
         else:
             dihedral.setText("")
+
+    def reject(self) -> None:
+        """Function that is called when dialog window is closed."""
+        self.main_window.structure_widget.unselect_all_atoms()
+        self.close()

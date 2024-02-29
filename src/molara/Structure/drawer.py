@@ -19,7 +19,7 @@ from molara.Rendering.sphere import (
 from molara.Tools.mathtools import norm
 
 if TYPE_CHECKING:
-    from molara.Molecule.atom import Atom
+    from molara.Structure.atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
 
