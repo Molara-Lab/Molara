@@ -1,4 +1,5 @@
 """Module for the Basisset class."""
+
 from __future__ import annotations
 
 import numpy as np

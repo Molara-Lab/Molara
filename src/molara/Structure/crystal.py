@@ -61,7 +61,7 @@ class Crystal(Structure):
 
         self.make_supercell(supercell_dims)
         self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
-        self.volume_unitcell = float(np.linalg.det(np.array(self.basis_vectors)))
+        self.volume_unitcell = Crystal.calc_volume_unitcell(self.basis_vectors)
         self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
     def _fold_coords_into_unitcell(
@@ -236,6 +236,19 @@ class Crystal(Structure):
                 raise (ValueError)
         return extra_atomic_nums, extra_fractional_coords
 
+    @staticmethod
+    def calc_volume_unitcell(basis_vectors: Sequence[Sequence[float]] | ArrayLike) -> float:
+        """Calculate unit cell volume based on given lattice basis vectors.
+
+        :param volume: unit cell volume to be matched
+        """
+        basis_vectors = np.array(basis_vectors)
+        if basis_vectors.shape != (3, 3):
+            msg = "Faulty shape of basis_vectors array. Shape must be (3,3)."
+            raise ValueError(msg)
+        # result is rounded to 12 digits because the det function tends to give results like 63.99999999999998
+        return round(np.abs(np.linalg.det(basis_vectors)), 12)
+
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
         """Creates a Crystal object from a POSCAR file.
@@ -284,16 +297,16 @@ class Crystal(Structure):
         )
 
     @classmethod
-    def from_pymatgen(cls: type[Crystal], structure: Pmgstructure) -> Crystal:
+    def from_pymatgen(
+        cls: type[Crystal],
+        structure: Pmgstructure,
+        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
+    ) -> Crystal:
         """Creates a Crystal object from a pymatgen.Structure object.
 
         :param structure: pymatgen.Structure object
         """
-        return cls(
-            structure.atomic_numbers,
-            structure.frac_coords,
-            structure.lattice.matrix,
-        )
+        return cls(structure.atomic_numbers, structure.frac_coords, structure.lattice.matrix, supercell_dims)
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:

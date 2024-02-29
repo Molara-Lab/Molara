@@ -1,4 +1,5 @@
 """An importer class for all read in functions."""
+
 from __future__ import annotations
 
 import re
@@ -22,6 +23,14 @@ class FileImporterError(Exception):
 
 class FileFormatError(FileImporterError):
     """raised when the file format is wrong or unsupported."""
+
+
+def robust_split(text: str) -> list[str]:
+    """Split a text into its components (separated by any kinds of space characters) with regular expressions.
+
+    :param text: text to be splitted up
+    """
+    return re.split(r"\s+", text)
 
 
 class Importer(ABC):
@@ -93,38 +102,33 @@ class PoscarImporter(Importer):
         """Imports a file and returns the Crystal."""
         try:
             from monty.io import zopen
-            from pymatgen.core import Structure
+            from pymatgen.core import Structure as PymatgenStructure
         except ImportError:
-            Structure = None  # noqa: N806
+            PymatgenStructure = None  # noqa: N806
 
-        if Structure is not None:
+        if PymatgenStructure is not None:
             with zopen(self.path, "rt", errors="replace") as f:
                 contents = f.read()
-            structure = Structure.from_str(contents, fmt="poscar")
-            crystal = Crystal.from_pymatgen(structure)
+            structure = PymatgenStructure.from_str(contents, fmt="poscar")
+            crystal = Crystal.from_pymatgen(structure, self.supercell_dims)
         else:
             with open(self.path) as file:
-                lines = file.readlines()
-            header_length = 9
-            if not len(lines) >= header_length:
+                lines = [line.strip() for line in file]
+            header_length = 8
+            if not len(lines) > header_length:
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg)
-            scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
-            species_ = lines[5].strip()
-            numbers_ = lines[6]
-            mode = lines[7].strip()
+            scale_, latvecs_ = lines[1], lines[2:5]
+            species_, numbers_, mode = lines[5:8]
             positions_ = lines[8:]
             try:
                 scale = float(scale_)
-                latvec_a = [float(component) for component in latvec_a_.split()[:3]]
-                latvec_b = [float(component) for component in latvec_b_.split()[:3]]
-                latvec_c = [float(component) for component in latvec_c_.split()[:3]]
-                species = re.split(r"\s+", species_)
-                numbers = [int(num) for num in numbers_.split()]
+                basis_vectors = [[float(component) for component in robust_split(latvec_)[:3]] for latvec_ in latvecs_]
+                species = robust_split(species_)
+                numbers = [int(num) for num in robust_split(numbers_)]
                 if len(positions_) == sum(numbers) * 2 + 1:
                     positions_ = positions_[0 : sum(numbers)]
-                positions = [np.fromstring(pos, sep=" ").tolist()[:3] for pos in positions_]
-                basis_vectors = [latvec_a, latvec_b, latvec_c]
+                positions = [[float(component) for component in robust_split(pos)[:3]] for pos in positions_]
             except ValueError as err:
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg) from err
@@ -135,6 +139,7 @@ class PoscarImporter(Importer):
             ):
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg)
+
             # For cartesian coordinates, convert to fractional coordinates
             if mode.lower().startswith(("c", "k")):
                 positions = [np.dot(np.linalg.inv(basis_vectors).T, position).tolist() for position in positions]
@@ -144,10 +149,15 @@ class PoscarImporter(Importer):
             for num, an in zip(numbers, atomic_numbers):
                 atomic_numbers_extended.extend(num * [an])
 
+            scale_unitcell_to_volume = scale < 0
+            if scale_unitcell_to_volume:
+                _old_volume = Crystal.calc_volume_unitcell(basis_vectors)
+                scale = np.cbrt((-scale) / _old_volume)
+
             crystal = Crystal(
                 atomic_numbers_extended,
                 positions,
-                [scale * np.array(bv, dtype=float) for bv in basis_vectors],
+                (scale * np.array(basis_vectors)).tolist(),
                 self.supercell_dims,
             )
 
