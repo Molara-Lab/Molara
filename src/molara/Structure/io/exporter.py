@@ -1,4 +1,5 @@
 """An exporter module to write chemical structures to files."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
