@@ -35,6 +35,7 @@ class MeasurementDialog(QDialog):
         self.ui.info_text.setText("Select / unselect atoms: SHIFT + Left Click on atoms.")
         self.ui.info_text_2.setText("Unselect all atoms: SHIFT + CTRL + Left Click on empty area.")
 
+        # basic setup of the tables
         self.ui.tableDistances.setColumnCount(3)
         self.ui.tableDistances.setRowCount(3)
         self.ui.tableAngles.setRowCount(3)
@@ -42,78 +43,51 @@ class MeasurementDialog(QDialog):
         self.ui.tablePositions.setColumnCount(5)
         self.ui.tablePositions.setRowCount(4)
 
+        # resize modes: specify how the tables are filles with the colums / rows
         def set_resize_modes(obj: QHeaderView, modes: list) -> None:
             for i, mode in enumerate(modes):
                 obj.setSectionResizeMode(i, mode)
 
-        def set_horizontal_items(obj: QTableWidget, items: list[QTableWidgetItem]) -> None:
-            for i, item in enumerate(items):
-                obj.setHorizontalHeaderItem(i, item)
-
-        def set_vertical_items(obj: QTableWidget, items: list[QTableWidgetItem]) -> None:
-            for i, item in enumerate(items):
-                obj.setVerticalHeaderItem(i, item)
-
-        def color_item(text: str, color: str) -> None:
-            brush = QBrush(QColor(color))
-            item = QTableWidgetItem(text)
-            item.setForeground(brush)
-            return item
-
         fixed, resize, stretch = QHeaderView.Fixed, QHeaderView.ResizeToContents, QHeaderView.Stretch
 
         header_positions = self.ui.tablePositions.horizontalHeader()
-        sidelabels_positions = self.ui.tablePositions.verticalHeader()
-        header_distances = self.ui.tableDistances.horizontalHeader()
-        header_angles = self.ui.tableAngles.horizontalHeader()
-
         set_resize_modes(header_positions, [resize, stretch, resize, resize, resize])
+        sidelabels_positions = self.ui.tablePositions.verticalHeader()
         set_resize_modes(sidelabels_positions, [fixed, fixed, fixed, stretch])
+        header_distances = self.ui.tableDistances.horizontalHeader()
         set_resize_modes(header_distances, [resize, resize, stretch])
+        header_angles = self.ui.tableAngles.horizontalHeader()
         set_resize_modes(header_angles, [stretch])
 
+        # create labels for the table rows & columns
+        def _set_table_labels(horizontal: bool, obj: QTableWidget, labels: list[str], colors: list[str] | None) -> None:
+            _set_item = obj.setHorizontalHeaderItem if horizontal else obj.setVerticalHeaderItem
+            if colors is None:
+                colors = [None] * len(labels)
+            for i, (label_i, color_i) in enumerate(zip(labels, colors)):
+                item = QTableWidgetItem(label_i)
+                if color_i is not None:
+                    brush = QBrush(QColor(color_i))
+                    item.setForeground(brush)
+                _set_item(i, item)
+
+        def set_horizontal_table_labels(obj: QTableWidget, labels: list[str], colors: list[str] | None = None) -> None:
+            horizontal = True
+            _set_table_labels(horizontal, obj, labels, colors)
+
+        def set_vertical_table_labels(obj: QTableWidget, labels: list[str], colors: list[str] | None = None) -> None:
+            vertical = False
+            _set_table_labels(vertical, obj, labels, colors)
+
         colors = ["#f00", "#0d0", "#00f", "#cc0"]
-        items_distance_horizontal = [color_item(rf"Atom {i+2}", color_i) for i, color_i in enumerate(colors[1:])]
-        items_distance_vertical = [color_item(rf"Atom {i+1}", color_i) for i, color_i in enumerate(colors[:-1])]
-        # for i, brush in enumerate(brushes[1:]):
-        #     item_horizontal = QTableWidgetItem(rf"Atom {i+2}")
-        #     item_horizontal.setForeground(brush)
-        #     self.ui.tableDistances.setHorizontalHeaderItem(i, item_horizontal)
-        # for i, brush in enumerate(brushes[:-1]):
-        #     item_vertical = QTableWidgetItem(rf"Atom {i+1}")
-        #     item_vertical.setForeground(brush)
-        #     self.ui.tableDistances.setVerticalHeaderItem(i, item_vertical)
+        atom_labels = [rf"Atom {i+1}" for i in range(len(colors))]
 
-        set_horizontal_items(self.ui.tableDistances, items_distance_horizontal)
-        set_vertical_items(self.ui.tableDistances, items_distance_vertical)
-
-        item123 = QTableWidgetItem("\u2222 123")
-        item234 = QTableWidgetItem("\u2222 234")
-        item1234 = QTableWidgetItem("\u2222 1234")
-        itemheader = QTableWidgetItem("Angle")
-        set_horizontal_items(self.ui.tableAngles, [itemheader])
-        # self.ui.tableAngles.setHorizontalHeaderItem(0, itemheader)
-        # self.ui.tableAngles.setVerticalHeaderItem(0, item123)
-        # self.ui.tableAngles.setVerticalHeaderItem(1, item234)
-        # self.ui.tableAngles.setVerticalHeaderItem(2, item1234)
-        set_vertical_items(self.ui.tableAngles, [item123, item234, item1234])
-
-        set_horizontal_items(
-            self.ui.tablePositions,
-            [
-                QTableWidgetItem("symbol"),
-                QTableWidgetItem("name"),
-                QTableWidgetItem("x"),
-                QTableWidgetItem("y"),
-                QTableWidgetItem("z"),
-            ],
-        )
-
-        for i, color in enumerate(colors):
-            brush = QBrush(QColor(color))
-            item = QTableWidgetItem(rf"Atom {i+1}")
-            item.setForeground(brush)
-            self.ui.tablePositions.setVerticalHeaderItem(i, item)
+        set_horizontal_table_labels(self.ui.tablePositions, ["symbol", "name", "x", "y", "z"])
+        set_vertical_table_labels(self.ui.tablePositions, atom_labels, colors)
+        set_horizontal_table_labels(self.ui.tableDistances, atom_labels[1:], colors[1:])
+        set_vertical_table_labels(self.ui.tableDistances, atom_labels[:-1], colors[:-1])
+        set_horizontal_table_labels(self.ui.tableAngles, ["Angle"])
+        set_vertical_table_labels(self.ui.tableAngles, ["\u2222 123", "\u2222 234", "\u2222 1234"])
 
     def display_metrics(self, structure: Structure, selected_atoms: list) -> None:
         """Display the metrics in the table.
