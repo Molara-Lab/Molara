@@ -63,7 +63,7 @@ class Crystal(Structure):
         #     SupercellDialog.get_supercell_dims(supercell_dims)
         self.make_supercell(supercell_dims)
         self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
-        self.volume_unitcell = float(np.linalg.det(np.array(self.basis_vectors)))
+        self.volume_unitcell = Crystal.calc_volume_unitcell(self.basis_vectors)
         self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
     def _fold_coords_into_unitcell(
@@ -236,6 +236,19 @@ class Crystal(Structure):
             else:
                 raise (ValueError)
         return extra_atomic_nums, extra_fractional_coords
+
+    @staticmethod
+    def calc_volume_unitcell(basis_vectors: Sequence[Sequence[float]] | ArrayLike) -> float:
+        """Calculate unit cell volume based on given lattice basis vectors.
+
+        :param volume: unit cell volume to be matched
+        """
+        basis_vectors = np.array(basis_vectors)
+        if basis_vectors.shape != (3, 3):
+            msg = "Faulty shape of basis_vectors array. Shape must be (3,3)."
+            raise ValueError(msg)
+        # result is rounded to 12 digits because the det function tends to give results like 63.99999999999998
+        return round(np.abs(np.linalg.det(basis_vectors)), 12)
 
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
