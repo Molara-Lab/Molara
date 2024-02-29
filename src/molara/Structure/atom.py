@@ -24,6 +24,7 @@ class Atom:
         :param position: cartesian coordinates of atom location
         """
         self.symbol = elements[atomic_number]["symbol"]
+        self.name = elements[atomic_number]["name"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]
         self.electronegativity = elements[atomic_number]["electronegativity"]

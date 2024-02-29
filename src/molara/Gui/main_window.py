@@ -146,7 +146,6 @@ class MainWindow(QMainWindow):
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
         if self.structure_widget.structure_is_set:
-            self.measurement_dialog.ini_labels()
             self.measurement_dialog.show()
 
     def show_builder_dialog(self) -> None:
