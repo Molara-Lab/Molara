@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Molara"
-version = "0.0.1"
 description = "A visualisation tool for chemical structures."
 authors = [
     {name = "Michel Heinz"},
@@ -42,6 +41,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+dynamic = ["version"]
 
 [project.urls]
 Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
@@ -76,6 +76,9 @@ package-dir = {"" = "src"}
 [tool.setuptools.packages.find]
 include = ["molara", "molara.*"]
 exclude = ["tests", "tests.*"]
+
+[tool.setuptools.dynamic]
+version = {"attr" = "molara.__version__"}
 
 [tool.ruff]
 exclude = ["ui_*",]
