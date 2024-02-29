@@ -70,6 +70,8 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.openGLWidget = StructureWidget(self.centralwidget)
         self.openGLWidget.setObjectName(u"openGLWidget")
+        self.actionAdd_unit_cell_boundaries = QAction(MainWindow)
+        self.actionAdd_unit_cell_boundaries.setObjectName(u"actionAdd_unit_cell_boundaries")
 
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
 
@@ -115,6 +117,7 @@ class Ui_MainWindow(object):
         self.menuCrystal.addAction(self.actionSupercell)
         self.menuTools.addAction(self.actionMeasure)
         self.menuTools.addAction(self.actionBuilder)
+        self.menuCrystal.addAction(self.actionAdd_unit_cell_boundaries)
 
         self.retranslateUi(MainWindow)
 
@@ -147,5 +150,6 @@ class Ui_MainWindow(object):
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
+        self.actionAdd_unit_cell_boundaries.setText(QCoreApplication.translate("MainWindow", u"Toggle Unit Cell Boundaries", None))
     # retranslateUi
 
