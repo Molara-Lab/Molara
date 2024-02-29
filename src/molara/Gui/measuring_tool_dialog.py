@@ -123,7 +123,7 @@ class MeasurementDialog(QDialog):
                 self.ui.tablePositions.setItem(i, 4, QTableWidgetItem(""))
             for k in range(i + 1, 4):
                 if selected_atoms[i] == -1 or selected_atoms[k] == -1:
-                    self.ui.tableDistances.setItem(i, k, QTableWidgetItem(""))
+                    self.ui.tableDistances.setItem(i, k - 1, QTableWidgetItem(""))
                     continue
                 d = np.linalg.norm(
                     structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[k]].position,
@@ -144,10 +144,8 @@ class MeasurementDialog(QDialog):
                 a = np.arccos(
                     np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
                 )
-                # angles[i].setText(f"{np.degrees(a).round(1):.3f}")
                 self.ui.tableAngles.setItem(i, 0, QTableWidgetItem(f"{np.degrees(a).round(1):.3f}" + " \u00b0"))
             else:
-                # angles[i].setText("")
                 self.ui.tableAngles.setItem(i, 0, QTableWidgetItem(""))
 
     def display_dihedral(self, structure: Structure, selected_atoms: list) -> None:
