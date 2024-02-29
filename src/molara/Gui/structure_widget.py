@@ -351,13 +351,13 @@ class StructureWidget(QOpenGLWidget):
         # the unit cell boundaries shall be drawn anew if:
         # 1.) a box was not drawn before and function is called as a "toggle", not an update
         # 2.) a box was drawn before, but shall be updated (crystal structure changed)
-        basis_vectors_matrix = self.structure.basis_vectors
-        zerovec = np.array([0, 0, 0])
+        basis_vectors_matrix = np.array(self.structure.basis_vectors)
+        zero_vec = np.array([0, 0, 0])
         positions = np.array(
             [
-                [zerovec, basis_vectors_matrix[0]],
-                [zerovec, basis_vectors_matrix[1]],
-                [zerovec, basis_vectors_matrix[2]],
+                [zero_vec, basis_vectors_matrix[0]],
+                [zero_vec, basis_vectors_matrix[1]],
+                [zero_vec, basis_vectors_matrix[2]],
                 [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
                 [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
                 [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
