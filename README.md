@@ -14,3 +14,19 @@ python -m cython_build build_ext --inplace
 pip install -e .
 molara
 ```
+
+To generate the documentation you need to install molara like this:
+
+```
+pip install -e . molara[doc]
+
+```
+
+then run
+
+
+```
+cd docs
+make html
+
+```

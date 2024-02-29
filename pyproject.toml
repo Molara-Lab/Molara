@@ -47,6 +47,11 @@ classifiers = [
 Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
 
 [project.optional-dependencies]
+doc = [
+    "sphinx",
+    "sphinx_rtd_theme",
+    "myst-parser"
+]
 dev = [
     "mypy",
     "pre-commit",
@@ -55,6 +60,7 @@ dev = [
     "pytest-cov",
     "pytest-split",
     "ruff",
+    "molara[doc]",
 ]
 crystal = [
     "pymatgen",
