@@ -1,4 +1,5 @@
 """A Molecules Class to be able to work with several molecules."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
