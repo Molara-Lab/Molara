@@ -97,15 +97,14 @@ class BuilderDialog(QDialog):
             mol = self.main_window.mols.mols[0]
             params, atom_nums = self._get_parameters(mol.n_at)
 
-            match mol.n_at:
-                case 0:
-                    self.add_first_atom(params)
-                case 1:
-                    self.add_second_atom(mol, params)
-                case 2:
-                    self.add_third_atom(mol, params, atom_nums)
-                case _:
-                    self.add_nth_atom(mol, params, atom_nums)
+            if mol.n_at == 0:
+                self.add_first_atom(params)
+            elif mol.n_at == 1:
+                self.add_second_atom(mol, params)
+            elif mol.n_at == 2:  # noqa: PLR2004
+                self.add_third_atom(mol, params, atom_nums)
+            else:
+                self.add_nth_atom(mol, params, atom_nums)
 
         self.disable_slot = False
         if not self.err and self.colliding_idx is None:
@@ -377,13 +376,12 @@ class BuilderDialog(QDialog):
 
         for i, text in enumerate(self.z_matrix[row]["parameter"]):
             if text is not None:
-                match i:
-                    case 0:
-                        temp_text = text
-                    case 1:
-                        temp_text = f"{text:.2f}"
-                    case _:
-                        temp_text = f"{np.rad2deg(text):.2f}"
+                if i == 0:
+                    temp_text = text
+                elif i == 1:
+                    temp_text = f"{text:.2f}"
+                else:
+                    temp_text = f"{np.rad2deg(text):.2f}"
 
                 self.ui.tableWidget.setItem(row, param_rows[i], QTableWidgetItem(temp_text))
                 if param_rows[i] != 0:
@@ -417,20 +415,18 @@ class BuilderDialog(QDialog):
         dihedral: float = np.deg2rad(float(self.ui.Box_3DihedralAngle.text()))
         atom_nums = self.structure_widget.builder_selected_spheres
 
-        match num_atoms:
-            case 0:
-                return (element, None), []
-            case 1:
-                return (element, dist), [0]
-            case 2:
-                return (element, dist, angle), atom_nums
-            case _:
-                return (
-                    element,
-                    dist,
-                    angle,
-                    dihedral,
-                ), atom_nums
+        if num_atoms == 0:
+            return (element, None), []
+        if num_atoms == 1:
+            return (element, dist), [0]
+        if num_atoms == 2:  # noqa: PLR2004
+            return (element, dist, angle), atom_nums
+        return (
+            element,
+            dist,
+            angle,
+            dihedral,
+        ), atom_nums
 
     def _get_parameters_from_table(self, row: int) -> tuple:
         """Returns the parameter of a specified row in the table.
@@ -459,15 +455,14 @@ class BuilderDialog(QDialog):
         if not param_type_validity:
             return (None,)
 
-        match row:
-            case 0:
-                return (element, None)
-            case 1:
-                return (element, float(dist))
-            case 2:
-                return (element, float(dist), np.deg2rad(float(angle)))
-            case _:
-                return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
+        if row == 0:
+            return (element, None)
+        if row == 1:
+            return (element, float(dist))
+        if row == 2:  # noqa: PLR2004
+            return (element, float(dist), np.deg2rad(float(angle)))
+
+        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
 
     def _check_z_matrix_deletion(self, idx: int) -> bool:
         """Checks if the deletion of the z-matrix entry is valid.
