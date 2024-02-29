@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-from molara.Molecule.mos import Mos
-from molara.Molecule.structure import Structure
+from molara.Structure.mos import Mos
+from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
+if TYPE_CHECKING:
+    from molara.Structure.atom import Atom
 
 
 class Molecule(Structure):
@@ -30,8 +34,9 @@ class Molecule(Structure):
         """
         if dummy:
             self.dummy = True
+
         self.atomic_numbers = np.array(atomic_numbers)
-        self.atoms = []
+        self.atoms: list[Atom] = []
         self.mos = Mos()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20

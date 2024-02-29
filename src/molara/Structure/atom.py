@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from molara.Molecule.basisset import Basisset
+from molara.Structure.basisset import Basisset
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
@@ -24,6 +24,7 @@ class Atom:
         :param position: cartesian coordinates of atom location
         """
         self.symbol = elements[atomic_number]["symbol"]
+        self.name = elements[atomic_number]["name"]
         self.atomic_number = atomic_number
         self.atomic_mass = elements[atomic_number]["atomic_weight"]
         self.electronegativity = elements[atomic_number]["electronegativity"]
@@ -65,8 +66,8 @@ def element_symbol_to_atomic_number(symbol: str) -> int:
         "P": 15,
         "S": 16,
         "Cl": 17,
-        "K": 19,
         "Ar": 18,
+        "K": 19,
         "Ca": 20,
         "Sc": 21,
         "Ti": 22,
@@ -74,8 +75,8 @@ def element_symbol_to_atomic_number(symbol: str) -> int:
         "Cr": 24,
         "Mn": 25,
         "Fe": 26,
-        "Ni": 28,
         "Co": 27,
+        "Ni": 28,
         "Cu": 29,
         "Zn": 30,
         "Ga": 31,
@@ -131,6 +132,12 @@ def element_symbol_to_atomic_number(symbol: str) -> int:
         "Tl": 81,
         "Pb": 82,
         "Bi": 83,
+        "Po": 84,
+        "At": 85,
+        "Rn": 86,
+        "Fr": 87,
+        "Ra": 88,
+        "Ac": 89,
         "Th": 90,
         "Pa": 91,
         "U": 92,
@@ -161,7 +168,7 @@ def element_symbol_to_atomic_number(symbol: str) -> int:
         "Ts": 117,
         "Og": 118,
     }
-    return symbol_to_atomic_number[symbol]
+    return symbol_to_atomic_number.get(symbol, 0)
 
 
 elements: dict[int, dict[str, Any]] = {

@@ -1,4 +1,5 @@
 """Module for the Basisset class."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -8,7 +9,7 @@ import numpy as np
 from molara.Eval.aos import calculate_aos
 
 if TYPE_CHECKING:
-    from molara.Molecule.basisset import Orbital
+    from molara.Structure.basisset import Orbital
 
 __copyright__ = "Copyright 2024, Molara"
 

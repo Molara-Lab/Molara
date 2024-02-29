@@ -1,28 +1,35 @@
 """A module for the Structure class."""
+
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 # if TYPE_CHECKING:
 import numpy as np
 
-from .atom import Atom
-from .drawer import Drawer
+from molara.Structure.atom import Atom
+from molara.Structure.drawer import Drawer
 
 __copyright__ = "Copyright 2024, Molara"
+
+if TYPE_CHECKING:
+    from molara.Structure.crystal import Crystal
+    from molara.Structure.molecule import Molecule
 
 
 class Structure:
     """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
 
     def __init__(
-        self,
+        self: Structure | Crystal | Molecule,
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
         draw_bonds: bool = True,
     ) -> None:
         """Creates a new Structure object.
 
-        :param atomic_numbers:np.ndarray: atomic numbers of a atoms
-        :param coordinates:np.ndarray: coordinates of the atoms
+        :param atomic_numbers: np.ndarray: atomic numbers of a atoms
+        :param coordinates: np.ndarray: coordinates of the atoms
         :param header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
@@ -40,8 +47,9 @@ class Structure:
         self.bonded_pairs = self.calculate_bonds()
         self.draw_bonds = draw_bonds and (self.bonded_pairs[0, 0] != -1)
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
+        self.n_at = len(self.atoms)
 
-    def copy(self) -> Structure:
+    def copy(self: Structure | Crystal | Molecule) -> Structure:
         """Creates a copy of the structure."""
         return type(self)(
             self.atomic_numbers,
@@ -49,7 +57,21 @@ class Structure:
             self.draw_bonds,
         )
 
-    def center_coordinates(self) -> None:
+    def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
+        """Computes if the given coordinate is equal to the coordinate of an existing atom.
+
+        Return None if no atom collides.
+
+        :param coordinate: Coordinate to check whether they are equal to position of an atom
+        """
+        dist_threshold = 1e-10
+        for i, atom in enumerate(self.atoms):
+            dist = np.linalg.norm(atom.position - coordinate)
+            if dist < dist_threshold:
+                return i
+        return None
+
+    def center_coordinates(self: Structure | Crystal | Molecule) -> None:
         """Centers the structure around the center of mass."""
         coordinates = np.array([atom.position for atom in self.atoms])
         center = np.average(
@@ -68,7 +90,7 @@ class Structure:
             self.drawer.set_cylinder_model_matrices()
         self.drawer.set_atom_model_matrices()
 
-    def calculate_bonds(self) -> np.ndarray:
+    def calculate_bonds(self: Structure | Crystal | Molecule) -> np.ndarray:
         """Calculates the bonded pairs of atoms."""
         bonded_pairs = []
 
@@ -90,11 +112,15 @@ class Structure:
 
         return np.array([[-1, -1]], dtype=np.int_)
 
-    def toggle_bonds(self) -> None:
+    def toggle_bonds(self: Structure | Crystal | Molecule) -> None:
         """Toggles the bonds on and off."""
         self.draw_bonds = not self.draw_bonds
 
-    def add_atom(self, atomic_number: int, coordinate: np.ndarray) -> None:
+    def add_atom(
+        self: Structure | Crystal | Molecule,
+        atomic_number: int,
+        coordinate: np.ndarray,
+    ) -> None:
         """Adds an atom to the structure.
 
         :param atomic_number: atomic number (nuclear charge number) of the atom
@@ -103,13 +129,22 @@ class Structure:
         atom = Atom(atomic_number, coordinate)
         self.atoms.append(atom)
         self.bonded_pairs = self.calculate_bonds()
+        self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
+        self.atomic_numbers = np.append(self.atomic_numbers, atomic_number)
+        self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
-    def remove_atom(self, index: int) -> None:
+    def remove_atom(self: Structure | Crystal | Molecule, index: int) -> None:
         """Removes an atom from the structure.
 
         :param index: list index of the atom that shall be removed
         """
+        self.n_at -= 1
         self.molar_mass -= self.atoms[index].atomic_mass
         self.atoms.pop(index)
-        self.bonded_pairs = self.calculate_bonds()
+
+        if self.n_at != 0:
+            self.bonded_pairs = self.calculate_bonds()
+            self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
+
+        self.atomic_numbers = np.delete(self.atomic_numbers, index)

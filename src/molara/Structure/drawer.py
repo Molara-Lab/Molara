@@ -19,7 +19,7 @@ from molara.Rendering.sphere import (
 from molara.Tools.mathtools import norm
 
 if TYPE_CHECKING:
-    from molara.Molecule.atom import Atom
+    from molara.Structure.atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -45,7 +45,7 @@ class Drawer:
         self.cylinder_rotation_matrices: list | np.ndarray = []
         self.cylinder_translation_matrices: list | np.ndarray = []
         self.cylinder_model_matrices = np.array([], dtype=np.float32)
-        self.cylinder_colors: np.ndarray = np.array([], dtype=np.float32)
+        self.cylinder_colors: list | np.ndarray = np.array([], dtype=np.float32)
         self.atoms = atoms
         self.bonds = bonds
         self.atom_positions: list | np.ndarray = []
@@ -54,6 +54,7 @@ class Drawer:
         self.cylinder_positions: list | np.ndarray = []
         self.cylinder_directions: list | np.ndarray = []
         self.cylinder_dimensions: list | np.ndarray = []
+
         self.set_atom_colors()
         self.set_atom_positions()
         self.set_atom_scales()
@@ -83,57 +84,41 @@ class Drawer:
 
         :return:
         """
-        for i, atom in enumerate(self.atoms):
-            if i != 0:
-                self.atom_colors = np.concatenate(
-                    (self.atom_colors, np.array([atom.cpk_color], dtype=np.float32)),
-                )
-            else:
-                self.atom_colors = np.array([self.atoms[0].cpk_color], dtype=np.float32)
-        self.atom_colors = np.array(self.atom_colors, dtype=np.float32)
+        self.atom_colors = np.array([atom.cpk_color for atom in self.atoms], dtype=np.float32)
 
     def set_cylinder_props(self) -> None:
         """Sets the colors of the bonds (cylinders).
 
         :return:
         """
-        self.cylinder_colors = np.array([], dtype=np.float32)
+        self.cylinder_colors = []
         self.cylinder_positions = []
         self.cylinder_directions = []
         self.cylinder_dimensions = []
-        i = 0
+        radius = 0.075
+
         for bond in self.bonds:
-            if bond[0] != -1:
-                radius = 0.075
-                difference = self.atoms[bond[0]].position - self.atoms[bond[1]].position
-                # Calculate the length of the cylinder.
-                length = float(norm(difference)) / 2
-                mid_point = (self.atoms[bond[0]].position + self.atoms[bond[1]].position) / 2
-                # calculate the point 1 quarter between the 2 atoms
-                position_1 = mid_point + difference / 4
-                # calculate the point 3 quarter between the 2 atoms
-                position_2 = mid_point - difference / 4
-                self.cylinder_positions.append(position_1)
-                self.cylinder_positions.append(position_2)
-                self.cylinder_directions.append(difference)
-                self.cylinder_dimensions.append([radius, length, radius])
-                if i != 0:
-                    self.cylinder_colors = np.concatenate(
-                        (
-                            self.cylinder_colors,
-                            np.array([self.atoms[bond[0]].cpk_color], dtype=np.float32),
-                            np.array([self.atoms[bond[1]].cpk_color], dtype=np.float32),
-                        ),
-                    )
-                else:
-                    self.cylinder_colors = np.array(
-                        [
-                            self.atoms[bond[0]].cpk_color,
-                            self.atoms[bond[1]].cpk_color,
-                        ],
-                        dtype=np.float32,
-                    )
-                i += 1
+            if bond[0] == -1:
+                continue
+
+            atom1, atom2 = self.atoms[bond[0]], self.atoms[bond[1]]
+            pos1, pos2 = atom1.position, atom2.position
+            difference = pos1 - pos2
+            # Calculate the length of the cylinder.
+            length = float(norm(difference)) / 2
+            mid_point = (pos1 + pos2) / 2
+            # calculate the point 1 quarter between the 2 atoms
+            pos_quarter1 = mid_point + difference / 4
+            # calculate the point 3 quarter between the 2 atoms
+            pos_quarter2 = mid_point - difference / 4
+            self.cylinder_positions.append(pos_quarter1)
+            self.cylinder_positions.append(pos_quarter2)
+            self.cylinder_directions.append(difference)
+            self.cylinder_dimensions.append([radius, length, radius])
+            self.cylinder_colors += [
+                np.array([atom1.cpk_color], dtype=np.float32),
+                np.array([atom2.cpk_color], dtype=np.float32),
+            ]
 
         self.cylinder_colors = np.array(self.cylinder_colors, dtype=np.float32)
         self.cylinder_positions = np.array(self.cylinder_positions, dtype=np.float32)
@@ -145,21 +130,19 @@ class Drawer:
 
         :return:
         """
-        self.atom_positions = []
-        for atom in self.atoms:
-            self.atom_positions.append(np.array(atom.position, dtype=np.float32))
-        self.atom_positions = np.array(self.atom_positions, dtype=np.float32)
+        self.atom_positions = np.array(
+            [np.array(atom.position, dtype=np.float32) for atom in self.atoms],
+            dtype=np.float32,
+        )
 
     def set_atom_scales(self) -> None:
-        """Sets the positions of the atoms.
+        """Sets the scales of the atoms.
 
         :return:
         """
         self.atom_scales = []
-        for atom in self.atoms:
-            r = float(atom.vdw_radius / 6)
-            self.atom_scales.append([r, r, r])
-        self.atom_scales = np.array(self.atom_scales, dtype=np.float32)
+        scaling_factor = 1.0 / 6
+        self.atom_scales = np.array([3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms], dtype=np.float32)
 
     def reset_atom_model_matrices(self) -> None:
         """Resets the model matrices for the spheres.
@@ -265,12 +248,12 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
     length = float(norm(difference)) / 2
     mid_point = (atom1.position + atom2.position) / 2
     # calculate the point 1 quarter between the 2 atoms
-    position_1 = mid_point - difference / 4
+    pos_quarter1 = mid_point - difference / 4
     # calculate the point 3 quarter between the 2 atoms
-    position_2 = mid_point + difference / 4
+    pos_quarter2 = mid_point + difference / 4
 
-    mat1 = calculate_cylinder_model_matrix(position_1, radius, length, difference)
-    mat2 = calculate_cylinder_model_matrix(position_2, radius, length, difference)
+    mat1 = calculate_cylinder_model_matrix(pos_quarter1, radius, length, difference)
+    mat2 = calculate_cylinder_model_matrix(pos_quarter2, radius, length, difference)
     return np.array(
         [
             mat2,
