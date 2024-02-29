@@ -31,7 +31,6 @@ from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 if TYPE_CHECKING:
-
     from numpy import floating
 
     from molara.Rendering.camera import Camera
