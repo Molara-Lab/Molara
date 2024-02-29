@@ -5,7 +5,7 @@ They are used to create cylinders and multiple cylinders of the same color, resp
 
 cimport numpy as npc
 import numpy as np
-from molara.Tools.mathtools import norm
+from molara.Tools.mathtools import norm_float
 
 
 class Cylinder:
@@ -49,8 +49,8 @@ def generate_cylinder(
         x = radius * np.cos(theta)
         y = -height / 2
         z = radius * np.sin(theta)
-        normal = np.array([x, 0, z])
-        normal /= norm(normal)
+        normal = np.array([x, 0, z],dtype=np.float32)
+        normal /= norm_float(normal)
         vertices.extend([x, y, z, 0, -1, 0])
         vertices.extend(
             [x, y, z, normal[0], normal[1], normal[2]],
@@ -91,10 +91,10 @@ def generate_cylinder(
 
 
 cpdef calculate_cylinder_model_matrix(
-    npc.ndarray[double, ndim=1] position,
+    npc.ndarray[float, ndim=1] position,
     float radius,
     float length,
-    npc.ndarray[double, ndim=1] direction,
+    npc.ndarray[float, ndim=1] direction,
 ):
     """Calculates the model matrix for a cylinder.
 
@@ -103,15 +103,15 @@ cpdef calculate_cylinder_model_matrix(
     :param length: Length of the cylinder.
     :param direction: Direction of the cylinder, does not need to be normalized.
     """
-    cdef npc.ndarray[double, ndim=1] rotation_axis = np.empty(3, dtype=np.float64)
+    cdef npc.ndarray[float, ndim=1] rotation_axis = np.empty(3, dtype=np.float32)
     cdef float rotation_angle, x, y, z, c, s, t
     cdef int i, j
-    cdef npc.ndarray[double, ndim=2] rotation_scale_matrix
-    cdef npc.ndarray[double, ndim=2] scale_matrix
-    cdef npc.ndarray[double, ndim=2] rotation_matrix
-    cdef npc.ndarray[double, ndim=2] translation_matrix
+    cdef npc.ndarray[float, ndim=2] rotation_scale_matrix
+    cdef npc.ndarray[float, ndim=2] scale_matrix
+    cdef npc.ndarray[float, ndim=2] rotation_matrix
+    cdef npc.ndarray[float, ndim=2] translation_matrix
     cdef float[3] y_axis = np.array([0, 1, 0], dtype=np.float32)
-    cdef float direction_norm = norm(direction)
+    cdef float direction_norm = norm_float(direction)
     direction = direction / direction_norm
     cdef float dot = np.dot(direction, y_axis)
     if abs(dot) != 1:
@@ -119,7 +119,7 @@ cpdef calculate_cylinder_model_matrix(
         y_axis[1] * direction[2] - y_axis[2] * direction[1],
         y_axis[2] * direction[0] - y_axis[0] * direction[2],
         y_axis[0] * direction[1] - y_axis[1] * direction[0]
-        ], dtype=np.float64)
+        ], dtype=np.float32)
         # Calculate the angle to rotate the cylinder to the correct orientation.
         rotation_angle = np.arccos(
             np.clip(
@@ -129,14 +129,14 @@ cpdef calculate_cylinder_model_matrix(
             ),
         )
     else:
-        rotation_axis = np.array([0, 0, 1], dtype=np.float64)
+        rotation_axis = np.array([0, 0, 1], dtype=np.float32)
         rotation_angle = 0
-    translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
+    translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
     translation_matrix[3, 0:3] = position
 
-    rotation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
+    rotation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
 
-    rotation_axis = rotation_axis / norm(rotation_axis)
+    rotation_axis = rotation_axis / norm_float(rotation_axis)
     x, y, z = rotation_axis
     c = np.cos(rotation_angle)
     s = np.sin(rotation_angle)
@@ -146,11 +146,11 @@ cpdef calculate_cylinder_model_matrix(
         [t*x*x + c, t*x*y + s*z, t*x*z - s*y],
         [t*x*y - s*z, t*y*y + c, t*y*z + s*x],
         [t*x*z + s*y, t*y*z - s*x, t*z*z + c]]
-    )
+    , dtype=np.float32)
 
     cdef float[3] scale = [radius, radius, radius]
     scale[1] = length
-    scale_matrix =np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]])
+    scale_matrix =np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
     scale_matrix[0, 0] = scale[0]
     scale_matrix[1, 1] = scale[1]
     scale_matrix[2, 2] = scale[2]
