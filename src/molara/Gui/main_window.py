@@ -27,9 +27,6 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
-ENABLED, DISABLED = True, False
-
-
 class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
@@ -116,7 +113,7 @@ class MainWindow(QMainWindow):
         self.structure_widget.set_structure(self.mols.get_current_mol())
 
         if self.mols.num_mols > 1:
-            self.ui.actionOpen_Trajectory_Dialog.setEnabled(ENABLED)
+            self.ui.actionOpen_Trajectory_Dialog.setEnabled(True)
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
@@ -124,7 +121,7 @@ class MainWindow(QMainWindow):
 
         self.trajectory_dialog.reset()
         self.trajectory_dialog.close()
-        self.ui.actionOpen_Trajectory_Dialog.setEnabled(DISABLED)
+        self.ui.actionOpen_Trajectory_Dialog.setEnabled(False)
 
     def export_structure(self) -> None:
         """Save structure to file."""
@@ -149,6 +146,7 @@ class MainWindow(QMainWindow):
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
         if self.structure_widget.structure_is_set:
+            self.measurement_dialog.ini_labels()
             self.measurement_dialog.show()
 
     def show_builder_dialog(self) -> None:

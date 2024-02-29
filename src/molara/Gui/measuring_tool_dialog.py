@@ -5,8 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtGui import QBrush, QColor
-from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
+from PySide6.QtWidgets import (
+    QDialog,
+    QMainWindow,
+)
 
 from molara.Gui.ui_measuring_tool import Ui_measuring_tool
 
@@ -32,62 +34,31 @@ class MeasurementDialog(QDialog):
         self.ui = Ui_measuring_tool()
         self.ui.setupUi(self)
 
-        self.ui.info_text.setText("Select / unselect atoms: SHIFT + Left Click on atoms.")
-        self.ui.info_text_2.setText("Unselect all atoms: SHIFT + CTRL + Left Click on empty area.")
-
-        # basic setup of the tables
-        self.ui.tableDistances.setColumnCount(3)
-        self.ui.tableDistances.setRowCount(3)
-        self.ui.tableAngles.setRowCount(3)
-        self.ui.tableAngles.setColumnCount(1)
-        self.ui.tablePositions.setColumnCount(5)
-        self.ui.tablePositions.setRowCount(4)
-
-        # resize modes: specify how the tables are filles with the colums / rows
-        def set_resize_modes(obj: QHeaderView, modes: list) -> None:
-            for i, mode in enumerate(modes):
-                obj.setSectionResizeMode(i, mode)
-
-        fixed, resize, stretch = QHeaderView.Fixed, QHeaderView.ResizeToContents, QHeaderView.Stretch
-
-        header_positions = self.ui.tablePositions.horizontalHeader()
-        set_resize_modes(header_positions, [resize, stretch, resize, resize, resize])
-        sidelabels_positions = self.ui.tablePositions.verticalHeader()
-        set_resize_modes(sidelabels_positions, [fixed, fixed, fixed, stretch])
-        header_distances = self.ui.tableDistances.horizontalHeader()
-        set_resize_modes(header_distances, [resize, resize, stretch])
-        header_angles = self.ui.tableAngles.horizontalHeader()
-        set_resize_modes(header_angles, [stretch])
-
-        # create labels for the table rows & columns
-        def _set_table_labels(horizontal: bool, obj: QTableWidget, labels: list[str], colors: list[str] | None) -> None:
-            _set_item = obj.setHorizontalHeaderItem if horizontal else obj.setVerticalHeaderItem
-            if colors is None:
-                colors = [None] * len(labels)
-            for i, (label_i, color_i) in enumerate(zip(labels, colors)):
-                item = QTableWidgetItem(label_i)
-                if color_i is not None:
-                    brush = QBrush(QColor(color_i))
-                    item.setForeground(brush)
-                _set_item(i, item)
-
-        def set_horizontal_table_labels(obj: QTableWidget, labels: list[str], colors: list[str] | None = None) -> None:
-            horizontal = True
-            _set_table_labels(horizontal, obj, labels, colors)
-
-        def set_vertical_table_labels(obj: QTableWidget, labels: list[str], colors: list[str] | None = None) -> None:
-            vertical = False
-            _set_table_labels(vertical, obj, labels, colors)
-
-        colors = ["#f00", "#0d0", "#00f", "#cc0"]
-        atom_labels = [rf"Atom {i+1}" for i in range(len(colors))]
-
-        set_horizontal_table_labels(self.ui.tablePositions, ["symbol", "name", "x", "y", "z"])
-        set_vertical_table_labels(self.ui.tablePositions, atom_labels, colors)
-        set_horizontal_table_labels(self.ui.tableDistances, atom_labels[1:], colors[1:])
-        set_vertical_table_labels(self.ui.tableDistances, atom_labels[:-1], colors[:-1])
-        set_horizontal_table_labels(self.ui.tableAngles, ["Angle"])
-        set_vertical_table_labels(self.ui.tableAngles, ["\u2222 123", "\u2222 234", "\u2222 1234"])
+    def ini_labels(self) -> None:
+        """Initializes the labels."""
+        self.ui.info_text.setText("Use SHIFT + Left Mouse Button to select atoms.")
+        self.ui.atom1.setText("")
+        self.ui.atom2.setText("")
+        self.ui.atom3.setText("")
+        self.ui.atom4.setText("")
+        self.ui.x1.setText("")
+        self.ui.y1.setText("")
+        self.ui.z1.setText("")
+        self.ui.x2.setText("")
+        self.ui.y2.setText("")
+        self.ui.z2.setText("")
+        self.ui.x3.setText("")
+        self.ui.y3.setText("")
+        self.ui.z3.setText("")
+        self.ui.x4.setText("")
+        self.ui.y4.setText("")
+        self.ui.z4.setText("")
+        self.ui.d12.setText("")
+        self.ui.d23.setText("")
+        self.ui.d34.setText("")
+        self.ui.a123.setText("")
+        self.ui.a234.setText("")
+        self.ui.d1234.setText("")
 
     def display_metrics(self, structure: Structure, selected_atoms: list) -> None:
         """Display the metrics in the table.
@@ -107,28 +78,33 @@ class MeasurementDialog(QDialog):
         :param selected_atoms: The selected atoms.
         :return:
         """
-        for i in range(4):
-            if selected_atoms[i] != -1:
-                pos = structure.atoms[selected_atoms[i]].position
-                self.ui.tablePositions.setItem(i, 0, QTableWidgetItem(structure.atoms[selected_atoms[i]].symbol))
-                self.ui.tablePositions.setItem(i, 1, QTableWidgetItem(structure.atoms[selected_atoms[i]].name))
-                self.ui.tablePositions.setItem(i, 2, QTableWidgetItem(f"{pos[0]:.3f}"))
-                self.ui.tablePositions.setItem(i, 3, QTableWidgetItem(f"{pos[1]:.3f}"))
-                self.ui.tablePositions.setItem(i, 4, QTableWidgetItem(f"{pos[2]:.3f}"))
+        atom_labels = [self.ui.atom1, self.ui.atom2, self.ui.atom3, self.ui.atom4]
+        atom_coordinates = [
+            [self.ui.x1, self.ui.y1, self.ui.z1],
+            [self.ui.x2, self.ui.y2, self.ui.z2],
+            [self.ui.x3, self.ui.y3, self.ui.z3],
+            [self.ui.x4, self.ui.y4, self.ui.z4],
+        ]
+        distances = [self.ui.d12, self.ui.d23, self.ui.d34]
+        for i in range(len(selected_atoms)):
+            if selected_atoms[i] == -1:
+                atom_labels[i].setText("")
+                for j in range(3):
+                    atom_coordinates[i][j].setText("")
             else:
-                self.ui.tablePositions.setItem(i, 0, QTableWidgetItem(""))
-                self.ui.tablePositions.setItem(i, 1, QTableWidgetItem(""))
-                self.ui.tablePositions.setItem(i, 2, QTableWidgetItem(""))
-                self.ui.tablePositions.setItem(i, 3, QTableWidgetItem(""))
-                self.ui.tablePositions.setItem(i, 4, QTableWidgetItem(""))
-            for k in range(i + 1, 4):
-                if selected_atoms[i] == -1 or selected_atoms[k] == -1:
-                    self.ui.tableDistances.setItem(i, k - 1, QTableWidgetItem(""))
-                    continue
+                atom_labels[i].setText(structure.atoms[selected_atoms[i]].symbol)
+                for j in range(3):
+                    atom_coordinates[i][j].setText(
+                        f"{structure.atoms[selected_atoms[i]].position[j].round(3):.3f}",
+                    )
+        for i in range(3):
+            if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1:
                 d = np.linalg.norm(
-                    structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[k]].position,
+                    structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position,
                 )
-                self.ui.tableDistances.setItem(i, k - 1, QTableWidgetItem(f"{d.round(3):.3f}" + " \u00c5"))
+                distances[i].setText(f"{d.round(3):.3f}")
+            else:
+                distances[i].setText("")
 
     def display_angles(self, structure: Structure, selected_atoms: list) -> None:
         """Display the angles in the table.
@@ -137,6 +113,7 @@ class MeasurementDialog(QDialog):
         :param selected_atoms: The selected atoms.
         :return:
         """
+        angles = [self.ui.a123, self.ui.a234]
         for i in range(2):
             if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1 and selected_atoms[i + 2] != -1:
                 v1 = structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position
@@ -144,9 +121,9 @@ class MeasurementDialog(QDialog):
                 a = np.arccos(
                     np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
                 )
-                self.ui.tableAngles.setItem(i, 0, QTableWidgetItem(f"{np.degrees(a).round(1):.3f}" + " \u00b0"))
+                angles[i].setText(f"{np.degrees(a).round(1):.3f}")
             else:
-                self.ui.tableAngles.setItem(i, 0, QTableWidgetItem(""))
+                angles[i].setText("")
 
     def display_dihedral(self, structure: Structure, selected_atoms: list) -> None:
         """Display the dihedral in the table.
@@ -155,22 +132,22 @@ class MeasurementDialog(QDialog):
         :param selected_atoms: The selected atoms.
         :return:
         """
-        if selected_atoms[0] == -1 or selected_atoms[1] == -1 or selected_atoms[2] == -1 or selected_atoms[3] == -1:
-            self.ui.tableAngles.setItem(2, 0, QTableWidgetItem(""))
-            return
-
-        ab = structure.atoms[selected_atoms[1]].position - structure.atoms[selected_atoms[0]].position
-        bc = structure.atoms[selected_atoms[2]].position - structure.atoms[selected_atoms[1]].position
-        cd = structure.atoms[selected_atoms[3]].position - structure.atoms[selected_atoms[2]].position
-        nabc = np.cross(ab, bc)
-        nbcd = np.cross(bc, cd)
-        t = np.cross(nabc, bc)
-        a = np.arctan2(np.dot(t, nbcd), np.dot(nabc, nbcd))
-        a_deg = np.degrees(a)
-        if a_deg > 0:
-            a_deg = a_deg - 360
-        a_deg = -a_deg
-        self.ui.tableAngles.setItem(2, 0, QTableWidgetItem(f"{a_deg:.3f}" + " \u00b0"))
+        dihedral = self.ui.d1234
+        if selected_atoms[0] != -1 and selected_atoms[1] != -1 and selected_atoms[2] != -1 and selected_atoms[3] != -1:
+            ab = structure.atoms[selected_atoms[1]].position - structure.atoms[selected_atoms[0]].position
+            bc = structure.atoms[selected_atoms[2]].position - structure.atoms[selected_atoms[1]].position
+            cd = structure.atoms[selected_atoms[3]].position - structure.atoms[selected_atoms[2]].position
+            nabc = np.cross(ab, bc)
+            nbcd = np.cross(bc, cd)
+            t = np.cross(nabc, bc)
+            a = np.arctan2(np.dot(t, nbcd), np.dot(nabc, nbcd))
+            a_deg = np.degrees(a)
+            if a_deg > 0:
+                a_deg = a_deg - 360
+            a_deg = -a_deg
+            dihedral.setText(f"{a_deg.round(1):.3f}")
+        else:
+            dihedral.setText("")
 
     def reject(self) -> None:
         """Function that is called when dialog window is closed."""
