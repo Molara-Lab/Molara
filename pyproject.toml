@@ -44,7 +44,7 @@ classifiers = [
 ]
 
 [project.urls]
-Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
+Repo = "https://github.com/Molara-Lab/Molara"
 
 [project.optional-dependencies]
 dev = [
