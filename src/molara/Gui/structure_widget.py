@@ -452,4 +452,17 @@ class StructureWidget(QOpenGLWidget):
         """Test function."""
         print("Wirklich Doof!")
         self.makeCurrent()
-        self.renderer.draw_spheres(np.array([[0,0,0],[1,0,0]],dtype=np.float32), np.array([1,0.5],dtype=np.float32), np.array([[255,0,0],[0,0,255]],dtype=np.float32), 25)
+        positions = np.array([[2, 2, 2]], dtype=np.float32)
+        directions = np.array([[1, 0, 0]], dtype=np.float32)
+        radii = np.array([0.5,1], dtype=np.float32)
+        lengths = np.array([1,2], dtype=np.float32)
+        colors = np.array([[255, 0, 0]], dtype=np.float32)
+        #self.renderer.draw_spheres(np.array([[2,2,2]],dtype=np.float32), np.array([0.5],dtype=np.float32), np.array([[255,0,0]],dtype=np.float32), 25)
+        self.renderer.draw_cylinders(
+            positions=positions,
+            directions=directions,
+            radii=radii,
+            lengths=lengths,
+            colors=colors,
+            subdivisions=25
+            )

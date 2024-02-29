@@ -89,10 +89,10 @@ class Renderer:
         cylinder_mesh = Cylinder(subdivisions)
         if n_instances == 1:
             model_matrices = calculate_cylinder_model_matrix(
-                positions[0],
+                np.array(positions[0], dtype=np.float64),
                 radii[0],
                 lengths[0],
-                directions[0],
+                np.array(directions[0], dtype=np.float64),
             )
         else:
             for i in range(n_instances):
@@ -197,7 +197,7 @@ class Renderer:
         return i_sphere
 
 
-    def draw_box(
+    def draw_rectangle(
         self,
         positions: np.ndarray,
         width: np.ndarray,
