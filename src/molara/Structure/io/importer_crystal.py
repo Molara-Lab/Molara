@@ -93,15 +93,15 @@ class PoscarImporter(Importer):
         """Imports a file and returns the Crystal."""
         try:
             from monty.io import zopen
-            from pymatgen.core import Structure
+            from pymatgen.core import Structure as PymatgenStructure
         except ImportError:
-            Structure = None  # noqa: N806
+            PymatgenStructure = None  # noqa: N806
 
-        if Structure is not None:
+        if PymatgenStructure is not None:
             with zopen(self.path, "rt", errors="replace") as f:
                 contents = f.read()
-            structure = Structure.from_str(contents, fmt="poscar")
-            crystal = Crystal.from_pymatgen(structure)
+            structure = PymatgenStructure.from_str(contents, fmt="poscar")
+            crystal = Crystal.from_pymatgen(structure, self.supercell_dims)
         else:
             with open(self.path) as file:
                 lines = file.readlines()
@@ -135,6 +135,7 @@ class PoscarImporter(Importer):
             ):
                 msg = "Error: faulty formatting of the POSCAR file."
                 raise FileFormatError(msg)
+
             # For cartesian coordinates, convert to fractional coordinates
             if mode.lower().startswith(("c", "k")):
                 positions = [np.dot(np.linalg.inv(basis_vectors).T, position).tolist() for position in positions]
