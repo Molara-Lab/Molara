@@ -107,6 +107,8 @@ class StructureWidget(QOpenGLWidget):
         self.structure_is_set = True
         self.center_structure()
 
+        self.reset_measurement()
+
     def center_structure(self) -> None:
         """Centers the structure in the widget."""
         if self.structure_is_set:
@@ -305,7 +307,11 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def select_sphere(self, xpos: int, ypos: int) -> int:
-        """Return index of sphere that has been selected by clicking."""
+        """Return index of sphere that has been selected by clicking.
+
+        :param xpos: x position of the mouse-click event
+        :param ypos: y position of the mouse-click event
+        """
         click_position = np.array(
             [
                 (xpos * 2 - self.width()) / self.width(),
@@ -375,6 +381,14 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_colors,
         )
         self.update()
+        self.main_window.measurement_dialog.display_metrics(
+            self.structure,
+            self.measurement_selected_spheres,
+        )
+
+    def reset_measurement(self) -> None:
+        """Reset measurement arrays and measurement dialog."""
+        self.measurement_selected_spheres = [-1] * 4
         self.main_window.measurement_dialog.display_metrics(
             self.structure,
             self.measurement_selected_spheres,

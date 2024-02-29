@@ -174,9 +174,6 @@ class MeasurementDialog(QDialog):
         a_deg = -a_deg
         self.ui.tableAngles.setItem(2, 0, QTableWidgetItem(f"{a_deg:.3f}" + " \u00b0"))
 
-    def reset(self) -> None:
-        """Reset the measurement dialog (unselect atoms and clear the tables)."""
-
     def reject(self) -> None:
         """Function that is called when dialog window is closed."""
         self.main_window.structure_widget.unselect_all_atoms()
