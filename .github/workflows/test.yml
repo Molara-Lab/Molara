@@ -14,7 +14,7 @@ permissions:
 jobs:
   test:
     # prevent this action from running on forks
-    if: github.repository == 'Thursday-Evening-Hackathon/Molara'
+    if: github.repository == 'Molara-Lab/Molara'
     strategy:
       fail-fast: false
       matrix:
