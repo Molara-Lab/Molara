@@ -25,13 +25,6 @@ class Ui_builder(object):
         if not builder.objectName():
             builder.setObjectName(u"builder")
         builder.resize(447, 310)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(builder.sizePolicy().hasHeightForWidth())
-        builder.setSizePolicy(sizePolicy)
-        builder.setMinimumSize(QSize(447, 310))
-        builder.setMaximumSize(QSize(447, 310))
         self.buttonBox = QDialogButtonBox(builder)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setGeometry(QRect(90, 270, 341, 32))

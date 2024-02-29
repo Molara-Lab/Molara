@@ -10,12 +10,6 @@
     <height>476</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
    <string>Create custom crystal structure</string>
   </property>
@@ -27,9 +21,6 @@
      <width>341</width>
      <height>32</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -47,9 +38,6 @@
      <height>28</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>Add Atom</string>
    </property>
@@ -66,9 +54,6 @@
      <height>21</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>Show Preview</string>
    </property>
@@ -81,9 +66,6 @@
      <width>20</width>
      <height>461</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="orientation">
     <enum>Qt::Vertical</enum>
@@ -100,9 +82,6 @@
      <width>76</width>
      <height>24</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <item>
     <property name="text">
@@ -152,9 +131,6 @@
      <height>24</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <item>
     <property name="text">
      <string>–</string>
@@ -185,9 +161,6 @@
      <height>26</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="minimum">
     <double>0.010000000000000</double>
    </property>
@@ -209,9 +182,6 @@
      <width>65</width>
      <height>26</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="minimum">
     <double>0.010000000000000</double>
@@ -235,9 +205,6 @@
      <height>26</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="minimum">
     <double>0.010000000000000</double>
    </property>
@@ -257,9 +224,6 @@
      <height>26</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="maximum">
     <double>0.990000000000000</double>
    </property>
@@ -276,9 +240,6 @@
      <height>26</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="maximum">
     <double>0.990000000000000</double>
    </property>
@@ -294,9 +255,6 @@
      <width>62</width>
      <height>26</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="maximum">
     <double>0.990000000000000</double>
@@ -317,9 +275,6 @@
      <height>28</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
   </widget>
   <widget class="QLabel" name="labelElementSymbol">
    <property name="geometry">
@@ -329,9 +284,6 @@
      <width>58</width>
      <height>16</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>Element</string>
@@ -346,9 +298,6 @@
      <height>16</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>coord. a</string>
    </property>
@@ -361,9 +310,6 @@
      <width>58</width>
      <height>16</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>coord. b</string>
@@ -378,9 +324,6 @@
      <height>16</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>coord. c</string>
    </property>
@@ -393,9 +336,6 @@
      <width>16</width>
      <height>20</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>a</string>
@@ -410,9 +350,6 @@
      <height>20</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>b</string>
    </property>
@@ -425,9 +362,6 @@
      <width>16</width>
      <height>20</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>c</string>
@@ -442,9 +376,6 @@
      <height>16</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>Lattice constants</string>
    </property>
@@ -457,9 +388,6 @@
      <width>42</width>
      <height>26</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="minimum">
     <number>1</number>
@@ -474,9 +402,6 @@
      <height>26</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="minimum">
     <number>1</number>
    </property>
@@ -489,9 +414,6 @@
      <width>42</width>
      <height>26</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="minimum">
     <number>1</number>
@@ -506,9 +428,6 @@
      <height>16</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>Supercell</string>
    </property>
@@ -521,9 +440,6 @@
      <width>16</width>
      <height>20</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;N&lt;sub&gt;a&lt;/sub&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -538,9 +454,6 @@
      <height>20</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;N&lt;sub&gt;b&lt;/sub&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
@@ -554,9 +467,6 @@
      <height>20</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;N&lt;sub&gt;c&lt;/sub&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
@@ -569,9 +479,6 @@
      <width>256</width>
      <height>291</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <attribute name="horizontalHeaderCascadingSectionResizes">
     <bool>false</bool>
@@ -595,9 +502,6 @@
      <height>28</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>Clear Atoms</string>
    </property>
@@ -610,9 +514,6 @@
      <width>101</width>
      <height>16</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>Lattice angles</string>
@@ -629,9 +530,6 @@
      <width>65</width>
      <height>26</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="minimum">
     <double>0.010000000000000</double>
@@ -655,9 +553,6 @@
      <height>20</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>α</string>
    </property>
@@ -671,9 +566,6 @@
      <height>20</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="text">
     <string>β</string>
    </property>
@@ -686,9 +578,6 @@
      <width>65</width>
      <height>26</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="minimum">
     <double>0.010000000000000</double>
@@ -715,9 +604,6 @@
      <height>26</height>
     </rect>
    </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
-   </property>
    <property name="minimum">
     <double>0.010000000000000</double>
    </property>
@@ -739,9 +625,6 @@
      <width>16</width>
      <height>20</height>
     </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>γ</string>
