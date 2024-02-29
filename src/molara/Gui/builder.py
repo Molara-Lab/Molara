@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Callable, ParamSpec, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
+from typing_extensions import ParamSpec
 
 from molara.Gui.ui_builder import Ui_builder
 from molara.Structure.atom import element_symbol_to_atomic_number
