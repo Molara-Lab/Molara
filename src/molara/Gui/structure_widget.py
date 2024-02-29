@@ -407,7 +407,6 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
 
-
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
         if self.molecule_is_set:
