@@ -103,6 +103,8 @@ class MainWindow(QMainWindow):
             self,
             dir=".",
         )[0]
+        if file_name == "":
+            return
         self.load_molecules(file_name)
 
     def load_molecules(self, path: PathLike | str) -> None:
@@ -130,13 +132,15 @@ class MainWindow(QMainWindow):
         """Save structure to file."""
         if not self.structure_widget.structure:
             return
-        filename = QFileDialog.getSaveFileName(
+        file_name = QFileDialog.getSaveFileName(
             self,
             "Export structure to file",
             ".",
             "*",
-        )
-        exporter = GeneralExporter(filename[0])
+        )[0]
+        if file_name == "":
+            return
+        exporter = GeneralExporter(file_name)
         exporter.write_structure(self.structure_widget.structure)
 
     def toggle_bonds(self) -> None:
@@ -172,16 +176,18 @@ class MainWindow(QMainWindow):
 
     def show_poscar(self) -> bool:
         """Reads poscar file and shows the first structure in this file."""
-        filename = QFileDialog.getOpenFileName(
+        file_name = QFileDialog.getOpenFileName(
             self,
             caption="Open POSCAR file",
             dir=".",
             filter="POSCAR Files (*)",
-        )
+        )[0]
+        if file_name == "":
+            return None
 
         supercell_dims = [1, 1, 1]
 
-        importer = PoscarImporter(filename[0], supercell_dims)
+        importer = PoscarImporter(file_name, supercell_dims)
         crystals = importer.load()
 
         if not isinstance(crystals, Crystals):
