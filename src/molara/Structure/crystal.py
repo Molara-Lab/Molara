@@ -286,7 +286,9 @@ class Crystal(Structure):
 
     @classmethod
     def from_pymatgen(
-        cls: type[Crystal], structure: Pmgstructure, supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
+        cls: type[Crystal],
+        structure: Pmgstructure,
+        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
     ) -> Crystal:
         """Creates a Crystal object from a pymatgen.Structure object.
 
