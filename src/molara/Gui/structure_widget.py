@@ -14,6 +14,7 @@ from PySide6.QtWidgets import QFileDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
+from molara.Structure.crystal import Crystal
 from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
@@ -111,6 +112,7 @@ class StructureWidget(QOpenGLWidget):
             self.bonds = True
         self.structure_is_set = True
         self.center_structure()
+        self.add_unit_cell_boundaries(update_box=True)
 
     def center_structure(self) -> None:
         """Centers the structure in the widget."""
@@ -309,115 +311,74 @@ class StructureWidget(QOpenGLWidget):
             self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
         self.update()
 
-    def add_unit_cell_boundaries(self) -> None:
-        """Draws the box."""
-        basis_vectors_matrix = self.structure.basis_vectors
-        radius = 0.02
+    def add_unit_cell_boundaries(self, update_box: bool = False) -> None:
+        """Draws the unit cell boundaries.
+
+        :param update_box: specifies whether box shall be updated. If False, a drawn box will be hidden.
+        """
         self.makeCurrent()
-        if self.box[0] != -1:
+
+        box_was_drawn = self.box[0] != -1
+
+        if not box_was_drawn and update_box:
+            # if no box is drawn and unit cell boundary shall not be toggled but just updated, nothing needs to be done!
+            return
+
+        if box_was_drawn:
             self.renderer.remove_cylinder(self.box[0])
-            self.box = [-1, -1]
-        else:
-            positions = np.array(
+            # if a box was drawn and the unit cell boundary shall not be simply updated,
+            # the box should be removed.
+            if not update_box:
+                self.box = [-1, -1]
+                self.update()
+                return
+            if not isinstance(self.structure, Crystal):
+                self.box = [-1, -1]
+                self.update()
+                return
+
+        # the unit cell boundaries shall be drawn anew if:
+        # 1.) a box was not drawn before and function is called as a "toggle", not an update
+        # 2.) a box was drawn before, but shall be updated (crystal structure changed)
+        basis_vectors_matrix = self.structure.basis_vectors
+        zerovec = np.array([0, 0, 0])
+        positions = np.array(
+            [
+                [zerovec, basis_vectors_matrix[0]],
+                [zerovec, basis_vectors_matrix[1]],
+                [zerovec, basis_vectors_matrix[2]],
+                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
+                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
+                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
+                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[2]],
+                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[1]],
+                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[0]],
                 [
-                    [basis_vectors_matrix[0][0] / 2, basis_vectors_matrix[0][1] / 2, basis_vectors_matrix[0][2] / 2],
-                    [
-                        basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[1][0],
-                        basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[1][1],
-                        basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[1][2],
-                    ],
-                    [
-                        basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[2][0],
-                        basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[2][1],
-                        basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[2][2],
-                    ],
-                    [
-                        basis_vectors_matrix[0][0] / 2 + basis_vectors_matrix[1][0] + basis_vectors_matrix[2][0],
-                        basis_vectors_matrix[0][1] / 2 + basis_vectors_matrix[1][1] + basis_vectors_matrix[2][1],
-                        basis_vectors_matrix[0][2] / 2 + basis_vectors_matrix[1][2] + basis_vectors_matrix[2][2],
-                    ],
-                    [basis_vectors_matrix[1][0] / 2, basis_vectors_matrix[1][1] / 2, basis_vectors_matrix[1][2] / 2],
-                    [
-                        basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[0][0],
-                        basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[0][1],
-                        basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[0][2],
-                    ],
-                    [
-                        basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[2][0],
-                        basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[2][1],
-                        basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[2][2],
-                    ],
-                    [
-                        basis_vectors_matrix[1][0] / 2 + basis_vectors_matrix[0][0] + basis_vectors_matrix[2][0],
-                        basis_vectors_matrix[1][1] / 2 + basis_vectors_matrix[0][1] + basis_vectors_matrix[2][1],
-                        basis_vectors_matrix[1][2] / 2 + basis_vectors_matrix[0][2] + basis_vectors_matrix[2][2],
-                    ],
-                    [basis_vectors_matrix[2][0] / 2, basis_vectors_matrix[2][1] / 2, basis_vectors_matrix[2][2] / 2],
-                    [
-                        basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[1][0],
-                        basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[1][1],
-                        basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[1][2],
-                    ],
-                    [
-                        basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[0][0],
-                        basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[0][1],
-                        basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[0][2],
-                    ],
-                    [
-                        basis_vectors_matrix[2][0] / 2 + basis_vectors_matrix[1][0] + basis_vectors_matrix[0][0],
-                        basis_vectors_matrix[2][1] / 2 + basis_vectors_matrix[1][1] + basis_vectors_matrix[0][1],
-                        basis_vectors_matrix[2][2] / 2 + basis_vectors_matrix[1][2] + basis_vectors_matrix[0][2],
-                    ],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
                 ],
-                dtype=np.float32,
-            )
-            positions -= self.structure.center
-            directions_1 = np.array(
-                [basis_vectors_matrix[0][0], basis_vectors_matrix[0][1], basis_vectors_matrix[0][2]],
-                dtype=np.float32,
-            )
-            directions_2 = np.array(
-                [basis_vectors_matrix[1][0], basis_vectors_matrix[1][1], basis_vectors_matrix[1][2]],
-                dtype=np.float32,
-            )
-            directions_3 = np.array(
-                [basis_vectors_matrix[2][0], basis_vectors_matrix[2][1], basis_vectors_matrix[2][2]],
-                dtype=np.float32,
-            )
-            directions = np.block(
                 [
-                    [directions_1],
-                    [directions_1],
-                    [directions_1],
-                    [directions_1],
-                    [directions_2],
-                    [directions_2],
-                    [directions_2],
-                    [directions_2],
-                    [directions_3],
-                    [directions_3],
-                    [directions_3],
-                    [directions_3],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[2],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
                 ],
-            )
-            colors = np.array([0, 0, 0] * 12, dtype=np.float32)
-            radii = np.array([radius] * 12, dtype=np.float32)
-            lengths = np.concatenate(
-                (
-                    np.array([np.linalg.norm(basis_vectors_matrix[0])] * 4, dtype=np.float32),
-                    np.array([np.linalg.norm(basis_vectors_matrix[1])] * 4, dtype=np.float32),
-                    np.array([np.linalg.norm(basis_vectors_matrix[2])] * 4, dtype=np.float32),
-                ),
-                axis=None,
-            )
-            self.box[0] = self.renderer.draw_cylinders(
-                positions,
-                directions,
-                radii,
-                lengths,
-                colors,
-                25,
-            )
+                [
+                    basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                ],
+            ],
+            dtype=np.float32,
+        )
+
+        radius = 0.02
+        positions -= self.structure.center
+        colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
+        radii = np.array([radius] * positions.shape[0], dtype=np.float32)
+        self.box[0] = self.renderer.draw_cylinders_from_to(
+            positions,
+            radii,
+            colors,
+            25,
+        )
         self.update()
 
     def show_measurement_dialog(self) -> None:
