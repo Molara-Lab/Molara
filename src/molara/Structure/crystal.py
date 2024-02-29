@@ -58,9 +58,7 @@ class Crystal(Structure):
         self.coords_unitcell = self._fold_coords_into_unitcell(coords)
         self.basis_vectors = basis_vectors
         self.energy = 0.0  # TD: implement energy calculation
-        # if supercell_dims is None:
-        #     supercell_dims = [1, 1, 1]
-        #     SupercellDialog.get_supercell_dims(supercell_dims)
+
         self.make_supercell(supercell_dims)
         self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
         self.volume_unitcell = Crystal.calc_volume_unitcell(self.basis_vectors)
@@ -143,6 +141,7 @@ class Crystal(Structure):
         super().__init__(
             self.atomic_nums_supercell,
             self.cartesian_coordinates_supercell,
+            draw_bonds=False,
         )
 
     @staticmethod
