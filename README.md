@@ -1,5 +1,5 @@
 
-[![CI Status](https://github.com/Thursday-Evening-Hackathon/Molara/actions/workflows/test.yml/badge.svg)](https://github.com/Thursday-Evening-Hackathon/Molara/actions/workflows/test.yml)
+[![CI Status](https://github.com/Molara-Lab/Molara/actions/workflows/test.yml/badge.svg)](https://github.com/Molara-Lab/Molara/actions/workflows/test.yml)
 # Molara
 ```
 git clone <this repo>
