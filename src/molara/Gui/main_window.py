@@ -27,6 +27,9 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
+ENABLED, DISABLED = True, False
+
+
 class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
@@ -101,6 +104,8 @@ class MainWindow(QMainWindow):
             self,
             dir=".",
         )[0]
+        if file_name == "":
+            return
         self.load_molecules(file_name)
 
     def load_molecules(self, path: PathLike | str) -> None:
@@ -114,7 +119,7 @@ class MainWindow(QMainWindow):
         self.structure_widget.set_structure(self.mols.get_current_mol())
 
         if self.mols.num_mols > 1:
-            self.ui.actionOpen_Trajectory_Dialog.setEnabled(True)
+            self.ui.actionOpen_Trajectory_Dialog.setEnabled(ENABLED)
             self.trajectory_dialog.show()
             self.trajectory_dialog.initial_energy_plot()
             self.trajectory_dialog.set_slider_range()
@@ -122,19 +127,21 @@ class MainWindow(QMainWindow):
 
         self.trajectory_dialog.reset()
         self.trajectory_dialog.close()
-        self.ui.actionOpen_Trajectory_Dialog.setEnabled(False)
+        self.ui.actionOpen_Trajectory_Dialog.setEnabled(DISABLED)
 
     def export_structure(self) -> None:
         """Save structure to file."""
         if not self.structure_widget.structure:
             return
-        filename = QFileDialog.getSaveFileName(
+        file_name = QFileDialog.getSaveFileName(
             self,
             "Export structure to file",
             ".",
             "*",
-        )
-        exporter = GeneralExporter(filename[0])
+        )[0]
+        if file_name == "":
+            return
+        exporter = GeneralExporter(file_name)
         exporter.write_structure(self.structure_widget.structure)
 
     def toggle_bonds(self) -> None:
@@ -147,7 +154,6 @@ class MainWindow(QMainWindow):
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
         if self.structure_widget.structure_is_set:
-            self.measurement_dialog.ini_labels()
             self.measurement_dialog.show()
 
     def show_builder_dialog(self) -> None:
@@ -171,16 +177,18 @@ class MainWindow(QMainWindow):
 
     def show_poscar(self) -> bool:
         """Reads poscar file and shows the first structure in this file."""
-        filename = QFileDialog.getOpenFileName(
+        file_name = QFileDialog.getOpenFileName(
             self,
             caption="Open POSCAR file",
             dir=".",
             filter="POSCAR Files (*)",
-        )
+        )[0]
+        if file_name == "":
+            return None
 
         supercell_dims = [1, 1, 1]
 
-        importer = PoscarImporter(filename[0], supercell_dims)
+        importer = PoscarImporter(file_name, supercell_dims)
         crystals = importer.load()
 
         if not isinstance(crystals, Crystals):

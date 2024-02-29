@@ -114,6 +114,8 @@ class StructureWidget(QOpenGLWidget):
         self.center_structure()
         self.add_unit_cell_boundaries(update_box=True)
 
+        self.reset_measurement()
+
     def center_structure(self) -> None:
         """Centers the structure in the widget."""
         if self.structure_is_set:
@@ -381,6 +383,31 @@ class StructureWidget(QOpenGLWidget):
         )
         self.update()
 
+    def select_sphere(self, xpos: int, ypos: int) -> int:
+        """Return index of sphere that has been selected by clicking.
+
+        :param xpos: x position of the mouse-click event
+        :param ypos: y position of the mouse-click event
+        """
+        click_position = np.array(
+            [
+                (xpos * 2 - self.width()) / self.width(),
+                (ypos * 2 - self.height()) / self.height(),
+            ],
+            dtype=np.float32,
+        )
+        return select_sphere(
+            click_position,
+            self.camera.position,
+            self.camera.view_matrix_inv,
+            self.camera.projection_matrix_inv,
+            self.camera.fov,
+            self.height() / self.width(),
+            self.structure.drawer.atom_positions,
+            self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
+        )
+
+
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
         if self.molecule_is_set:
@@ -398,23 +425,7 @@ class StructureWidget(QOpenGLWidget):
         :return:
         """
         self.makeCurrent()
-        click_position = np.array(
-            [
-                (event.x() * 2 - self.width()) / self.width(),
-                (event.y() * 2 - self.height()) / self.height(),
-            ],
-            dtype=np.float32,
-        )
-        selected_sphere = select_sphere(
-            click_position,
-            self.camera.position,
-            self.camera.view_matrix_inv,
-            self.camera.projection_matrix_inv,
-            self.camera.fov,
-            self.height() / self.width(),
-            self.structure.drawer.atom_positions,
-            self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
-        )
+        selected_sphere = self.select_sphere(event.x(), event.y())
 
         def measurement_select_sphere(sphere_id: int) -> None:
             id_in_selection = self.measurement_selected_spheres.index(-1)
@@ -453,6 +464,14 @@ class StructureWidget(QOpenGLWidget):
             self.measurement_selected_spheres,
         )
 
+    def reset_measurement(self) -> None:
+        """Reset measurement arrays and measurement dialog."""
+        self.measurement_selected_spheres = [-1] * 4
+        self.main_window.measurement_dialog.display_metrics(
+            self.structure,
+            self.measurement_selected_spheres,
+        )
+
     def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
         """Returns the selected atoms.
 
@@ -461,23 +480,7 @@ class StructureWidget(QOpenGLWidget):
         """
         self.makeCurrent()
 
-        click_position = np.array(
-            [
-                (event.x() * 2 - self.width()) / self.width(),
-                (event.y() * 2 - self.height()) / self.height(),
-            ],
-            dtype=np.float32,
-        )
-        selected_sphere = select_sphere(
-            click_position,
-            self.camera.position,
-            self.camera.view_matrix_inv,
-            self.camera.projection_matrix_inv,
-            self.camera.fov,
-            self.height() / self.width(),
-            self.structure.drawer.atom_positions,
-            self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
-        )
+        selected_sphere = self.select_sphere(event.x(), event.y())
 
         def builder_select_sphere(sphere_id: int) -> None:
             id_in_selection = self.builder_selected_spheres.index(-1)

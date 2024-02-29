@@ -56,7 +56,9 @@ class SupercellDialog(QDialog):
         :param supercell_dims: supercell dimensions (e.g. [2, 4, 3] for 2x4x3 supercell)
         """
         self.supercell_dims = supercell_dims
-        self.ui.set_supercell_dims(self.supercell_dims)
+        self.ui.inputSupercell_a.setValue(supercell_dims[0])
+        self.ui.inputSupercell_b.setValue(supercell_dims[1])
+        self.ui.inputSupercell_c.setValue(supercell_dims[2])
 
     def accept(self) -> None:
         """Submit contents of supercell dialog.

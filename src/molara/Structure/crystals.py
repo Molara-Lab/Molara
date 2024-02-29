@@ -1,4 +1,5 @@
 """A Crystals Class to be able to work with several crystals."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
