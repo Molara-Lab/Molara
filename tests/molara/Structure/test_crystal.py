@@ -77,7 +77,7 @@ class TestCrystal(TestCase):
     def test_from_poscar_cartesian(self) -> None:
         """Test the creation of a crystal from a POSCAR file with cartesian coords."""
         supercell_dims = self.supercell_dims
-        importer = PoscarImporter("examples/POSCAR/boron_nitride_cartesian", supercell_dims)
+        importer = PoscarImporter("examples/POSCAR/BN_cartesian.POSCAR", supercell_dims)
         self.crystals_from_POSCAR_c = importer.load()
         self.crystal_from_POSCAR_c = self.crystals_from_POSCAR_c.get_current_mol()
 
