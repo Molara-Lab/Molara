@@ -10,12 +10,13 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html#project-informatio
 from __future__ import annotations
 
 from datetime import datetime, timezone
+
 import molara
 
 __copyright__ = "Copyright 2024, Molara"
 
 project = "Molara"
-project_copyright = f"2023–{datetime.now(timezone.utc).year}, Molara Team"
+project_copyright = f"2023\u2013{datetime.now(timezone.utc).year}, Molara Team"
 author = "Michel Heinz"
 
 # -- General configuration ---------------------------------------------------
@@ -44,6 +45,6 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_logo = "_static/logo.png"
 html_theme_options = {
-    "logo_only": False,      # only display the logo not the project name
-    "display_version": True, # display the version number in the sidebar
+    "logo_only": False,  # only display the logo not the project name
+    "display_version": True,  # display the version number in the sidebar
 }
