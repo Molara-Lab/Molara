@@ -132,6 +132,26 @@ class TestCrystal(TestCase):
         assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
         assert_almost_equal(self.crystal.density_unitcell, 3.6229802861472007, decimal=5)
 
+    def test_toggle_bonds(self) -> None:
+        """Test the toggle bonds routine."""
+        # after instantiation, draw_bonds should be False by default,
+        # and bonds should not have been calculated yet.
+        assert not self.crystal.draw_bonds
+        assert not self.crystal.bonds_calculated
+        assert not self.crystal.has_bonds
+        # after bonds toggle, bonds should have been calculated,
+        # and draw_bonds should be set to True.
+        self.crystal.toggle_bonds()
+        assert self.crystal.draw_bonds
+        assert self.crystal.bonds_calculated
+        assert self.crystal.has_bonds
+        # after a further bonds toggle, calculated bonds should still be there,
+        # but draw_bonds should once again be set to False.
+        self.crystal.toggle_bonds()
+        assert not self.crystal.draw_bonds
+        assert self.crystal.bonds_calculated
+        assert self.crystal.has_bonds
+
     def test_copy(self) -> None:
         """Test the copy method."""
         copy = self.crystal.copy()
