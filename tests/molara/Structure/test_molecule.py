@@ -78,3 +78,21 @@ class TestMolecule(TestCase):
             [atom_i.position - self.water.atoms[0].position for atom_i in self.water.atoms[1:]],
         )
         assert_array_equal(bond_vectors_water_object, bond_vectors_water)
+
+    def test_toggle_bonds(self) -> None:
+        """Test the toggle bonds routine."""
+        # after instantiation, draw_bonds should be True by default,
+        # and bonds should have been calculated.
+        assert self.ccl4.draw_bonds
+        assert self.ccl4.bonds_calculated
+        assert self.ccl4.has_bonds
+        # after bonds toggle, draw_bonds should be set to False.
+        self.ccl4.toggle_bonds()
+        assert not self.ccl4.draw_bonds
+        assert self.ccl4.bonds_calculated
+        assert self.ccl4.has_bonds
+        # after a further bonds toggle, draw_bonds be True again.
+        self.ccl4.toggle_bonds()
+        assert not self.ccl4.draw_bonds
+        assert self.ccl4.bonds_calculated
+        assert self.ccl4.has_bonds
