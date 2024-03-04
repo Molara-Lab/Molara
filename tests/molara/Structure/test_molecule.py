@@ -93,6 +93,6 @@ class TestMolecule(TestCase):
         assert self.ccl4.has_bonds
         # after a further bonds toggle, draw_bonds be True again.
         self.ccl4.toggle_bonds()
-        assert not self.ccl4.draw_bonds
+        assert self.ccl4.draw_bonds
         assert self.ccl4.bonds_calculated
         assert self.ccl4.has_bonds
