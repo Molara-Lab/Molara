@@ -62,7 +62,7 @@ class Structure:
         return type(self)(
             self.atomic_numbers,
             np.array([atom.position for atom in self.atoms]),
-            self.draw_bonds,
+            draw_bonds=self.draw_bonds,
         )
 
     def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
