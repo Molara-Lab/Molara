@@ -98,7 +98,7 @@ class PoscarImporter(Importer):
         super().__init__(path)
         self.supercell_dims = supercell_dims
 
-    def load(self, use_pymatgen: bool = False) -> Crystals:
+    def load(self, use_pymatgen: bool = True) -> Crystals:
         """Imports a file and returns the Crystal.
 
         :param use_pymatgen: specifies whether pymatgen (if available) shall be preferred over own parser
