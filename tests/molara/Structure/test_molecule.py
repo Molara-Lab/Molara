@@ -98,7 +98,7 @@ class TestMolecule(TestCase):
         assert self.ccl4.has_bonds
 
     def test_copy(self) -> None:
-        """Test the copy method."""
+        """Test the copy routine."""
         copy = self.ccl4.copy()
         assert_array_equal(copy.atomic_numbers, self.ccl4.atomic_numbers)
         assert copy.molar_mass == self.ccl4.molar_mass
@@ -109,3 +109,32 @@ class TestMolecule(TestCase):
         self.ccl4.toggle_bonds()
         copy = self.ccl4.copy()
         assert copy.draw_bonds == self.ccl4.draw_bonds
+
+    def test_compute_collision(self) -> None:
+        """Test the compute_collision routine."""
+        # def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
+        dist_threshold = 1e-10
+        just_below = 0.99 * dist_threshold
+        just_above = 1.01 * dist_threshold
+        collision_coords1 = self.coords_ccl4[0]
+        collision_coords21 = self.coords_ccl4[1] + np.array([just_below, 0.0, 0.0])
+        collision_coords22 = self.coords_ccl4[1] + np.array([0.0, just_below, 0.0])
+        collision_coords23 = self.coords_ccl4[1] + np.array([0.0, 0.0, just_below])
+        collision_coords31 = self.coords_ccl4[2] + np.array([just_above, 0.0, 0.0])
+        collision_coords32 = self.coords_ccl4[2] + np.array([0.0, just_above, 0.0])
+        collision_coords33 = self.coords_ccl4[2] + np.array([0.0, 0.0, just_above])
+        just_below = 0.99 * dist_threshold / np.sqrt(3)
+        just_above = 1.01 * dist_threshold / np.sqrt(3)
+        collision_coords4 = self.coords_ccl4[3] + np.array([just_below, -just_below, -just_below])
+        collision_coords5 = self.coords_ccl4[4] + np.array([-just_above, just_above, -just_above])
+
+        id1, id2, id4 = 0, 1, 3
+        assert self.ccl4.compute_collision(collision_coords1) == id1
+        assert self.ccl4.compute_collision(collision_coords21) == id2
+        assert self.ccl4.compute_collision(collision_coords22) == id2
+        assert self.ccl4.compute_collision(collision_coords23) == id2
+        assert self.ccl4.compute_collision(collision_coords31) is None
+        assert self.ccl4.compute_collision(collision_coords32) is None
+        assert self.ccl4.compute_collision(collision_coords33) is None
+        assert self.ccl4.compute_collision(collision_coords4) == id4
+        assert self.ccl4.compute_collision(collision_coords5) is None
