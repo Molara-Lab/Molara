@@ -164,7 +164,7 @@ class PoscarImporter(Importer):
         scale_unitcell_to_volume = scale < 0
         if scale_unitcell_to_volume:
             _old_volume = Crystal.calc_volume_unitcell(basis_vectors)
-            scale = np.cbrt((-scale) / _old_volume)# cbrt: cube root
+            scale = np.cbrt((-scale) / _old_volume)  # cbrt: cube root
 
         return Crystal(
             atomic_numbers_extended,
@@ -172,6 +172,7 @@ class PoscarImporter(Importer):
             (scale * np.array(basis_vectors)).tolist(),
             self.supercell_dims,
         )
+
 
 class VasprunImporter(Importer):
     """import crystal files."""
