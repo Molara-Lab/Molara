@@ -80,14 +80,18 @@ class Structure:
                 return i
         return None
 
-    def center_coordinates(self: Structure | Crystal | Molecule) -> None:
-        """Centers the structure around the center of mass."""
-        coordinates = np.array([atom.position for atom in self.atoms])
-        self.center = np.average(
-            coordinates,
+    @property
+    def center_of_mass(self: Structure | Crystal | Molecule) -> np.ndarray:
+        """Returns the center of mass of the structure."""
+        return np.average(
+            [atom.position for atom in self.atoms],
             weights=[atom.atomic_mass for atom in self.atoms],
             axis=0,
         )
+
+    def center_coordinates(self: Structure | Crystal | Molecule) -> None:
+        """Centers the structure around the center of mass."""
+        self.center = self.center_of_mass
         for _i, atom in enumerate(self.atoms):
             position = atom.position - self.center
             atom.set_position(position)
