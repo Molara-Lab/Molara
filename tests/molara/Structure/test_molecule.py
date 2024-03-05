@@ -138,3 +138,12 @@ class TestMolecule(TestCase):
         assert self.ccl4.compute_collision(collision_coords33) is None
         assert self.ccl4.compute_collision(collision_coords4) == id4
         assert self.ccl4.compute_collision(collision_coords5) is None
+
+    def test_center_coordinates(self) -> None:
+        """Test the center_coordinates routine."""
+        # test ccl4
+        self.ccl4.center_coordinates()
+        assert_array_equal(np.mean(self.ccl4.coords, axis=0), np.zeros(3))
+        # test water
+        self.water.center_coordinates()
+        assert_array_equal(np.mean(self.water.coords, axis=0), np.zeros(3))
