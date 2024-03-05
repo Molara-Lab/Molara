@@ -144,6 +144,19 @@ class TestMolecule(TestCase):
         # test ccl4
         self.ccl4.center_coordinates()
         assert_array_equal(np.mean(self.ccl4.coords, axis=0), np.zeros(3))
+        offset = np.array([1.234, 2.345, 3.456])
+        for atom_i in self.ccl4.atoms:
+            atom_i.position += offset
+        self.ccl4.center_coordinates()
+        assert_array_equal(np.mean(self.ccl4.coords, axis=0), np.zeros(3))
+        assert_array_equal(self.ccl4.center, offset)
+
         # test water
         self.water.center_coordinates()
         assert_array_equal(np.mean(self.water.coords, axis=0), np.zeros(3))
+        offset = np.array([1.456, 2.567, 3.678])
+        for atom_i in self.water.atoms:
+            atom_i.position += offset
+        self.water.center_coordinates()
+        assert_array_equal(np.mean(self.water.coords, axis=0), np.zeros(3))
+        assert_array_equal(self.water.center, offset)

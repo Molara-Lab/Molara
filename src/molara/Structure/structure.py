@@ -35,6 +35,7 @@ class Structure:
         :param header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
+        self.coords = coordinates
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
         self.unique_atomic_numbers: list[int] = []
@@ -149,6 +150,7 @@ class Structure:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
         self.atomic_numbers = np.append(self.atomic_numbers, atomic_number)
+        self.coords = np.append(self.coords, coordinate)
         self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
@@ -166,3 +168,4 @@ class Structure:
             self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
 
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
+        self.coords = np.delete(self.coords, index)
