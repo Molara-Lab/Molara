@@ -104,7 +104,7 @@ class Structure:
         coordinates = np.array([atom.position for atom in self.atoms])
 
         max_distance = 2.0 * vdw_radii.max() / 1.75
-        tree = spatial.KDTree(coordinates)
+        tree = spatial.cKDTree(coordinates)
 
         for i, j in tree.query_pairs(max_distance):
             if i > j:
