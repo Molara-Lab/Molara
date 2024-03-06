@@ -61,6 +61,7 @@ class TestMolecule(TestCase):
             [atom_i.position - self.ccl4.atoms[0].position for atom_i in self.ccl4.atoms[1:]],
         )
         assert_array_equal(bond_vectors_ccl4_object, bond_vectors_ccl4)
+        assert ccl4.bond_distance_factor == 1.0 / 1.75
 
         # test water
         water, num_atoms_water = self.water, self.num_atoms_water
@@ -78,3 +79,4 @@ class TestMolecule(TestCase):
             [atom_i.position - self.water.atoms[0].position for atom_i in self.water.atoms[1:]],
         )
         assert_array_equal(bond_vectors_water_object, bond_vectors_water)
+        assert water.bond_distance_factor == 1.0 / 1.75

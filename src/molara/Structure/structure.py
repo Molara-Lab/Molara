@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 # if TYPE_CHECKING:
 import numpy as np
+from scipy import spatial
 
 from molara.Structure.atom import Atom
 from molara.Structure.drawer import Drawer
@@ -47,6 +48,7 @@ class Structure:
 
         self.molar_mass: float = np.sum([atom.atomic_mass for atom in self.atoms])
 
+        self.bond_distance_factor = 1.0 / 1.75  # (sum of vdw radii) / 1.75 is the maximum distance for a bond
         self.draw_bonds = draw_bonds
         self.bonded_pairs = NO_BONDS
         self.bonds_calculated = False
@@ -102,15 +104,16 @@ class Structure:
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
         coordinates = np.array([atom.position for atom in self.atoms])
 
-        for i in range(len(self.atoms)):
-            atom1_coord = coordinates[i]
-            atom1_radius = vdw_radii[i]
+        max_distance = 2.0 * vdw_radii.max() * self.bond_distance_factor
+        tree = spatial.cKDTree(coordinates)
 
-            distances = np.linalg.norm(coordinates - atom1_coord, axis=1)
-            mean_radii = (vdw_radii + atom1_radius) / 1.75
+        for i, j in tree.query_pairs(max_distance):
+            atom1_radius, atom2_radius = vdw_radii[i], vdw_radii[j]
+            distance = np.linalg.norm(coordinates[j] - coordinates[i])
 
-            bonded_indices = np.where(distances <= mean_radii)[0]
-            bonded_pairs.extend([(i, j) for j in bonded_indices if j > i])
+            mean_radii = (atom1_radius + atom2_radius) * self.bond_distance_factor
+            if distance <= mean_radii:
+                bonded_pairs.append((i, j))
 
         if bonded_pairs:
             return np.array(bonded_pairs)
