@@ -107,8 +107,6 @@ class Structure:
         tree = spatial.cKDTree(coordinates)
 
         for i, j in tree.query_pairs(max_distance):
-            if i > j:
-                continue  # don't count the same pair twice
             atom1_radius, atom2_radius = vdw_radii[i], vdw_radii[j]
             distance = np.linalg.norm(coordinates[j] - coordinates[i])
 
