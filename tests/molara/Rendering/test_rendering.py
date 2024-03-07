@@ -4,7 +4,6 @@ from __future__ import annotations
 import unittest
 
 from molara.Rendering.rendering import Renderer
-from OpenGL.GL import GLuint
 
 
 class TestRenderer(unittest.TestCase):
@@ -21,7 +20,7 @@ class TestRenderer(unittest.TestCase):
         assert isinstance(self.renderer.bonds_vao, dict)
         assert isinstance(self.renderer.spheres, list)
         assert isinstance(self.renderer.cylinders, list)
-        assert isinstance(self.renderer.shader, GLuint)
+        assert self.renderer.shader == 0
 
     # def test_draw_cylinders(self) -> None:
     #     positions = np.array([[0, 0, 0], [1, 1, 1]])
