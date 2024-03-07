@@ -52,6 +52,7 @@ dev = [
     "mypy",
     "pre-commit",
     "pytest",
+    "pytest-qt",
     "cython",
     "pytest-cov",
     "pytest-split",
