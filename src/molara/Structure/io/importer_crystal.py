@@ -28,7 +28,7 @@ class FileFormatError(FileImporterError):
 def robust_split(text: str) -> list[str]:
     """Split a text into its components (separated by any kinds of space characters) with regular expressions.
 
-    :param text: text to be splitted up
+    :param text: text to be split up
     """
     return re.split(r"\s+", text)
 
