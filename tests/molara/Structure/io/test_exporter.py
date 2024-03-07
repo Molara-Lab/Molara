@@ -16,8 +16,9 @@ class TestXyzExporter(unittest.TestCase):
 
     def setUp(self) -> None:
         """Instantiates the XyzExporter object."""
-        self.exporter = XyzExporter("output.xyz")
         self.timestamp = int(time.time())
+        self.filename = f"output_temporary_{self.timestamp}.xyz"
+        self.exporter = XyzExporter(self.filename)
         self.atomic_numbers = np.array([6, 8, 2, 3, 1, 7])  # C, O, He, Li, H, N
         self.coordinates = np.array(
             [
@@ -36,18 +37,17 @@ class TestXyzExporter(unittest.TestCase):
 
     def test_write_structure(self) -> None:
         """Tests the write_structure method of the XyzExporter class."""
-        filename = f"output_temporary_{self.timestamp}.xyz"
-        assert Path(filename).exists() is False
+        assert Path(self.filename).exists() is False
         self.exporter.write_structure(self.structure)
         # Assert that the output file exists
-        assert Path(filename).exists()
+        assert Path(self.filename).exists()
 
         # Assert that the output file has the expected content
-        with open(filename) as file:
+        with open(self.filename) as file:
             num_atoms = int(file.readline().strip())
             assert num_atoms == self.atomic_numbers.size
         data = np.genfromtxt(
-            filename,
+            self.filename,
             skip_header=2,
             dtype=str,
         )
