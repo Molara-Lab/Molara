@@ -40,6 +40,8 @@ jobs:
       - if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
+          sudo apt install -y xvfb
+          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
       - name: pytest
         run: |
           pytest --cov=src --cov-report=xml tests
