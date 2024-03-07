@@ -7,8 +7,8 @@ import unittest
 from pathlib import Path
 
 import numpy as np
-from molara.Molecule.structure import Structure
 from molara.Structure.io.exporter import XyzExporter
+from molara.Structure.structure import Structure
 
 
 class TestXyzExporter(unittest.TestCase):
