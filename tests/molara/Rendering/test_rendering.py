@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
 
 
-@pytest.mark.skipif(sys.platform == "win32")
+@pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 def test_renderer(qtbot: QtBot) -> None:
     """Tests the Renderer class."""
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
