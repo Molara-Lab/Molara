@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 from molara.Structure.io.exporter import XyzExporter
 from molara.Structure.structure import Structure
+from numpy.testing import assert_array_equal
 
 
 class TestXyzExporter(unittest.TestCase):
@@ -53,7 +54,9 @@ class TestXyzExporter(unittest.TestCase):
         )
         assert data.shape == (6, 4)
         assert data[:, 0].tolist() == ["C", "O", "He", "Li", "H", "N"]
-        assert data[:, 1:].tolist() == self.coordinates.tolist()
+        coordinates = data[:, 1:].astype(float)
+        assert_array_equal(coordinates, self.coordinates)
+
         # Delete file
         Path(f"output_temporary_{self.timestamp}.xyz").unlink()
 
