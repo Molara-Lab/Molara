@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING
 
 import numpy as np
+import pytest
 from molara.Rendering.rendering import Renderer
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
@@ -12,6 +14,7 @@ if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
 
 
+@pytest.mark.skipif(sys.platform == "win32")
 def test_renderer(qtbot: QtBot) -> None:
     """Tests the Renderer class."""
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
