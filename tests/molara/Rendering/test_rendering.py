@@ -1,4 +1,5 @@
 """This module contains the tests for the rendering module."""
+
 from __future__ import annotations
 
 import unittest
