@@ -4,9 +4,7 @@ from __future__ import annotations
 import unittest
 
 from molara.Rendering.rendering import Renderer
-from OpenGL.GL import (
-    GLuint,
-)
+from OpenGL.GL import GLuint
 
 
 class TestRenderer(unittest.TestCase):
@@ -21,8 +19,8 @@ class TestRenderer(unittest.TestCase):
         assert isinstance(self.renderer, Renderer)
         assert isinstance(self.renderer.atoms_vao, dict)
         assert isinstance(self.renderer.bonds_vao, dict)
-        assert isinstance(self.renderer.spheres, list[dict])
-        assert isinstance(self.renderer.cylinders, list[dict])
+        assert isinstance(self.renderer.spheres, list)
+        assert isinstance(self.renderer.cylinders, list)
         assert isinstance(self.renderer.shader, GLuint)
 
     # def test_draw_cylinders(self) -> None:
