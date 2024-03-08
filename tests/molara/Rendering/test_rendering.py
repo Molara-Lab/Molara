@@ -16,7 +16,10 @@ if TYPE_CHECKING:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 def test_renderer(qtbot: QtBot) -> None:
-    """Tests the Renderer class."""
+    """Tests the Renderer class.
+
+    :param qtbot: provides methods to simulate user interaction
+    """
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
     workaround_test_renderer.openGLWidget.makeCurrent()
     # The order of the tests is important, as the tests are not independent.
