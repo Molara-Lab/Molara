@@ -172,8 +172,9 @@ class WorkaroundTestMainWindow:
         ui = self.window.ui
         ui.actionBuilder.triggered.emit()
         assert self.window.builder_dialog.isVisible()
-        self.window.builder_dialog.reject()
+        self.window.builder_dialog.close()
         assert not self.window.builder_dialog.isVisible()
+        self.window.builder_dialog.reject()
 
     def test_show_crystal_dialog(self) -> None:
         """Write test code to verify the behavior of show_crystal_dialog method."""
@@ -181,8 +182,9 @@ class WorkaroundTestMainWindow:
         ui = self.window.ui
         ui.actionCreate_Lattice.triggered.emit()
         assert self.window.crystal_dialog.isVisible()
-        self.window.crystal_dialog.reject()
+        self.window.crystal_dialog.close()
         assert not self.window.crystal_dialog.isVisible()
+        self.window.crystal_dialog.reject()
 
     # def test_edit_supercell_dims(self) -> None:
     #     """Write test code to verify the behavior of edit_supercell_dims method."""
