@@ -10,6 +10,7 @@ from Gui.test_main_window import WorkaroundTestMainWindow
 from Rendering.test_rendering import WorkaroundTestRenderer
 
 if TYPE_CHECKING:
+    from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
 
@@ -21,7 +22,7 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     """
     main_window_tests = WorkaroundTestMainWindow(qtbot)
     _test_main_window(main_window_tests)
-    _test_renderer(qtbot)
+    _test_renderer(qtbot, main_window_tests.window)
     main_window_tests.tearDown()
 
 
@@ -38,12 +39,12 @@ def _test_main_window(main_window_tests: WorkaroundTestMainWindow) -> None:
 
 
 # @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
-def _test_renderer(qtbot: QtBot) -> None:
+def _test_renderer(qtbot: QtBot, main_window: MainWindow) -> None:
     """Tests the Renderer class.
 
     :param qtbot: provides methods to simulate user interaction
     """
-    workaround_test_renderer = WorkaroundTestRenderer(qtbot)
+    workaround_test_renderer = WorkaroundTestRenderer(qtbot, main_window)
 
     # The order of the tests is important, as the tests are not independent.
     # Changing the order of the tests may lead to failing tests.

@@ -6,22 +6,23 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Rendering.rendering import Renderer
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 if TYPE_CHECKING:
+    from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
 
 class WorkaroundTestRenderer:
     """This class contains the tests for the Renderer class."""
 
-    def __init__(self, qtbot: QtBot) -> None:
+    def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
         """Instantiates the Renderer object.
 
         :param qtbot: provides methods to simulate user interaction
         """
         self.qtbot = qtbot
-        self.openGLWidget = QOpenGLWidget(None)
+        self.main_window = main_window
+        self.openGLWidget = self.main_window.structure_widget
         self.renderer = Renderer()
         self.openGLWidget.show()
 
