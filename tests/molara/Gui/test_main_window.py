@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 import sys
 
 import pytest
+from test_rendering import _renderer
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
@@ -35,6 +36,7 @@ def test_main_window(qtbot: QtBot) -> None:
     workaround_test_main_window.test_structure_widget()
     workaround_test_main_window.test_show_builder_dialog()
     workaround_test_main_window.test_show_crystal_dialog()
+    _renderer(qtbot, workaround_test_main_window.window)
     workaround_test_main_window.tearDown()
 
 
