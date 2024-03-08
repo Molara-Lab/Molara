@@ -13,7 +13,7 @@ from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Structure.molecules import Molecules
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenu, QMenuBar
+from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
@@ -50,6 +50,7 @@ class WorkaroundTestMainWindow:
         :param qtbot: provides methods to simulate user interaction
         """
         self.qtbot = qtbot
+        self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
         self.window = MainWindow()
 
     def test_init(self) -> None:
@@ -146,6 +147,7 @@ class WorkaroundTestMainWindow:
     def tearDown(self) -> None:
         """Clean up the test."""
         self.window.close()
+        QApplication.instance().shutdown() if QApplication.instance() is not None else None
 
     def test_structure_widget(self) -> None:
         """Write test code to verify the behavior of the structure_widget property."""
