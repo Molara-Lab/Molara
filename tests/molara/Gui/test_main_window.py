@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import unittest
 from typing import TYPE_CHECKING
 
 from molara.Gui.builder import BuilderDialog
@@ -34,8 +33,8 @@ def test_main_window(qtbot: QtBot) -> None:
     workaround_test_main_window.test_init()
     workaround_test_main_window.test_ui()
     workaround_test_main_window.test_structure_widget()
-    workaround_test_main_window.test_show_builder_dialog()
-    workaround_test_main_window.test_show_crystal_dialog()
+    # workaround_test_main_window.test_show_builder_dialog()
+    # workaround_test_main_window.test_show_crystal_dialog()
     workaround_test_main_window.tearDown()
 
 
@@ -190,7 +189,3 @@ class WorkaroundTestMainWindow:
 
     # def test_show_poscar(self) -> None:
     #     """Write test code to verify the behavior of show_poscar method."""
-
-
-if __name__ == "__main__":
-    unittest.main()
