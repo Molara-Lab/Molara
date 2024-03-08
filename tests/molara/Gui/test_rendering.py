@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 def _renderer(qtbot: QtBot, main_window: QMainWindow) -> None:
     """Tests the Renderer class.
 
-    :param qtbot: provides methods to simulate user interaction
+    :param qtbot: provides methods to simulate user interaction.
     """
     workaround_test_renderer = WorkaroundTestRenderer(qtbot, main_window)
     # workaround_test_renderer.openGLWidget.makeCurrent()
