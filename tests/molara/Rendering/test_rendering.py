@@ -20,7 +20,9 @@ def test_renderer(qtbot: QtBot) -> None:
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
     workaround_test_renderer.openGLWidget.makeCurrent()
     workaround_test_renderer.test_init()
+    workaround_test_renderer.test_set_shader()
     workaround_test_renderer.test_draw_cylinders()
+    workaround_test_renderer.test_draw_cylinders_from_to()
     workaround_test_renderer.test_draw_spheres()
     workaround_test_renderer.openGLWidget.doneCurrent()
 
@@ -55,27 +57,75 @@ class WorkaroundTestRenderer:
 
     def test_draw_cylinders(self) -> None:
         """Tests the draw_cylinders method of the Renderer class."""
-        positions = np.array([[0, 0, 0], [1, 1, 1]], dtype=np.float32)
-        directions = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
-        radii = np.array([0.5, 0.3], dtype=np.float32)
-        lengths = np.array([1.0, 2.0], dtype=np.float32)
-        colors = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
+        positions = np.array([[0, 0, 0], [1, 1, 1], [4, 5, 6]], dtype=np.float32)
+        directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
+        lengths = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+        colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
         subdivisions = 10
 
-        mostrecent_cylinder_id = 0
+        mostrecent_cylinder_id = -1
+        cylinder_total_counter = 0
+
+        def _test_ids_and_counters(result: int) -> None:
+            """Tests most recent cylinder ids, cylinder vao entries and...?"""
+            assert result == mostrecent_cylinder_id
+            assert self.renderer.cylinders[mostrecent_cylinder_id]["vao"] == cylinder_total_counter
+            start_id = 1 + (cylinder_total_counter - 1) * 4
+            end_id = 1 + cylinder_total_counter * 4
+            buffers_comparison = list(range(start_id, end_id))
+            assert self.renderer.cylinders[mostrecent_cylinder_id]["buffers"] == buffers_comparison
+
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        assert result == mostrecent_cylinder_id
+        cylinder_total_counter += 1
         mostrecent_cylinder_id += 1
+        _test_ids_and_counters(result)
+
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        assert result == mostrecent_cylinder_id
+        cylinder_total_counter += 1
         mostrecent_cylinder_id += 1
+        _test_ids_and_counters(result)
+
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        assert result == mostrecent_cylinder_id
+        cylinder_total_counter += 1
+        mostrecent_cylinder_id += 1
+        _test_ids_and_counters(result)
 
         self.renderer.remove_cylinder(0)
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         mostrecent_cylinder_id = 0
-        assert result == mostrecent_cylinder_id
+        cylinder_total_counter += 1
+        self.renderer.remove_cylinder(0)
+        self.renderer.remove_cylinder(1)
+        self.renderer.remove_cylinder(2)
+
+    def test_draw_cylinders_from_to(self) -> None:
+        """Tests the draw_cylinders_from_to method of the Renderer class."""
+        positions_from_to = np.array(
+            [
+                [[1.2, 3.4, 5.6], [9.8, 7.6, 5.4]],
+                [[-3.3, -2.2, 1.1], [9.9, 8.8, -7.7]],
+                [[0, 0, 0], [1, 1, 1]],
+            ],
+            dtype=np.float32,
+        )
+        positions = positions_from_to.mean(axis=1, dtype=np.float32)
+        directions = positions_from_to[:, 1, :] - positions_from_to[:, 0, :]
+        radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
+        colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        subdivisions = 10
+
+        id_cylinder_from_to = self.renderer.draw_cylinders_from_to(positions_from_to, radii, colors, subdivisions)
+        id_cylinder_normal = self.renderer.draw_cylinders(
+            positions,
+            directions,
+            radii,
+            np.linalg.norm(directions, axis=1),
+            colors,
+            subdivisions,
+        )
+        assert id_cylinder_from_to == 0
+        assert id_cylinder_normal == 1
 
     def test_draw_spheres(self) -> None:
         """Tests the draw_spheres method of the Renderer class."""

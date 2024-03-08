@@ -126,6 +126,8 @@ class Renderer:
             if check_cylinder["vao"] == 0:
                 i_cylinder = i
                 self.cylinders[i_cylinder] = cylinder
+                break
+
         if i_cylinder == -1:
             i_cylinder = len(self.cylinders)
             self.cylinders.append(cylinder)
