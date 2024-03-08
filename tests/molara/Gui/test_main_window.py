@@ -179,7 +179,7 @@ class WorkaroundTestMainWindow:
         """Write test code to verify the behavior of show_crystal_dialog method."""
         assert not self.window.crystal_dialog.isVisible()
         ui = self.window.ui
-        ui.actionCreate_Lattice.trigger()
+        ui.actionCreate_Lattice.triggered.emit()
         assert self.window.crystal_dialog.isVisible()
         # self.window.crystal_dialog.close()
         # assert not self.window.crystal_dialog.isVisible()
