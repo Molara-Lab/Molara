@@ -2,49 +2,27 @@
 
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pytest
 from molara.Rendering.rendering import Renderer
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 if TYPE_CHECKING:
+    from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
-
-
-@pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
-def test_renderer(qtbot: QtBot) -> None:
-    """Tests the Renderer class.
-
-    :param qtbot: provides methods to simulate user interaction
-    """
-    workaround_test_renderer = WorkaroundTestRenderer(qtbot)
-    # workaround_test_renderer.openGLWidget.makeCurrent()
-
-    # The order of the tests is important, as the tests are not independent.
-    # Changing the order of the tests may lead to failing tests.
-    workaround_test_renderer.test_init()
-    workaround_test_renderer.test_set_shader()
-    workaround_test_renderer.test_draw_cylinders()
-    workaround_test_renderer.test_remove_cylinder()
-    workaround_test_renderer.test_draw_cylinders_from_to()
-    workaround_test_renderer.test_draw_spheres()
-
-    workaround_test_renderer.openGLWidget.doneCurrent()
 
 
 class WorkaroundTestRenderer:
     """This class contains the tests for the Renderer class."""
 
-    def __init__(self, qtbot: QtBot) -> None:
+    def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
         """Instantiates the Renderer object.
 
         :param qtbot: provides methods to simulate user interaction
         """
         self.qtbot = qtbot
-        self.openGLWidget = QOpenGLWidget(None)
+        self.main_window = main_window
+        self.openGLWidget = self.main_window.structure_widget
         self.renderer = Renderer()
         self.openGLWidget.show()
 
