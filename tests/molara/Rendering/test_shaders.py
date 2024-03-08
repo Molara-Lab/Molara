@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import hashlib
+import sys
 import unittest
 
+import pytest
 from molara.Rendering import shaders
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 class TestShaders(unittest.TestCase):
     """This class contains the tests for the shaders module."""
 
