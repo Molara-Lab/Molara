@@ -170,7 +170,7 @@ class WorkaroundTestMainWindow:
         """Write test code to verify the behavior of show_measurement_dialog method."""
         assert not self.window.builder_dialog.isVisible()
         ui = self.window.ui
-        ui.actionBuilder.trigger()
+        ui.actionBuilder.triggered.emit()
         assert self.window.builder_dialog.isVisible()
         self.window.builder_dialog.reject()
         assert not self.window.builder_dialog.isVisible()
