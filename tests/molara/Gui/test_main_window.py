@@ -25,7 +25,7 @@ import pytest
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 def test_main_window(qtbot: QtBot) -> None:
-    """Creates a MainWindow object.
+    """Creates a MainWindow object...
 
     :param qtbot: provides methods to simulate user interaction
     """
