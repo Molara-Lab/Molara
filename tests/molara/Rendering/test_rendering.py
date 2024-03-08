@@ -18,15 +18,21 @@ if TYPE_CHECKING:
 def test_renderer(qtbot: QtBot) -> None:
     """Tests the Renderer class."""
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
+    workaround_test_renderer.openGLWidget.makeCurrent()
     workaround_test_renderer.test_init()
     workaround_test_renderer.test_draw_cylinders()
+    workaround_test_renderer.test_draw_spheres()
+    workaround_test_renderer.openGLWidget.doneCurrent()
 
 
 class WorkaroundTestRenderer:
     """This class contains the tests for the Renderer class."""
 
     def __init__(self, qtbot: QtBot) -> None:
-        """Instantiates the Renderer object."""
+        """Instantiates the Renderer object.
+
+        :param qtbot: provides methods to simulate user interaction
+        """
         self.qtbot = qtbot
         self.openGLWidget = QOpenGLWidget(None)
         self.renderer = Renderer()
@@ -50,7 +56,6 @@ class WorkaroundTestRenderer:
         colors = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
         subdivisions = 10
 
-        self.openGLWidget.makeCurrent()
         count_cylinder_instances = 0
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         assert result == count_cylinder_instances
@@ -60,17 +65,23 @@ class WorkaroundTestRenderer:
         count_cylinder_instances += 1
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         assert result == count_cylinder_instances
-        self.openGLWidget.doneCurrent()
 
-    # def test_draw_spheres(self):
-    #     positions = np.array([[0, 0, 0], [1, 1, 1]])
-    #     radii = np.array([0.5, 0.3])
-    #     colors = np.array([[1, 0, 0], [0, 1, 0]])
-    #     subdivisions = 10
+    def test_draw_spheres(self) -> None:
+        """Tests the draw_spheres method of the Renderer class."""
+        positions = np.array([[0, 0, 0], [1, 1, 1]], dtype=np.float32)
+        radii = np.array([0.5, 0.3], dtype=np.float32)
+        colors = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
+        subdivisions = 10
 
-    #     result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
-
-    #     self.assertEqual(result, 2)  # Assert that the number of spheres drawn is correct
+        count_sphere_instances = 0
+        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
+        assert result == count_sphere_instances
+        count_sphere_instances += 1
+        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
+        assert result == count_sphere_instances
+        count_sphere_instances += 1
+        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
+        assert result == count_sphere_instances
 
     # def test_remove_cylinder(self):
     #     i_cylinder = 0
