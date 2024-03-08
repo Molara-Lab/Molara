@@ -181,7 +181,7 @@ class WorkaroundTestMainWindow:
         ui = self.window.ui
         ui.actionCreate_Lattice.triggered.emit()
         assert self.window.crystal_dialog.isVisible()
-        # self.window.crystal_dialog.close()
+        self.window.crystal_dialog.reject()
         # assert not self.window.crystal_dialog.isVisible()
 
     # def test_edit_supercell_dims(self) -> None:
