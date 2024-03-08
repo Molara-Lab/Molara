@@ -21,7 +21,7 @@ def test_renderer(qtbot: QtBot) -> None:
     :param qtbot: provides methods to simulate user interaction
     """
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
-    workaround_test_renderer.openGLWidget.makeCurrent()
+    # workaround_test_renderer.openGLWidget.makeCurrent()
 
     # The order of the tests is important, as the tests are not independent.
     # Changing the order of the tests may lead to failing tests.
@@ -65,6 +65,7 @@ class WorkaroundTestRenderer:
 
     def test_draw_cylinders(self) -> None:
         """Tests the draw_cylinders method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
         positions = np.array([[0, 0, 0], [1, 1, 1], [4, 5, 6]], dtype=np.float32)
         directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
         radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
@@ -106,6 +107,7 @@ class WorkaroundTestRenderer:
 
     def test_remove_cylinder(self) -> None:
         """Tests the remove_cylinder method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
         self.renderer.remove_cylinder(0)
         self.renderer.remove_cylinder(1)
         self.renderer.remove_cylinder(2)
@@ -114,6 +116,7 @@ class WorkaroundTestRenderer:
 
     def test_draw_cylinders_from_to(self) -> None:
         """Tests the draw_cylinders_from_to method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
         positions_from_to = np.array(
             [
                 [[1.2, 3.4, 5.6], [9.8, 7.6, 5.4]],
@@ -142,6 +145,7 @@ class WorkaroundTestRenderer:
 
     def test_draw_spheres(self) -> None:
         """Tests the draw_spheres method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
         positions = np.array([[0, 0, 0], [1, 1, 1]], dtype=np.float32)
         radii = np.array([0.5, 0.3], dtype=np.float32)
         colors = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
