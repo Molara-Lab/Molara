@@ -21,7 +21,7 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     """
     main_window_tests = WorkaroundTestMainWindow(qtbot)
     _test_main_window(main_window_tests)
-    _test_renderer(qtbot)
+    _test_renderer(qtbot, main_window_tests.window)
     main_window_tests.tearDown()
 
 
