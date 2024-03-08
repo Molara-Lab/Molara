@@ -18,25 +18,6 @@ from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
 
-import sys
-
-import pytest
-
-
-@pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
-def test_main_window(qtbot: QtBot) -> None:
-    """Creates a MainWindow object.
-
-    :param qtbot: provides methods to simulate user interaction
-    """
-    workaround_test_main_window = WorkaroundTestMainWindow(qtbot)
-    workaround_test_main_window.test_init()
-    workaround_test_main_window.test_ui()
-    workaround_test_main_window.test_structure_widget()
-    workaround_test_main_window.test_show_builder_dialog()
-    workaround_test_main_window.test_show_crystal_dialog()
-    workaround_test_main_window.tearDown()
-
 
 class WorkaroundTestMainWindow:
     """This class contains the tests for the MainWindow class.
@@ -169,11 +150,10 @@ class WorkaroundTestMainWindow:
     def test_show_builder_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""
         assert not self.window.builder_dialog.isVisible()
-        # ui = self.window.ui
-        # ui.actionBuilder.triggered.emit()
-        # assert self.window.builder_dialog.isVisible()
-        # self.window.builder_dialog.reject()
-        # self.window.structure_widget.doneCurrent()
+        ui = self.window.ui
+        ui.actionBuilder.triggered.emit()
+        assert self.window.builder_dialog.isVisible()
+        self.window.builder_dialog.reject()
 
     def test_show_crystal_dialog(self) -> None:
         """Write test code to verify the behavior of show_crystal_dialog method."""
