@@ -62,15 +62,20 @@ class WorkaroundTestRenderer:
         colors = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
         subdivisions = 10
 
-        count_cylinder_instances = 0
+        mostrecent_cylinder_id = 0
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        assert result == count_cylinder_instances
-        count_cylinder_instances += 1
+        assert result == mostrecent_cylinder_id
+        mostrecent_cylinder_id += 1
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        assert result == count_cylinder_instances
-        count_cylinder_instances += 1
+        assert result == mostrecent_cylinder_id
+        mostrecent_cylinder_id += 1
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        assert result == count_cylinder_instances
+        assert result == mostrecent_cylinder_id
+
+        self.renderer.remove_cylinder(0)
+        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
+        mostrecent_cylinder_id = 0
+        assert result == mostrecent_cylinder_id
 
     def test_draw_spheres(self) -> None:
         """Tests the draw_spheres method of the Renderer class."""

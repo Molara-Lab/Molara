@@ -228,20 +228,22 @@ class Renderer:
         :type i_cylinder: int
         :return:
         """
-        if i_cylinder < len(self.cylinders):
-            cylinder = self.cylinders[i_cylinder]
-            if cylinder["vao"] != 0:
-                glBindBuffer(GL_ARRAY_BUFFER, 0)
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-                for buffer in cylinder["buffers"]:
-                    glDeleteBuffers(1, [buffer])
-                glDeleteVertexArrays(1, [cylinder["vao"]])
-            self.cylinders[i_cylinder] = {
-                "vao": 0,
-                "n_instances": 0,
-                "n_vertices": 0,
-                "buffers": [],
-            }
+        if i_cylinder >= len(self.cylinders):
+            return
+
+        cylinder = self.cylinders[i_cylinder]
+        if cylinder["vao"] != 0:
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+            for buffer in cylinder["buffers"]:
+                glDeleteBuffers(1, [buffer])
+            glDeleteVertexArrays(1, [cylinder["vao"]])
+        self.cylinders[i_cylinder] = {
+            "vao": 0,
+            "n_instances": 0,
+            "n_vertices": 0,
+            "buffers": [],
+        }
 
     def remove_sphere(self, i_sphere: int) -> None:
         """Removes a sphere from the list of spheres.
