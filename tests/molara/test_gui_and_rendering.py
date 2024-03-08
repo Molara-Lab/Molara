@@ -28,7 +28,7 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
 def _test_main_window(main_window_tests: WorkaroundTestMainWindow) -> None:
     """Creates a MainWindow object.
 
-    :param qtbot: provides methods to simulate user interaction
+    :param qtbot: provides methods to simulate user interaction.
     """
     main_window_tests.test_init()
     main_window_tests.test_ui()
