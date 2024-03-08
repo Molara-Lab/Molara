@@ -22,6 +22,7 @@ def test_renderer(qtbot: QtBot) -> None:
     """
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
     workaround_test_renderer.openGLWidget.makeCurrent()
+
     # The order of the tests is important, as the tests are not independent.
     # Changing the order of the tests may lead to failing tests.
     workaround_test_renderer.test_init()
@@ -30,6 +31,7 @@ def test_renderer(qtbot: QtBot) -> None:
     workaround_test_renderer.test_remove_cylinder()
     workaround_test_renderer.test_draw_cylinders_from_to()
     workaround_test_renderer.test_draw_spheres()
+
     workaround_test_renderer.openGLWidget.doneCurrent()
 
 
