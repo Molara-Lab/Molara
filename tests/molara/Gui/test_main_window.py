@@ -173,6 +173,7 @@ class WorkaroundTestMainWindow:
         ui.actionBuilder.triggered.emit()
         assert self.window.builder_dialog.isVisible()
         self.window.builder_dialog.reject()
+        self.window.structure_widget.doneCurrent()
 
     def test_show_crystal_dialog(self) -> None:
         """Write test code to verify the behavior of show_crystal_dialog method."""
