@@ -169,11 +169,11 @@ class WorkaroundTestMainWindow:
     def test_show_builder_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""
         assert not self.window.builder_dialog.isVisible()
-        # ui = self.window.ui
-        # ui.actionBuilder.trigger()
-        # assert self.window.builder_dialog.isVisible()
-        # self.window.builder_dialog.close()
-        # assert not self.window.builder_dialog.isVisible()
+        ui = self.window.ui
+        ui.actionBuilder.trigger()
+        assert self.window.builder_dialog.isVisible()
+        self.window.builder_dialog.reject()
+        assert not self.window.builder_dialog.isVisible()
 
     def test_show_crystal_dialog(self) -> None:
         """Write test code to verify the behavior of show_crystal_dialog method."""
@@ -182,7 +182,7 @@ class WorkaroundTestMainWindow:
         ui.actionCreate_Lattice.triggered.emit()
         assert self.window.crystal_dialog.isVisible()
         self.window.crystal_dialog.reject()
-        # assert not self.window.crystal_dialog.isVisible()
+        assert not self.window.crystal_dialog.isVisible()
 
     # def test_edit_supercell_dims(self) -> None:
     #     """Write test code to verify the behavior of edit_supercell_dims method."""
