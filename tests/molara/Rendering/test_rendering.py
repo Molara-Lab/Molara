@@ -117,7 +117,12 @@ class WorkaroundTestRenderer:
 
         id_cylinder_from_to = self.renderer.draw_cylinders_from_to(positions_from_to, radii, colors, subdivisions)
         id_cylinder_normal = self.renderer.draw_cylinders(
-            positions, directions, radii, np.linalg.norm(directions, axis=1), colors, subdivisions,
+            positions,
+            directions,
+            radii,
+            np.linalg.norm(directions, axis=1),
+            colors,
+            subdivisions,
         )
         assert id_cylinder_from_to == 0
         assert id_cylinder_normal == 1
