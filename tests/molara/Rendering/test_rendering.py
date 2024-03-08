@@ -16,12 +16,18 @@ if TYPE_CHECKING:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 def test_renderer(qtbot: QtBot) -> None:
-    """Tests the Renderer class."""
+    """Tests the Renderer class.
+
+    :param qtbot: provides methods to simulate user interaction
+    """
     workaround_test_renderer = WorkaroundTestRenderer(qtbot)
     workaround_test_renderer.openGLWidget.makeCurrent()
+    # The order of the tests is important, as the tests are not independent.
+    # Changing the order of the tests may lead to failing tests.
     workaround_test_renderer.test_init()
     workaround_test_renderer.test_set_shader()
     workaround_test_renderer.test_draw_cylinders()
+    workaround_test_renderer.test_remove_cylinder()
     workaround_test_renderer.test_draw_cylinders_from_to()
     workaround_test_renderer.test_draw_spheres()
     workaround_test_renderer.openGLWidget.doneCurrent()
@@ -95,9 +101,14 @@ class WorkaroundTestRenderer:
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         mostrecent_cylinder_id = 0
         cylinder_total_counter += 1
+
+    def test_remove_cylinder(self) -> None:
+        """Tests the remove_cylinder method of the Renderer class."""
         self.renderer.remove_cylinder(0)
         self.renderer.remove_cylinder(1)
         self.renderer.remove_cylinder(2)
+        # also test removing a cylinder that does not exist. Nothing should happen.
+        self.renderer.remove_cylinder(543210)
 
     def test_draw_cylinders_from_to(self) -> None:
         """Tests the draw_cylinders_from_to method of the Renderer class."""
@@ -143,14 +154,6 @@ class WorkaroundTestRenderer:
         count_sphere_instances += 1
         result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
         assert result == count_sphere_instances
-
-    # def test_remove_cylinder(self):
-    #     i_cylinder = 0
-
-    #     self.renderer.remove_cylinder(i_cylinder)
-
-    #     # Assert that the cylinder has been removed successfully
-    #     # You can add additional assertions here if needed
 
     # def test_remove_sphere(self):
     #     i_sphere = 0
