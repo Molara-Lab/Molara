@@ -140,6 +140,24 @@ class WorkaroundTestMainWindow:
         structure_widget = self.window.structure_widget
         assert structure_widget is not None
 
+    def test_show_builder_dialog(self) -> None:
+        """Write test code to verify the behavior of show_measurement_dialog method."""
+        assert not self.window.builder_dialog.isVisible()
+        ui = self.window.ui
+        ui.actionBuilder.triggered.emit()
+        assert self.window.builder_dialog.isVisible()
+        self.window.builder_dialog.reject()
+        assert not self.window.builder_dialog.isVisible()
+
+    def test_show_crystal_dialog(self) -> None:
+        """Write test code to verify the behavior of show_crystal_dialog method."""
+        assert not self.window.crystal_dialog.isVisible()
+        ui = self.window.ui
+        ui.actionCreate_Lattice.triggered.emit()
+        assert self.window.crystal_dialog.isVisible()
+        self.window.crystal_dialog.reject()
+        assert not self.window.crystal_dialog.isVisible()
+
     def test_show_init_xyz(self) -> None:
         """Write test code to verify the behavior of show_init_xyz method."""
         sys.argv[1] = "examples/xyz/pentane.xyz"
@@ -149,9 +167,6 @@ class WorkaroundTestMainWindow:
         assert isinstance(window.structure_widget.structure, Molecule)
         assert window.structure_widget.structure_is_set
         assert window.structure_widget.structure is window.mols.get_current_mol()
-
-    # def test_show_file_open_dialog(self) -> None:
-    #     """Write test code to verify the behavior of show_file_open_dialog method."""
 
     def test_load_molecules(self) -> None:
         """Write test code to verify the behavior of load_molecules method."""
@@ -175,21 +190,18 @@ class WorkaroundTestMainWindow:
         assert window.structure_widget.structure_is_set
         assert window.structure_widget.structure is window.mols.get_current_mol()
 
-    def test_show_builder_dialog(self) -> None:
+    def test_show_measurement_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""
-        assert not self.window.builder_dialog.isVisible()
+        # a test where a molecule has been loaded must be executed before this test!
+        assert not self.window.measurement_dialog.isVisible()
         ui = self.window.ui
-        ui.actionBuilder.triggered.emit()
-        assert self.window.builder_dialog.isVisible()
-        self.window.builder_dialog.reject()
+        ui.actionMeasure.triggered.emit()
+        assert self.window.measurement_dialog.isVisible()
+        self.window.measurement_dialog.reject()
+        assert not self.window.measurement_dialog.isVisible()
 
-    def test_show_crystal_dialog(self) -> None:
-        """Write test code to verify the behavior of show_crystal_dialog method."""
-        assert not self.window.crystal_dialog.isVisible()
-        ui = self.window.ui
-        ui.actionCreate_Lattice.triggered.emit()
-        assert self.window.crystal_dialog.isVisible()
-        self.window.crystal_dialog.reject()
+    # def test_show_file_open_dialog(self) -> None:
+    #     """Write test code to verify the behavior of show_file_open_dialog method."""
 
     # def test_edit_supercell_dims(self) -> None:
     #     """Write test code to verify the behavior of edit_supercell_dims method."""

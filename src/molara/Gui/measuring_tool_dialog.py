@@ -175,4 +175,4 @@ class MeasurementDialog(QDialog):
     def reject(self) -> None:
         """Function that is called when dialog window is closed."""
         self.main_window.structure_widget.unselect_all_atoms()
-        self.close()
+        self.setVisible(False)
