@@ -36,6 +36,8 @@ def _test_main_window(main_window_tests: WorkaroundTestMainWindow) -> None:
     main_window_tests.test_structure_widget()
     main_window_tests.test_show_builder_dialog()
     main_window_tests.test_show_crystal_dialog()
+    main_window_tests.test_show_init_xyz()
+    main_window_tests.test_load_molecules()
 
 
 # @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")

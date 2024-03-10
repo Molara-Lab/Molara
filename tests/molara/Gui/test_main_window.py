@@ -11,12 +11,17 @@ from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.structure_widget import StructureWidget
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
+from molara.Structure.crystal import Crystal
+from molara.Structure.crystals import Crystals
+from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
+
+import sys
 
 
 class WorkaroundTestMainWindow:
@@ -135,17 +140,40 @@ class WorkaroundTestMainWindow:
         structure_widget = self.window.structure_widget
         assert structure_widget is not None
 
-    # def test_show_init_xyz(self) -> None:
-    #     """Write test code to verify the behavior of show_init_xyz method."""
+    def test_show_init_xyz(self) -> None:
+        """Write test code to verify the behavior of show_init_xyz method."""
+        sys.argv[1] = "examples/xyz/pentane.xyz"
+        window = self.window
+        window.show_init_xyz()
+        assert isinstance(window.mols, Molecules)
+        assert isinstance(window.structure_widget.structure, Molecule)
+        assert window.structure_widget.structure_is_set
+        assert window.structure_widget.structure is window.mols.get_current_mol()
 
     # def test_show_file_open_dialog(self) -> None:
     #     """Write test code to verify the behavior of show_file_open_dialog method."""
 
-    # def test_load_molecules(self) -> None:
-    #    """Write test code to verify the behavior of load_molecules method."""
-
-    # def test_export_structure(self) -> None:
-    #     """Write test code to verify the behavior of export_structure method."""
+    def test_load_molecules(self) -> None:
+        """Write test code to verify the behavior of load_molecules method."""
+        window = self.window
+        # test coord file
+        window.load_molecules("examples/coord/coord1.coord")
+        assert isinstance(window.mols, Molecules)
+        assert isinstance(window.structure_widget.structure, Molecule)
+        assert window.structure_widget.structure_is_set
+        assert window.structure_widget.structure is window.mols.get_current_mol()
+        # test xyz file
+        window.load_molecules("examples/xyz/ferrocene.xyz")
+        assert isinstance(window.mols, Molecules)
+        assert isinstance(window.structure_widget.structure, Molecule)
+        assert window.structure_widget.structure_is_set
+        assert window.structure_widget.structure is window.mols.get_current_mol()
+        # test POSCAR file
+        window.load_molecules("examples/POSCAR/Ba2YCu3O7_POSCAR")
+        assert isinstance(window.mols, Crystals)
+        assert isinstance(window.structure_widget.structure, Crystal)
+        assert window.structure_widget.structure_is_set
+        assert window.structure_widget.structure is window.mols.get_current_mol()
 
     def test_show_builder_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""

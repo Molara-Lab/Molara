@@ -64,7 +64,10 @@ class WorkaroundTestRenderer:
             assert self.renderer.cylinders[mostrecent_cylinder_id]["buffers"] == buffers_comparison
 
         result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        cylinder_total_counter += 1
+        # for the first added cylinder, cylinder_total_counter must be set to the vao id of the first cylinder.
+        # this is because previous tests might have added cylinders already.
+        # after this, every added cylinder should increase the cylinder_total_counter by 1.
+        cylinder_total_counter = self.renderer.cylinders[mostrecent_cylinder_id]["vao"]
         mostrecent_cylinder_id += 1
         _test_ids_and_counters(result)
 
