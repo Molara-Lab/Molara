@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
 
         # Tools
         self.ui.actionBuilder.triggered.connect(
-            self.structure_widget.show_builder_dialog,
+            self.show_builder_dialog,
         )
         self.ui.actionMeasure.triggered.connect(
             self.show_measurement_dialog,
