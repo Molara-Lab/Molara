@@ -204,6 +204,20 @@ class WorkaroundTestMainWindow:
         measurement_dialog.reject()
         assert not measurement_dialog.isVisible()
 
+    def test_show_trajectory_dialog(self) -> None:
+        """Write test code to verify the behavior of show_trajectory_dialog method."""
+        window = self.window
+        window.load_molecules("examples/xyz/opt.xyz")
+        # trajectory dialog should be opened since a trajectory has been loaded
+        assert self.window.trajectory_dialog.isVisible()
+        self.window.trajectory_dialog.reject()
+        assert not self.window.trajectory_dialog.isVisible()
+        # now open trajectory dialog by triggering the menu action
+        window.ui.actionOpen_Trajectory_Dialog.triggered.emit()
+        assert self.window.trajectory_dialog.isVisible()
+        self.window.trajectory_dialog.reject()
+        assert not self.window.trajectory_dialog.isVisible()
+
     # def test_show_file_open_dialog(self) -> None:
     #     """Write test code to verify the behavior of show_file_open_dialog method."""
 
