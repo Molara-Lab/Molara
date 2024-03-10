@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from Gui.test_main_window import WorkaroundTestMainWindow
+from Gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
 from Rendering.test_rendering import WorkaroundTestRenderer
 
 if TYPE_CHECKING:
@@ -23,6 +24,7 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     main_window_tests = WorkaroundTestMainWindow(qtbot)
     _test_main_window(main_window_tests)
     _test_renderer(qtbot, main_window_tests.window)
+    _test_measurement_window(qtbot, main_window_tests.window)
     main_window_tests.tearDown()
 
 
@@ -59,3 +61,15 @@ def _test_renderer(qtbot: QtBot, main_window: MainWindow) -> None:
     workaround_test_renderer.test_draw_spheres()
 
     workaround_test_renderer.openGLWidget.doneCurrent()
+
+
+def _test_measurement_window(qtbot: QtBot, main_window: MainWindow) -> None:
+    """Tests the MeasurementDialog class.
+
+    :param qtbot: provides methods to simulate user interaction
+    """
+    workaround_test_measurement_window = WorkaroundTestMeasurementDialog(qtbot, main_window)
+
+    # The order of the tests is important, as the tests are not independent.
+    # Changing the order of the tests may lead to failing tests.
+    workaround_test_measurement_window.test_display_distances()

@@ -191,14 +191,18 @@ class WorkaroundTestMainWindow:
         assert window.structure_widget.structure is window.mols.get_current_mol()
 
     def test_show_measurement_dialog(self) -> None:
-        """Write test code to verify the behavior of show_measurement_dialog method."""
-        # a test where a molecule has been loaded must be executed before this test!
-        assert not self.window.measurement_dialog.isVisible()
-        ui = self.window.ui
+        """Write test code to verify the behavior of show_measurement_dialog method.
+
+        a test where a molecule has been loaded must be executed before this test! (see test_load_molecules)
+        """
+        window = self.window
+        ui = window.ui
+        measurement_dialog = window.measurement_dialog
+        assert not measurement_dialog.isVisible()
         ui.actionMeasure.triggered.emit()
-        assert self.window.measurement_dialog.isVisible()
-        self.window.measurement_dialog.reject()
-        assert not self.window.measurement_dialog.isVisible()
+        assert measurement_dialog.isVisible()
+        measurement_dialog.reject()
+        assert not measurement_dialog.isVisible()
 
     # def test_show_file_open_dialog(self) -> None:
     #     """Write test code to verify the behavior of show_file_open_dialog method."""
