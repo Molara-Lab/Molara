@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import pytest
 from Gui.test_main_window import WorkaroundTestMainWindow
 from Gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
+from Rendering.test_buffers import WorkaroundTestBuffers
 from Rendering.test_rendering import WorkaroundTestRenderer
 
 if TYPE_CHECKING:
@@ -25,6 +26,7 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     _test_main_window(main_window_tests)
     _test_renderer(qtbot, main_window_tests.window)
     _test_measurement_window(qtbot, main_window_tests.window)
+    _test_buffers(qtbot, main_window_tests.window)
     main_window_tests.tearDown()
 
 
@@ -73,3 +75,15 @@ def _test_measurement_window(qtbot: QtBot, main_window: MainWindow) -> None:
     # The order of the tests is important, as the tests are not independent.
     # Changing the order of the tests may lead to failing tests.
     workaround_test_measurement_window.test_display_distances()
+
+
+def _test_buffers(qtbot: QtBot, main_window: MainWindow) -> None:
+    """Tests the buffers module.
+
+    :param qtbot: provides methods to simulate user interaction
+    """
+    workaround_test_buffers = WorkaroundTestBuffers(qtbot, main_window)
+
+    # The order of the tests is important, as the tests are not independent.
+    # Changing the order of the tests may lead to failing tests.
+    workaround_test_buffers.test_setup_vao()
