@@ -75,7 +75,8 @@ def _test_measurement_window(qtbot: QtBot, main_window: MainWindow) -> None:
 
     # The order of the tests is important, as the tests are not independent.
     # Changing the order of the tests may lead to failing tests.
-    workaround_test_measurement_window.test_display_distances()
+    workaround_test_measurement_window.test_init()
+    workaround_test_measurement_window.test_display_distances_angles()
 
 
 def _test_buffers(qtbot: QtBot, main_window: MainWindow) -> None:
