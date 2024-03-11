@@ -89,11 +89,22 @@ class WorkaroundTestRenderer:
     def test_remove_cylinder(self) -> None:
         """Tests the remove_cylinder method of the Renderer class."""
         self.openGLWidget.makeCurrent()
-        self.renderer.remove_cylinder(0)
-        self.renderer.remove_cylinder(1)
-        self.renderer.remove_cylinder(2)
+
+        def _remove_tests(cylinder_id: int) -> None:
+            """Tests the removal of a cylinder."""
+            self.renderer.remove_cylinder(cylinder_id)
+            if cylinder_id >= len(self.renderer.cylinders):
+                return
+            assert self.renderer.cylinders[cylinder_id]["vao"] == 0
+            assert self.renderer.cylinders[cylinder_id]["n_instances"] == 0
+            assert self.renderer.cylinders[cylinder_id]["n_vertices"] == 0
+            assert self.renderer.cylinders[cylinder_id]["buffers"] == []
+
+        _remove_tests(0)
+        _remove_tests(1)
+        _remove_tests(2)
         # also test removing a cylinder that does not exist. Nothing should happen.
-        self.renderer.remove_cylinder(543210)
+        _remove_tests(543210)
 
     def test_draw_cylinders_from_to(self) -> None:
         """Tests the draw_cylinders_from_to method of the Renderer class."""
@@ -132,23 +143,55 @@ class WorkaroundTestRenderer:
         colors = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
         subdivisions = 10
 
-        count_sphere_instances = 0
-        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
-        assert result == count_sphere_instances
-        count_sphere_instances += 1
-        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
-        assert result == count_sphere_instances
-        count_sphere_instances += 1
-        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
-        assert result == count_sphere_instances
+        mostrecent_sphere_id = -1
+        sphere_total_counter = 0
 
-    # def test_remove_sphere(self):
-    #     i_sphere = 0
+        def _test_ids_and_counters(result: int) -> None:
+            """Tests most recent sphere ids, sphere vao entries and...?"""
+            assert result == mostrecent_sphere_id
+            assert self.renderer.spheres[mostrecent_sphere_id]["vao"] == sphere_total_counter
+            start_id = 1 + (sphere_total_counter - 1) * 4
+            end_id = 1 + sphere_total_counter * 4
+            buffers_comparison = list(range(start_id, end_id))
+            assert self.renderer.spheres[mostrecent_sphere_id]["buffers"] == buffers_comparison
 
-    #     self.renderer.remove_sphere(i_sphere)
+        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
+        mostrecent_sphere_id += 1
+        # for the first added sphere, sphere_total_counter must be set to the vao id of the first sphere.
+        # this is because previous tests might have added spheres already.
+        # after this, every added sphere should increase the sphere_total_counter by 1.
+        sphere_total_counter = self.renderer.spheres[mostrecent_sphere_id]["vao"]
+        _test_ids_and_counters(result)
 
-    #     # Assert that the sphere has been removed successfully
-    #     # You can add additional assertions here if needed
+        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
+        mostrecent_sphere_id += 1
+        sphere_total_counter += 1
+        _test_ids_and_counters(result)
+
+        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
+        mostrecent_sphere_id += 1
+        sphere_total_counter += 1
+        _test_ids_and_counters(result)
+
+    def test_remove_sphere(self) -> None:
+        """Tests the remove_sphere method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+
+        def _remove_tests(sphere_id: int) -> None:
+            """Tests the removal of a sphere."""
+            self.renderer.remove_sphere(sphere_id)
+            if sphere_id >= len(self.renderer.spheres):
+                return
+            assert self.renderer.spheres[sphere_id]["vao"] == 0
+            assert self.renderer.spheres[sphere_id]["n_instances"] == 0
+            assert self.renderer.spheres[sphere_id]["n_vertices"] == 0
+            assert self.renderer.spheres[sphere_id]["buffers"] == []
+
+        _remove_tests(0)
+        _remove_tests(1)
+        _remove_tests(2)
+        # also test removing a sphere that does not exist. Nothing should happen.
+        _remove_tests(543210)
 
     # def test_update_atoms_vao(self):
     #     vertices = np.array([[0, 0, 0], [1, 1, 1]])
