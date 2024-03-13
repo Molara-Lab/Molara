@@ -26,6 +26,7 @@ class Camera:
         self.distance_from_target = 5.0
         self.zoom_sensitivity = 0.15
         self.projection_matrix = None
+        self.orthographic_projection = False# specify whether orthographic projection shall be used
         self.calculate_projection_matrix(self.width, self.height)
 
         self.rotation = pyrr.Quaternion()
@@ -56,6 +57,21 @@ class Camera:
         :param width: Width of the opengl widget.
         :param height: Height of the opengl widget.
         """
+        if self.orthographic_projection:
+            # calculate width and height of the clipping plane
+            # such that it matches the field of view in the perspective projection
+            h = self.distance_from_target*np.tan(np.radians(self.fov/2))
+            w = h * width / height
+            self.projection_matrix = pyrr.matrix44.create_orthogonal_projection_matrix(
+                -w,
+                w,
+                -h,
+                h,
+                0.1,
+                100,
+                dtype=np.float32,
+            )
+            return
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
             self.fov,
             width / height,
@@ -160,6 +176,11 @@ class Camera:
         self.distance_from_target += zoom_factor * (np.sign(zoom_factor - 1)) * self.zoom_sensitivity
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
+    def toggle_projection(self) -> None:
+        """Toggle between perspective and orthographic projection."""
+        self.orthographic_projection = not self.orthographic_projection
+        self.calculate_projection_matrix(self.width, self.height)
+
     def update(self, save: bool = False) -> None:
         """Updates the camera position and orientation.
 
@@ -180,6 +201,8 @@ class Camera:
             dtype=np.float32,
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
+        if self.orthographic_projection:
+            self.calculate_projection_matrix(self.width, self.height)
 
     def set_translation_vector(
         self,

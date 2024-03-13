@@ -78,6 +78,11 @@ class StructureWidget(QOpenGLWidget):
             return self.structure.draw_bonds and self.structure.has_bonds
         return False
 
+    @property
+    def orthographic_projection(self) -> bool:
+        """Specifies whether the projection is orthographic or not."""
+        return self.camera.orthographic_projection
+
     def reset_view(self) -> None:
         """Resets the view of the structure to the initial view."""
         self.camera.reset(self.width(), self.height())
@@ -321,6 +326,11 @@ class StructureWidget(QOpenGLWidget):
             self.structure.toggle_bonds()
             self.set_vertex_attribute_objects()
             self.update()
+
+    def toggle_projection(self) -> None:
+        """Toggles between orthographic and perspective projection."""
+        self.camera.toggle_projection()
+        self.update()
 
     def add_unit_cell_boundaries(self, update_box: bool = False) -> None:
         """Draws the unit cell boundaries.
