@@ -69,7 +69,7 @@ class StructureWidget(QOpenGLWidget):
             np.array([0, 0, 1], dtype=np.float32),
             np.array([1, 1, 0], dtype=np.float32),
         ]
-        # self.add_unit_cell_boundaries()
+        # self.toggle_unit_cell_boundaries()
 
     @property
     def bonds(self) -> bool:
@@ -77,6 +77,21 @@ class StructureWidget(QOpenGLWidget):
         if self.structure_is_set:
             return self.structure.draw_bonds and self.structure.has_bonds
         return False
+
+    @property
+    def draw_bonds(self) -> bool:
+        """Specifies whether bonds should be drawn."""
+        return self.structure.draw_bonds
+
+    @property
+    def draw_axes(self) -> bool:
+        """Specifies whether the axes should be drawn."""
+        return self.axes[0] != -1
+
+    @property
+    def draw_unit_cell_boundaries(self) -> bool:
+        """Specifies whether the unit cell boundaries should be drawn."""
+        return self.box[0] != -1
 
     @property
     def orthographic_projection(self) -> bool:
@@ -119,7 +134,7 @@ class StructureWidget(QOpenGLWidget):
         self.structure = struct
         self.structure_is_set = True
         self.center_structure()
-        self.add_unit_cell_boundaries(update_box=True)
+        self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()
 
@@ -287,38 +302,43 @@ class StructureWidget(QOpenGLWidget):
         length = 2.0
         radius = 0.02
         self.makeCurrent()
-        if self.axes[0] != -1:
+        if self.draw_axes:
             self.renderer.remove_cylinder(self.axes[0])
             self.renderer.remove_sphere(self.axes[1])
             self.axes = [-1, -1]
-        else:
-            positions = np.array(
-                [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
-                dtype=np.float32,
-            )
-            directions = np.eye(3, dtype=np.float32)
-            colors = np.eye(3, dtype=np.float32)
-            radii = np.array([radius] * 3, dtype=np.float32)
-            lengths = np.array([length] * 3, dtype=np.float32)
-            self.axes[0] = self.renderer.draw_cylinders(
-                positions,
-                directions,
-                radii,
-                lengths,
-                colors,
-                25,
-            )
-            positions = np.array(
-                [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
-                dtype=np.float32,
-            )
-            colors = np.array(
-                [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
-                dtype=np.float32,
-            )
-            radii = np.array([radius] * 4, dtype=np.float32)
-            self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
+            self.update()
+            self.main_window.update_action_texts()
+            return
+
+        positions = np.array(
+            [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
+            dtype=np.float32,
+        )
+        directions = np.eye(3, dtype=np.float32)
+        colors = np.eye(3, dtype=np.float32)
+        radii = np.array([radius] * 3, dtype=np.float32)
+        lengths = np.array([length] * 3, dtype=np.float32)
+        self.axes[0] = self.renderer.draw_cylinders(
+            positions,
+            directions,
+            radii,
+            lengths,
+            colors,
+            25,
+        )
+        positions = np.array(
+            [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
+            dtype=np.float32,
+        )
+        colors = np.array(
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
+            dtype=np.float32,
+        )
+        radii = np.array([radius] * 4, dtype=np.float32)
+        self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
         self.update()
+
+        self.main_window.update_action_texts()
 
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
@@ -326,17 +346,22 @@ class StructureWidget(QOpenGLWidget):
             self.structure.toggle_bonds()
             self.set_vertex_attribute_objects()
             self.update()
+            self.main_window.update_action_texts()
 
     def toggle_projection(self) -> None:
         """Toggles between orthographic and perspective projection."""
         self.camera.toggle_projection()
         self.update()
+        self.main_window.update_action_texts()
 
-    def add_unit_cell_boundaries(self, update_box: bool = False) -> None:
+    def toggle_unit_cell_boundaries(self, update_box: bool = False) -> None:
         """Draws the unit cell boundaries.
 
         :param update_box: specifies whether box shall be updated. If False, a drawn box will be hidden.
         """
+        if not self.structure_is_set:
+            return
+
         self.makeCurrent()
 
         box_was_drawn = self.box[0] != -1
@@ -352,10 +377,12 @@ class StructureWidget(QOpenGLWidget):
             if not update_box:
                 self.box = [-1, -1]
                 self.update()
+                self.main_window.update_action_texts()
                 return
             if not isinstance(self.structure, Crystal):
                 self.box = [-1, -1]
                 self.update()
+                self.main_window.update_action_texts()
                 return
 
         # the unit cell boundaries shall be drawn anew if:
@@ -401,6 +428,8 @@ class StructureWidget(QOpenGLWidget):
             25,
         )
         self.update()
+
+        self.main_window.update_action_texts()
 
     def select_sphere(self, xpos: int, ypos: int) -> int:
         """Return index of sphere that has been selected by clicking.
