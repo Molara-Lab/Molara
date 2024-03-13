@@ -100,7 +100,13 @@ class StructureWidget(QOpenGLWidget):
 
     def reset_view(self) -> None:
         """Resets the view of the structure to the initial view."""
-        self.camera.reset(self.width(), self.height())
+        self.center_structure()
+        dy, dz = None, None
+        if len(self.structure.atoms) > 1:
+            x, y, z = np.array([atom.position for atom in self.structure.atoms]).T
+            dy = y.max() - y.min()
+            dz = z.max() - z.min()
+        self.camera.reset(self.width(), self.height(), dy, dz)
         self.update()
 
     def set_view_to_x_axis(self) -> None:
@@ -133,7 +139,7 @@ class StructureWidget(QOpenGLWidget):
         """
         self.structure = struct
         self.structure_is_set = True
-        self.center_structure()
+        self.reset_view()
         self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()

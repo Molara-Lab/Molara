@@ -80,30 +80,59 @@ class Camera:
             dtype=np.float32,
         )
 
-    def reset(self, width: float, height: float) -> None:
+    def reset(
+        self,
+        width: float,
+        height: float,
+        dy_struct: float | None = None,
+        dz_struct: float | None = None,
+    ) -> None:
         """Resets the camera.
 
         :param width: Width of the opengl widget.
         :param height: Height of the opengl widget.
+        :param dy_struct: extent of the structure in y-direction
+        :param dz_struct: extent of the structure in z-direction
         """
         self.width = width
         self.height = height
+
+        # set distance from target such that the structure fits into the view
+        # equation to be solved:
+        # tan(fov [°] / 2)) * distance_from_target = dy / 2
+        # if vertical (y) length is limiting, dy = dy_struct. Otherwise, dy = height/width*dz_struct
+        # z-axis is horizontal by default.
+        distance_from_target = None
+        if dy_struct and dz_struct:
+            extra_space_factor = 1.5
+            dy = dy_struct if dy_struct * self.width > dz_struct * self.height else dz_struct * self.height / self.width
+            distance_from_target = extra_space_factor * dy / (2 * np.tan(np.radians(self.fov / 2)))
+
         self.set_position(
             [1.0, 0.0, 0.0],
             [0.0, 1.0, 0.0],
             [0.0, 0.0, -1.0],
+            distance_from_target,
         )
 
-    def set_position(self, position: list[float], up_vector: list[float], right_vector: list[float]) -> None:
+    def set_position(
+        self,
+        position: list[float],
+        up_vector: list[float],
+        right_vector: list[float],
+        distance_from_target: float | None = None,
+    ) -> None:
         """Set camera position and orientation.
 
         :param position: coordinates of camera position
         :param up_vector: vector indicating which direction is upward for the camera
         :param right_vector: vector indicating which direction is right for the camera
+        :param distance_from_target: distance between the camera and its target
         """
         self.position = pyrr.Vector3(position, dtype=np.float32)
         self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
+        self.distance_from_target = distance_from_target if distance_from_target else self.distance_from_target
         self.projection_matrix = None
         self.calculate_projection_matrix(self.width, self.height)
 
