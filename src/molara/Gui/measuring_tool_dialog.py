@@ -43,7 +43,7 @@ class MeasurementDialog(QDialog):
         self.ui.tablePositions.setColumnCount(5)
         self.ui.tablePositions.setRowCount(4)
 
-        # resize modes: specify how the tables are filles with the colums / rows
+        # resize modes: specify how the tables are filled with the columns / rows
         def set_resize_modes(obj: QHeaderView, modes: list) -> None:
             for i, mode in enumerate(modes):
                 obj.setSectionResizeMode(i, mode)
