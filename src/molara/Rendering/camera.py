@@ -26,7 +26,7 @@ class Camera:
         self.distance_from_target = 5.0
         self.zoom_sensitivity = 0.15
         self.projection_matrix = None
-        self.orthographic_projection = False# specify whether orthographic projection shall be used
+        self.orthographic_projection = False  # specify whether orthographic projection shall be used
         self.calculate_projection_matrix(self.width, self.height)
 
         self.rotation = pyrr.Quaternion()
@@ -60,7 +60,7 @@ class Camera:
         if self.orthographic_projection:
             # calculate width and height of the clipping plane
             # such that it matches the field of view in the perspective projection
-            h = self.distance_from_target*np.tan(np.radians(self.fov/2))
+            h = self.distance_from_target * np.tan(np.radians(self.fov / 2))
             w = h * width / height
             self.projection_matrix = pyrr.matrix44.create_orthogonal_projection_matrix(
                 -w,
