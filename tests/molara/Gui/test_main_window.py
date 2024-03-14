@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
 
 import sys
-import unittest.mock as mock
+from unittest import mock
 
 
 class WorkaroundTestMainWindow:
@@ -162,7 +162,7 @@ class WorkaroundTestMainWindow:
     def test_show_init_xyz(self) -> None:
         """Write test code to verify the behavior of show_init_xyz method."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
-        with mock.patch.object(sys, 'argv', testargs):
+        with mock.patch.object(sys, "argv", testargs):
             print(sys.argv)
             window = self.window
             window.show_init_xyz()
