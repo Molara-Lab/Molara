@@ -8,7 +8,7 @@ cpdef double norm(double[:] x):
     return res
 
 """
-This is absolutly stupid, but we only use floats in the rendering functions
+This is absolutely stupid, but we only use floats in the rendering functions
 """
 
 cpdef float norm_float(float[:] x):
