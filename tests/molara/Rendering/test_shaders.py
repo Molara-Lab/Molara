@@ -19,7 +19,7 @@ class TestShaders(unittest.TestCase):
 
     def test_compile_shaders(self) -> None:
         """Tests the compile_shaders function of the shaders module."""
-        QApplication.instance().shutdown() if QApplication.instance() else None
+        QApplication.instance().shutdown() if QApplication.instance() else None # type: ignore[union-attr]
         QApplication([])
         _format = QSurfaceFormat()
         _format.setVersion(4, 1)
