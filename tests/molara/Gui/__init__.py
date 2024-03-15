@@ -1,4 +1,4 @@
-"""Init file for molara tests."""
+"""Init file for GUI tests module."""
 
 from __future__ import annotations
 
