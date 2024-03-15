@@ -12,9 +12,8 @@ from Rendering.test_buffers import WorkaroundTestBuffers
 from Rendering.test_rendering import WorkaroundTestRenderer
 
 if TYPE_CHECKING:
-    from pytestqt.qtbot import QtBot
-
     from molara.Gui.main_window import MainWindow
+    from pytestqt.qtbot import QtBot
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
