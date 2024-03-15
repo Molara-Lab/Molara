@@ -9,10 +9,7 @@ from PySide6.QtWidgets import QDialog, QMainWindow
 from molara.Gui.ui_supercell_dialog import Ui_Dialog
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-    from typing import Annotated
-
-    intvec3 = Annotated[Sequence[int], 3]
+    intvec3 = list[int]
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -38,10 +35,10 @@ class SupercellDialog(QDialog):
         # by a list that is passed by a Crystal object. The entries of this
         # list are changed in the accept routine, thus changing the original
         # list in the crystal object.
-        self.supercell_dims: intvec3 = [1, 1, 1]
+        self.supercell_dims: list[int] = [1, 1, 1]
 
     @staticmethod
-    def get_supercell_dims(supercell_dims: intvec3) -> bool:
+    def get_supercell_dims(supercell_dims: list[int]) -> bool:
         """Opens dialog for supercell size specification.
 
         :param supercell_dims: supercell dimensions (e.g. [2, 4, 3] for 2x4x3 supercell)
