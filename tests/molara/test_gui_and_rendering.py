@@ -6,10 +6,10 @@ import sys
 from typing import TYPE_CHECKING
 
 import pytest
-from Gui.test_main_window import WorkaroundTestMainWindow
-from Gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
-from Rendering.test_buffers import WorkaroundTestBuffers
-from Rendering.test_rendering import WorkaroundTestRenderer
+from gui.test_main_window import WorkaroundTestMainWindow
+from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
+from rendering.test_buffers import WorkaroundTestBuffers
+from rendering.test_rendering import WorkaroundTestRenderer
 
 if TYPE_CHECKING:
     from molara.Gui.main_window import MainWindow
