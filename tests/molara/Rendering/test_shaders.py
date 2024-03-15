@@ -5,7 +5,9 @@ from __future__ import annotations
 import hashlib
 import sys
 import unittest
-
+from PySide6.QtGui import QSurfaceFormat
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from PySide6.QtWidgets import QApplication, QMainWindow
 import pytest
 from molara.Rendering import shaders
 
@@ -16,6 +18,16 @@ class TestShaders(unittest.TestCase):
 
     def test_compile_shaders(self) -> None:
         """Tests the compile_shaders function of the shaders module."""
+        QApplication.instance().shutdown() if QApplication.instance() else None
+        QApplication([])
+        _format = QSurfaceFormat()
+        _format.setVersion(4, 1)
+        _format.setSamples(4)
+        _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
+        QSurfaceFormat.setDefaultFormat(_format)
+        main_window = QMainWindow()
+        openglwidget = QOpenGLWidget(main_window)
+        main_window.show()
         program = shaders.compile_shaders()
         assert isinstance(program, int)
 
