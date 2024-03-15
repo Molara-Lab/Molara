@@ -152,4 +152,3 @@ class Ui_MainWindow(object):
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
         self.actionAdd_unit_cell_boundaries.setText(QCoreApplication.translate("MainWindow", u"Toggle Unit Cell Boundaries", None))
     # retranslateUi
-
