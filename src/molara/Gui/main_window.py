@@ -179,9 +179,7 @@ class MainWindow(QMainWindow):
         if file_name == "":
             return None
 
-        supercell_dims = [1, 1, 1]
-
-        importer = PoscarImporter(file_name, supercell_dims)
+        importer = PoscarImporter(file_name)
         crystals = importer.load()
 
         if not isinstance(crystals, Crystals):

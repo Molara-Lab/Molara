@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from contextlib import suppress
-from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
@@ -11,10 +10,6 @@ from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 from molara.Gui.ui_crystalstructure_dialog import Ui_CrystalDialog
 from molara.Structure.atom import element_symbol_to_atomic_number
 from molara.Structure.crystal import Crystal
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
 
 RIGHTANGLE = 90.0
 ENABLED, DISABLED = True, False
@@ -175,7 +170,7 @@ class CrystalDialog(QDialog):
         self.ui.inputLatAngle_beta.setEnabled(ENABLED)
         self.ui.inputLatAngle_gamma.setEnabled(ENABLED)
 
-    def enable_lattice_constants(self, ids: Sequence[int]) -> None:
+    def enable_lattice_constants(self, ids: list[int]) -> None:
         """Enable or disable inputs for lattice constants, depending on crystal system.
 
         :param ids: list that contains ids of inputs that shall be enabled
@@ -193,7 +188,7 @@ class CrystalDialog(QDialog):
             self.ui.inputLatConst_a.valueChanged.connect(self.bc_equals_a)
             self.bc_equals_a(self.ui.inputLatConst_a.value())
 
-    def hide_space_groups(self, hide: Sequence[bool]) -> None:
+    def hide_space_groups(self, hide: list[bool]) -> None:
         """Hide space-group entries depending on crystal system.
 
         :param hide: list of bools that specify which space-group entries should be hidden
