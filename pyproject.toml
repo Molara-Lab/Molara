@@ -23,6 +23,7 @@ dependencies = [
     "pyrr",
     "scipy",
     "cython",
+    "typing_extensions",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -44,7 +45,7 @@ classifiers = [
 ]
 
 [project.urls]
-Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
+Repo = "https://github.com/Molara-Lab/Molara"
 
 [project.optional-dependencies]
 dev = [

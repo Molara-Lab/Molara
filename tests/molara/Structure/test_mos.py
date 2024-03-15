@@ -1,10 +1,11 @@
 """Test the Mos class."""
+
 from __future__ import annotations
 
 from unittest import TestCase
 
 import numpy as np
-from molara.Molecule.io.importer import GeneralImporter
+from molara.Structure.io.importer import GeneralImporter
 
 __copyright__ = "Copyright 2024, Molara"
 

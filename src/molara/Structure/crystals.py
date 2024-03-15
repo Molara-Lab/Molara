@@ -1,12 +1,13 @@
 """A Crystals Class to be able to work with several crystals."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from molara.Molecule.crystal import Crystal
+    from molara.Structure.crystal import Crystal
 
-from molara.Molecule.structures import Structures
+from molara.Structure.structures import Structures
 
 
 class Crystals(Structures):
@@ -22,7 +23,7 @@ class Crystals(Structures):
 
         # aliases for routines from Structure
         self.get_current_mol = self._get_current_structure
-        self.get_index_mol = self._get_structure_by_id
+        self.get_mol_by_id = self._get_structure_by_id
         self.set_next_mol = self._set_next_structure
         self.set_previous_mol = self._set_previous_structure
         self.remove_crystal = self._remove_structure
@@ -41,7 +42,10 @@ class Crystals(Structures):
         """Index of currently displayed molecule."""
         return self._structure_id
 
-    def add_crystal(self, mol: Crystal) -> None:
-        """Add a new crystals to list of crystals."""
-        self._add_structure(mol)
-        self.energies.append(mol.energy)
+    def add_crystal(self, crystal: Crystal) -> None:
+        """Add a new crystals to list of crystals.
+
+        :param crystal: Crystal object to be added to Crystals object
+        """
+        self._add_structure(crystal)
+        self.energies.append(crystal.energy)

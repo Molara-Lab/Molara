@@ -19,7 +19,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QGridLayout, QMainWindow, QMenu,
     QMenuBar, QSizePolicy, QStatusBar, QWidget)
 
-from molara.MoleculeWidget.molecule_widget import MoleculeWidget
+from molara.Gui.structure_widget import StructureWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -58,6 +58,8 @@ class Ui_MainWindow(object):
         self.actionMeasure.setObjectName(u"actionMeasure")
         self.actionSupercell = QAction(MainWindow)
         self.actionSupercell.setObjectName(u"actionSupercell")
+        self.actionBuilder = QAction(MainWindow)
+        self.actionBuilder.setObjectName(u"actionBuilder")
         self.actionExport = QAction(MainWindow)
         self.actionExport.setObjectName(u"actionExport")
         self.actionExport_Snapshot = QAction(MainWindow)
@@ -66,15 +68,17 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.openGLWidget = MoleculeWidget(self.centralwidget)
+        self.openGLWidget = StructureWidget(self.centralwidget)
         self.openGLWidget.setObjectName(u"openGLWidget")
+        self.actionAdd_unit_cell_boundaries = QAction(MainWindow)
+        self.actionAdd_unit_cell_boundaries.setObjectName(u"actionAdd_unit_cell_boundaries")
 
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 22))
+        self.menubar.setGeometry(QRect(0, 0, 800, 37))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuEdit = QMenu(self.menubar)
@@ -112,6 +116,8 @@ class Ui_MainWindow(object):
         self.menuCrystal.addAction(self.actionCreate_Lattice)
         self.menuCrystal.addAction(self.actionSupercell)
         self.menuTools.addAction(self.actionMeasure)
+        self.menuTools.addAction(self.actionBuilder)
+        self.menuCrystal.addAction(self.actionAdd_unit_cell_boundaries)
 
         self.retranslateUi(MainWindow)
 
@@ -136,6 +142,7 @@ class Ui_MainWindow(object):
         self.actionToggle_Bonds.setText(QCoreApplication.translate("MainWindow", u"Toggle Bonds", None))
         self.actionMeasure.setText(QCoreApplication.translate("MainWindow", u"Measure", None))
         self.actionSupercell.setText(QCoreApplication.translate("MainWindow", u"Supercell", None))
+        self.actionBuilder.setText(QCoreApplication.translate("MainWindow", u"Builder", None))
         self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export", None))
         self.actionExport_Snapshot.setText(QCoreApplication.translate("MainWindow", u"Export Snapshot", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
@@ -143,5 +150,6 @@ class Ui_MainWindow(object):
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
+        self.actionAdd_unit_cell_boundaries.setText(QCoreApplication.translate("MainWindow", u"Toggle Unit Cell Boundaries", None))
     # retranslateUi
 

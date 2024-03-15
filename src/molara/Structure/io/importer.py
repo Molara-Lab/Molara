@@ -1,4 +1,5 @@
 """An importer class for all read in functions."""
+
 from __future__ import annotations
 
 import locale
@@ -8,11 +9,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from molara.Molecule.atom import element_symbol_to_atomic_number
-from molara.Molecule.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
-from molara.Molecule.molecule import Molecule
-from molara.Molecule.molecules import Molecules
-from molara.Molecule.mos import Mos
+from molara.Structure.atom import element_symbol_to_atomic_number
+from molara.Structure.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
+from molara.Structure.molecule import Molecule
+from molara.Structure.molecules import Molecules
+from molara.Structure.mos import Mos
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -43,7 +44,11 @@ class FileFormatError(FileImporterError):
 class MoleculesImporter(ABC):
     """Base class for importers loading molecules from files."""
 
-    def __init__(self, path: PathLike | str) -> None:  # noqa: D107
+    def __init__(self, path: PathLike | str) -> None:
+        """Instantiate MoleculesImporter object.
+
+        :param path: input file path
+        """
         super().__init__()
 
         self.path = Path(path)
@@ -58,7 +63,11 @@ class MoleculesImporter(ABC):
 class CrystalImporter(ABC):
     """Base class for importers loading molecules from files."""
 
-    def __init__(self, path: PathLike | str) -> None:  # noqa: D107
+    def __init__(self, path: PathLike | str) -> None:
+        """Instantiate CrystalImporter object.
+
+        :param path: input file path
+        """
         super().__init__()
 
         self.path = Path(path)
@@ -387,7 +396,11 @@ class MoldenImporter(MoleculesImporter):
 class QmImporter(MoleculesImporter):
     """importer for output files of various quantum chemistry programs."""
 
-    def __init__(self, path: PathLike | str) -> None:  # noqa: D107
+    def __init__(self, path: PathLike | str) -> None:
+        """Instantiate QmImporter object.
+
+        :param path: input file path
+        """
         import cclib
 
         super().__init__(path)
@@ -415,6 +428,10 @@ class QmImporter(MoleculesImporter):
         self,
         cclib_data: ccData,
     ) -> np.ndarray | None:
+        """Convert cclib energy to hartree.
+
+        :param cclib_data: cclib data
+        """
         # conversion factor used by the cclib package
         cclib_ev_in_hartree = 27.21138505
 
@@ -428,6 +445,10 @@ class QmImporter(MoleculesImporter):
         return energy
 
     def _get_geometries(self, cclib_data: ccData) -> list[Molecule]:
+        """Extract geometries from cclib data.
+
+        :param cclib_data: cclib data
+        """
         try:
             atoms = cclib_data.atomnos
 
@@ -458,7 +479,10 @@ class GeneralImporter(MoleculesImporter):
         self,
         path: PathLike | str,
     ) -> None:
-        """Tries to determine the file format and calls the correct importer."""
+        """Instantiate GeneralImporter object.
+
+        :param path: input file path
+        """
         super().__init__(path)
 
         suffix = self.path.suffix

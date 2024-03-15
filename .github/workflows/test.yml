@@ -14,12 +14,11 @@ permissions:
 jobs:
   test:
     # prevent this action from running on forks
-    if: github.repository == 'Thursday-Evening-Hackathon/Molara'
+    if: github.repository == 'Molara-Lab/Molara'
     strategy:
       fail-fast: false
       matrix:
-        # os: [ubuntu-latest, windows-latest] # windows-latest is very expensive
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.12"]
 
     runs-on: ${{ matrix.os }}
@@ -43,4 +42,9 @@ jobs:
           sudo apt update && sudo apt install -y libegl1-mesa-dev
       - name: pytest
         run: |
-          pytest tests
+          pytest --cov=src --cov-report=xml tests
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

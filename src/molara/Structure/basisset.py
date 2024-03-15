@@ -1,4 +1,5 @@
 """Module for the Basisset class."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -271,6 +272,7 @@ def calculate_normalization_contracted_gtos(
 def generate_ijks(shell: str) -> list[list]:
     """Generates the ijk values for the shells.
 
+    :param shell: name of the atomic orbital shell (s/p/d/f)
     :return:
     """
     if shell == "s":

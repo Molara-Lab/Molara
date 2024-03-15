@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-from molara.Molecule.mos import Mos
-from molara.Molecule.structure import Structure
+from molara.Structure.mos import Mos
+from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
+if TYPE_CHECKING:
+    from molara.Structure.atom import Atom
 
 
 class Molecule(Structure):
@@ -23,16 +27,16 @@ class Molecule(Structure):
     ) -> None:
         """Creates a new Molecule object.
 
-        params:
-        atomic_numbers:np.ndarray: atomic numbers of a atoms
-        coordinates:np.ndarray: coordinates of the molecule
-        header:str: header from the imported file
-        dummy: bool: a dummy object.
+        :param atomic_numbers:np.ndarray: atomic numbers of a atoms
+        :param coordinates:np.ndarray: coordinates of the molecule
+        :param header:str: header from the imported file
+        :param dummy: bool: a dummy object.
         """
         if dummy:
             self.dummy = True
+
         self.atomic_numbers = np.array(atomic_numbers)
-        self.atoms = []
+        self.atoms: list[Atom] = []
         self.mos = Mos()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
@@ -41,7 +45,10 @@ class Molecule(Structure):
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
     def gen_energy_information(self, string: str | None) -> None:
-        """Reads the energy from the second line."""
+        """Reads the energy from the second line.
+
+        :param string: file header from which energy info is extracted
+        """
         self.energy = 0.0
 
         if isinstance(string, str):

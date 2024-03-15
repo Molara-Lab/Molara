@@ -1,12 +1,13 @@
 """A Molecules Class to be able to work with several molecules."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from molara.Molecule.structures import Structures
+from molara.Structure.structures import Structures
 
 if TYPE_CHECKING:
-    from molara.Molecule.molecule import Molecule
+    from molara.Structure.molecule import Molecule
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -20,14 +21,13 @@ class Molecules(Structures):
         self.energies: list = []
 
         # aliases for attributes and properties from Structure
-        self.mols = self._structures
+        self.mols: list[Molecule] = self._structures
 
         # aliases for routines from Structure
         self.get_current_mol = self._get_current_structure
-        self.get_index_mol = self._get_structure_by_id
+        self.get_mol_by_id = self._get_structure_by_id
         self.set_next_mol = self._set_next_structure
         self.set_previous_mol = self._set_previous_structure
-        self.remove_molecule = self._remove_structure
 
     @property
     def num_mols(self) -> int:
@@ -40,6 +40,17 @@ class Molecules(Structures):
         return self._structure_id
 
     def add_molecule(self, mol: Molecule) -> None:
-        """Add a new molecules to list of molecules."""
+        """Add a new molecules to list of molecules.
+
+        :param mol: Molecule object to be added
+        """
         self._add_structure(mol)
         self.energies.append(mol.energy)
+
+    def remove_molecule(self, mol_id: int) -> None:
+        """Remove a molecule from list of molecules.
+
+        :param mol_id: Index of the molecule
+        """
+        self._remove_structure(mol_id)
+        self.energies.pop(mol_id)

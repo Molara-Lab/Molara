@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from unittest import TestCase
 
-from molara.Molecule.atom import elements
-from molara.Molecule.crystal import Crystal
-from molara.Molecule.io.importer import PoscarImporter
+from molara.Structure.atom import elements
+from molara.Structure.crystal import Crystal
+from molara.Structure.io.importer import PoscarImporter
 from numpy.testing import assert_almost_equal, assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
@@ -17,24 +17,27 @@ class TestCrystal(TestCase):
 
     def setUp(self) -> None:
         """Set up a crystal."""
-        atomic_numbers = [5, 7]
-        coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
-        basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
+        self.atomic_numbers = [5, 7]
+        self.coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
+        self.basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
         self.supercell_dims = [2, 7, 4]
-        self.crystal = Crystal(atomic_numbers, coordinates, basis_vectors, self.supercell_dims)
+        self.crystal = Crystal(self.atomic_numbers, self.coordinates, self.basis_vectors, self.supercell_dims)
+
+    def test_setup(self) -> None:
+        """Test the result of the setUp routine."""
         supercell_dims = self.crystal.supercell_dims
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
-        assert_array_equal(self.crystal.basis_vectors, basis_vectors)
-        assert_array_equal(self.crystal.atomic_nums_unitcell, atomic_numbers)
-        assert_array_equal(self.crystal.coords_unitcell, coordinates)
+        assert_array_equal(self.crystal.basis_vectors, self.basis_vectors)
+        assert_array_equal(self.crystal.atomic_nums_unitcell, self.atomic_numbers)
+        assert_array_equal(self.crystal.coords_unitcell, self.coordinates)
 
     def test_from_poscar(self) -> None:
         """Test the creation of a crystal from a POSCAR file."""
         supercell_dims = self.supercell_dims
-        importer = PoscarImporter("examples/POSCAR/boron_nitride", supercell_dims)
+        importer = PoscarImporter("examples/POSCAR/BN_POSCAR", supercell_dims)
         self.crystals_from_POSCAR = importer.load()
         self.crystal_from_POSCAR = self.crystals_from_POSCAR.get_current_mol()
 
@@ -74,7 +77,7 @@ class TestCrystal(TestCase):
     def test_from_poscar_cartesian(self) -> None:
         """Test the creation of a crystal from a POSCAR file with cartesian coords."""
         supercell_dims = self.supercell_dims
-        importer = PoscarImporter("examples/POSCAR/boron_nitride_cartesian", supercell_dims)
+        importer = PoscarImporter("examples/POSCAR/BN_cartesian_POSCAR", supercell_dims)
         self.crystals_from_POSCAR_c = importer.load()
         self.crystal_from_POSCAR_c = self.crystals_from_POSCAR_c.get_current_mol()
 

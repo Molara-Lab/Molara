@@ -31,6 +31,8 @@ from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 if TYPE_CHECKING:
+    from numpy import floating
+
     from molara.Rendering.camera import Camera
 
 __copyright__ = "Copyright 2024, Molara"
@@ -132,6 +134,34 @@ class Renderer:
             self.cylinders.append(cylinder)
         return i_cylinder
 
+    def draw_cylinders_from_to(
+        self,
+        positions: np.ndarray,
+        radii: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+    ) -> int:
+        """Draws one or multiple cylinders.
+
+        :param positions: Positions [[start, end], [start, end], ...] of the cylinders.
+        :param radii: Radii of the cylinders.
+        :param colors: Colors of the cylinders.
+        :param subdivisions: Number of subdivisions of the cylinder.
+        :return: Returns the index of the cylinder in the list of cylinders.
+        """
+        _directions: list[list[floating]] = []
+        _lengths: list[floating] = []
+        _positions_middle: list[list[list[floating]]] = []
+        for pos12 in positions:
+            pos1, pos2 = pos12
+            _directions.append((pos2 - pos1).tolist())
+            _lengths.append(np.linalg.norm(pos2 - pos1))
+            _positions_middle.append((0.5 * (pos1 + pos2)).tolist())
+        positions_middle = np.array(_positions_middle)
+        lengths = np.array(_lengths)
+        directions = np.array(_directions) / lengths[:, None]
+        return self.draw_cylinders(positions_middle, -directions, radii, lengths, colors, subdivisions)
+
     def draw_spheres(
         self,
         positions: np.ndarray,
@@ -206,8 +236,8 @@ class Renderer:
                 glBindBuffer(GL_ARRAY_BUFFER, 0)
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
                 for buffer in cylinder["buffers"]:
-                    glDeleteBuffers(1, buffer)
-                glDeleteVertexArrays(1, cylinder["vao"])
+                    glDeleteBuffers(1, [buffer])
+                glDeleteVertexArrays(1, [cylinder["vao"]])
             self.cylinders[i_cylinder] = {
                 "vao": 0,
                 "n_instances": 0,
@@ -228,8 +258,8 @@ class Renderer:
                 glBindBuffer(GL_ARRAY_BUFFER, 0)
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
                 for buffer in sphere["buffers"]:
-                    glDeleteBuffers(1, buffer)
-                glDeleteVertexArrays(1, sphere["vao"])
+                    glDeleteBuffers(1, [buffer])
+                glDeleteVertexArrays(1, [sphere["vao"]])
             self.spheres[i_sphere] = {
                 "vao": 0,
                 "n_instances": 0,

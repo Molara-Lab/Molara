@@ -1,15 +1,16 @@
 """Test the basis set and check if normalized."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
-from molara.Molecule.io.importer import GeneralImporter
+from molara.Structure.io.importer import GeneralImporter
 from numpy.testing import assert_array_almost_equal_nulp
 
 if TYPE_CHECKING:
-    from molara.Molecule.basisset import Orbital
+    from molara.Structure.basisset import Orbital
 
 __copyright__ = "Copyright 2024, Molara"
 
