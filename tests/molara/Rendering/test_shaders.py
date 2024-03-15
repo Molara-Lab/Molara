@@ -28,6 +28,7 @@ class TestShaders(unittest.TestCase):
         QSurfaceFormat.setDefaultFormat(_format)
         main_window = QMainWindow()
         openglwidget = QOpenGLWidget(main_window)
+        openglwidget.show()
         main_window.show()
         program = shaders.compile_shaders()
         assert isinstance(program, int)
