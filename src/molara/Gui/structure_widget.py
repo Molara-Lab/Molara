@@ -15,13 +15,13 @@ from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
 from molara.Structure.crystal import Crystal
-from molara.Structure.molecule import Molecule
 from molara.Tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
     from PySide6.QtWidgets import QWidget
 
+    from molara.Structure.molecule import Molecule
     from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
