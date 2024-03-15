@@ -60,7 +60,12 @@ class MeasurementDialog(QDialog):
         set_resize_modes(header_angles, [stretch])
 
         # create labels for the table rows & columns
-        def _set_table_labels(horizontal: bool, obj: QTableWidget, labels: list[str], colors: list[str] | None) -> None:
+        def _set_table_labels(
+            horizontal: bool,
+            obj: QTableWidget,
+            labels: list[str],
+            colors: list[None] | list[str] | None,
+        ) -> None:
             _set_item = obj.setHorizontalHeaderItem if horizontal else obj.setVerticalHeaderItem
             if colors is None:
                 colors = [None] * len(labels)

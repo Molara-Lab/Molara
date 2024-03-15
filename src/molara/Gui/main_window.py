@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
         self.structure_widget.set_structure(crystal)
         return True
 
-    def show_poscar(self) -> bool:
+    def show_poscar(self) -> bool | None:
         """Reads poscar file and shows the first structure in this file."""
         file_name = QFileDialog.getOpenFileName(
             self,
