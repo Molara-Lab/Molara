@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
 
         # Tools
         self.ui.actionBuilder.triggered.connect(
-            self.structure_widget.show_builder_dialog,
+            self.show_builder_dialog,
         )
         self.ui.actionMeasure.triggered.connect(
             self.show_measurement_dialog,
@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
         self.structure_widget.set_structure(crystal)
         return True
 
-    def show_poscar(self) -> bool:
+    def show_poscar(self) -> bool | None:
         """Reads poscar file and shows the first structure in this file."""
         file_name = QFileDialog.getOpenFileName(
             self,
@@ -179,9 +179,7 @@ class MainWindow(QMainWindow):
         if file_name == "":
             return None
 
-        supercell_dims = [1, 1, 1]
-
-        importer = PoscarImporter(file_name, supercell_dims)
+        importer = PoscarImporter(file_name)
         crystals = importer.load()
 
         if not isinstance(crystals, Crystals):

@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.Structure.atom import element_symbol_to_atomic_number
@@ -13,7 +13,6 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
     from os import PathLike
 
 
@@ -28,7 +27,7 @@ class FileFormatError(FileImporterError):
 def robust_split(text: str) -> list[str]:
     """Split a text into its components (separated by any kinds of space characters) with regular expressions.
 
-    :param text: text to be splitted up
+    :param text: text to be split up
     """
     return re.split(r"\s+", text)
 
@@ -70,7 +69,7 @@ class PymatgenImporter(Importer):
             from pymatgen.core import Structure
 
             structure = Structure.from_file(self.path)
-            crystal = Crystal.from_pymatgen(structure)
+            crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
         except ImportError as err:
             msg = "pymatgen is not installed and internal importer not successful, cannot read files"
             raise ImportError(msg) from err
@@ -88,7 +87,6 @@ class PoscarImporter(Importer):
     def __init__(
         self,
         path: PathLike | str,
-        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
     ) -> None:
         """Initializes the Importer object.
 
@@ -96,7 +94,6 @@ class PoscarImporter(Importer):
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
         """
         super().__init__(path)
-        self.supercell_dims = supercell_dims
 
     def load(self) -> Crystals:
         """Imports a file and returns the Crystal."""
@@ -110,7 +107,7 @@ class PoscarImporter(Importer):
             with zopen(self.path, "rt", errors="replace") as f:
                 contents = f.read()
             structure = PymatgenStructure.from_str(contents, fmt="poscar")
-            crystal = Crystal.from_pymatgen(structure, self.supercell_dims)
+            crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
         else:
             with open(self.path) as file:
                 lines = [line.strip() for line in file]
@@ -158,7 +155,7 @@ class PoscarImporter(Importer):
                 atomic_numbers_extended,
                 positions,
                 (scale * np.array(basis_vectors)).tolist(),
-                self.supercell_dims,
+                supercell_dims=[1, 1, 1],
             )
 
         crystals = Crystals()
@@ -183,7 +180,7 @@ class VasprunImporter(Importer):
 
             vasprun = Vasprun(self.path)
             structure = vasprun.final_structure
-            crystal = Crystal.from_pymatgen(structure)
+            crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
         except ImportError as err:
             msg = "pymatgen is not installed, cannot read vasprun.xml files"
             raise FileFormatError(

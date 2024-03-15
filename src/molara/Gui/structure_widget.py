@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
     from PySide6.QtWidgets import QWidget
 
+    from molara.Structure.molecule import Molecule
     from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
@@ -106,7 +107,7 @@ class StructureWidget(QOpenGLWidget):
         self.vertex_attribute_objects = [-1]
         self.update()
 
-    def set_structure(self, struct: Structure) -> None:
+    def set_structure(self, struct: Structure | Crystal | Molecule) -> None:
         """Sets the structure to be drawn.
 
         :param struct: Structure object that shall be drawn
@@ -351,6 +352,7 @@ class StructureWidget(QOpenGLWidget):
         # the unit cell boundaries shall be drawn anew if:
         # 1.) a box was not drawn before and function is called as a "toggle", not an update
         # 2.) a box was drawn before, but shall be updated (crystal structure changed)
+        assert isinstance(self.structure, Crystal)
         basis_vectors_matrix = np.array(self.structure.basis_vectors)
         zero_vec = np.array([0, 0, 0])
         positions = np.array(
@@ -415,16 +417,6 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_positions,
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
-
-    def show_measurement_dialog(self) -> None:
-        """Show the measurement dialog."""
-        if self.molecule_is_set:
-            self.main_window.measurement_dialog.ini_labels()
-            self.main_window.measurement_dialog.show()
-
-    def show_builder_dialog(self) -> None:
-        """Show the builder dialog."""
-        self.main_window.builder_dialog.show()
 
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.
