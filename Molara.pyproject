@@ -4,7 +4,7 @@
 
         "src/molara/Gui/form.ui",
 
-        "src/molara/Gui/builder.ui"
+        "src/molara/Gui/builder.ui",
         "src/molara/Gui/crystalstructure_dialog.ui",
         "src/molara/Gui/measuring_tool.ui",
         "src/molara/Gui/supercell_dialog.ui",

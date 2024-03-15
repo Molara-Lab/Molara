@@ -167,7 +167,7 @@ class TrajectoryDialog(QDialog):
             "o",
         )
         self.sc.axes.set_xlabel(r"steps")
-        self.sc.axes.set_ylabel(r"energy$\,/\,\mathrm{eV}$")
+        self.sc.axes.set_ylabel(r"energy$\,/\,E_\mathrm{h}$")
         self.sc.fig.tight_layout()
         self.sc.fig.subplots_adjust(bottom=0.22, right=0.99)
         self.sc.draw()

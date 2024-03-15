@@ -23,6 +23,7 @@ dependencies = [
     "pyrr",
     "scipy",
     "cython",
+    "typing_extensions",
 ]
 requires-python = ">=3.8"
 readme = "README.md"

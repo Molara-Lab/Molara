@@ -42,4 +42,9 @@ jobs:
           sudo apt update && sudo apt install -y libegl1-mesa-dev
       - name: pytest
         run: |
-          pytest tests
+          pytest --cov=src --cov-report=xml tests
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
