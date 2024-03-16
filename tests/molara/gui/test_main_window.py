@@ -77,7 +77,7 @@ class WorkaroundTestMainWindow:
         assert isinstance(ui.actionBuilder, QAction)
         assert isinstance(ui.actionExport, QAction)
         assert isinstance(ui.actionExport_Snapshot, QAction)
-        assert isinstance(ui.actionAdd_unit_cell_boundaries, QAction)
+        assert isinstance(ui.actionToggle_UnitCellBoundaries, QAction)
 
         # test that the menus have been set up correctly.
         assert isinstance(ui.menubar, QMenuBar)
@@ -129,7 +129,7 @@ class WorkaroundTestMainWindow:
         assert ui.actionRead_POSCAR in ui.menuCrystal.actions()
         assert ui.actionCreate_Lattice in ui.menuCrystal.actions()
         assert ui.actionSupercell in ui.menuCrystal.actions()
-        assert ui.actionAdd_unit_cell_boundaries in ui.menuCrystal.actions()
+        assert ui.actionToggle_UnitCellBoundaries in ui.menuCrystal.actions()
 
     def tearDown(self) -> None:
         """Clean up the test."""
