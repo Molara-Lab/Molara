@@ -89,22 +89,17 @@ class Renderer:
         """
         n_instances = len(positions)
         cylinder_mesh = Cylinder(subdivisions)
-        if n_instances == 1:
-            model_matrices = calculate_cylinder_model_matrix(
-                positions[0],
-                radii[0],
-                lengths[0],
-                directions[0],
+
+        model_matrices = np.array([])
+
+        for i in range(n_instances):
+            model_matrix = calculate_cylinder_model_matrix(
+                np.array(positions[i], dtype=np.float32),
+                float(radii[i]),
+                float(lengths[i]),
+                np.array(directions[i], dtype=np.float32),
             )
-        else:
-            for i in range(n_instances):
-                model_matrix = calculate_cylinder_model_matrix(
-                    np.array(positions[i], dtype=np.float64),
-                    float(radii[i]),
-                    float(lengths[i]),
-                    np.array(directions[i], dtype=np.float64),
-                )
-                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
         cylinder = {
             "vao": 0,
@@ -121,17 +116,22 @@ class Renderer:
 
         # get index of new cylinder instances in list
         i_cylinder = -1
-        if len(self.cylinders) != 0:
-            for i, check_cylinder in enumerate(self.cylinders):
-                if check_cylinder["vao"] == 0:
-                    i_cylinder = i
-                    self.cylinders[i_cylinder] = cylinder
-            if i_cylinder == -1:
-                i_cylinder = len(self.cylinders)
-                self.cylinders.append(cylinder)
-        else:
+
+        if len(self.cylinders) == 0:
             i_cylinder = 0
             self.cylinders.append(cylinder)
+            return i_cylinder
+
+        for i, check_cylinder in enumerate(self.cylinders):
+            if check_cylinder["vao"] == 0:
+                i_cylinder = i
+                self.cylinders[i_cylinder] = cylinder
+                break
+
+        if i_cylinder == -1:
+            i_cylinder = len(self.cylinders)
+            self.cylinders.append(cylinder)
+
         return i_cylinder
 
     def draw_cylinders_from_to(
@@ -230,20 +230,22 @@ class Renderer:
         :type i_cylinder: int
         :return:
         """
-        if i_cylinder < len(self.cylinders):
-            cylinder = self.cylinders[i_cylinder]
-            if cylinder["vao"] != 0:
-                glBindBuffer(GL_ARRAY_BUFFER, 0)
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-                for buffer in cylinder["buffers"]:
-                    glDeleteBuffers(1, [buffer])
-                glDeleteVertexArrays(1, [cylinder["vao"]])
-            self.cylinders[i_cylinder] = {
-                "vao": 0,
-                "n_instances": 0,
-                "n_vertices": 0,
-                "buffers": [],
-            }
+        if i_cylinder >= len(self.cylinders):
+            return
+
+        cylinder = self.cylinders[i_cylinder]
+        if cylinder["vao"] != 0:
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+            for buffer in cylinder["buffers"]:
+                glDeleteBuffers(1, [buffer])
+            glDeleteVertexArrays(1, [cylinder["vao"]])
+        self.cylinders[i_cylinder] = {
+            "vao": 0,
+            "n_instances": 0,
+            "n_vertices": 0,
+            "buffers": [],
+        }
 
     def remove_sphere(self, i_sphere: int) -> None:
         """Removes a sphere from the list of spheres.

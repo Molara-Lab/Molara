@@ -463,16 +463,6 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
 
-    def show_measurement_dialog(self) -> None:
-        """Show the measurement dialog."""
-        if self.molecule_is_set:
-            self.main_window.measurement_dialog.ini_labels()
-            self.main_window.measurement_dialog.show()
-
-    def show_builder_dialog(self) -> None:
-        """Show the builder dialog."""
-        self.main_window.builder_dialog.show()
-
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
         """Updates the selected atoms in the measurement dialog.
 
