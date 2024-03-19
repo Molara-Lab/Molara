@@ -225,7 +225,7 @@ class BuilderDialog(QDialog):
 
         init_xyz = np.zeros([1, 3])
 
-        self.main_window.mols.add_molecule(Molecule([at_chrg], init_xyz, draw_bonds=False))
+        self.main_window.mols.add_molecule(Molecule(np.array([at_chrg]), init_xyz, draw_bonds=False))
         if at_chrg_check:
             self.ui.tableWidget.setRowCount(1)
             self.ui.tableWidget.setItem(0, 0, QTableWidgetItem(element))

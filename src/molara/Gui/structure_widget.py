@@ -188,6 +188,7 @@ class StructureWidget(QOpenGLWidget):
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Sets the vertex attribute objects of the structure."""
         self.makeCurrent()
+        assert isinstance(self.structure.drawer.cylinder_colors, np.ndarray)
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
             self.structure.drawer.sphere.indices,
