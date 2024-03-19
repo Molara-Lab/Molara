@@ -176,9 +176,9 @@ class StructureWidget(QOpenGLWidget):
         :param width: widget width (in pixels)
         :param height: widget height (in pixels)
         """
+        glViewport(0, 0, width, height)  # one can also use self.width() and self.height()
         self.camera.width, self.camera.height = width, height
-        glViewport(0, 0, self.width(), self.height())
-        self.camera.calculate_projection_matrix(self.width(), self.height())
+        self.camera.calculate_projection_matrix()
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802

@@ -27,7 +27,7 @@ class Camera:
         self.zoom_sensitivity = 0.15
         self.projection_matrix = None
         self.orthographic_projection = False  # specify whether orthographic projection shall be used
-        self.calculate_projection_matrix(self.width, self.height)
+        self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
         self.last_rotation = self.rotation
@@ -51,12 +51,9 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-    def calculate_projection_matrix(self, width: float, height: float) -> None:
-        """Calculates the projection matrix to get from world to camera space.
-
-        :param width: Width of the opengl widget.
-        :param height: Height of the opengl widget.
-        """
+    def calculate_projection_matrix(self) -> None:
+        """Calculates the projection matrix to get from world to camera space."""
+        width, height = self.width, self.height  # Width and height of the opengl widget
         if self.orthographic_projection:
             # calculate width and height of the clipping plane
             # such that it matches the field of view in the perspective projection
@@ -134,7 +131,7 @@ class Camera:
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
         self.distance_from_target = distance_from_target if distance_from_target else self.distance_from_target
         self.projection_matrix = None
-        self.calculate_projection_matrix(self.width, self.height)
+        self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
         self.last_rotation = self.rotation
@@ -208,7 +205,7 @@ class Camera:
     def toggle_projection(self) -> None:
         """Toggle between perspective and orthographic projection."""
         self.orthographic_projection = not self.orthographic_projection
-        self.calculate_projection_matrix(self.width, self.height)
+        self.calculate_projection_matrix()
 
     def update(self, save: bool = False) -> None:
         """Updates the camera position and orientation.
@@ -231,7 +228,7 @@ class Camera:
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         if self.orthographic_projection:
-            self.calculate_projection_matrix(self.width, self.height)
+            self.calculate_projection_matrix()
 
     def set_translation_vector(
         self,
