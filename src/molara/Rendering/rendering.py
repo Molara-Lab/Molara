@@ -23,6 +23,7 @@ from OpenGL.GL import (
     glDrawElementsInstanced,
     glGetUniformLocation,
     glUniform3fv,
+    glUseProgram,
     glUniformMatrix4fv,
 )
 
@@ -47,15 +48,15 @@ class Renderer:
         self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
         self.spheres: list[dict] = []
         self.cylinders: list[dict] = []
-        self.shader: GLuint = 0
+        self.shaders: list[GLuint] = [0]
 
-    def set_shader(self, shader: GLuint) -> None:
+    def set_shaders(self, shaders: list[GLuint]) -> None:
         """Sets the shader program for the opengl widget.
 
         :param shader: The shader program of the opengl widget.
         :type shader: pyopengl program
         """
-        self.shader = shader
+        self.shaders = shaders
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -350,10 +351,11 @@ class Renderer:
         :type bonds: bool
         :return:
         """
-        light_direction_loc = glGetUniformLocation(self.shader, "light_direction")
-        proj_loc = glGetUniformLocation(self.shader, "projection")
-        camera_loc = glGetUniformLocation(self.shader, "camera_position")
-        view_loc = glGetUniformLocation(self.shader, "view")
+        glUseProgram(self.shaders[0])
+        light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
+        proj_loc = glGetUniformLocation(self.shaders[0], "projection")
+        camera_loc = glGetUniformLocation(self.shaders[0], "camera_position")
+        view_loc = glGetUniformLocation(self.shaders[0], "view")
 
         light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
         glUniform3fv(light_direction_loc, 1, light_direction)

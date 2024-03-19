@@ -16,7 +16,7 @@ from OpenGL.GL.shaders import compileShader
 __copyright__ = "Copyright 2024, Molara"
 
 
-def compile_shaders() -> GLuint:
+def compile_shaders() -> list[GLuint]:
     """Compiles the shader program with the given shader source code in glsl.
 
     :return: The compiled shader program from pyopengl.
@@ -27,8 +27,8 @@ def compile_shaders() -> GLuint:
     glAttachShader(shader, vertex_shader)
     glAttachShader(shader, fragment_shader)
     glLinkProgram(shader)
-    glUseProgram(shader)
-    return shader
+    # glUseProgram(shader)
+    return [shader]
 
 
 vertex_src = """

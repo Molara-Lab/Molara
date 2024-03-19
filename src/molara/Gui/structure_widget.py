@@ -172,7 +172,7 @@ class StructureWidget(QOpenGLWidget):
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
-        self.renderer.set_shader(compile_shaders())
+        self.renderer.set_shaders(compile_shaders())
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         """Resizes the widget.
