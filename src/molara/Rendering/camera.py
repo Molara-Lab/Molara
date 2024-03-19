@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import numpy.typing as npt
 import pyrr
 
 __copyright__ = "Copyright 2024, Molara"
@@ -25,8 +26,9 @@ class Camera:
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
         self.distance_from_target = 5.0
         self.zoom_sensitivity = 0.15
-        self.projection_matrix = None
-        self.calculate_projection_matrix(self.width, self.height)
+        self.projection_matrix: npt.ArrayLike | None = None
+        self.orthographic_projection = False  # specify whether orthographic projection shall be used
+        self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
         self.last_rotation = self.rotation
@@ -50,12 +52,24 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-    def calculate_projection_matrix(self, width: float, height: float) -> None:
-        """Calculates the projection matrix to get from world to camera space.
-
-        :param width: Width of the opengl widget.
-        :param height: Height of the opengl widget.
-        """
+    def calculate_projection_matrix(self) -> None:
+        """Calculates the projection matrix to get from world to camera space."""
+        width, height = self.width, self.height  # Width and height of the opengl widget
+        if self.orthographic_projection:
+            # calculate width and height of the clipping plane
+            # such that it matches the field of view in the perspective projection
+            h = self.distance_from_target * np.tan(np.radians(self.fov / 2))
+            w = h * width / height
+            self.projection_matrix = pyrr.matrix44.create_orthogonal_projection_matrix(
+                -w,
+                w,
+                -h,
+                h,
+                0.1,
+                100,
+                dtype=np.float32,
+            )
+            return
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
             self.fov,
             width / height,
@@ -64,32 +78,61 @@ class Camera:
             dtype=np.float32,
         )
 
-    def reset(self, width: float, height: float) -> None:
+    def reset(
+        self,
+        width: float,
+        height: float,
+        dy_struct: float | None = None,
+        dz_struct: float | None = None,
+    ) -> None:
         """Resets the camera.
 
         :param width: Width of the opengl widget.
         :param height: Height of the opengl widget.
+        :param dy_struct: extent of the structure in y-direction
+        :param dz_struct: extent of the structure in z-direction
         """
         self.width = width
         self.height = height
+
+        # set distance from target such that the structure fits into the view
+        # equation to be solved:
+        # tan(fov [°] / 2)) * distance_from_target = dy / 2
+        # if vertical (y) length is limiting, dy = dy_struct. Otherwise, dy = height/width*dz_struct
+        # z-axis is horizontal by default.
+        distance_from_target = None
+        if dy_struct and dz_struct:
+            extra_space_factor = 1.5
+            dy = dy_struct if dy_struct * self.width > dz_struct * self.height else dz_struct * self.height / self.width
+            distance_from_target = extra_space_factor * dy / (2 * np.tan(np.radians(self.fov / 2)))
+
         self.set_position(
             [1.0, 0.0, 0.0],
             [0.0, 1.0, 0.0],
             [0.0, 0.0, -1.0],
+            distance_from_target,
         )
 
-    def set_position(self, position: list[float], up_vector: list[float], right_vector: list[float]) -> None:
+    def set_position(
+        self,
+        position: list[float],
+        up_vector: list[float],
+        right_vector: list[float],
+        distance_from_target: float | None = None,
+    ) -> None:
         """Set camera position and orientation.
 
         :param position: coordinates of camera position
         :param up_vector: vector indicating which direction is upward for the camera
         :param right_vector: vector indicating which direction is right for the camera
+        :param distance_from_target: distance between the camera and its target
         """
         self.position = pyrr.Vector3(position, dtype=np.float32)
         self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
+        self.distance_from_target = distance_from_target if distance_from_target else self.distance_from_target
         self.projection_matrix = None
-        self.calculate_projection_matrix(self.width, self.height)
+        self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
         self.last_rotation = self.rotation
@@ -160,6 +203,11 @@ class Camera:
         self.distance_from_target += zoom_factor * (np.sign(zoom_factor - 1)) * self.zoom_sensitivity
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
+    def toggle_projection(self) -> None:
+        """Toggle between perspective and orthographic projection."""
+        self.orthographic_projection = not self.orthographic_projection
+        self.calculate_projection_matrix()
+
     def update(self, save: bool = False) -> None:
         """Updates the camera position and orientation.
 
@@ -180,6 +228,8 @@ class Camera:
             dtype=np.float32,
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
+        if self.orthographic_projection:
+            self.calculate_projection_matrix()
 
     def set_translation_vector(
         self,

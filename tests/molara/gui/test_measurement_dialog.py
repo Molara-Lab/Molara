@@ -13,13 +13,13 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestMeasurementDialog:
-    """This class contains the tests for the MainWindow class.
+    """This class contains the tests for the MeasurementDialog class.
 
     It does not inherit from unittest.TestCase, because that does not work with pytest-qt.
     """
 
     def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
-        """Instantiates the WorkaroundTestMainWindow object.
+        """Instantiates the WorkaroundTestMeasurementDialog object.
 
         :param qtbot: provides methods to simulate user interaction
         """
