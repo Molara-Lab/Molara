@@ -91,6 +91,26 @@ class TestCamera(TestCase):
         camera.calculate_projection_matrix()
         assert_array_equal(camera.projection_matrix, projection_matrix_orthographic)
 
+        camera.set_distance_from_target(40)
+        old_distance_from_target = distance_from_target
+        distance_from_target = camera.distance_from_target
+        assert distance_from_target > old_distance_from_target
+        h = distance_from_target * np.tan(np.radians(fov / 2))
+        w = h * width / height
+        projection_matrix_orthographic = pyrr.matrix44.create_orthogonal_projection_matrix(
+            -w,
+            w,
+            -h,
+            h,
+            0.1,
+            100,
+            dtype=np.float32,
+        )
+        # in orthographic projection, the projection matrix must be updated when camera.update() is called.
+        # here, we test if this is actually the case.
+        camera.update()
+        assert_array_equal(camera.projection_matrix, projection_matrix_orthographic)
+
     def test_center_coordinates(self) -> None:
         """Test coordinate recentering."""
         translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
