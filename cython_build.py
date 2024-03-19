@@ -2,6 +2,7 @@
 
 It needs to be called manually with python3 cython_build.py build_ext --inplace.
 """
+
 from __future__ import annotations
 
 import numpy as np

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 ################################################################################
 ## Form generated from reading UI file 'supercell_dialog.ui'
 ##
@@ -5,123 +7,72 @@
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
-from __future__ import annotations
 
-from PySide6.QtCore import (
-    QCoreApplication,
-    QDate,
-    QDateTime,
-    QLocale,
-    QMetaObject,
-    QObject,
-    QPoint,
-    QRect,
-    QSize,
-    Qt,
-    QTime,
-    QUrl,
-)
-from PySide6.QtGui import (
-    QBrush,
-    QColor,
-    QConicalGradient,
-    QCursor,
-    QFont,
-    QFontDatabase,
-    QGradient,
-    QIcon,
-    QImage,
-    QKeySequence,
-    QLinearGradient,
-    QPainter,
-    QPalette,
-    QPixmap,
-    QRadialGradient,
-    QTransform,
-)
-from PySide6.QtWidgets import (
-    QAbstractButton,
-    QApplication,
-    QDialog,
-    QDialogButtonBox,
-    QLabel,
-    QSizePolicy,
-    QSpinBox,
-    QWidget,
-)
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
+    QLabel, QSizePolicy, QSpinBox, QWidget)
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-    from typing import Annotated
-    intvec3 = Annotated[Sequence[int], 3]
-
-class Ui_Dialog:
-    """Class for supercell dialog Gui."""
+class Ui_Dialog(object):
     def setupUi(self, Dialog):
-        """Setup of supercell dialog Gui."""
         if not Dialog.objectName():
-            Dialog.setObjectName("Dialog")
-        Dialog.resize(400, 300)
+            Dialog.setObjectName(u"Dialog")
+        Dialog.resize(257, 204)
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
+        Dialog.setSizePolicy(sizePolicy)
         self.buttonBox = QDialogButtonBox(Dialog)
-        self.buttonBox.setObjectName("buttonBox")
-        self.buttonBox.setGeometry(QRect(30, 240, 341, 32))
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setGeometry(QRect(60, 160, 181, 32))
         self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
         self.inputSupercell_a = QSpinBox(Dialog)
-        self.inputSupercell_a.setObjectName("inputSupercell_a")
-        self.inputSupercell_a.setGeometry(QRect(50, 50, 42, 26))
+        self.inputSupercell_a.setObjectName(u"inputSupercell_a")
+        self.inputSupercell_a.setGeometry(QRect(30, 50, 42, 26))
         self.inputSupercell_a.setMinimum(1)
         self.inputSupercell_b = QSpinBox(Dialog)
-        self.inputSupercell_b.setObjectName("inputSupercell_b")
-        self.inputSupercell_b.setGeometry(QRect(130, 50, 42, 26))
+        self.inputSupercell_b.setObjectName(u"inputSupercell_b")
+        self.inputSupercell_b.setGeometry(QRect(80, 50, 42, 26))
         self.inputSupercell_b.setMinimum(1)
         self.inputSupercell_c = QSpinBox(Dialog)
-        self.inputSupercell_c.setObjectName("inputSupercell_c")
-        self.inputSupercell_c.setGeometry(QRect(210, 50, 42, 26))
+        self.inputSupercell_c.setObjectName(u"inputSupercell_c")
+        self.inputSupercell_c.setGeometry(QRect(130, 50, 42, 26))
         self.inputSupercell_c.setMinimum(1)
         self.labelSupercell_a = QLabel(Dialog)
-        self.labelSupercell_a.setObjectName("labelSupercell_a")
-        self.labelSupercell_a.setGeometry(QRect(50, 80, 58, 16))
+        self.labelSupercell_a.setObjectName(u"labelSupercell_a")
+        self.labelSupercell_a.setGeometry(QRect(40, 80, 21, 16))
         self.labelSupercell_b = QLabel(Dialog)
-        self.labelSupercell_b.setObjectName("labelSupercell_b")
-        self.labelSupercell_b.setGeometry(QRect(130, 80, 58, 16))
+        self.labelSupercell_b.setObjectName(u"labelSupercell_b")
+        self.labelSupercell_b.setGeometry(QRect(90, 80, 21, 16))
         self.labelSupercell_c = QLabel(Dialog)
-        self.labelSupercell_c.setObjectName("labelSupercell_c")
-        self.labelSupercell_c.setGeometry(QRect(210, 80, 58, 16))
+        self.labelSupercell_c.setObjectName(u"labelSupercell_c")
+        self.labelSupercell_c.setGeometry(QRect(140, 80, 21, 16))
         self.labelNumAtoms = QLabel(Dialog)
-        self.labelNumAtoms.setObjectName("labelNumAtoms")
-        self.labelNumAtoms.setGeometry(QRect(70, 170, 58, 16))
+        self.labelNumAtoms.setObjectName(u"labelNumAtoms")
+        self.labelNumAtoms.setGeometry(QRect(20, 120, 58, 16))
+        self.label = QLabel(Dialog)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(20, 20, 171, 16))
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
 
         QMetaObject.connectSlotsByName(Dialog)
-
     # setupUi
 
-    def set_supercell_dims(self, supercell_dims: intvec3) -> None:
-        """Set supercell dimensions in input boxes."""
-        self.inputSupercell_a.setValue(supercell_dims[0])
-        self.inputSupercell_b.setValue(supercell_dims[1])
-        self.inputSupercell_c.setValue(supercell_dims[2])
-
     def retranslateUi(self, Dialog):
-        """Set labels in dialog."""
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Dialog", None))
-        self.labelSupercell_a.setText(
-            QCoreApplication.translate("Dialog", "N<sub>a</sub>", None)
-        )
-        self.labelSupercell_b.setText(
-            QCoreApplication.translate("Dialog", "N<sub>b</sub>", None)
-        )
-        self.labelSupercell_c.setText(
-            QCoreApplication.translate("Dialog", "N<sub>c</sub>", None)
-        )
-        self.labelNumAtoms.setText(
-            QCoreApplication.translate("Dialog", "TextLabel", None)
-        )
-
+        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
+        self.labelSupercell_a.setText(QCoreApplication.translate("Dialog", u"N<sub>a</sub>", None))
+        self.labelSupercell_b.setText(QCoreApplication.translate("Dialog", u"N<sub>b</sub>", None))
+        self.labelSupercell_c.setText(QCoreApplication.translate("Dialog", u"N<sub>c</sub>", None))
+        self.labelNumAtoms.setText(QCoreApplication.translate("Dialog", u"TextLabel", None))
+        self.label.setText(QCoreApplication.translate("Dialog", u"Enter supercell dimensions", None))
     # retranslateUi

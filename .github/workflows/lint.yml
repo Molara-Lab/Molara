@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.9", "3.12"]
     steps:
     - uses: actions/checkout@v3
 
@@ -18,7 +18,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install ruff black mypy --upgrade
+        pip install ruff mypy cython-lint --upgrade
         pip install -e .
 
     - name: ruff
@@ -32,3 +32,8 @@ jobs:
         mypy --version
         rm -rf .mypy_cache
         mypy . #  ${{ github.event.repository.name }}
+
+    - name: cython-lint
+      run: |
+        cython-lint . --no-pycodestyle
+        double-quote-cython-strings

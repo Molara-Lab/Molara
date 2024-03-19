@@ -23,6 +23,7 @@ dependencies = [
     "pyrr",
     "scipy",
     "cython",
+    "typing_extensions",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -44,13 +45,15 @@ classifiers = [
 ]
 
 [project.urls]
-Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
+Repo = "https://github.com/Molara-Lab/Molara"
 
 [project.optional-dependencies]
 dev = [
     "mypy",
     "pre-commit",
     "pytest",
+    "pytest-qt",
+    "pytest-xvfb",
     "cython",
     "pytest-cov",
     "pytest-split",
@@ -58,6 +61,7 @@ dev = [
 ]
 crystal = [
     "pymatgen",
+    "ase",
 ]
 
 [project.scripts]
@@ -74,8 +78,8 @@ exclude = ["tests", "tests.*"]
 exclude = ["ui_*",]
 target-version = "py39"
 line-length = 120
-select = ["ALL"]
-ignore = [
+lint.select = ["ALL"]
+lint.ignore = [
   "ANN101", # Missing type annotation for `self` in method
   "ERA001", # Found commented-out code
   "FBT001", # Boolean-typed positional argument in function definition
@@ -85,8 +89,8 @@ ignore = [
   "PTH123", # `open()` should be replaced by `Path.open()`
   "S101",   # Use of assert detected
   ]
-pydocstyle.convention = "google"
-isort.required-imports = ["from __future__ import annotations"]
+lint.pydocstyle.convention = "google"
+lint.isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
 exclude = ["ui_*"]

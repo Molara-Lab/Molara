@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="MoleculeWidget" name="openGLWidget"/>
+     <widget class="StructureWidget" name="openGLWidget"/>
     </item>
    </layout>
   </widget>
@@ -35,6 +35,7 @@
     </property>
     <addaction name="actionImport"/>
     <addaction name="actionExport"/>
+    <addaction name="actionExport_Snapshot"/>
     <addaction name="quit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -52,6 +53,7 @@
     <addaction name="actionCenter_Molecule"/>
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
+    <addaction name="actionToggle_Projection"/>
     <addaction name="actionDraw_Axes"/>
     <addaction name="actionOpen_Trajectory_Dialog"/>
     <addaction name="separator"/>
@@ -64,6 +66,7 @@
     <addaction name="actionRead_POSCAR"/>
     <addaction name="actionCreate_Lattice"/>
     <addaction name="actionSupercell"/>
+    <addaction name="actionToggle_UnitCellBoundaries"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -71,6 +74,7 @@
     </property>
     <addaction name="actionMeasure"/>
     <addaction name="actionDisplay_MOs"/>
+    <addaction name="actionBuilder"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -158,6 +162,11 @@
     <string>Supercell</string>
    </property>
   </action>
+  <action name="actionBuilder">
+   <property name="text">
+    <string>Builder</string>
+   </property>
+  </action>
   <action name="actionExport">
    <property name="text">
     <string>Export</string>
@@ -168,12 +177,27 @@
     <string>Display MOs</string>
    </property>
   </action>
+  <action name="actionExport_Snapshot">
+   <property name="text">
+    <string>Export Snapshot</string>
+   </property>
+  </action>
+  <action name="actionToggle_UnitCellBoundaries">
+   <property name="text">
+    <string>Toggle Unit Cell Boundaries</string>
+   </property>
+  </action>
+  <action name="actionToggle_Projection">
+   <property name="text">
+    <string>Toggle Projection (Perspective/Ortho)</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MoleculeWidget</class>
+   <class>StructureWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">molara/MoleculeWidget/molecule_widget</header>
+   <header location="global">molara/Gui/structure_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

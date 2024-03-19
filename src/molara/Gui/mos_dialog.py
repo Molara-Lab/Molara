@@ -40,19 +40,21 @@ class MOsDialog(QDialog):
         self.ui = Ui_MOs_dialog()
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.test)
+        self.check_if_mos()
 
     def check_if_mos(self):
         """Check if MOs are available."""
-        if self.parent().parent().mols is None:
+        if self.parent().structure_widget.structure is None:
             return False
-        if self.parent().parent().mols.get_current_mol().mos.coefficients.size == 0:
+        if self.parent().structure_widget.structure.mos.coefficients.size == 0:
             return False
-        self.mos = self.parent().parent().mols.get_current_mol().mos
-        self.aos = self.parent().parent().mols.get_current_mol().aos
-        self.atoms = self.parent().parent().mols.get_current_mol().atoms
+        self.mos = self.parent().structure_widget.structure.mos
+        self.aos = self.parent().structure_widget.structure.aos
+        self.atoms = self.parent().structure_widget.structure.atoms
         return True
 
     def test(self):
+        self.check_if_mos()
         self.mcubes()
 
     def mcubes(self):
@@ -109,7 +111,7 @@ class MOsDialog(QDialog):
             dtype=np.float64,
         )
         mo_coefficients = self.mos.coefficients[orbital]
-        self.parent().parent().ui.openGLWidget.update()
+        self.parent().structure_widget.update()
 
         print(voxel_size_)
 
@@ -129,10 +131,10 @@ class MOsDialog(QDialog):
         t3 = time.time()
         print("new_voxel: ", t2 - t1)
         print("marching: ", t3 - t2)
-        self.parent().parent().ui.openGLWidget.renderer.draw_polygon(
+        self.parent().structure_widget.renderer.draw_polygon(
             vertices1, np.array([[1, 0, 0]], dtype=np.float32)
         )
-        self.parent().parent().ui.openGLWidget.renderer.draw_polygon(
+        self.parent().structure_widget.renderer.draw_polygon(
             vertices2, np.array([[0, 0, 1]], dtype=np.float32)
         )
 

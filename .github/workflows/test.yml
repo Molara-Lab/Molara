@@ -14,12 +14,11 @@ permissions:
 jobs:
   test:
     # prevent this action from running on forks
-    if: github.repository == 'Thursday-Evening-Hackathon/Molara'
+    if: github.repository == 'Molara-Lab/Molara'
     strategy:
       fail-fast: false
       matrix:
-        # os: [ubuntu-latest, windows-latest] # windows-latest is very expensive
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.12"]
 
     runs-on: ${{ matrix.os }}
@@ -41,6 +40,14 @@ jobs:
       - if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
+          sudo apt install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0 libxcb-shape0 libglib2.0-0
+          sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
+          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
       - name: pytest
         run: |
-          pytest tests
+          pytest --cov=src --cov-report=xml tests
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
