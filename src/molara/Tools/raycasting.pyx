@@ -1,6 +1,4 @@
-from cython import boundscheck
 import numpy as np
-cimport numpy as npc
 import pyrr
 
 
@@ -20,9 +18,8 @@ cpdef int select_sphere(float[:] screen_coordinates, float[:] camera_position,
     :return: Index of selected sphere or -1 if no sphere was selected
     """
 
-    cdef int i, j, selected_sphere_index
-    cdef float min_distance, distance, sphere_origin[3], ray[3]
-    cdef fl
+    cdef int i, selected_sphere_index
+    cdef float min_distance, distance, ray[3]
 
     min_distance = -1.0
     selected_sphere_index = -1
