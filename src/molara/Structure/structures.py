@@ -42,6 +42,14 @@ class Structures:
         self._structure_id -= 1
         self._structure_id %= self._num_structures
 
+    def _set_structure_by_id(self, structure_id: int) -> None:
+        """Set the structure by a given index.
+
+        :param structure_id: list index of the structure that shall be set as current
+        """
+        self._structure_id = structure_id
+        self._structure_id %= self._num_structures
+
     def _add_structure(self, struct: Structure) -> None:
         """Adds a structure to the list of structures.
 

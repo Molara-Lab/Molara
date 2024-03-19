@@ -7,10 +7,6 @@ cpdef double norm(double[:] x):
     res = res**0.5
     return res
 
-"""
-This is absolutely stupid, but we only use floats in the rendering functions
-"""
-
 cpdef float norm_float(float[:] x):
     cdef float res = 0
     cdef int i

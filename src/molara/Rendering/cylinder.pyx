@@ -105,7 +105,6 @@ cpdef calculate_cylinder_model_matrix(
     """
     cdef npc.ndarray[float, ndim=1] rotation_axis = np.empty(3, dtype=np.float32)
     cdef float rotation_angle, x, y, z, c, s, t
-    cdef int i, j
     cdef npc.ndarray[float, ndim=2] rotation_scale_matrix
     cdef npc.ndarray[float, ndim=2] scale_matrix
     cdef npc.ndarray[float, ndim=2] rotation_matrix
