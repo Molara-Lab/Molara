@@ -136,5 +136,13 @@ class TestMolecules(TestCase):
         self.molecules.set_previous_mol()
         assert self.molecules.mol_index == 1
 
+        #    test setting molecule by index
+        self.molecules.set_mol_by_id(0)
+        assert self.molecules.mol_index == 0
+        self.molecules.set_mol_by_id(1)
+        assert self.molecules.mol_index == 1
+        self.molecules.set_mol_by_id(1)
+        assert self.molecules.mol_index == 1
+
     # def test_copy(self) -> None:
     #     """Test the copy method."""
