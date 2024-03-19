@@ -133,14 +133,14 @@ class StructureWidget(QOpenGLWidget):
         self.vertex_attribute_objects = [-1]
         self.update()
 
-    def set_structure(self, struct: Structure | Crystal | Molecule) -> None:
+    def set_structure(self, struct: Structure | Crystal | Molecule, reset_view: bool = True) -> None:
         """Sets the structure to be drawn.
 
         :param struct: Structure object that shall be drawn
         """
         self.structure = struct
         self.structure_is_set = True
-        self.reset_view()
+        self.reset_view() if reset_view else self.center_structure()
         self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()
