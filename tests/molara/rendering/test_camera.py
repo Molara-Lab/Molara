@@ -84,6 +84,7 @@ class TestCamera(TestCase):
 
         assert not camera.orthographic_projection
         camera.calculate_projection_matrix()
+        assert isinstance(camera.projection_matrix, np.ndarray)
         assert_array_equal(camera.projection_matrix, projection_matrix_perspective)
 
         camera.toggle_projection()

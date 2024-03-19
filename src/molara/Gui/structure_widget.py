@@ -140,7 +140,11 @@ class StructureWidget(QOpenGLWidget):
         """
         self.structure = struct
         self.structure_is_set = True
-        self.reset_view() if reset_view else self.center_structure()
+        if reset_view:
+            self.reset_view()
+        else:
+            self.set_vertex_attribute_objects()
+            self.update()
         self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()
@@ -188,6 +192,7 @@ class StructureWidget(QOpenGLWidget):
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Sets the vertex attribute objects of the structure."""
         self.makeCurrent()
+        assert isinstance(self.structure.drawer.cylinder_colors, np.ndarray)
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
             self.structure.drawer.sphere.indices,

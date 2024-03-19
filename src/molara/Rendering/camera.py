@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import numpy.typing as npt
 import pyrr
 
 __copyright__ = "Copyright 2024, Molara"
@@ -25,7 +26,7 @@ class Camera:
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
         self.distance_from_target = 5.0
         self.zoom_sensitivity = 0.15
-        self.projection_matrix = None
+        self.projection_matrix: npt.ArrayLike | None = None
         self.orthographic_projection = False  # specify whether orthographic projection shall be used
         self.calculate_projection_matrix()
 
