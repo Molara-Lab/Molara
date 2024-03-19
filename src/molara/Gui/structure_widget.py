@@ -188,6 +188,7 @@ class StructureWidget(QOpenGLWidget):
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         self.renderer.draw_scene(self.camera, self.bonds)
+        self.renderer.draw_lines()
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Sets the vertex attribute objects of the structure."""

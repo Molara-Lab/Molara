@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import ctypes
 import numpy as np
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
@@ -14,8 +15,23 @@ from OpenGL.GL import (
     GL_FALSE,
     GL_TRIANGLES,
     GL_UNSIGNED_INT,
+    GL_TRIANGLE_STRIP,
     GLuint,
+    glEnable,
+    GL_VERTEX_PROGRAM_POINT_SIZE,
+
     glBindBuffer,
+    glGenVertexArrays,
+    glGenBuffers,
+    glBufferData,
+    glEnableVertexAttribArray,
+    glVertexAttribPointer,
+    GL_STATIC_DRAW,
+    GL_FLOAT,
+    GL_POINTS,
+    glViewport,
+    GL_LINES,
+    GL_TRIANGLES,
     glBindVertexArray,
     glClear,
     glDeleteBuffers,
@@ -23,6 +39,7 @@ from OpenGL.GL import (
     glDrawElementsInstanced,
     glGetUniformLocation,
     glUniform3fv,
+    glDrawArrays,
     glUseProgram,
     glUniformMatrix4fv,
 )
@@ -410,4 +427,37 @@ class Renderer:
                     None,
                     cylinder["n_instances"],
                 )
+        glBindVertexArray(0)
+
+    def draw_lines(self) -> None:
+        """Draws the lines."""
+        glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
+        glUseProgram(self.shaders[1])
+        # allocate a VertexArray
+        vao = glGenVertexArrays(1)
+        # now bind a vertex array object for our verts
+        glBindVertexArray(vao)
+        #  a simple triangle not a numpy array would be good here but can use other methods too
+        vert = np.array([
+            -0.5, -0.5,
+             0.5, -0.5,
+             0.5,  0.5,
+            -0.5,  0.5
+        ], dtype='float32')
+        #  now we are going to bind this to our vbo
+
+        vboID = glGenBuffers(1)
+        #  now bind this to the VBO buffer
+        glBindBuffer(GL_ARRAY_BUFFER, vboID)
+        #  allocate the buffer data
+        glBufferData(GL_ARRAY_BUFFER, vert, GL_STATIC_DRAW)
+        #  now fix this to the attribute buffer 0
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, None)
+        #  enable and bind this attribute (will be inPosition in the shader)
+        glEnableVertexAttribArray(0)
+
+        glBindVertexArray(0)
+
+        glBindVertexArray(vao)
+        glDrawArrays(GL_POINTS, 0, 4)
         glBindVertexArray(0)
