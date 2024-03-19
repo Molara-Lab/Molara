@@ -210,15 +210,36 @@ class WorkaroundTestMainWindow:
         """Write test code to verify the behavior of show_trajectory_dialog method."""
         window = self.window
         window.load_molecules("examples/xyz/opt.xyz")
+        num_mols = window.mols.num_mols
+        assert num_mols > 1
         # trajectory dialog should be opened since a trajectory has been loaded
-        assert self.window.trajectory_dialog.isVisible()
-        self.window.trajectory_dialog.reject()
-        assert not self.window.trajectory_dialog.isVisible()
+        trajectory_dialog = window.trajectory_dialog
+        assert trajectory_dialog.isVisible()
+        # test the buttons
+        initial_mol_id = window.mols.mol_index
+        trajectory_dialog.ui.NextButton.clicked.emit()
+        assert window.mols.mol_index == initial_mol_id + 1
+        trajectory_dialog.ui.PrevButton.clicked.emit()
+        assert window.mols.mol_index == initial_mol_id
+        # close the dialog
+        trajectory_dialog.reject()
+        assert not trajectory_dialog.isVisible()
+
         # now open trajectory dialog by triggering the menu action
         window.ui.actionOpen_Trajectory_Dialog.triggered.emit()
-        assert self.window.trajectory_dialog.isVisible()
-        self.window.trajectory_dialog.reject()
-        assert not self.window.trajectory_dialog.isVisible()
+        assert trajectory_dialog.isVisible()
+        # test the buttons
+        trajectory_dialog.ui.NextButton.clicked.emit()
+        assert window.mols.mol_index == initial_mol_id + 1
+        trajectory_dialog.ui.NextButton.clicked.emit()
+        assert window.mols.mol_index == initial_mol_id + 2
+        trajectory_dialog.ui.PrevButton.clicked.emit()
+        assert window.mols.mol_index == initial_mol_id + 1
+        trajectory_dialog.ui.PrevButton.clicked.emit()
+        assert window.mols.mol_index == initial_mol_id
+        # close the dialog
+        trajectory_dialog.reject()
+        assert not trajectory_dialog.isVisible()
 
     # def test_show_file_open_dialog(self) -> None:
     #     """Write test code to verify the behavior of show_file_open_dialog method."""

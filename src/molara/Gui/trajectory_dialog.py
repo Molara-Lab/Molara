@@ -71,12 +71,9 @@ class TrajectoryDialog(QDialog):
         self.ui.playStopButton.clicked.connect(self.show_trajectory)
         self.ui.PrevButton.clicked.connect(self.get_prev_mol)
         self.ui.NextButton.clicked.connect(self.get_next_mol)
-        self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
+        # self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
+        self.ui.verticalSlider.sliderMoved.connect(self.slide_molecule)
         self.ui.speedDial.valueChanged.connect(self.change_speed)
-
-        self.timer = QTimer(self)
-        self.timer.setInterval(40)
-        self.timer.timeout.connect(self.get_next_mol)
 
         layout = QVBoxLayout(self.ui.widget)
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
