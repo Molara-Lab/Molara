@@ -16,7 +16,7 @@ class TestXyzExporter(unittest.TestCase):
     """This class contains the tests for the XyzExporter class."""
 
     def setUp(self) -> None:
-        """Instantiates the XyzExporter object."""
+        """Instantiate the XyzExporter object."""
         self.timestamp = int(time.time())
         self.filename = f"output_temporary_{self.timestamp}.xyz"
         self.exporter = XyzExporter(self.filename)
@@ -65,7 +65,7 @@ class TestGeneralExporter(unittest.TestCase):
     """This class contains the tests for the GeneralExporter class."""
 
     def setUp(self) -> None:
-        """Instantiates the GeneralExporter object."""
+        """Instantiate the GeneralExporter object."""
         self.timestamp = int(time.time())
         self.filename_xyz = f"output_temporary_{self.timestamp}.xyz"
         self.exporter_xyz = GeneralExporter(self.filename_xyz)

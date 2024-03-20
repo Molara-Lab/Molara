@@ -40,7 +40,7 @@ class Crystal(Structure):
         basis_vectors: list[list[float]] | ArrayLike,
         supercell_dims: list[int],
     ) -> None:
-        """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
+        """Create a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
 
         Particle positions are given in terms of the basis vectors:
         E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
@@ -72,7 +72,7 @@ class Crystal(Structure):
         return np.mod(fractional_coords, 1.0).tolist()
 
     def make_supercell(self, supercell_dims: list[int]) -> None:
-        """Creates a supercell of the crystal.
+        """Create a supercell of the crystal.
 
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
         """
@@ -248,7 +248,7 @@ class Crystal(Structure):
 
     @classmethod
     def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
-        """Creates a Crystal object from a POSCAR file.
+        """Create a Crystal object from a POSCAR file.
 
         :param file_path: POSCAR input file path
         """
@@ -300,7 +300,7 @@ class Crystal(Structure):
         structure: Pmgstructure,
         supercell_dims: list[int],
     ) -> Crystal:
-        """Creates a Crystal object from a pymatgen.Structure object.
+        """Create a Crystal object from a pymatgen.Structure object.
 
         :param structure: pymatgen.Structure object
         """
@@ -308,7 +308,7 @@ class Crystal(Structure):
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:
-        """Creates a Crystal object from an ase.Atoms object.
+        """Create a Crystal object from an ase.Atoms object.
 
         :params atoms: ase.Atoms object
         """
@@ -325,7 +325,7 @@ class Crystal(Structure):
         )
 
     def copy(self) -> Crystal:
-        """Returns a copy of the Crystal object."""
+        """Return a copy of the Crystal object."""
         return Crystal(
             self.atomic_nums_unitcell,
             self.coords_unitcell,

@@ -18,7 +18,7 @@ class Atom:
     """Creates an Atom object."""
 
     def __init__(self, atomic_number: int, position: ArrayLike) -> None:
-        """Creates an Atom object.
+        """Create an Atom object.
 
         :param atomic_number: atomic number (nuclear charge number) of the atom
         :param position: cartesian coordinates of atom location

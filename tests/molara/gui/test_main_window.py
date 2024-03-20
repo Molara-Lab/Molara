@@ -32,7 +32,7 @@ class WorkaroundTestMainWindow:
     """
 
     def __init__(self, qtbot: QtBot) -> None:
-        """Instantiates the MainWindow object.
+        """Instantiate the MainWindow object.
 
         :param qtbot: provides methods to simulate user interaction
         """

@@ -14,7 +14,7 @@ def calculate_aos(  # noqa: PLR0915 C901
     coefficients: np.ndarray,
     orbital: int,
 ) -> np.ndarray:
-    """Calculates the atomic orbitals for a given atom (cartesian).
+    """Calculate the atomic orbitals for a given atom (cartesian).
 
     If the orbital is an s orbital, the function the return has size 1, if the orbital is a d orbital, the return
     ha size 6 (dxx, dyy, dzz, etc.).

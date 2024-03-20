@@ -11,7 +11,7 @@ class Structures:
     """A class to store and manipulate a list of Structures."""
 
     def __init__(self) -> None:
-        """Initializes the Structures Class."""
+        """Initialize the Structures Class."""
         self._structures: list = []
         self._structure_id = 0
 
@@ -21,7 +21,7 @@ class Structures:
         return len(self._structures)
 
     def _get_current_structure(self) -> Structure:
-        """Returns the current structure."""
+        """Return the current structure."""
         return self._structures[self._structure_id]
 
     def _get_structure_by_id(self, structure_id: int) -> Structure:
@@ -33,17 +33,17 @@ class Structures:
         return self._structures[self._structure_id]
 
     def _set_next_structure(self) -> None:
-        """Returns the next structure in the list of structure."""
+        """Return the next structure in the list of structure."""
         self._structure_id += 1
         self._structure_id %= self._num_structures
 
     def _set_previous_structure(self) -> None:
-        """Returns the previous structure of the list of structure."""
+        """Return the previous structure of the list of structure."""
         self._structure_id -= 1
         self._structure_id %= self._num_structures
 
     def _add_structure(self, struct: Structure) -> None:
-        """Adds a structure to the list of structures.
+        """Add a structure to the list of structures.
 
         :param struct: Structure object to be added to the list
         """
@@ -53,7 +53,7 @@ class Structures:
         self._structures.append(struct)
 
     def _remove_structure(self, structure_id: int) -> None:
-        """Removes a structure from the list of structures.
+        """Remove a structure from the list of structures.
 
         :param structure_id: list index of the structure that shall be removed
         """

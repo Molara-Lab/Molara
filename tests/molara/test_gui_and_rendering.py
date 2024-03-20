@@ -31,7 +31,7 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
 
 
 def _test_main_window(main_window_tests: WorkaroundTestMainWindow) -> None:
-    """Creates a MainWindow object.
+    """Create a MainWindow object.
 
     :param qtbot: provides methods to simulate user interaction
     """
@@ -48,7 +48,7 @@ def _test_main_window(main_window_tests: WorkaroundTestMainWindow) -> None:
 
 # @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 def _test_renderer(qtbot: QtBot, main_window: MainWindow) -> None:
-    """Tests the Renderer class.
+    """Test the Renderer class.
 
     :param qtbot: provides methods to simulate user interaction
     """
@@ -68,7 +68,7 @@ def _test_renderer(qtbot: QtBot, main_window: MainWindow) -> None:
 
 
 def _test_measurement_window(qtbot: QtBot, main_window: MainWindow) -> None:
-    """Tests the MeasurementDialog class.
+    """Test the MeasurementDialog class.
 
     :param qtbot: provides methods to simulate user interaction
     """
@@ -81,7 +81,7 @@ def _test_measurement_window(qtbot: QtBot, main_window: MainWindow) -> None:
 
 
 def _test_buffers(qtbot: QtBot, main_window: MainWindow) -> None:
-    """Tests the buffers module.
+    """Test the buffers module.
 
     :param qtbot: provides methods to simulate user interaction
     """

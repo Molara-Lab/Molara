@@ -19,7 +19,7 @@ class WorkaroundTestMeasurementDialog:
     """
 
     def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
-        """Instantiates the WorkaroundTestMainWindow object.
+        """Instantiate the WorkaroundTestMainWindow object.
 
         :param qtbot: provides methods to simulate user interaction
         """

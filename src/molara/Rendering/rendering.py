@@ -42,7 +42,7 @@ class Renderer:
     """Contains the rendering function for the opengl widget."""
 
     def __init__(self) -> None:
-        """Creates a Renderer object."""
+        """Create a Renderer object."""
         self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": []}
         self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
         self.spheres: list[dict] = []
@@ -50,7 +50,7 @@ class Renderer:
         self.shader: GLuint = 0
 
     def set_shader(self, shader: GLuint) -> None:
-        """Sets the shader program for the opengl widget.
+        """Set the shader program for the opengl widget.
 
         :param shader: The shader program of the opengl widget.
         :type shader: pyopengl program
@@ -224,7 +224,7 @@ class Renderer:
         return i_sphere
 
     def remove_cylinder(self, i_cylinder: int) -> None:
-        """Removes a cylinder from the list of cylinders.
+        """Remove a cylinder from the list of cylinders.
 
         :param i_cylinder: Index of the cylinder to remove.
         :type i_cylinder: int
@@ -248,7 +248,7 @@ class Renderer:
         }
 
     def remove_sphere(self, i_sphere: int) -> None:
-        """Removes a sphere from the list of spheres.
+        """Remove a sphere from the list of spheres.
 
         :param i_sphere: Index of the sphere to remove.
         :type i_sphere: int
@@ -276,7 +276,7 @@ class Renderer:
         model_matrices: np.ndarray,
         colors: np.ndarray,
     ) -> None:
-        """Updates the vertex attribute object for the atoms.
+        """Update the vertex attribute object for the atoms.
 
         :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
         :type vertices: numpy.array of numpy.float32
@@ -310,7 +310,7 @@ class Renderer:
         model_matrices: np.ndarray,
         colors: np.ndarray,
     ) -> None:
-        """Updates the vertex attribute object for the bonds.
+        """Update the vertex attribute object for the bonds.
 
         :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
         :type vertices: numpy.array of numpy.float32

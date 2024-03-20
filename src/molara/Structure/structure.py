@@ -29,7 +29,7 @@ class Structure:
         coordinates: np.ndarray,
         draw_bonds: bool = True,
     ) -> None:
-        """Creates a new Structure object.
+        """Create a new Structure object.
 
         :param atomic_numbers: np.ndarray: atomic numbers of a atoms
         :param coordinates: np.ndarray: coordinates of the atoms
@@ -60,7 +60,7 @@ class Structure:
         self.n_at = len(self.atoms)
 
     def copy(self: Structure | Crystal | Molecule) -> Structure:
-        """Creates a copy of the structure."""
+        """Create a copy of the structure."""
         return type(self)(
             self.atomic_numbers,
             np.array([atom.position for atom in self.atoms]),
@@ -68,7 +68,7 @@ class Structure:
         )
 
     def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
-        """Computes if the given coordinate is equal to the coordinate of an existing atom.
+        """Compute if the given coordinate is equal to the coordinate of an existing atom.
 
         Return None if no atom collides.
 
@@ -98,7 +98,7 @@ class Structure:
             self.drawer.update_bonds()
 
     def calculate_bonds(self: Structure | Crystal | Molecule) -> np.ndarray:
-        """Calculates the bonded pairs of atoms."""
+        """Calculate the bonded pairs of atoms."""
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
@@ -142,7 +142,7 @@ class Structure:
         atomic_number: int,
         coordinate: np.ndarray,
     ) -> None:
-        """Adds an atom to the structure.
+        """Add an atom to the structure.
 
         :param atomic_number: atomic number (nuclear charge number) of the atom
         :param coordinate: cartesian coordinates of atom location
@@ -156,7 +156,7 @@ class Structure:
         self.molar_mass += atom.atomic_mass
 
     def remove_atom(self: Structure | Crystal | Molecule, index: int) -> None:
-        """Removes an atom from the structure.
+        """Remove an atom from the structure.
 
         :param index: list index of the atom that shall be removed
         """

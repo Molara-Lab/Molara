@@ -16,7 +16,7 @@ class Molecules(Structures):
     """A class to store and manipulate a list of Molecules."""
 
     def __init__(self) -> None:
-        """Initializes the Molecules Class."""
+        """Initialize the Molecules Class."""
         super().__init__()
         self.energies: list = []
 

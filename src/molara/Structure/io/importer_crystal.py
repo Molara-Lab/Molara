@@ -36,7 +36,7 @@ class Importer(ABC):
     """Base class for all importers."""
 
     def __init__(self, path: PathLike | str) -> None:
-        """Initializes the Importer object.
+        """Initialize the Importer object.
 
         :param path: input file path
         """
@@ -46,7 +46,7 @@ class Importer(ABC):
 
     @abstractmethod
     def load(self) -> Crystals:
-        """Reads the file in self.path."""
+        """Read the file in self.path."""
 
 
 class PymatgenImporter(Importer):
@@ -57,14 +57,14 @@ class PymatgenImporter(Importer):
     """
 
     def __init__(self, path: PathLike | str) -> None:
-        """Initializes the Importer object.
+        """Initialize the Importer object.
 
         :param path: input file path
         """
         super().__init__(path)
 
     def load(self) -> Crystals:
-        """Imports a file and returns the Crystal."""
+        """Import a file and returns the Crystal."""
         try:
             from pymatgen.core import Structure
 
@@ -88,7 +88,7 @@ class PoscarImporter(Importer):
         self,
         path: PathLike | str,
     ) -> None:
-        """Initializes the Importer object.
+        """Initialize the Importer object.
 
         :param path: input file path
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
@@ -96,7 +96,7 @@ class PoscarImporter(Importer):
         super().__init__(path)
 
     def load(self) -> Crystals:
-        """Imports a file and returns the Crystal."""
+        """Import a file and returns the Crystal."""
         try:
             from monty.io import zopen
             from pymatgen.core import Structure as PymatgenStructure
@@ -167,14 +167,14 @@ class VasprunImporter(Importer):
     """import crystal files."""
 
     def __init__(self, path: PathLike | str) -> None:
-        """Initializes the Importer object.
+        """Initialize the Importer object.
 
         :param path: input file path
         """
         super().__init__(path)
 
     def load(self) -> Crystals:
-        """Imports a file and returns the Crystal."""
+        """Import a file and returns the Crystal."""
         try:
             from pymatgen.io.vasp import Vasprun
 

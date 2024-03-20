@@ -31,7 +31,7 @@ class StructureWidget(QOpenGLWidget):
     """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
 
     def __init__(self, parent: QWidget) -> None:
-        """Creates a StructureWidget object, which is a subclass of QOpenGLWidget.
+        """Create a StructureWidget object, which is a subclass of QOpenGLWidget.
 
         :param parent: parent widget (main window's central widget)
         """
@@ -80,7 +80,7 @@ class StructureWidget(QOpenGLWidget):
         return False
 
     def reset_view(self) -> None:
-        """Resets the view of the structure to the initial view."""
+        """Reset the view of the structure to the initial view."""
         self.camera.reset(self.width(), self.height())
         self.update()
 
@@ -108,7 +108,7 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def set_structure(self, struct: Structure | Crystal | Molecule) -> None:
-        """Sets the structure to be drawn.
+        """Set the structure to be drawn.
 
         :param struct: Structure object that shall be drawn
         """
@@ -128,7 +128,7 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def export_snapshot(self) -> None:
-        """Saves a snapshot of the structure (as png)."""
+        """Save a snapshot of the structure (as png)."""
         filename = QFileDialog.getSaveFileName(
             self,
             "Export structure to file",
@@ -138,7 +138,7 @@ class StructureWidget(QOpenGLWidget):
         self.grabFramebuffer().save(filename[0])
 
     def initializeGL(self) -> None:  # noqa: N802
-        """Initializes the widget."""
+        """Initialize the widget."""
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
@@ -160,7 +160,7 @@ class StructureWidget(QOpenGLWidget):
         self.renderer.draw_scene(self.camera, self.bonds)
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
-        """Sets the vertex attribute objects of the structure."""
+        """Set the vertex attribute objects of the structure."""
         self.makeCurrent()
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
@@ -184,7 +184,7 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        """Starts the rotation or translation of the structure.
+        """Start the rotation or translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -234,7 +234,7 @@ class StructureWidget(QOpenGLWidget):
             self.update()
 
     def set_normalized_position(self, event: QMouseEvent) -> None:
-        """Sets the normalized position of the mouse cursor.
+        """Set the normalized position of the mouse cursor.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -247,7 +247,7 @@ class StructureWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        """Stops the rotation or translation of the structure.
+        """Stop the rotation or translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -257,7 +257,7 @@ class StructureWidget(QOpenGLWidget):
             self.stop_translate(event)
 
     def stop_translate(self, event: QMouseEvent) -> None:
-        """Stops the translation of the structure.
+        """Stop the translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         :return:
@@ -268,7 +268,7 @@ class StructureWidget(QOpenGLWidget):
         self.click_position = None
 
     def stop_rotation(self, event: QMouseEvent) -> None:
-        """Stops the rotation of the structure.
+        """Stop the rotation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         :return:
@@ -419,7 +419,7 @@ class StructureWidget(QOpenGLWidget):
         )
 
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
-        """Updates the selected atoms in the measurement dialog.
+        """Update the selected atoms in the measurement dialog.
 
         :param event: mouse event (such as left click, right click...)
         :return:
@@ -473,7 +473,7 @@ class StructureWidget(QOpenGLWidget):
         )
 
     def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
-        """Returns the selected atoms.
+        """Return the selected atoms.
 
         :param event: The mouse event.
         :return:
@@ -523,5 +523,5 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def clear_builder_selected_atoms(self) -> None:
-        """Resets the selected spheres builder spheres."""
+        """Reset the selected spheres builder spheres."""
         self.builder_selected_spheres = [-1] * 3

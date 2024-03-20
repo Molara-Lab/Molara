@@ -34,7 +34,7 @@ def setup_vao(
     model_matrices: np.ndarray,
     colors: np.ndarray,
 ) -> tuple[int, list[int]]:
-    """Sets up a vertex attribute object and binds it to the GPU.
+    """Set up a vertex attribute object and binds it to the GPU.
 
     :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
         rgb are the color values [0,1], and nxnynz are the components of the normal vector.

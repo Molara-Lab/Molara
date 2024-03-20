@@ -12,7 +12,7 @@ class Camera:
     """Creates a Camera object."""
 
     def __init__(self, width: float, height: float) -> None:
-        """Creates a Camera object.
+        """Create a Camera object.
 
         :param width: Width of the opengl widget.
         :param height: Height of the opengl widget.
@@ -51,7 +51,7 @@ class Camera:
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def calculate_projection_matrix(self, width: float, height: float) -> None:
-        """Calculates the projection matrix to get from world to camera space.
+        """Calculate the projection matrix to get from world to camera space.
 
         :param width: Width of the opengl widget.
         :param height: Height of the opengl widget.
@@ -65,7 +65,7 @@ class Camera:
         )
 
     def reset(self, width: float, height: float) -> None:
-        """Resets the camera.
+        """Reset the camera.
 
         :param width: Width of the opengl widget.
         :param height: Height of the opengl widget.
@@ -161,7 +161,7 @@ class Camera:
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def update(self, save: bool = False) -> None:
-        """Updates the camera position and orientation.
+        """Update the camera position and orientation.
 
         :param save: specifies whether updated camera orientation shall be saved as new reference
         """
@@ -186,7 +186,7 @@ class Camera:
         old_mouse_position: np.ndarray,
         mouse_position: np.ndarray,
     ) -> None:
-        """Calculates the translation matrix using the normalized mouse positions.
+        """Calculate the translation matrix using the normalized mouse positions.
 
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
         :param mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
@@ -200,14 +200,14 @@ class Camera:
         old_mouse_position: np.ndarray,
         new_mouse_position: np.ndarray,
     ) -> None:
-        """Calculates the rotation quaternion using the normalized mouse positions.
+        """Calculate the rotation quaternion using the normalized mouse positions.
 
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
         :param new_mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
         """
 
         def calculate_arcball_point(x: float, y: float) -> np.ndarray:
-            """Calculates the x, y, and z on the surface of an invisible sphere.
+            """Calculate the x, y, and z on the surface of an invisible sphere.
 
             :param x: Normalized x coordinate.
             :param y: Normalized y coordinate.
