@@ -1,4 +1,4 @@
-"""This module contains the Crystal class, which is a subclass of Structure."""
+"""Contains the Crystal class, which is a subclass of Structure."""
 
 from __future__ import annotations
 

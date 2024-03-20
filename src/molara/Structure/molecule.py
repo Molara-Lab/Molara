@@ -1,4 +1,4 @@
-"""This module contains the Molecule class."""
+"""Contains the Molecule class."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""This module tests the GUI and rendering."""
+"""Test the GUI and rendering."""
 
 from __future__ import annotations
 

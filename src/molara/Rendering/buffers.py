@@ -1,4 +1,4 @@
-"""This module contains functions to set up vertex attribute objects and vertex buffer objects."""
+"""Contains functions to set up vertex attribute objects and vertex buffer objects."""
 
 from __future__ import annotations
 

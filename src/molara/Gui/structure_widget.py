@@ -1,4 +1,4 @@
-"""This module contains the StructureWidget class, which is a subclass of QOpenGLWidget."""
+"""Contains the StructureWidget class, which is a subclass of QOpenGLWidget."""
 
 from __future__ import annotations
 

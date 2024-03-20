@@ -1,4 +1,4 @@
-"""This module contains the tests for the exporter module."""
+"""Contains the tests for the exporter module."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from numpy.testing import assert_array_equal
 
 
 class TestXyzExporter(unittest.TestCase):
-    """This class contains the tests for the XyzExporter class."""
+    """Contains the tests for the XyzExporter class."""
 
     def setUp(self) -> None:
         """Instantiate the XyzExporter object."""
@@ -62,7 +62,7 @@ class TestXyzExporter(unittest.TestCase):
 
 
 class TestGeneralExporter(unittest.TestCase):
-    """This class contains the tests for the GeneralExporter class."""
+    """Contains the tests for the GeneralExporter class."""
 
     def setUp(self) -> None:
         """Instantiate the GeneralExporter object."""

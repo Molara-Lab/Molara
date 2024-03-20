@@ -1,4 +1,4 @@
-"""This module contains the tests for the rendering module."""
+"""Contains the tests for the rendering module."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestRenderer:
-    """This class contains the tests for the Renderer class."""
+    """Contains the tests for the Renderer class."""
 
     def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
         """Instantiate the Renderer object.

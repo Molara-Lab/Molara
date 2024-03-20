@@ -1,4 +1,4 @@
-"""This module contains the main window of the application."""
+"""Contains the main window of the application."""
 
 from __future__ import annotations
 

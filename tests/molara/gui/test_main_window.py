@@ -1,4 +1,4 @@
-"""This module contains the test cases for the main window of the application."""
+"""Contains the test cases for the main window of the application."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ from unittest import mock
 
 
 class WorkaroundTestMainWindow:
-    """This class contains the tests for the MainWindow class.
+    """Contains the tests for the MainWindow class.
 
     It does not inherit from unittest.TestCase, because that does not work with pytest-qt.
     """

@@ -1,4 +1,4 @@
-"""This module contains the Atom class and a dictionary of elements."""
+"""Contains the Atom class and a dictionary of elements."""
 
 from __future__ import annotations
 

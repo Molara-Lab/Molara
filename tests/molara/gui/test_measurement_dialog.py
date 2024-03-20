@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestMeasurementDialog:
-    """This class contains the tests for the MainWindow class.
+    """Contains the tests for the MainWindow class.
 
     It does not inherit from unittest.TestCase, because that does not work with pytest-qt.
     """

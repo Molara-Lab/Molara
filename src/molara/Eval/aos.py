@@ -1,4 +1,4 @@
-"""This module serves the calculation of atomic orbitals."""
+"""Serves the calculation of atomic orbitals."""
 
 from __future__ import annotations
 
