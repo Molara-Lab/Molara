@@ -71,12 +71,9 @@ class TrajectoryDialog(QDialog):
         self.ui.playStopButton.clicked.connect(self.show_trajectory)
         self.ui.PrevButton.clicked.connect(self.get_prev_mol)
         self.ui.NextButton.clicked.connect(self.get_next_mol)
-        self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
+        # self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
+        self.ui.verticalSlider.sliderMoved.connect(self.slide_molecule)
         self.ui.speedDial.valueChanged.connect(self.change_speed)
-
-        self.timer = QTimer(self)
-        self.timer.setInterval(40)
-        self.timer.timeout.connect(self.get_next_mol)
 
         layout = QVBoxLayout(self.ui.widget)
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
@@ -104,6 +101,9 @@ class TrajectoryDialog(QDialog):
         self.ui.verticalSlider.setValue(val + 1)
         self.parent().mols.set_next_mol()
         self.update_molecule()
+        if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
+            self.timer.stop()
+            self.ui.playStopButton.setText("Play")
 
     def get_prev_mol(self) -> None:
         """Call molecules object to get the previous molecule and update it in the GUI."""
@@ -125,24 +125,17 @@ class TrajectoryDialog(QDialog):
             return
 
         index = self.ui.verticalSlider.sliderPosition()
-        self.parent().structure_widget.delete_structure()
-        self.parent().structure_widget.set_structure(
-            self.parent().mols.get_mol_by_id(index),
-        )
-        self.update_energy_plot()
+        self.parent().mols.set_mol_by_id(index)
+        self.update_molecule()
 
     def update_molecule(self) -> None:
         """Update molecule and delete old molecule."""
         self.parent().structure_widget.delete_structure()
-
-        self.update_energy_plot()
-
         self.parent().structure_widget.set_structure(
             self.parent().mols.get_current_mol(),
+            reset_view=False,
         )
-        if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
-            self.timer.stop()
-            self.ui.playStopButton.setText("Play")
+        self.update_energy_plot()
 
     def change_speed(self, value: int) -> None:
         """Change speed (/ time interval) of trajectory animation.

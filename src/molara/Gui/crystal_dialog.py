@@ -82,7 +82,7 @@ class CrystalDialog(QDialog):
             self.ui.inputSupercell_b.value(),
             self.ui.inputSupercell_c.value(),
         )
-        supercell_dims = np.array([dim_a, dim_b, dim_c])
+        supercell_dims = [dim_a, dim_b, dim_c]
         a, b, c = (
             self.ui.inputLatConst_a.value(),
             self.ui.inputLatConst_b.value(),
