@@ -20,7 +20,7 @@ class MeasurementDialog(QDialog):
     """Dialog for displaying measurements."""
 
     def __init__(self, parent: QMainWindow) -> None:
-        """Initializes the measurement dialog.
+        """Initialize the measurement dialog.
 
         :param parent: the MainWindow widget
         """
@@ -181,6 +181,6 @@ class MeasurementDialog(QDialog):
         self.ui.tableAngles.setItem(2, 0, QTableWidgetItem(f"{a_deg:.3f}" + " \u00b0"))
 
     def reject(self) -> None:
-        """Function that is called when dialog window is closed."""
+        """Close the dialog window."""
         self.main_window.structure_widget.unselect_all_atoms()
         self.setVisible(False)

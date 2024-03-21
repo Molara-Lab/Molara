@@ -36,7 +36,7 @@ class MplCanvas(FigureCanvasQTAgg):
         height: int = 4,
         dpi: int = 100,
     ) -> None:
-        """Initializes a Figure by generating a subplot.
+        """Initialize a Figure by generating a subplot.
 
         :param parent: MainWindow: The widget of the MainWindow
         :param width: int: Width of the figure
@@ -52,7 +52,7 @@ class TrajectoryDialog(QDialog):
     """Dialog for manipulating appearance of trajectories."""
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Initializes the trajectory dialog.
+        """Initialize the trajectory dialog.
 
         :param parent: parent widget (main window)
         """
@@ -81,7 +81,7 @@ class TrajectoryDialog(QDialog):
         self.ui.widget.setLayout(layout)
 
     def show_trajectory(self) -> None:
-        """Shows the all molecules in the current Molecules class automatically."""
+        """Show the all molecules in the current Molecules class automatically."""
         if not self.parent().mols.num_mols > 1:
             return
 
@@ -93,7 +93,7 @@ class TrajectoryDialog(QDialog):
         self.ui.playStopButton.setText("Stop")
 
     def get_next_mol(self) -> None:
-        """Calls molecules object to get the next molecule and update it in the GUI."""
+        """Call molecules object to get the next molecule and update it in the GUI."""
         if not self.parent().mols.num_mols > 1:
             return
 
@@ -106,7 +106,7 @@ class TrajectoryDialog(QDialog):
             self.ui.playStopButton.setText("Play")
 
     def get_prev_mol(self) -> None:
-        """Calls molecules object to get the previous molecule and update it in the GUI."""
+        """Call molecules object to get the previous molecule and update it in the GUI."""
         if not self.parent().mols.num_mols > 1:
             return
 
@@ -120,7 +120,7 @@ class TrajectoryDialog(QDialog):
         self.ui.verticalSlider.setRange(0, int(self.parent().mols.num_mols) - 1)
 
     def slide_molecule(self) -> None:
-        """Updates the molecule and energy plot in dependence of the slider position."""
+        """Update the molecule and energy plot in dependence of the slider position."""
         if not self.parent().mols.num_mols > 1:
             return
 

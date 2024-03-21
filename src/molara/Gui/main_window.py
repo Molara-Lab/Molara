@@ -1,4 +1,4 @@
-"""This module contains the main window of the application."""
+"""Contains the main window of the application."""
 
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Creates a MainWindow object.
+        """Create a MainWindow object.
 
         :param parent: parent widget
         """
@@ -188,7 +188,7 @@ class MainWindow(QMainWindow):
         return True
 
     def show_poscar(self) -> bool | None:
-        """Reads poscar file and shows the first structure in this file."""
+        """Read poscar file and shows the first structure in this file."""
         file_name = QFileDialog.getOpenFileName(
             self,
             caption="Open POSCAR file",

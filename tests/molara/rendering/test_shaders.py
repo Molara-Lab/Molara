@@ -15,7 +15,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 class TestShaders(unittest.TestCase):
-    """This class contains the tests for the shaders module."""
+    """Contains the tests for the shaders module."""
 
     def test_compile_shaders(self) -> None:
         """Tests the compile_shaders function of the shaders module."""
