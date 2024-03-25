@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
+from molara.Gui.export_image_dialog import ExportImageDialog
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
@@ -43,6 +44,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.export_image_dialog = ExportImageDialog(self)
+
         # instantiate dialog windows, pass main window as parent.
         self.trajectory_dialog = TrajectoryDialog(self)
         self.crystal_dialog = CrystalDialog(self)
@@ -64,8 +67,11 @@ class MainWindow(QMainWindow):
         # Start
         self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
         self.ui.actionExport.triggered.connect(self.export_structure)
-        self.ui.actionExport_Snapshot.triggered.connect(self.structure_widget.export_snapshot)
         self.ui.quit.triggered.connect(self.close)
+
+        self.ui.actionExport_Snapshot.triggered.connect(
+            self.export_image_dialog.show_dialog,
+        )  # self.virtual_rendering_window.draw_spheres_and_export)
 
         # View
         self.ui.actionReset_View.triggered.connect(self.structure_widget.reset_view)
