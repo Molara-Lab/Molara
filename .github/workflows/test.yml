@@ -44,8 +44,8 @@ jobs:
           sudo apt update && sudo apt install -y libegl1-mesa-dev
           # xvfb libxcb-randr0 libxcb-xfixes0 libglib2.0-0
           # libxrender-dev
-          sudo apt install -y libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 
-          sudo apt install -y libxcb-xinput0 libxcb-shape0 
+          sudo apt install -y libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0
+          sudo apt install -y libxcb-xinput0 libxcb-shape0
           # sudo apt install -y '^libxcb.*-dev'
           sudo apt install -y libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
