@@ -17,7 +17,7 @@ maintainers = [
 ]
 dependencies = [
     "PyOpenGL",
-    "PySide6",
+    "PySide6<=6.6.2",
     "matplotlib",
     "numpy",
     "pyrr",
