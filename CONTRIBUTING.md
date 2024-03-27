@@ -8,7 +8,7 @@ Thank you for considering contributing to our project! We value your effort and 
 
 2. **Type Hints**: Always provide [type hints](https://docs.python.org/3/library/typing.html) in your function and method definitions. This helps in understanding the expected data types and ensures type safety.
 
-3. **Docstrings**: Adopt the [google-style](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html) for docstrings. Every public class and method should have a descriptive docstring.
+3. **Docstrings**: Adopt the [Sphinx format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html) for docstrings. Every public class and method should have a descriptive docstring.
 
 4. **Line Length**: Be mindful of the line length. The maximum permissible line length is 120 characters.
 
@@ -25,7 +25,7 @@ Thank you for considering contributing to our project! We value your effort and 
 ## Branch Names:
 
 1. **Naming Convention**:
-   - For features: `feature-<issue-number>-<description>`. Example: `feature-123-user-authentication`.
-   - For bug fixes: `bug-<issue-number>-<description>`. Example: `bug-456-payment-gateway-error`.
+   - For features: `feature/<issue-number>-<description>`. Example: `feature/123-user-authentication`.
+   - For bug fixes: `bug/<issue-number>-<description>`. Example: `bug/456-payment-gateway-error`.
 
 By following these guidelines, you're helping us keep the project's quality high and ensuring your contributions can be smoothly integrated. We appreciate your commitment and look forward to collaborating!
