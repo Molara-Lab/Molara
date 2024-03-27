@@ -55,7 +55,7 @@ class MoleculesImporter(ABC):
 
     @abstractmethod
     def load(self) -> Molecules | Crystals:
-        """Reads the file in self.path and creates a Molecules object."""
+        """Read the file in self.path and creates a Molecules object."""
 
 
 # Note: distinction between MoleculesImporter and CrystalImporter will become
@@ -74,14 +74,14 @@ class CrystalImporter(ABC):
 
     @abstractmethod
     def load(self) -> Crystal:
-        """Reads the file in self.path and creates a Molecules object."""
+        """Read the file in self.path and creates a Molecules object."""
 
 
 class XyzImporter(MoleculesImporter):
     """Import xyz files."""
 
     def load(self) -> Molecules:
-        """Reads the file in self.path and creates a Molecules object."""
+        """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
         with open(self.path, encoding="utf-8") as file:
@@ -162,7 +162,7 @@ class CoordImporter(MoleculesImporter):
     """Importer from *.coord files."""
 
     def load(self) -> Molecules:
-        """Reads the file in self.path and creates a Molecules object."""
+        """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
         with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
@@ -195,7 +195,7 @@ class MoldenImporter(MoleculesImporter):
     """Importer from *.molden files."""
 
     def load(self) -> Molecules:  # noqa: C901
-        """Reads the file in self.path and creates a Molecules object."""
+        """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
         with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
@@ -255,7 +255,7 @@ class MoldenImporter(MoleculesImporter):
         return molecules
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
-        """Reads the atomic numbers and coordinates from the lines of the atoms block.
+        """Read the atomic numbers and coordinates from the lines of the atoms block.
 
         :param lines: The lines of the atom block.
         :return: The atomic numbers and coordinates.
@@ -286,7 +286,7 @@ class MoldenImporter(MoleculesImporter):
         return atomic_numbers, coordinates
 
     def get_basisset(self, lines: list[str]) -> list:  # noqa: C901
-        """Reads the basis set from the lines of the basisset block.
+        """Read the basis set from the lines of the basisset block.
 
         :param lines: The lines of the basis set block.
         :return: The basis set.
@@ -351,7 +351,7 @@ class MoldenImporter(MoleculesImporter):
         self,
         lines: list[str],
     ) -> tuple[list[list[float]], list[str], list[float], list[int], list[float]]:
-        """Reads the MO coefficients from the lines of the MO block.
+        """Read the MO coefficients from the lines of the MO block.
 
         :param lines: The lines of the MO block.
         :return: The MO coefficients.
@@ -412,7 +412,7 @@ class QmImporter(MoleculesImporter):
             raise FileFormatError(msg)
 
     def load(self) -> Molecules:
-        """Reads the file in self.path and creates a Molecules object."""
+        """Read the file in self.path and creates a Molecules object."""
         data = self._ccparser.parse()
 
         mols: list[Molecule] = self._get_geometries(data)
@@ -504,5 +504,5 @@ class GeneralImporter(MoleculesImporter):
                 raise FileFormatError(msg) from err
 
     def load(self) -> Molecules | Crystals:
-        """Reads the file in self.path and creates a Molecules object."""
+        """Read the file in self.path and creates a Molecules object."""
         return self._importer.load()

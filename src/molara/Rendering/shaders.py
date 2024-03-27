@@ -1,4 +1,4 @@
-"""This module contains the shader source code for the rendering of the structures."""
+"""Contains the shader source code for the rendering of the structures."""
 
 from __future__ import annotations
 

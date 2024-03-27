@@ -1,4 +1,4 @@
-"""This module contains the StructureWidget class, which is a subclass of QOpenGLWidget."""
+"""Contains the StructureWidget class, which is a subclass of QOpenGLWidget."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from PySide6.QtGui import QMouseEvent
     from PySide6.QtWidgets import QWidget
 
+    from molara.Structure.molecule import Molecule
     from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
@@ -30,7 +31,7 @@ class StructureWidget(QOpenGLWidget):
     """Creates a StructureWidget object, which is a subclass of QOpenGLWidget."""
 
     def __init__(self, parent: QWidget) -> None:
-        """Creates a StructureWidget object, which is a subclass of QOpenGLWidget.
+        """Create a StructureWidget object, which is a subclass of QOpenGLWidget.
 
         :param parent: parent widget (main window's central widget)
         """
@@ -69,7 +70,7 @@ class StructureWidget(QOpenGLWidget):
             np.array([0, 0, 1], dtype=np.float32),
             np.array([1, 1, 0], dtype=np.float32),
         ]
-        # self.add_unit_cell_boundaries()
+        # self.toggle_unit_cell_boundaries()
 
     @property
     def bonds(self) -> bool:
@@ -78,9 +79,35 @@ class StructureWidget(QOpenGLWidget):
             return self.structure.draw_bonds and self.structure.has_bonds
         return False
 
+    @property
+    def draw_bonds(self) -> bool:
+        """Specifies whether bonds should be drawn."""
+        return self.structure.draw_bonds
+
+    @property
+    def draw_axes(self) -> bool:
+        """Specifies whether the axes should be drawn."""
+        return self.axes[0] != -1
+
+    @property
+    def draw_unit_cell_boundaries(self) -> bool:
+        """Specifies whether the unit cell boundaries should be drawn."""
+        return self.box[0] != -1
+
+    @property
+    def orthographic_projection(self) -> bool:
+        """Specifies whether the projection is orthographic or not."""
+        return self.camera.orthographic_projection
+
     def reset_view(self) -> None:
-        """Resets the view of the structure to the initial view."""
-        self.camera.reset(self.width(), self.height())
+        """Reset the view of the structure to the initial view."""
+        self.center_structure()
+        dy, dz = None, None
+        if len(self.structure.atoms) > 1:
+            x, y, z = np.array([atom.position for atom in self.structure.atoms]).T
+            dy = y.max() - y.min()
+            dz = z.max() - z.min()
+        self.camera.reset(self.width(), self.height(), dy, dz)
         self.update()
 
     def set_view_to_x_axis(self) -> None:
@@ -106,15 +133,19 @@ class StructureWidget(QOpenGLWidget):
         self.vertex_attribute_objects = [-1]
         self.update()
 
-    def set_structure(self, struct: Structure) -> None:
-        """Sets the structure to be drawn.
+    def set_structure(self, struct: Structure | Crystal | Molecule, reset_view: bool = True) -> None:
+        """Set the structure to be drawn.
 
         :param struct: Structure object that shall be drawn
         """
         self.structure = struct
         self.structure_is_set = True
-        self.center_structure()
-        self.add_unit_cell_boundaries(update_box=True)
+        if reset_view:
+            self.reset_view()
+        else:
+            self.set_vertex_attribute_objects()
+            self.update()
+        self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()
 
@@ -127,7 +158,7 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def export_snapshot(self) -> None:
-        """Saves a snapshot of the structure (as png)."""
+        """Save a snapshot of the structure (as png)."""
         filename = QFileDialog.getSaveFileName(
             self,
             "Export structure to file",
@@ -137,7 +168,7 @@ class StructureWidget(QOpenGLWidget):
         self.grabFramebuffer().save(filename[0])
 
     def initializeGL(self) -> None:  # noqa: N802
-        """Initializes the widget."""
+        """Initialize the widget."""
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
@@ -149,9 +180,9 @@ class StructureWidget(QOpenGLWidget):
         :param width: widget width (in pixels)
         :param height: widget height (in pixels)
         """
+        glViewport(0, 0, width, height)  # one can also use self.width() and self.height()
         self.camera.width, self.camera.height = width, height
-        glViewport(0, 0, self.width(), self.height())
-        self.camera.calculate_projection_matrix(self.width(), self.height())
+        self.camera.calculate_projection_matrix()
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802
@@ -159,8 +190,9 @@ class StructureWidget(QOpenGLWidget):
         self.renderer.draw_scene(self.camera, self.bonds)
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
-        """Sets the vertex attribute objects of the structure."""
+        """Set the vertex attribute objects of the structure."""
         self.makeCurrent()
+        assert isinstance(self.structure.drawer.cylinder_colors, np.ndarray)
         self.renderer.update_atoms_vao(
             self.structure.drawer.sphere.vertices,
             self.structure.drawer.sphere.indices,
@@ -183,7 +215,7 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        """Starts the rotation or translation of the structure.
+        """Start the rotation or translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -233,7 +265,7 @@ class StructureWidget(QOpenGLWidget):
             self.update()
 
     def set_normalized_position(self, event: QMouseEvent) -> None:
-        """Sets the normalized position of the mouse cursor.
+        """Set the normalized position of the mouse cursor.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -246,7 +278,7 @@ class StructureWidget(QOpenGLWidget):
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        """Stops the rotation or translation of the structure.
+        """Stop the rotation or translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         """
@@ -256,7 +288,7 @@ class StructureWidget(QOpenGLWidget):
             self.stop_translate(event)
 
     def stop_translate(self, event: QMouseEvent) -> None:
-        """Stops the translation of the structure.
+        """Stop the translation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         :return:
@@ -267,7 +299,7 @@ class StructureWidget(QOpenGLWidget):
         self.click_position = None
 
     def stop_rotation(self, event: QMouseEvent) -> None:
-        """Stops the rotation of the structure.
+        """Stop the rotation of the structure.
 
         :param event: mouse event (such as left click, right click...)
         :return:
@@ -282,38 +314,43 @@ class StructureWidget(QOpenGLWidget):
         length = 2.0
         radius = 0.02
         self.makeCurrent()
-        if self.axes[0] != -1:
+        if self.draw_axes:
             self.renderer.remove_cylinder(self.axes[0])
             self.renderer.remove_sphere(self.axes[1])
             self.axes = [-1, -1]
-        else:
-            positions = np.array(
-                [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
-                dtype=np.float32,
-            )
-            directions = np.eye(3, dtype=np.float32)
-            colors = np.eye(3, dtype=np.float32)
-            radii = np.array([radius] * 3, dtype=np.float32)
-            lengths = np.array([length] * 3, dtype=np.float32)
-            self.axes[0] = self.renderer.draw_cylinders(
-                positions,
-                directions,
-                radii,
-                lengths,
-                colors,
-                25,
-            )
-            positions = np.array(
-                [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
-                dtype=np.float32,
-            )
-            colors = np.array(
-                [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
-                dtype=np.float32,
-            )
-            radii = np.array([radius] * 4, dtype=np.float32)
-            self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
+            self.update()
+            self.main_window.update_action_texts()
+            return
+
+        positions = np.array(
+            [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
+            dtype=np.float32,
+        )
+        directions = np.eye(3, dtype=np.float32)
+        colors = np.eye(3, dtype=np.float32)
+        radii = np.array([radius] * 3, dtype=np.float32)
+        lengths = np.array([length] * 3, dtype=np.float32)
+        self.axes[0] = self.renderer.draw_cylinders(
+            positions,
+            directions,
+            radii,
+            lengths,
+            colors,
+            25,
+        )
+        positions = np.array(
+            [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
+            dtype=np.float32,
+        )
+        colors = np.array(
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
+            dtype=np.float32,
+        )
+        radii = np.array([radius] * 4, dtype=np.float32)
+        self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
         self.update()
+
+        self.main_window.update_action_texts()
 
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
@@ -321,12 +358,22 @@ class StructureWidget(QOpenGLWidget):
             self.structure.toggle_bonds()
             self.set_vertex_attribute_objects()
             self.update()
+            self.main_window.update_action_texts()
 
-    def add_unit_cell_boundaries(self, update_box: bool = False) -> None:
+    def toggle_projection(self) -> None:
+        """Toggles between orthographic and perspective projection."""
+        self.camera.toggle_projection()
+        self.update()
+        self.main_window.update_action_texts()
+
+    def toggle_unit_cell_boundaries(self, update_box: bool = False) -> None:
         """Draws the unit cell boundaries.
 
         :param update_box: specifies whether box shall be updated. If False, a drawn box will be hidden.
         """
+        if not self.structure_is_set:
+            return
+
         self.makeCurrent()
 
         box_was_drawn = self.box[0] != -1
@@ -342,15 +389,18 @@ class StructureWidget(QOpenGLWidget):
             if not update_box:
                 self.box = [-1, -1]
                 self.update()
+                self.main_window.update_action_texts()
                 return
             if not isinstance(self.structure, Crystal):
                 self.box = [-1, -1]
                 self.update()
+                self.main_window.update_action_texts()
                 return
 
         # the unit cell boundaries shall be drawn anew if:
         # 1.) a box was not drawn before and function is called as a "toggle", not an update
         # 2.) a box was drawn before, but shall be updated (crystal structure changed)
+        assert isinstance(self.structure, Crystal)
         basis_vectors_matrix = np.array(self.structure.basis_vectors)
         zero_vec = np.array([0, 0, 0])
         positions = np.array(
@@ -392,6 +442,8 @@ class StructureWidget(QOpenGLWidget):
         )
         self.update()
 
+        self.main_window.update_action_texts()
+
     def select_sphere(self, xpos: int, ypos: int) -> int:
         """Return index of sphere that has been selected by clicking.
 
@@ -416,18 +468,8 @@ class StructureWidget(QOpenGLWidget):
             self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
 
-    def show_measurement_dialog(self) -> None:
-        """Show the measurement dialog."""
-        if self.molecule_is_set:
-            self.main_window.measurement_dialog.ini_labels()
-            self.main_window.measurement_dialog.show()
-
-    def show_builder_dialog(self) -> None:
-        """Show the builder dialog."""
-        self.main_window.builder_dialog.show()
-
     def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
-        """Updates the selected atoms in the measurement dialog.
+        """Update the selected atoms in the measurement dialog.
 
         :param event: mouse event (such as left click, right click...)
         :return:
@@ -481,7 +523,7 @@ class StructureWidget(QOpenGLWidget):
         )
 
     def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
-        """Returns the selected atoms.
+        """Return the selected atoms.
 
         :param event: The mouse event.
         :return:
@@ -531,5 +573,5 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def clear_builder_selected_atoms(self) -> None:
-        """Resets the selected spheres builder spheres."""
+        """Reset the selected spheres builder spheres."""
         self.builder_selected_spheres = [-1] * 3

@@ -126,14 +126,27 @@ class TestMolecules(TestCase):
             assert_array_equal(atom_i.position, coords_i)
         assert_array_equal(molecules_glucose.atomic_numbers, atomic_nums_glucose)
         assert_array_equal(molecules_glucose.unique_atomic_numbers, [6, 8])
+
+    def test_switching_of_molecule(self) -> None:
+        """Test the switching of the current molecule (to 'next', 'previous', or specified id.)."""
         #    test switching to next / previous molecule
+        initial_mol_index = self.molecules.mol_index
+        num_mols = self.molecules.num_mols
         self.molecules.set_previous_mol()
-        assert self.molecules.mol_index == 0
+        assert self.molecules.mol_index == (initial_mol_index - 1) % num_mols
         self.molecules.set_next_mol()
+        assert self.molecules.mol_index == initial_mol_index % num_mols
+        self.molecules.set_next_mol()
+        assert self.molecules.mol_index == (initial_mol_index + 1) % num_mols
+        self.molecules.set_previous_mol()
+        assert self.molecules.mol_index == initial_mol_index
+
+        #    test setting molecule by index
+        self.molecules.set_mol_by_id(0)
+        assert self.molecules.mol_index == 0
+        self.molecules.set_mol_by_id(1)
         assert self.molecules.mol_index == 1
-        self.molecules.set_next_mol()
-        assert self.molecules.mol_index == 0
-        self.molecules.set_previous_mol()
+        self.molecules.set_mol_by_id(1)
         assert self.molecules.mol_index == 1
 
     # def test_copy(self) -> None:

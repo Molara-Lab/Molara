@@ -63,4 +63,3 @@ class Ui_Dialog(object):
         self.playStopButton.setText(QCoreApplication.translate("Dialog", u"Play", None))
         self.label.setText(QCoreApplication.translate("Dialog", u"Animation speed:", None))
     # retranslateUi
-
