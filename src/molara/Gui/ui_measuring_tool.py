@@ -63,4 +63,3 @@ class Ui_measuring_tool(object):
         self.labelDistances.setText(QCoreApplication.translate("measuring_tool", u"Distances:", None))
         self.info_text_2.setText(QCoreApplication.translate("measuring_tool", u"TextLabel", None))
     # retranslateUi
-

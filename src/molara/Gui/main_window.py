@@ -1,10 +1,11 @@
-"""This module contains the main window of the application."""
+"""Contains the main window of the application."""
 
 from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING
 
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 from molara.Gui.builder import BuilderDialog
@@ -34,7 +35,7 @@ class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Creates a MainWindow object.
+        """Create a MainWindow object.
 
         :param parent: parent widget
         """
@@ -51,6 +52,7 @@ class MainWindow(QMainWindow):
         self.mols = Molecules()
 
         self.set_action_triggers()
+        self.update_action_texts()
 
     @property
     def structure_widget(self) -> StructureWidget:
@@ -78,10 +80,10 @@ class MainWindow(QMainWindow):
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )
-
+        self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
         # Tools
         self.ui.actionBuilder.triggered.connect(
-            self.structure_widget.show_builder_dialog,
+            self.show_builder_dialog,
         )
         self.ui.actionMeasure.triggered.connect(
             self.show_measurement_dialog,
@@ -90,7 +92,24 @@ class MainWindow(QMainWindow):
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
-        self.ui.actionAdd_unit_cell_boundaries.triggered.connect(self.ui.openGLWidget.add_unit_cell_boundaries)
+        self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
+
+    def update_action_texts(self) -> None:
+        """Update the texts of the menu actions."""
+        text_axes = "Hide Axes" if self.structure_widget.draw_axes else "Show Axes"
+        text_projection = (
+            "Perspective Projection" if self.structure_widget.orthographic_projection else "Orthographic Projection"
+        )
+        text_unit_cell_boundaries = (
+            "Hide Unit Cell Boundaries"
+            if self.structure_widget.draw_unit_cell_boundaries
+            else "Show Unit Cell Boundaries"
+        )
+        self.ui.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", text_axes, None))
+        self.ui.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", text_projection, None))
+        self.ui.actionToggle_UnitCellBoundaries.setText(
+            QCoreApplication.translate("MainWindow", text_unit_cell_boundaries, None),
+        )
 
     def show_init_xyz(self) -> None:
         """Read the file from terminal arguments."""
@@ -168,8 +187,8 @@ class MainWindow(QMainWindow):
         self.structure_widget.set_structure(crystal)
         return True
 
-    def show_poscar(self) -> bool:
-        """Reads poscar file and shows the first structure in this file."""
+    def show_poscar(self) -> bool | None:
+        """Read poscar file and shows the first structure in this file."""
         file_name = QFileDialog.getOpenFileName(
             self,
             caption="Open POSCAR file",
@@ -179,9 +198,7 @@ class MainWindow(QMainWindow):
         if file_name == "":
             return None
 
-        supercell_dims = [1, 1, 1]
-
-        importer = PoscarImporter(file_name, supercell_dims)
+        importer = PoscarImporter(file_name)
         crystals = importer.load()
 
         if not isinstance(crystals, Crystals):
