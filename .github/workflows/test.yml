@@ -44,17 +44,6 @@ jobs:
           sudo apt update && sudo apt install -y libegl1-mesa-dev
           sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
-          # ========
-          # Dependencies for qt testing are installed according to a StackOverflow answer: https://stackoverflow.com/a/68213228/11339443
-          # Packages that were previously also listed for installation are listed below.
-          # If, in the future, problems arise in Github Actions, try installing them again.
-          #   libxcb-randr0 libxcb-xfixes0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1
-          #   libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-shape0
-          #   libglib2.0-0
-          #   libxkbcommon-x11-0
-          #   libxrender-dev
-          #   xvfb
-          # ========
       - name: pytest
         run: |
           pytest --cov=src --cov-report=xml tests
