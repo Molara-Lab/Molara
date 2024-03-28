@@ -199,6 +199,16 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>widthSpinBox</tabstop>
+  <tabstop>heightSpinBox</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>filenameInput</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>sphereSubdivisionsSpinBox</tabstop>
+  <tabstop>cylinderSubdivisionsSpinBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

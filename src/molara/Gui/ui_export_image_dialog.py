@@ -78,6 +78,13 @@ class Ui_Dialog(object):
         self.label_4.setObjectName(u"label_4")
         self.label_4.setGeometry(QRect(20, 80, 131, 16))
         self.tabWidget.addTab(self.tab_2, "")
+        QWidget.setTabOrder(self.tabWidget, self.widthSpinBox)
+        QWidget.setTabOrder(self.widthSpinBox, self.heightSpinBox)
+        QWidget.setTabOrder(self.heightSpinBox, self.checkBox)
+        QWidget.setTabOrder(self.checkBox, self.filenameInput)
+        QWidget.setTabOrder(self.filenameInput, self.pushButton)
+        QWidget.setTabOrder(self.pushButton, self.sphereSubdivisionsSpinBox)
+        QWidget.setTabOrder(self.sphereSubdivisionsSpinBox, self.cylinderSubdivisionsSpinBox)
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
@@ -100,3 +107,4 @@ class Ui_Dialog(object):
         self.label_4.setText(QCoreApplication.translate("Dialog", u"Cylinder Subdivisions", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Dialog", u"Rendering Options", None))
     # retranslateUi
+

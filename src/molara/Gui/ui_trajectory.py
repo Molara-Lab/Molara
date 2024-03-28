@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'trajectory.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -50,6 +50,10 @@ class Ui_Dialog(object):
         self.label = QLabel(Dialog)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(220, 267, 101, 20))
+        QWidget.setTabOrder(self.PrevButton, self.NextButton)
+        QWidget.setTabOrder(self.NextButton, self.playStopButton)
+        QWidget.setTabOrder(self.playStopButton, self.speedDial)
+        QWidget.setTabOrder(self.speedDial, self.verticalSlider)
 
         self.retranslateUi(Dialog)
 
@@ -63,3 +67,4 @@ class Ui_Dialog(object):
         self.playStopButton.setText(QCoreApplication.translate("Dialog", u"Play", None))
         self.label.setText(QCoreApplication.translate("Dialog", u"Animation speed:", None))
     # retranslateUi
+

@@ -6,9 +6,11 @@
 
         "src/molara/Gui/builder.ui",
         "src/molara/Gui/crystalstructure_dialog.ui",
+        "src/molara/Gui/export_image_dialog.ui",
         "src/molara/Gui/measuring_tool.ui",
         "src/molara/Gui/supercell_dialog.ui",
         "src/molara/Gui/trajectory.ui",
+        "src/molara/Gui/virtual_rendering_window.ui",
 
         "src/molara/Gui/main_window.py",
         "src/molara/Gui/structure_widget.py",

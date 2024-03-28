@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'crystalstructure_dialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,7 +26,7 @@ class Ui_CrystalDialog(object):
         if not CrystalDialog.objectName():
             CrystalDialog.setObjectName(u"CrystalDialog")
         CrystalDialog.resize(400, 476)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(CrystalDialog.sizePolicy().hasHeightForWidth())
@@ -236,6 +236,24 @@ class Ui_CrystalDialog(object):
         self.labelLatAngle_gamma.setObjectName(u"labelLatAngle_gamma")
         self.labelLatAngle_gamma.setGeometry(QRect(20, 300, 16, 20))
         self.labelLatAngle_gamma.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
+        QWidget.setTabOrder(self.selectCrystalSystem, self.selectSpaceGroup)
+        QWidget.setTabOrder(self.selectSpaceGroup, self.inputLatConst_a)
+        QWidget.setTabOrder(self.inputLatConst_a, self.inputLatConst_b)
+        QWidget.setTabOrder(self.inputLatConst_b, self.inputLatConst_c)
+        QWidget.setTabOrder(self.inputLatConst_c, self.inputLatAngle_alpha)
+        QWidget.setTabOrder(self.inputLatAngle_alpha, self.inputLatAngle_beta)
+        QWidget.setTabOrder(self.inputLatAngle_beta, self.inputLatAngle_gamma)
+        QWidget.setTabOrder(self.inputLatAngle_gamma, self.inputSupercell_a)
+        QWidget.setTabOrder(self.inputSupercell_a, self.inputSupercell_b)
+        QWidget.setTabOrder(self.inputSupercell_b, self.inputSupercell_c)
+        QWidget.setTabOrder(self.inputSupercell_c, self.inputElementSymbol)
+        QWidget.setTabOrder(self.inputElementSymbol, self.inputAtomCoord_a)
+        QWidget.setTabOrder(self.inputAtomCoord_a, self.inputAtomCoord_b)
+        QWidget.setTabOrder(self.inputAtomCoord_b, self.inputAtomCoord_c)
+        QWidget.setTabOrder(self.inputAtomCoord_c, self.buttonAddAtom)
+        QWidget.setTabOrder(self.buttonAddAtom, self.pushButton)
+        QWidget.setTabOrder(self.pushButton, self.listAtoms)
+        QWidget.setTabOrder(self.listAtoms, self.checkBoxPreview)
 
         self.retranslateUi(CrystalDialog)
         self.buttonBox.accepted.connect(CrystalDialog.accept)
@@ -279,3 +297,4 @@ class Ui_CrystalDialog(object):
         self.labelLatAngle_beta.setText(QCoreApplication.translate("CrystalDialog", u"\u03b2", None))
         self.labelLatAngle_gamma.setText(QCoreApplication.translate("CrystalDialog", u"\u03b3", None))
     # retranslateUi
+
