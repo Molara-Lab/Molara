@@ -51,6 +51,7 @@ class MainWindow(QMainWindow):
         self.crystal_dialog = CrystalDialog(self)
         self.measurement_dialog = MeasurementDialog(self)
         self.builder_dialog = BuilderDialog(self)
+        self.supercell_dialog = SupercellDialog(self)
 
         self.mols = Molecules()
 
@@ -180,12 +181,14 @@ class MainWindow(QMainWindow):
 
     def edit_supercell_dims(self) -> bool:
         """Open dialog window to edit supercell dimensions."""
+        if not self.structure_widget.structure_is_set:
+            return False
         if not isinstance(self.structure_widget.structure, Crystal):
-            # insert error message?
             return False
         crystal = self.structure_widget.structure
         supercell_dims = crystal.supercell_dims
-        SupercellDialog.get_supercell_dims(supercell_dims)
+        self.supercell_dialog.show()
+        self.supercell_dialog.get_supercell_dims(supercell_dims)
         # check if supercell dimensions have successfully been passed (i.e., all are >0)
         if sum(1 for component in supercell_dims if component <= 0):
             return False

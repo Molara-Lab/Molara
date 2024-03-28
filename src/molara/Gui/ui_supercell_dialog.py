@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'supercell_dialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -23,7 +23,7 @@ class Ui_Dialog(object):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
         Dialog.resize(257, 204)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
@@ -56,7 +56,8 @@ class Ui_Dialog(object):
         self.labelSupercell_c.setGeometry(QRect(140, 80, 21, 16))
         self.labelNumAtoms = QLabel(Dialog)
         self.labelNumAtoms.setObjectName(u"labelNumAtoms")
-        self.labelNumAtoms.setGeometry(QRect(20, 120, 58, 16))
+        self.labelNumAtoms.setGeometry(QRect(20, 110, 211, 41))
+        self.labelNumAtoms.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.label = QLabel(Dialog)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(20, 20, 171, 16))
@@ -76,3 +77,4 @@ class Ui_Dialog(object):
         self.labelNumAtoms.setText(QCoreApplication.translate("Dialog", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("Dialog", u"Enter supercell dimensions", None))
     # retranslateUi
+
