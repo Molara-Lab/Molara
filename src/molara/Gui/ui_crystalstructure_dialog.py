@@ -297,4 +297,3 @@ class Ui_CrystalDialog(object):
         self.labelLatAngle_beta.setText(QCoreApplication.translate("CrystalDialog", u"\u03b2", None))
         self.labelLatAngle_gamma.setText(QCoreApplication.translate("CrystalDialog", u"\u03b3", None))
     # retranslateUi
-

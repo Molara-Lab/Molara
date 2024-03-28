@@ -88,4 +88,3 @@ class Ui_builder(object):
         self.AddAtomButton.setText(QCoreApplication.translate("builder", u"Add", None))
         self.DeleteAtomButton.setText(QCoreApplication.translate("builder", u"Delete", None))
     # retranslateUi
-

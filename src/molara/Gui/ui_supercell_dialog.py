@@ -77,4 +77,3 @@ class Ui_Dialog(object):
         self.labelNumAtoms.setText(QCoreApplication.translate("Dialog", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("Dialog", u"Enter supercell dimensions", None))
     # retranslateUi
-

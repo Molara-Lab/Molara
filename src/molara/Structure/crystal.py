@@ -153,7 +153,11 @@ class Crystal(Structure):
     def edge_atom_coords(self) -> tuple[np.ndarray, np.ndarray]:
         """Return the coordinates of the edge atoms in the supercell."""
         _fractional_coords_np = np.array(self.fractional_coords_supercell)
-        return np.where(_fractional_coords_np == 0)
+        if len(_fractional_coords_np.shape) != 2:  # noqa: PLR2004
+            msg = "Faulty shape of fractional_coords_np array. Shape must be (N,3)."
+            raise ValueError(msg)
+        edges = np.where(_fractional_coords_np == 0)
+        return edges[0], edges[1]
 
     def make_supercell_edge_atoms(self) -> tuple[list[int], list[list[float]]]:
         """Extra atoms are created at supercell edges (periodic boundaries).

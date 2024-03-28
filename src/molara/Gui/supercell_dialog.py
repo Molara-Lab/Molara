@@ -9,8 +9,6 @@ from PySide6.QtWidgets import QDialog, QMainWindow
 from molara.Gui.ui_supercell_dialog import Ui_Dialog
 from molara.Structure.crystal import Crystal
 
-import numpy as np
-
 if TYPE_CHECKING:
     intvec3 = list[int]
 
