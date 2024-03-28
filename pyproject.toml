@@ -101,7 +101,6 @@ no_implicit_optional = false
 
 [tool.codespell]
 ignore-words-list = "nd,te"
-skip = "pymatgen/analysis/aflow_prototypes.json"
 check-filenames = true
 
 [tool.cythonize]
