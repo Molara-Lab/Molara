@@ -355,11 +355,11 @@ class BuilderDialog(QDialog):
 
         for i, text in enumerate(self.z_matrix[row]["parameter"]):
             if text is not None:
-                if i == 0:# atom id
+                if i == 0:  # atom id
                     temp_text = text
-                elif i == 1:# distance
+                elif i == 1:  # distance
                     temp_text = f"{text:.2f}"
-                else:# angles (bond angle, dihedral angle)
+                else:  # angles (bond angle, dihedral angle)
                     temp_text = f"{np.rad2deg(text):.2f}"
 
                 self.ui.tableWidget.setItem(row, param_rows[i], QTableWidgetItem(temp_text))
