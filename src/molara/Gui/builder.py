@@ -212,6 +212,7 @@ class BuilderDialog(QDialog):
         if not (atomic_num_valid and values_valid):
             return
 
+        # check if atom is the very first to be added
         if count_atoms == 0:
             pos = self.calc_position_new_atom(count_atoms, params, atom_ids)
             self.main_window.mols.add_molecule(
@@ -329,7 +330,7 @@ class BuilderDialog(QDialog):
     def _check_element(self, atomic_num: int | None) -> bool:
         """Check if the element which should be added exists.
 
-        :param at_charg: atomic charge which is None if not an element.
+        :param atomic_num: atomic number (core charge) which is None if not an element.
         """
         error_msg = "This is not an element."
         is_element = True
@@ -354,11 +355,11 @@ class BuilderDialog(QDialog):
 
         for i, text in enumerate(self.z_matrix[row]["parameter"]):
             if text is not None:
-                if i == 0:
+                if i == 0:# atom id
                     temp_text = text
-                elif i == 1:
+                elif i == 1:# distance
                     temp_text = f"{text:.2f}"
-                else:
+                else:# angles (bond angle, dihedral angle)
                     temp_text = f"{np.rad2deg(text):.2f}"
 
                 self.ui.tableWidget.setItem(row, param_rows[i], QTableWidgetItem(temp_text))
@@ -447,21 +448,18 @@ class BuilderDialog(QDialog):
 
         :param idx: Index of the row to be deleted
         """
-        do_deletion = True
-
         if idx == -1:
             error_msg = "No Atom was chosen to be deleted."
             self.ui.ErrorMessageBrowser.setText(error_msg)
-            do_deletion = False
+            return False
 
-        else:
-            for entry in self.z_matrix:
-                if idx in entry["atom_ids"]:
-                    error_msg = f"Cannot be deleted. Atom {idx+1} depends on this atom."
-                    do_deletion = False
-                    self.ui.ErrorMessageBrowser.setText(error_msg)
+        for entry in self.z_matrix:
+            if idx in entry["atom_ids"]:
+                error_msg = f"Cannot be deleted. Atom {idx+1} depends on this atom."
+                self.ui.ErrorMessageBrowser.setText(error_msg)
+                return False
 
-        return do_deletion
+        return True
 
     def _delete_zmat_row(self, idx: int, num_atoms: int) -> None:
         """Delete an entry in the z-matrix.
@@ -470,8 +468,8 @@ class BuilderDialog(QDialog):
         :param num_atoms: Total number of atoms in the molecule.
         """
         for i in range(idx, num_atoms):
-            for j, at_num in enumerate(self.z_matrix[i]["atom_ids"]):
-                if at_num > idx and at_num != -1:
+            for j, at_id in enumerate(self.z_matrix[i]["atom_ids"]):
+                if at_id > idx and at_id != -1:
                     self.z_matrix[i]["atom_ids"][j] -= 1
 
         self.z_matrix.pop(idx)
