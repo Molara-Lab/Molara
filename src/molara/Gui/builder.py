@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Callable, ParamSpec, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
+from typing_extensions import ParamSpec
 
 from molara.Gui.ui_builder import Ui_builder
 from molara.Structure.atom import element_symbol_to_atomic_number
@@ -43,7 +44,7 @@ class BuilderDialog(QDialog):
     """Dialog to ask for information to build molecules."""
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Initializes the ZMatBuilder dialog.
+        """Initialize the ZMatBuilder dialog.
 
         :param parent: QOpenGLWidget: The structure widget.
         """
@@ -69,7 +70,7 @@ class BuilderDialog(QDialog):
         self._initialize_table()
 
     def _initialize_table(self) -> None:
-        """Initializes the table of the builder."""
+        """Initialize the table of the builder."""
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(7)
 
@@ -83,7 +84,7 @@ class BuilderDialog(QDialog):
 
     @toggle_slot
     def select_add(self) -> None:
-        """Selects the add procedure. Depends on the number of atoms in the molecule."""
+        """Select the add procedure. Depends on the number of atoms in the molecule."""
         self.err = False
         self.colliding_idx = None
 
@@ -97,15 +98,14 @@ class BuilderDialog(QDialog):
             mol = self.main_window.mols.mols[0]
             params, atom_nums = self._get_parameters(mol.n_at)
 
-            match mol.n_at:
-                case 0:
-                    self.add_first_atom(params)
-                case 1:
-                    self.add_second_atom(mol, params)
-                case 2:
-                    self.add_third_atom(mol, params, atom_nums)
-                case _:
-                    self.add_nth_atom(mol, params, atom_nums)
+            if mol.n_at == 0:
+                self.add_first_atom(params)
+            elif mol.n_at == 1:
+                self.add_second_atom(mol, params)
+            elif mol.n_at == 2:  # noqa: PLR2004
+                self.add_third_atom(mol, params, atom_nums)
+            else:
+                self.add_nth_atom(mol, params, atom_nums)
 
         self.disable_slot = False
         if not self.err and self.colliding_idx is None:
@@ -116,7 +116,7 @@ class BuilderDialog(QDialog):
             self.structure_widget.clear_builder_selected_atoms()
 
     def delete_atom(self) -> None:
-        """Deletes an atom from the z-matrix visualization table and z_matrix itself."""
+        """Delete an atom from the z-matrix visualization table and z_matrix itself."""
         index = self.ui.tableWidget.currentRow()
 
         mol = self.main_window.mols.mols[0]
@@ -146,7 +146,7 @@ class BuilderDialog(QDialog):
 
     @toggle_slot
     def adapt_z_matrix(self, item: QTableWidgetItem) -> None:
-        """Changes the z-matrix in dependence of the visualization table.
+        """Change the z-matrix in dependence of the visualization table.
 
         :param item: passed item from the visualization table
         """
@@ -215,7 +215,7 @@ class BuilderDialog(QDialog):
 
     @toggle_slot
     def add_first_atom(self, params: tuple) -> None:
-        """Initializes a molecule and adds the first atom to it.
+        """Initialize a molecule and adds the first atom to it.
 
         :param params: parameters that are passed for the first atom
         """
@@ -225,13 +225,13 @@ class BuilderDialog(QDialog):
 
         init_xyz = np.zeros([1, 3])
 
-        self.main_window.mols.add_molecule(Molecule([at_chrg], init_xyz, draw_bonds=False))
+        self.main_window.mols.add_molecule(Molecule(np.array([at_chrg]), init_xyz, draw_bonds=False))
         if at_chrg_check:
             self.ui.tableWidget.setRowCount(1)
             self.ui.tableWidget.setItem(0, 0, QTableWidgetItem(element))
 
     def add_second_atom(self, mol: Molecule, params: tuple) -> None:
-        """Adds a second atom.
+        """Add a second atom.
 
         :param mol: The molecule where a second atom shall be added.
         """
@@ -245,7 +245,7 @@ class BuilderDialog(QDialog):
             mol.add_atom(at_chrg, coord)
 
     def add_third_atom(self, mol: Molecule, params: tuple, atom_ids: list) -> None:
-        """Adds a third atom to the molecule.
+        """Add a third atom to the molecule.
 
         :param mol: The molecule where a second atom shall be added.
         :param params: atom parameters (element, distance to selected atom, angle to selected bond)
@@ -268,7 +268,7 @@ class BuilderDialog(QDialog):
             mol.add_atom(at_chrg, coord)
 
     def add_nth_atom(self, mol: Molecule, params: tuple, atom_nums: list) -> None:
-        """Adds an nth atom to the molecule.
+        """Add an nth atom to the molecule.
 
         :param mol: The molecule where an nth atom shall be added.
         :param params: atom parameters (element, distance to selected atom, angle to selected bond)
@@ -306,7 +306,7 @@ class BuilderDialog(QDialog):
                 self.ui.ErrorMessageBrowser.setText(error_msg)
 
     def _clear_all_text(self) -> None:
-        """Clears all text in the zbuilder dialog."""
+        """Clear all text in the zbuilder dialog."""
         for line_edit in [
             self.ui.Box_0Element,
             self.ui.Box_1BondDistance,
@@ -316,7 +316,7 @@ class BuilderDialog(QDialog):
             line_edit.clear()
 
     def _check_value(self, *args: float, threshold: float = 1e-8) -> bool:
-        """Checks whether values are larger than a threshold.
+        """Check whether values are larger than a threshold.
 
         :param args: Parameter to check whether threshold is reached.
         :param threshold: Threshold to be reached.
@@ -334,7 +334,7 @@ class BuilderDialog(QDialog):
         return vals_above_threshold
 
     def _check_selected_atoms(self, *selected_atoms: int) -> bool:
-        """Checks if all necessary atoms are selected.
+        """Check if all necessary atoms are selected.
 
         :param selected_atoms:int: Selected Atoms to check if not -1
         """
@@ -350,7 +350,7 @@ class BuilderDialog(QDialog):
         return all_selected
 
     def _check_element(self, at_chrg: int | None) -> bool:
-        """Checks if the element which should be added exists.
+        """Check if the element which should be added exists.
 
         :param at_charg: atomic charge which is None if not an element.
         """
@@ -365,7 +365,7 @@ class BuilderDialog(QDialog):
 
     @toggle_slot
     def _set_z_matrix_row(self, tot_row: int, row: int) -> None:
-        """Sets a z matrix row in the table in builder dialog.
+        """Set a z matrix row in the table in builder dialog.
 
         :param tot_row: Total number of rows
         :param row: The idx of the row to be changed
@@ -377,13 +377,12 @@ class BuilderDialog(QDialog):
 
         for i, text in enumerate(self.z_matrix[row]["parameter"]):
             if text is not None:
-                match i:
-                    case 0:
-                        temp_text = text
-                    case 1:
-                        temp_text = f"{text:.2f}"
-                    case _:
-                        temp_text = f"{np.rad2deg(text):.2f}"
+                if i == 0:
+                    temp_text = text
+                elif i == 1:
+                    temp_text = f"{text:.2f}"
+                else:
+                    temp_text = f"{np.rad2deg(text):.2f}"
 
                 self.ui.tableWidget.setItem(row, param_rows[i], QTableWidgetItem(temp_text))
                 if param_rows[i] != 0:
@@ -400,7 +399,7 @@ class BuilderDialog(QDialog):
             self._set_z_matrix_row(tot_row, j)
 
     def _delete_table_row(self, idx: int) -> None:
-        """Deletes a row from the table.
+        """Delete a row from the table.
 
         :param idx: Index of the row to be deleted
         """
@@ -417,23 +416,21 @@ class BuilderDialog(QDialog):
         dihedral: float = np.deg2rad(float(self.ui.Box_3DihedralAngle.text()))
         atom_nums = self.structure_widget.builder_selected_spheres
 
-        match num_atoms:
-            case 0:
-                return (element, None), []
-            case 1:
-                return (element, dist), [0]
-            case 2:
-                return (element, dist, angle), atom_nums
-            case _:
-                return (
-                    element,
-                    dist,
-                    angle,
-                    dihedral,
-                ), atom_nums
+        if num_atoms == 0:
+            return (element, None), []
+        if num_atoms == 1:
+            return (element, dist), [0]
+        if num_atoms == 2:  # noqa: PLR2004
+            return (element, dist, angle), atom_nums
+        return (
+            element,
+            dist,
+            angle,
+            dihedral,
+        ), atom_nums
 
     def _get_parameters_from_table(self, row: int) -> tuple:
-        """Returns the parameter of a specified row in the table.
+        """Return the parameter of a specified row in the table.
 
         :param row: Index of the row of interest.
         """
@@ -459,18 +456,17 @@ class BuilderDialog(QDialog):
         if not param_type_validity:
             return (None,)
 
-        match row:
-            case 0:
-                return (element, None)
-            case 1:
-                return (element, float(dist))
-            case 2:
-                return (element, float(dist), np.deg2rad(float(angle)))
-            case _:
-                return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
+        if row == 0:
+            return (element, None)
+        if row == 1:
+            return (element, float(dist))
+        if row == 2:  # noqa: PLR2004
+            return (element, float(dist), np.deg2rad(float(angle)))
+
+        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
 
     def _check_z_matrix_deletion(self, idx: int) -> bool:
-        """Checks if the deletion of the z-matrix entry is valid.
+        """Check if the deletion of the z-matrix entry is valid.
 
         :param idx: Index of the row to be deleted
         """
@@ -491,7 +487,7 @@ class BuilderDialog(QDialog):
         return do_deletion
 
     def _delete_zmat_row(self, idx: int, num_atoms: int) -> None:
-        """Deletes an entry in the z-matrix.
+        """Delete an entry in the z-matrix.
 
         :param idx: Index of the row to be deleted
         :param num_atoms: Total number of atoms in the molecule.
@@ -505,7 +501,7 @@ class BuilderDialog(QDialog):
 
     @toggle_slot
     def _clear_upper_table_entries(self, number_of_rows: int) -> None:
-        """Clears the unnecessary table entries if there is some input."""
+        """Clear the unnecessary table entries if there is some input."""
         first_row = 0
         second_row = 1
         third_row = 2

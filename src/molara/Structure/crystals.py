@@ -14,7 +14,7 @@ class Crystals(Structures):
     """A class to store and manipulate a list of Crystals."""
 
     def __init__(self) -> None:
-        """Initializes the Crystals Class."""
+        """Initialize the Crystals Class."""
         super().__init__()
         self.energies: list = []
 
@@ -29,7 +29,7 @@ class Crystals(Structures):
         self.remove_crystal = self._remove_structure
 
     def _get_current_structure(self) -> Crystal:
-        """Returns the current structure."""
+        """Return the current structure."""
         return self._structures[self._structure_id]
 
     @property

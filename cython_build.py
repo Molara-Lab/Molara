@@ -1,4 +1,4 @@
-"""This file is used to compile the cython modules.
+"""File used to compile the cython modules.
 
 It needs to be called manually with python3 cython_build.py build_ext --inplace.
 """

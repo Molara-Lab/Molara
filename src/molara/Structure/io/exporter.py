@@ -40,7 +40,7 @@ class StructureExporter(ABC):
 
     @abstractmethod
     def write_structure(self, structure: Structure) -> None:
-        """Writes the structure in some given format into the output file.
+        """Write the structure in some given format into the output file.
 
         :param structure: Structure object to be exported to file
         """
@@ -74,7 +74,7 @@ class GeneralExporter(StructureExporter):
     }
 
     def __init__(self, path: PathLike | str) -> None:
-        """Tries to determine the file format and calls the correct exporter.
+        """Try to determine the file format and calls the correct exporter.
 
         :param path: output file path
         """

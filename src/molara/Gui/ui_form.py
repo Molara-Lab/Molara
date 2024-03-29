@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -64,6 +64,10 @@ class Ui_MainWindow(object):
         self.actionExport.setObjectName(u"actionExport")
         self.actionExport_Snapshot = QAction(MainWindow)
         self.actionExport_Snapshot.setObjectName(u"actionExport_Snapshot")
+        self.actionToggle_UnitCellBoundaries = QAction(MainWindow)
+        self.actionToggle_UnitCellBoundaries.setObjectName(u"actionToggle_UnitCellBoundaries")
+        self.actionToggle_Projection = QAction(MainWindow)
+        self.actionToggle_Projection.setObjectName(u"actionToggle_Projection")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -76,7 +80,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 37))
+        self.menubar.setGeometry(QRect(0, 0, 800, 22))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuEdit = QMenu(self.menubar)
@@ -103,6 +107,7 @@ class Ui_MainWindow(object):
         self.menuEdit.addAction(self.actionCenter_Molecule)
         self.menuEdit.addAction(self.actionReset_View)
         self.menuEdit.addAction(self.menuRotate.menuAction())
+        self.menuEdit.addAction(self.actionToggle_Projection)
         self.menuEdit.addAction(self.actionDraw_Axes)
         self.menuEdit.addAction(self.actionOpen_Trajectory_Dialog)
         self.menuEdit.addSeparator()
@@ -113,6 +118,7 @@ class Ui_MainWindow(object):
         self.menuCrystal.addAction(self.actionRead_POSCAR)
         self.menuCrystal.addAction(self.actionCreate_Lattice)
         self.menuCrystal.addAction(self.actionSupercell)
+        self.menuCrystal.addAction(self.actionToggle_UnitCellBoundaries)
         self.menuTools.addAction(self.actionMeasure)
         self.menuTools.addAction(self.actionBuilder)
 
@@ -142,10 +148,11 @@ class Ui_MainWindow(object):
         self.actionBuilder.setText(QCoreApplication.translate("MainWindow", u"Builder", None))
         self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export", None))
         self.actionExport_Snapshot.setText(QCoreApplication.translate("MainWindow", u"Export Snapshot", None))
+        self.actionToggle_UnitCellBoundaries.setText(QCoreApplication.translate("MainWindow", u"Toggle Unit Cell Boundaries", None))
+        self.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", u"Toggle Projection (Perspective/Ortho)", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
     # retranslateUi
-

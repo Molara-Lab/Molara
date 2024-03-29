@@ -35,7 +35,7 @@ class Basisset:
     """
 
     def __init__(self, basis_type: str = "None") -> None:
-        """Initializes the Basisset class.
+        """Initialize the Basisset class.
 
         :param basis_type: str.
         :return:
@@ -53,7 +53,7 @@ class Basisset:
         coefficients: list,
         position: np.ndarray,
     ) -> None:
-        """Generates the orbitals for the basisset and normalizes the primitive functions.
+        """Generate the orbitals for the basisset and normalizes the primitive functions.
 
         :param shells: list of shells
         :param exponents: list of exponents
@@ -184,7 +184,7 @@ class Orbital:
         coefficients: np.ndarray,
         position: np.ndarray,
     ) -> None:
-        """Initializes the orbital class.
+        """Initialize the orbital class.
 
         :param ijk: list of ijk values
         :param exponents: list of exponents
@@ -208,7 +208,7 @@ def calculate_normalization_primitive_gtos(
     ijk: np.ndarray,
     exponents: np.ndarray,
 ) -> np.ndarray:
-    """Normalizes the primitive gaussians.
+    """Normalize the primitive gaussians.
 
     :param ijk: list of ijk values
     :param exponents: list of exponents
@@ -239,7 +239,7 @@ def calculate_normalization_contracted_gtos(
     coefficients: np.ndarray,
     norms: np.ndarray,
 ) -> float:
-    """Normalizes the contracted gaussians.
+    """Normalize the contracted gaussians.
 
     :param ijk: list of ijk values
     :param exponents: list of exponents
@@ -270,7 +270,7 @@ def calculate_normalization_contracted_gtos(
 
 
 def generate_ijks(shell: str) -> list[list]:
-    """Generates the ijk values for the shells.
+    """Generate the ijk values for the shells.
 
     :param shell: name of the atomic orbital shell (s/p/d/f)
     :return:

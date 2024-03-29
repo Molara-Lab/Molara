@@ -24,7 +24,7 @@ class Mos:
         spins: list | None = None,
         occupations: list | None = None,
     ) -> None:
-        """Initializes the Mos class.
+        """Initialize the Mos class.
 
         :param labels: list of labels for the mos
         :param energies: list of energies for the mos
@@ -56,7 +56,7 @@ class Mos:
         aos: list[Orbital],
         electron_position: np.ndarray,
     ) -> float:
-        """Calculates the value of one mo for a given electron position. Cartesian only!
+        """Calculate the value of one mo for a given electron position. Cartesian only!.
 
         :param index: index of the mo
         :param aos: list of all the aos

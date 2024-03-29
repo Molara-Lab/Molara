@@ -1,4 +1,4 @@
-"""This module contains the Molecule class."""
+"""Contains the Molecule class."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ class Molecule(Structure):
         dummy: bool = False,
         draw_bonds: bool = True,
     ) -> None:
-        """Creates a new Molecule object.
+        """Create a new Molecule object.
 
         :param atomic_numbers:np.ndarray: atomic numbers of a atoms
         :param coordinates:np.ndarray: coordinates of the molecule
@@ -45,7 +45,7 @@ class Molecule(Structure):
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
     def gen_energy_information(self, string: str | None) -> None:
-        """Reads the energy from the second line.
+        """Read the energy from the second line.
 
         :param string: file header from which energy info is extracted
         """
