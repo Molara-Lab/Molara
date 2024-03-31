@@ -22,13 +22,11 @@ It is advisable to install Molara in a virtual Python environment.
 
 <b>Virtual environment on Linux / Mac:</b>
 ```
-python -m pip install virtualenv
 python -m venv venv
 source venv/bin/activate
 ```
 <b>Virtual environment on Windows:</b>
 ```
-python -m pip install virtualenv
 python -m venv venv
 .\venv\Scripts\activate.bat
 ```
