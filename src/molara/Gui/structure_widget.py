@@ -172,7 +172,7 @@ class StructureWidget(QOpenGLWidget):
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
-        self.renderer.set_shader(compile_shaders())
+        self.renderer.set_shaders(compile_shaders())
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         """Resizes the widget.
@@ -188,6 +188,7 @@ class StructureWidget(QOpenGLWidget):
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         self.renderer.draw_scene(self.camera, self.bonds)
+        self.renderer.draw_lines()
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""

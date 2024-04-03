@@ -5,33 +5,43 @@ from __future__ import annotations
 from OpenGL.GL import (
     GL_FRAGMENT_SHADER,
     GL_VERTEX_SHADER,
+    GL_GEOMETRY_SHADER,
     GLuint,
     glAttachShader,
     glCreateProgram,
     glLinkProgram,
-    glUseProgram,
 )
 from OpenGL.GL.shaders import compileShader
 
 __copyright__ = "Copyright 2024, Molara"
 
 
-def compile_shaders() -> GLuint:
+def compile_shaders() -> list[GLuint]:
     """Compiles the shader program with the given shader source code in glsl.
 
     :return: The compiled shader program from pyopengl.
     """
-    vertex_shader = compileShader(vertex_src, GL_VERTEX_SHADER)
-    fragment_shader = compileShader(fragment_src, GL_FRAGMENT_SHADER)
+    vertex_shader = compileShader(vertex_src_main, GL_VERTEX_SHADER)
+    fragment_shader = compileShader(fragment_src_main, GL_FRAGMENT_SHADER)
     shader = glCreateProgram()
     glAttachShader(shader, vertex_shader)
     glAttachShader(shader, fragment_shader)
     glLinkProgram(shader)
-    glUseProgram(shader)
-    return shader
+    shaders: list[GLuint] = [shader]
+
+    vertex_shader = compileShader(vertex_src_lines, GL_VERTEX_SHADER)
+    fragment_shader = compileShader(fragment_src_lines, GL_FRAGMENT_SHADER)
+    geometry_shader = compileShader(geometry_src_lines, GL_GEOMETRY_SHADER)
+    shader = glCreateProgram()
+    glAttachShader(shader, vertex_shader)
+    glAttachShader(shader, fragment_shader)
+    glAttachShader(shader, geometry_shader)
+    glLinkProgram(shader)
+    shaders.append(shader)
+    return shaders
 
 
-vertex_src = """
+vertex_src_main = """
 # version 410 core
 
 layout(location = 0) in vec3 a_position;
@@ -60,7 +70,7 @@ void main()
 }
 """
 
-fragment_src = """
+fragment_src_main = """
 # version 410 core
 
 in vec3 v_color;
@@ -91,3 +101,80 @@ void main()
     out_color = vec4(result, 1.0);
 }
 """
+
+vertex_src_lines = """
+#version 410 core
+layout (location = 0) in vec2 aPos;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+    gl_PointSize = 10.0;
+}
+"""
+
+fragment_src_lines = """
+#version 410 core
+out vec4 out_color;
+
+void main()
+{
+    out_color = vec4(0.0, 1.0, 0.0, 1.0);   
+}
+"""
+
+geometry_src_lines = """
+#version 330 core
+layout (points) in;
+layout (line_strip, max_vertices = 5) out;
+
+void build_house(vec4 position)
+{    
+    gl_Position = position + vec4(-0.2, -0.2, 0.0, 0.0);    // 1:bottom-left
+    EmitVertex();   
+    gl_Position = position + vec4( 0.2, -0.2, 0.0, 0.0);    // 2:bottom-right
+    EmitVertex();
+    gl_Position = position + vec4(-0.2,  0.2, 0.0, 0.0);    // 3:top-left
+    EmitVertex();
+    gl_Position = position + vec4( 0.2,  0.2, 0.0, 0.0);    // 4:top-right
+    EmitVertex();
+    gl_Position = position + vec4( 0.0,  0.4, 0.0, 0.0);    // 5:top
+    EmitVertex();
+    EndPrimitive();
+}
+
+void main() {    
+    build_house(gl_in[0].gl_Position);
+}  
+"""
+
+geometry_src_lines_with_linewidth = """
+#version 330 core
+layout(lines) in;
+layout(triangle_strip, max_vertices = 4) out;
+
+uniform float lineWidth;
+
+void main() {
+    vec4 p0 = gl_in[0].gl_Position;
+    vec4 p1 = gl_in[1].gl_Position;
+
+    vec2 dir = normalize(p1.xy - p0.xy);
+    vec2 normal = vec2(-dir.y, dir.x) * lineWidth * 0.5;
+
+    gl_Position = p0 + vec4(normal, 0.0, 0.0);
+    EmitVertex();
+
+    gl_Position = p1 + vec4(normal, 0.0, 0.0);
+    EmitVertex();
+
+    gl_Position = p0 - vec4(normal, 0.0, 0.0);
+    EmitVertex();
+
+    gl_Position = p1 - vec4(normal, 0.0, 0.0);
+    EmitVertex();
+
+    EndPrimitive();
+}
+"""
+

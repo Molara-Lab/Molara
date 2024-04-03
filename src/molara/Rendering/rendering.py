@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import ctypes
 import numpy as np
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
@@ -14,8 +15,23 @@ from OpenGL.GL import (
     GL_FALSE,
     GL_TRIANGLES,
     GL_UNSIGNED_INT,
+    GL_TRIANGLE_STRIP,
     GLuint,
+    glEnable,
+    GL_VERTEX_PROGRAM_POINT_SIZE,
+
     glBindBuffer,
+    glGenVertexArrays,
+    glGenBuffers,
+    glBufferData,
+    glEnableVertexAttribArray,
+    glVertexAttribPointer,
+    GL_STATIC_DRAW,
+    GL_FLOAT,
+    GL_POINTS,
+    glViewport,
+    GL_LINES,
+    GL_TRIANGLES,
     glBindVertexArray,
     glClear,
     glDeleteBuffers,
@@ -23,6 +39,8 @@ from OpenGL.GL import (
     glDrawElementsInstanced,
     glGetUniformLocation,
     glUniform3fv,
+    glDrawArrays,
+    glUseProgram,
     glUniformMatrix4fv,
 )
 
@@ -47,7 +65,7 @@ class Renderer:
         self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
         self.spheres: list[dict] = []
         self.cylinders: list[dict] = []
-        self.shader: GLuint = 0
+        self.shaders: list[GLuint] = [0]
 
     def set_shader(self, shader: GLuint) -> None:
         """Set the shader program for the opengl widget.
@@ -55,7 +73,7 @@ class Renderer:
         :param shader: The shader program of the opengl widget.
         :type shader: pyopengl program
         """
-        self.shader = shader
+        self.shaders = shaders
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -350,10 +368,11 @@ class Renderer:
         :type bonds: bool
         :return:
         """
-        light_direction_loc = glGetUniformLocation(self.shader, "light_direction")
-        proj_loc = glGetUniformLocation(self.shader, "projection")
-        camera_loc = glGetUniformLocation(self.shader, "camera_position")
-        view_loc = glGetUniformLocation(self.shader, "view")
+        glUseProgram(self.shaders[0])
+        light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
+        proj_loc = glGetUniformLocation(self.shaders[0], "projection")
+        camera_loc = glGetUniformLocation(self.shaders[0], "camera_position")
+        view_loc = glGetUniformLocation(self.shaders[0], "view")
 
         light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
         glUniform3fv(light_direction_loc, 1, light_direction)
@@ -408,4 +427,37 @@ class Renderer:
                     None,
                     cylinder["n_instances"],
                 )
+        glBindVertexArray(0)
+
+    def draw_lines(self) -> None:
+        """Draws the lines."""
+        glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
+        glUseProgram(self.shaders[1])
+        # allocate a VertexArray
+        vao = glGenVertexArrays(1)
+        # now bind a vertex array object for our verts
+        glBindVertexArray(vao)
+        #  a simple triangle not a numpy array would be good here but can use other methods too
+        vert = np.array([
+            -0.5, -0.5,
+             0.5, -0.5,
+             0.5,  0.5,
+            -0.5,  0.5
+        ], dtype='float32')
+        #  now we are going to bind this to our vbo
+
+        vboID = glGenBuffers(1)
+        #  now bind this to the VBO buffer
+        glBindBuffer(GL_ARRAY_BUFFER, vboID)
+        #  allocate the buffer data
+        glBufferData(GL_ARRAY_BUFFER, vert, GL_STATIC_DRAW)
+        #  now fix this to the attribute buffer 0
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, None)
+        #  enable and bind this attribute (will be inPosition in the shader)
+        glEnableVertexAttribArray(0)
+
+        glBindVertexArray(0)
+
+        glBindVertexArray(vao)
+        glDrawArrays(GL_POINTS, 0, 4)
         glBindVertexArray(0)
