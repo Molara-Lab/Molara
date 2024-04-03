@@ -67,11 +67,10 @@ class Renderer:
         self.cylinders: list[dict] = []
         self.shaders: list[GLuint] = [0]
 
-    def set_shader(self, shader: GLuint) -> None:
+    def set_shaders(self, shaders: list[GLuint]) -> None:
         """Set the shader program for the opengl widget.
 
-        :param shader: The shader program of the opengl widget.
-        :type shader: pyopengl program
+        :param shaders: The shader programs of the opengl widget.
         """
         self.shaders = shaders
 
