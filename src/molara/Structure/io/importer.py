@@ -100,7 +100,8 @@ class XyzImporter(MoleculesImporter):
                     atomic_numbers.append(int(atom_info[0]))
 
                 else:
-                    atomic_numbers.append(element_symbol_to_atomic_number(atom_info[0]))
+                    token = atom_info[0].capitalize() if atom_info[0].lower() == atom_info[0] else atom_info[0]
+                    atomic_numbers.append(element_symbol_to_atomic_number(token))
 
                 coordinates.append([float(coord) for coord in atom_info[1:4]])
 
