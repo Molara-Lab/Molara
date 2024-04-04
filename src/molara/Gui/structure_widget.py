@@ -173,6 +173,7 @@ class StructureWidget(QOpenGLWidget):
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
         self.renderer.set_shaders(compile_shaders())
+        self.renderer.aspect_ratio = self.width() / self.height()
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         """Resizes the widget.
@@ -183,12 +184,13 @@ class StructureWidget(QOpenGLWidget):
         glViewport(0, 0, width, height)  # one can also use self.width() and self.height()
         self.camera.width, self.camera.height = width, height
         self.camera.calculate_projection_matrix()
+        self.renderer.aspect_ratio = self.width() / self.height()
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         self.renderer.draw_scene(self.camera, self.bonds)
-        self.renderer.draw_lines()
+        self.renderer.draw_numbers()
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""

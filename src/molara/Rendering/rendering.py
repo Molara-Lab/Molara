@@ -8,11 +8,16 @@ from typing import TYPE_CHECKING
 import ctypes
 import numpy as np
 from OpenGL.GL import (
+    glPolygonMode,
+    GL_FRONT_AND_BACK,
+    GL_LINE,
+    GL_FILL,
     GL_ARRAY_BUFFER,
     GL_COLOR_BUFFER_BIT,
     GL_DEPTH_BUFFER_BIT,
     GL_ELEMENT_ARRAY_BUFFER,
     GL_FALSE,
+    glUniform1f,
     GL_TRIANGLES,
     GL_UNSIGNED_INT,
     GL_TRIANGLE_STRIP,
@@ -64,6 +69,7 @@ class Renderer:
         self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": []}
         self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
         self.spheres: list[dict] = []
+        self.aspect_ratio: float = 1.0
         self.cylinders: list[dict] = []
         self.shaders: list[GLuint] = [0]
 
@@ -367,6 +373,8 @@ class Renderer:
         :type bonds: bool
         :return:
         """
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glUseProgram(self.shaders[0])
         light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
         proj_loc = glGetUniformLocation(self.shaders[0], "projection")
@@ -428,7 +436,7 @@ class Renderer:
                 )
         glBindVertexArray(0)
 
-    def draw_lines(self) -> None:
+    def draw_numbers(self) -> None:
         """Draws the lines."""
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
         glUseProgram(self.shaders[1])
@@ -451,12 +459,14 @@ class Renderer:
         #  allocate the buffer data
         glBufferData(GL_ARRAY_BUFFER, vert, GL_STATIC_DRAW)
         #  now fix this to the attribute buffer 0
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, None)
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, vert.itemsize * 2, ctypes.c_void_p(0))
         #  enable and bind this attribute (will be inPosition in the shader)
         glEnableVertexAttribArray(0)
 
         glBindVertexArray(0)
 
         glBindVertexArray(vao)
+        aspect_ratio_location = glGetUniformLocation(self.shaders[1], "aspect_ratio")
+        glUniform1f(aspect_ratio_location, self.aspect_ratio)
         glDrawArrays(GL_POINTS, 0, 4)
         glBindVertexArray(0)
