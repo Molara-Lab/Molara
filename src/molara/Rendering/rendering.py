@@ -77,6 +77,7 @@ class Renderer:
         self.spheres: list[dict] = []
         self.aspect_ratio: float = 1.0
         self.cylinders: list[dict] = []
+        self.number_vao: list[dict] = []
         self.shaders: list[GLuint] = [0]
 
     def set_shaders(self, shaders: list[GLuint]) -> None:
@@ -332,6 +333,33 @@ class Renderer:
         self.atoms_vao["n_atoms"] = len(model_matrices)
         self.atoms_vao["n_vertices"] = len(vertices)
 
+    def draw_numbers(
+        self,
+        positions: np.ndarray,
+        digits: np.ndarray,
+        scales: np.ndarray,
+    ) -> None:
+        """Update the vertex attribute object for the numbers.
+
+        :param positions: Positions of the numbers.
+        :param digits: Digits of the numbers.
+        :param scales: Scales of the numbers.
+        :return:
+        """
+        if len(self.number_vao) != 0:
+            for number in self.number_vao:
+                if number["vao"] != 0:
+                    glBindBuffer(GL_ARRAY_BUFFER, 0)
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+                    for buffer in number["buffers"]:
+                        glDeleteBuffers(1, buffer)
+                    glDeleteVertexArrays(1, number["vao"])
+        self.number_vao = []
+        positions = positions.flatten()
+        vao, buffers = setup_vao_numbers(positions, digits, scales)
+        self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
+
+
     def update_bonds_vao(
         self,
         vertices: np.ndarray,
@@ -442,42 +470,21 @@ class Renderer:
                 )
         glBindVertexArray(0)
 
-    def draw_numbers(self) -> None:
+    def display_numbers(self) -> None:
         """Draws the lines."""
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
         glUseProgram(self.shaders[1])
-        # Generate and bind VAO
-        vao = glGenVertexArrays(1)
-        glBindVertexArray(vao)
 
-        # Number positions
-        number_positions = np.array([
-            -0.5, -0.5,  # Position for the first number
-            0.5, -0.5,  # Position for the second number
-            0.5, 0.5,  # Position for the third number
-            -0.5, 0.5  # Position for the fourth number
-        ], dtype='float32')
-        # Instance data (digits)
-        digits = np.array([
-            0,1,2,3,  # Digit 0 at position 0, digit 1 at position 1, etc.
-        ], dtype=np.uint32)
-        # Instance data (scales)
-        scales = np.array([
-            0.5,0.6,0.9,0.2,
-        ], dtype=np.float32)
-
-        vao, buffers = setup_vao_numbers(number_positions, digits, scales)
-
-        glBindVertexArray(vao)
+        glBindVertexArray(self.number_vao[0]["vao"])
         # Uniform for aspect ratio
         aspect_ratio_location = glGetUniformLocation(self.shaders[1], "aspect_ratio")
         glUniform1f(aspect_ratio_location, self.aspect_ratio)
 
         # Uniform for color
         color_location = glGetUniformLocation(self.shaders[1], "color_in")
-        glUniform3fv(color_location, 1, np.array([1.0, 1.0, 0.0], dtype=np.float32))
+        glUniform3fv(color_location, 1, np.array([.0, .0, .0], dtype=np.float32))
 
         # Draw instanced
-        glDrawArraysInstanced(GL_POINTS, 0, 4, len(digits))
+        glDrawArraysInstanced(GL_POINTS, 0, 4, self.number_vao[0]["n_instances"])
 
         glBindVertexArray(0)

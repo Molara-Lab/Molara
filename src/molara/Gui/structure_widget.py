@@ -70,7 +70,7 @@ class StructureWidget(QOpenGLWidget):
             np.array([0, 0, 1], dtype=np.float32),
             np.array([1, 1, 0], dtype=np.float32),
         ]
-        # self.toggle_unit_cell_boundaries()
+        self.show_atom_indices = False
 
     @property
     def bonds(self) -> bool:
@@ -98,6 +98,31 @@ class StructureWidget(QOpenGLWidget):
     def orthographic_projection(self) -> bool:
         """Specifies whether the projection is orthographic or not."""
         return self.camera.orthographic_projection
+
+    def toggle_atom_indices(self) -> None:
+        """Toggle the display of atom indices."""
+        self.show_atom_indices = not self.show_atom_indices
+        self.update_label_positions()
+        self.update()
+
+    def update_label_positions(self) -> None:
+        """Update the positions of the labels."""
+        number_of_atoms = len(self.structure.atoms)
+        positions = np.zeros((number_of_atoms,2), dtype=np.float32)
+        digits = np.zeros(number_of_atoms, dtype=np.int32)
+        scales = np.zeros(number_of_atoms, dtype=np.float32)
+        for i in range(number_of_atoms):
+            digits[i] = i + 1
+            temp_pos_vec = self.structure.atoms[i].position
+            temp_vec = temp_pos_vec - self.camera.position
+            scales[i] = 1/np.linalg.norm(temp_vec) * 0.2
+            temp_vec = temp_vec / np.linalg.norm(temp_vec)
+            temp_vec = self.camera.view_matrix_inv @ np.append(temp_vec, 0.0)
+            temp_vec[0] = temp_vec[0] / self.camera.projection_matrix_inv[1,1]
+            temp_vec[1] = temp_vec[1] / self.camera.projection_matrix_inv[1,1]
+            positions[i] = - temp_vec[:2] / temp_vec[2]
+        self.renderer.draw_numbers(positions, digits, scales)
+
 
     def reset_view(self) -> None:
         """Reset the view of the structure to the initial view."""
@@ -190,7 +215,9 @@ class StructureWidget(QOpenGLWidget):
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         self.renderer.draw_scene(self.camera, self.bonds)
-        self.renderer.draw_numbers()
+        if self.show_atom_indices:
+            self.update_label_positions()
+            self.renderer.display_numbers()
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""
