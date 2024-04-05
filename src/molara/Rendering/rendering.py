@@ -7,17 +7,22 @@ from typing import TYPE_CHECKING
 
 import ctypes
 import numpy as np
+import pyrr
 from OpenGL.GL import (
     glPolygonMode,
     GL_FRONT_AND_BACK,
     GL_LINE,
     GL_FILL,
     GL_ARRAY_BUFFER,
+    GL_DYNAMIC_DRAW,
+    glVertexAttribIPointer,
+    glVertexAttribDivisor,
     GL_COLOR_BUFFER_BIT,
     GL_DEPTH_BUFFER_BIT,
     GL_ELEMENT_ARRAY_BUFFER,
     GL_FALSE,
     glUniform1f,
+    GL_UNSIGNED_INT,
     GL_TRIANGLES,
     GL_UNSIGNED_INT,
     GL_TRIANGLE_STRIP,
@@ -44,12 +49,13 @@ from OpenGL.GL import (
     glDrawElementsInstanced,
     glGetUniformLocation,
     glUniform3fv,
+    glDrawArraysInstanced,
     glDrawArrays,
     glUseProgram,
     glUniformMatrix4fv,
 )
 
-from molara.Rendering.buffers import setup_vao
+from molara.Rendering.buffers import setup_vao, setup_vao_numbers
 from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
@@ -440,33 +446,38 @@ class Renderer:
         """Draws the lines."""
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
         glUseProgram(self.shaders[1])
-        # allocate a VertexArray
+        # Generate and bind VAO
         vao = glGenVertexArrays(1)
-        # now bind a vertex array object for our verts
         glBindVertexArray(vao)
-        #  a simple triangle not a numpy array would be good here but can use other methods too
-        vert = np.array([
-            -0.5, -0.5,
-             0.5, -0.5,
-             0.5,  0.5,
-            -0.5,  0.5
+
+        # Number positions
+        number_positions = np.array([
+            -0.5, -0.5,  # Position for the first number
+            0.5, -0.5,  # Position for the second number
+            0.5, 0.5,  # Position for the third number
+            -0.5, 0.5  # Position for the fourth number
         ], dtype='float32')
-        #  now we are going to bind this to our vbo
+        # Instance data (digits)
+        digits = np.array([
+            0,1,2,3,  # Digit 0 at position 0, digit 1 at position 1, etc.
+        ], dtype=np.uint32)
+        # Instance data (scales)
+        scales = np.array([
+            0.5,0.6,0.9,0.2,
+        ], dtype=np.float32)
 
-        vboID = glGenBuffers(1)
-        #  now bind this to the VBO buffer
-        glBindBuffer(GL_ARRAY_BUFFER, vboID)
-        #  allocate the buffer data
-        glBufferData(GL_ARRAY_BUFFER, vert, GL_STATIC_DRAW)
-        #  now fix this to the attribute buffer 0
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, vert.itemsize * 2, ctypes.c_void_p(0))
-        #  enable and bind this attribute (will be inPosition in the shader)
-        glEnableVertexAttribArray(0)
-
-        glBindVertexArray(0)
+        vao, buffers = setup_vao_numbers(number_positions, digits, scales)
 
         glBindVertexArray(vao)
+        # Uniform for aspect ratio
         aspect_ratio_location = glGetUniformLocation(self.shaders[1], "aspect_ratio")
         glUniform1f(aspect_ratio_location, self.aspect_ratio)
-        glDrawArrays(GL_POINTS, 0, 4)
+
+        # Uniform for color
+        color_location = glGetUniformLocation(self.shaders[1], "color_in")
+        glUniform3fv(color_location, 1, np.array([1.0, 1.0, 0.0], dtype=np.float32))
+
+        # Draw instanced
+        glDrawArraysInstanced(GL_POINTS, 0, 4, len(digits))
+
         glBindVertexArray(0)

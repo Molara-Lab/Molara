@@ -105,36 +105,45 @@ void main()
 vertex_src_numbers = """
 #version 410 core
 layout (location = 0) in vec2 aPos;
+layout (location = 1) in float scale;
+layout (location = 2) in uint digit;
 
 uniform float aspect_ratio;
-uniform float scale;
-uniform int digit;
 
 out float aspect_ratio_v;
+out uint digit_v;
+out float scale_v;
 
 void main()
 {
     aspect_ratio_v = aspect_ratio;
+    digit_v = digit;
+    scale_v = scale;
+        
     gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
 }
 """
 
 fragment_src_numbers = """
 #version 410 core
+uniform vec3 color_in;
+
 out vec4 out_color;
 
 void main()
 {
-    out_color = vec4(0.0, 1.0, 0.0, 1.0);   
+    out_color = vec4(color_in, 1.0);
 }
 """
 
 geometry_src_numbers = """
 #version 330 core
 layout (points) in;
-layout (triangle_strip, max_vertices = 1000) out;
+layout (triangle_strip, max_vertices = 500) out;
 
 in float aspect_ratio_v[];
+in uint digit_v[];
+in float scale_v[];
 
 void draw_horizontal_line(vec4 position, float aspect_ratio, float scale)
 {    
@@ -423,14 +432,42 @@ void display_9(vec4 position, float aspect_ratio, float scale)
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
 
-void display_number(vec4 position, float aspect_ratio)
+void display_number(vec4 position, float aspect_ratio, uint digit, float scale)
 {
-    display_4(position, aspect_ratio, 0.5);
-    //draw_horizontal_line(temp_pos, aspect_ratio, 0.5);
+    if (digit == 0u){
+        display_0(position, aspect_ratio, scale);
+    }
+    else if (digit == 1u){
+        display_1(position, aspect_ratio, scale);
+    }
+    else if (digit == 2u){
+        display_2(position, aspect_ratio, scale);
+    }
+    else if (digit == 3u){
+        display_3(position, aspect_ratio, scale);
+    }
+    else if (digit == 4u){
+        display_4(position, aspect_ratio, scale);
+    }
+    else if (digit == 5u){
+        display_5(position, aspect_ratio, scale);
+    }
+    else if (digit == 6u){
+        display_6(position, aspect_ratio, scale);
+    }
+    else if (digit == 7u){
+        display_7(position, aspect_ratio, scale);
+    }
+    else if (digit == 8u){
+        display_8(position, aspect_ratio, scale);
+    }
+    else if (digit == 9u){
+        display_9(position, aspect_ratio, scale);
+    }
 }
 
 void main() {    
-    display_number(gl_in[0].gl_Position, aspect_ratio_v[0]);
+    display_number(gl_in[0].gl_Position, aspect_ratio_v[0], digit_v[0], scale_v[0]);
 }  
 """
 
