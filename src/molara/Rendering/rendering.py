@@ -355,7 +355,6 @@ class Renderer:
                         glDeleteBuffers(1, buffer)
                     glDeleteVertexArrays(1, number["vao"])
         self.number_vao = []
-        assert(digits[0] == 1)
 
         vao, buffers = setup_vao_numbers(positions, digits, scales)
         self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})

@@ -106,10 +106,16 @@ class StructureWidget(QOpenGLWidget):
         """Toggle the display of atom indices."""
         self.show_atom_indices = not self.show_atom_indices
         self.show_atom_indices_is_initialized = not self.show_atom_indices_is_initialized
-        if self.show_atom_indices:
+        if self.show_atom_indices and len(self.structure.atoms) < 999:
             self.atom_indices_arrays = init_atom_number(self.structure)
-        self.update_label_positions()
-        self.update()
+            self.update_label_positions()
+            self.update()
+        elif len(self.structure.atoms) > 999:
+            print('Cannot display indices for more than 999 atoms.')
+            self.show_atom_indices = False
+            self.show_atom_indices_is_initialized = False
+            self.atom_indices_arrays = (np.zeros(1), np.zeros(1), np.zeros(1))
+
 
     def update_label_positions(self) -> None:
         """Update the positions of the labels."""
@@ -163,6 +169,15 @@ class StructureWidget(QOpenGLWidget):
         """
         self.structure = struct
         self.structure_is_set = True
+        if self.show_atom_indices and len(self.structure.atoms) < 999:
+            self.atom_indices_arrays = init_atom_number(self.structure)
+            self.show_atom_indices_is_initialized = True
+            self.update_label_positions()
+        elif len(self.structure.atoms) > 999:
+            print('Cannot display indices for more than 999 atoms.')
+            self.show_atom_indices = False
+            self.atom_indices_arrays = (np.zeros(1), np.zeros(1), np.zeros(1))
+            self.show_atom_indices_is_initialized = False
         if reset_view:
             self.reset_view()
         else:

@@ -56,6 +56,7 @@ def calculate_atom_number_arrays(positions: np.ndarray,
 
     digits_offset = 0.35
     digits_width = 0.21
+    screen_positions = np.zeros(2, dtype=np.float32)
 
     i = 0
     digit_index = 0
@@ -64,12 +65,37 @@ def calculate_atom_number_arrays(positions: np.ndarray,
         rel_atom_position_3d = atom_position_3d - camera.position
         distance_atom_camera = np.linalg.norm(rel_atom_position_3d)
         inv_distance_atom_camera = 1 / distance_atom_camera
+
         scale = inv_distance_atom_camera * 0.2
         rel_atom_position_3d /= distance_atom_camera
+        dir_cam_target = camera.target - camera.position
+        dir_cam_target /= np.linalg.norm(dir_cam_target)
+        min_size = 0.01
+
+        # check if scale too small or atom behind camera. (dirty)
+        if scale < min_size or np.dot(rel_atom_position_3d, dir_cam_target) < 0:
+            if i < 9:
+                scales[digit_index] = 0
+                digit_index += 1
+            elif i < 99:
+                scales[digit_index] = 0
+                digit_index += 1
+                scales[digit_index] = 0
+                digit_index += 1
+            elif i < 999:
+                scales[digit_index] = 0
+                digit_index += 1
+                scales[digit_index] = 0
+                digit_index += 1
+                scales[digit_index] = 0
+                digit_index += 1
+            i += 1
+            continue
+
         atom_positions_cam_space = camera.view_matrix_inv[:3,:3] @ rel_atom_position_3d
         atom_positions_clip_space = atom_positions_cam_space / camera.projection_matrix_inv[1, 1]
-        screen_positions = - atom_positions_clip_space / atom_positions_cam_space[2]
-        screen_positions = screen_positions[:2]
+        screen_positions[0] = - atom_positions_clip_space[0] / atom_positions_cam_space[2]
+        screen_positions[1] = - atom_positions_clip_space[1] / atom_positions_cam_space[2]
 
         scaled_digits_offset = digits_offset * scale
         scaled_digits_width = digits_width * scale
@@ -80,26 +106,32 @@ def calculate_atom_number_arrays(positions: np.ndarray,
             scales[digit_index] = scale
             digit_index += 1
         elif i < 99:
-            positions[digit_index] = screen_positions - np.array([scaled_digits_offset, 0], dtype=np.float32)
-            digits[digit_index] = i // 10
+            offset_array = np.array([scaled_digits_offset, 0], dtype=np.float32)
+            positions[digit_index,:] = screen_positions - offset_array
+            digits[digit_index] = (i + 1) // 10
+
             scales[digit_index] = scale
             digit_index += 1
-            positions[digit_index] = screen_positions + np.array([scaled_digits_offset, 0], dtype=np.float32)
-            digits[digit_index] = i % 10
+            positions[digit_index,:] = screen_positions + offset_array
+            digits[digit_index] = (i + 1) % 10
+
             scales[digit_index] = scale
             digit_index += 1
         elif i < 999:
             offset_array = np.array([scaled_digits_width + scaled_digits_offset, 0], dtype=np.float32)
-            positions[digit_index] = screen_positions - offset_array
-            digits[digit_index] = i // 100
+            positions[digit_index,:] = screen_positions - offset_array
+            digits[digit_index] = (i + 1) // 100
+
             scales[digit_index] = scale
             digit_index += 1
-            positions[digit_index] = screen_positions
-            digits[digit_index] = (i // 10) % 10
+            positions[digit_index,:] = screen_positions
+            digits[digit_index] = ((i + 1) // 10) % 10
+
             scales[digit_index] = scale
             digit_index += 1
-            positions[digit_index] = screen_positions + offset_array
-            digits[digit_index] = i % 10
+            positions[digit_index,:] = screen_positions + offset_array
+            digits[digit_index] = (i + 1) % 10
+
             scales[digit_index] = scale
             digit_index += 1
 
