@@ -14,6 +14,7 @@ from PySide6.QtWidgets import QFileDialog
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
+from molara.Rendering.atom_labels import init_atom_number, calculate_atom_number_arrays
 from molara.Structure.crystal import Crystal
 from molara.Tools.raycasting import select_sphere
 
@@ -71,6 +72,8 @@ class StructureWidget(QOpenGLWidget):
             np.array([1, 1, 0], dtype=np.float32),
         ]
         self.show_atom_indices = False
+        self.show_atom_indices_is_initialized = False
+        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1), np.zeros(1))
 
     @property
     def bonds(self) -> bool:
@@ -102,26 +105,21 @@ class StructureWidget(QOpenGLWidget):
     def toggle_atom_indices(self) -> None:
         """Toggle the display of atom indices."""
         self.show_atom_indices = not self.show_atom_indices
+        self.show_atom_indices_is_initialized = not self.show_atom_indices_is_initialized
+        if self.show_atom_indices:
+            self.atom_indices_arrays = init_atom_number(self.structure)
         self.update_label_positions()
         self.update()
 
     def update_label_positions(self) -> None:
         """Update the positions of the labels."""
-        number_of_atoms = len(self.structure.atoms)
-        positions = np.zeros((number_of_atoms,2), dtype=np.float32)
-        digits = np.zeros(number_of_atoms, dtype=np.int32)
-        scales = np.zeros(number_of_atoms, dtype=np.float32)
-        for i in range(number_of_atoms):
-            digits[i] = i + 1
-            temp_pos_vec = self.structure.atoms[i].position
-            temp_vec = temp_pos_vec - self.camera.position
-            scales[i] = 1/np.linalg.norm(temp_vec) * 0.2
-            temp_vec = temp_vec / np.linalg.norm(temp_vec)
-            temp_vec = self.camera.view_matrix_inv @ np.append(temp_vec, 0.0)
-            temp_vec[0] = temp_vec[0] / self.camera.projection_matrix_inv[1,1]
-            temp_vec[1] = temp_vec[1] / self.camera.projection_matrix_inv[1,1]
-            positions[i] = - temp_vec[:2] / temp_vec[2]
-        self.renderer.draw_numbers(positions, digits, scales)
+        calculate_atom_number_arrays(self.atom_indices_arrays[0],
+                                     self.atom_indices_arrays[1],
+                                     self.atom_indices_arrays[2],
+                                     self.structure, self.camera)
+        self.renderer.draw_numbers(self.atom_indices_arrays[0],
+                                   self.atom_indices_arrays[1],
+                                   self.atom_indices_arrays[2])
 
 
     def reset_view(self) -> None:

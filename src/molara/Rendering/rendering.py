@@ -346,8 +346,6 @@ class Renderer:
         :param scales: Scales of the numbers.
         :return:
         """
-        digits_offset = 0.35
-        digits_width = 0.21
         if len(self.number_vao) != 0:
             for number in self.number_vao:
                 if number["vao"] != 0:
@@ -358,60 +356,9 @@ class Renderer:
                     glDeleteVertexArrays(1, number["vao"])
         self.number_vao = []
         assert(digits[0] == 1)
-        if max(digits) < 10:
-            positions = positions.flatten()
-            vao, buffers = setup_vao_numbers(positions, digits, scales)
-            self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
-        else:
-            # the number is composed of at least two digits, the number needs to be formatted and the digits need to be
-            # drawn separately. Still only one position vector should be sent and thus only one vao containing all
-            # digits is created.
 
-            positions_all = positions[:9, :].copy().flatten()
-            digits_all = digits[:9]
-            scales_all = scales[:9]
-            for i, digit in enumerate(digits[9:]):
-                if scales[i + 9] <= 0.05:
-                    continue
-                scaled_offset = digits_offset * scales[i + 9]
-                scaled_width = digits_width * scales[i + 9]
-                if digit < 100:
-                    temp_position_plus = positions[i + 9, 0] + scaled_offset
-                    temp_position_minus = positions[i + 9, 0] - scaled_offset
-                    temp_position_y = positions[i + 9, 1]
-                    positions_all = np.concatenate((positions_all, [temp_position_minus, temp_position_y]))
-                    positions_all = np.concatenate((positions_all, [temp_position_plus, temp_position_y]))
-
-                    digit_1 = digit % 10
-                    digit_2 = (digit // 10) % 10
-                    digits_all = np.concatenate((digits_all, [digit_2, digit_1]))
-                    scales_all = np.concatenate((scales_all, [scales[i + 9], scales[i + 9]]))
-                elif digit < 1000:
-                    temp_position_middle = positions[i + 9, 0]
-                    temp_position_minus = temp_position_middle - scaled_width - scaled_offset
-                    temp_position_plus = temp_position_middle + scaled_width + scaled_offset
-                    temp_position_y = positions[i + 9, 1]
-                    positions_all = np.concatenate((positions_all, [temp_position_minus, temp_position_y]))
-                    positions_all = np.concatenate((positions_all, [temp_position_middle, temp_position_y]))
-                    positions_all = np.concatenate((positions_all, [temp_position_plus, temp_position_y]))
-
-                    digit_1 = digit % 10
-                    digit_2 = (digit // 10) % 10
-                    digit_3 = (digit // 100) % 10
-                    digits_all = np.concatenate((digits_all, [digit_3, digit_2, digit_1]))
-                    scales_all = np.concatenate((scales_all, [scales[i + 9], scales[i + 9], scales[i + 9]]))
-                else:
-                    print('Number too large to be displayed. :)')
-
-                positions_all = np.array(positions_all, dtype=np.float32)
-                digits_all = np.array(digits_all, dtype=np.uint32)
-                scales_all = np.array(scales_all, dtype=np.float32)
-
-
-                print(digits_all)
-
-            vao, buffers = setup_vao_numbers(positions_all, digits_all, scales_all)
-            self.number_vao.append({"vao": vao, "n_instances": len(digits_all), "buffers": buffers})
+        vao, buffers = setup_vao_numbers(positions, digits, scales)
+        self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
 
 
     def update_bonds_vao(
