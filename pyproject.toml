@@ -2,9 +2,12 @@
 requires = ["setuptools>=65.0.0", "cython", "numpy", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
 [project]
 name = "Molara"
-version = "0.0.1"
+version = "0.0.1.4"
 description = "A visualisation tool for chemical structures."
 authors = [
     {name = "Michel Heinz"},
@@ -67,13 +70,6 @@ crystal = [
 
 [project.scripts]
 molara = "molara.__main__:main"
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-include = ["molara", "molara.*"]
-exclude = ["tests", "tests.*"]
 
 [tool.ruff]
 exclude = ["ui_*",]
