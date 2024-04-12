@@ -99,6 +99,13 @@ no_implicit_optional = false
 ignore-words-list = "nd,te"
 check-filenames = true
 
+[tool.coverage.report]
+exclude_also = [
+  "except ImportError:",
+  "if TYPE_CHECKING:",
+  "if typing.TYPE_CHECKING:",
+]
+
 [tool.cythonize]
 # Specify the files to be compiled by Cython
 modules = [
