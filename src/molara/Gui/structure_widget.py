@@ -114,18 +114,17 @@ class StructureWidget(QOpenGLWidget):
             print('Cannot display indices for more than 999 atoms.')
             self.show_atom_indices = False
             self.show_atom_indices_is_initialized = False
-            self.atom_indices_arrays = (np.zeros(1), np.zeros(1), np.zeros(1))
+            self.atom_indices_arrays = (np.zeros(1), np.zeros(1))
 
 
     def update_label_positions(self) -> None:
         """Update the positions of the labels."""
         calculate_atom_number_arrays(self.atom_indices_arrays[0],
                                      self.atom_indices_arrays[1],
-                                     self.atom_indices_arrays[2],
                                      self.structure, self.camera)
         self.renderer.draw_numbers(self.atom_indices_arrays[0],
                                    self.atom_indices_arrays[1],
-                                   self.atom_indices_arrays[2])
+                                   )
 
 
     def reset_view(self) -> None:
@@ -230,7 +229,8 @@ class StructureWidget(QOpenGLWidget):
         self.renderer.draw_scene(self.camera, self.bonds)
         if self.show_atom_indices:
             self.update_label_positions()
-            self.renderer.display_numbers()
+            self.renderer.display_numbers(self.camera)
+
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""

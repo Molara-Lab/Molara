@@ -127,13 +127,12 @@ def setup_vao(
 
     return vao, buffers
 
-def setup_vao_numbers(positions: np.ndarray, digits: np.ndarray, scales: np.ndarray) -> tuple[int, list[int]]:
+
+def setup_vao_numbers(digits: np.ndarray, positions_3d: np.ndarray) -> tuple[int, list[int]]:
     """Set up a vertex attribute object and binds it to the GPU.
 
-    :param positions: Positions of the numbers.
     :param digits: The digits to be displayed.
-    :param scales: The scales of the numbers.
-    :param color: The color of the numbers.
+    :param positions_3d: The 3D positions of the atoms.
     :return: Returns a bound vertex attribute object
     """
     # Generate and bind VAO
@@ -141,30 +140,22 @@ def setup_vao_numbers(positions: np.ndarray, digits: np.ndarray, scales: np.ndar
     glBindVertexArray(vao)
 
     # Generate and bind VBO for instance data
-    instance_vbo_positions = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_positions)
-    glBufferData(GL_ARRAY_BUFFER, positions, GL_DYNAMIC_DRAW)
-    glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, positions.itemsize * 2, ctypes.c_void_p(0))
-    glVertexAttribDivisor(0, 1)  # Set instance data divisor
-
-    # Generate and bind VBO for instance data
     instance_vbo_digits = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_digits)
     glBufferData(GL_ARRAY_BUFFER, digits, GL_DYNAMIC_DRAW)
-    glEnableVertexAttribArray(2)
-    glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, digits.itemsize, ctypes.c_void_p(0))
-    glVertexAttribDivisor(2, 1)  # Set instance data divisor
+    glEnableVertexAttribArray(0)
+    glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, digits.itemsize, ctypes.c_void_p(0))
+    #glVertexAttribDivisor(0, 1)  # Set instance data divisor
 
     # Generate and bind VBO for instance data
-    instance_vbo_scales = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_scales)
-    glBufferData(GL_ARRAY_BUFFER, scales, GL_DYNAMIC_DRAW)
+    instance_vbo_positions_3d = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_positions_3d)
+    glBufferData(GL_ARRAY_BUFFER, positions_3d, GL_DYNAMIC_DRAW)
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, scales.itemsize, ctypes.c_void_p(0))
-    glVertexAttribDivisor(1, 1)  # Set instance data divisor
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, instance_vbo_positions_3d.itemsize*3, ctypes.c_void_p(0))
+    #glVertexAttribDivisor(1, 1)  # Set instance data divisor
 
-    buffers = [instance_vbo_positions, instance_vbo_digits, instance_vbo_scales]
+    buffers = [instance_vbo_digits, instance_vbo_positions_3d]
     glBindVertexArray(0)
 
     return vao, buffers

@@ -4,10 +4,9 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+import time as t
 
-import ctypes
 import numpy as np
-import pyrr
 from OpenGL.GL import (
     glPolygonMode,
     GL_FRONT_AND_BACK,
@@ -63,6 +62,7 @@ if TYPE_CHECKING:
     from numpy import floating
 
     from molara.Rendering.camera import Camera
+    from molara.Structure.atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -335,15 +335,13 @@ class Renderer:
 
     def draw_numbers(
         self,
-        positions: np.ndarray,
         digits: np.ndarray,
-        scales: np.ndarray,
+        positions_3d: np.ndarray,
     ) -> None:
         """Update the vertex attribute object for the numbers.
 
-        :param positions: Positions of the numbers.
         :param digits: Digits of the numbers.
-        :param scales: Scales of the numbers.
+        :param positions_3d: 3D positions of the numbers.
         :return:
         """
         if len(self.number_vao) != 0:
@@ -356,7 +354,7 @@ class Renderer:
                     glDeleteVertexArrays(1, number["vao"])
         self.number_vao = []
 
-        vao, buffers = setup_vao_numbers(positions, digits, scales)
+        vao, buffers = setup_vao_numbers(digits, positions_3d)
         self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
 
 
@@ -470,21 +468,39 @@ class Renderer:
                 )
         glBindVertexArray(0)
 
-    def display_numbers(self) -> None:
+    def display_numbers(self, camera: Camera) -> None:
         """Draws the lines."""
+
+        t0 = t.time()
+
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
         glUseProgram(self.shaders[1])
+        print('time_1:', t.time() - t0)
 
         glBindVertexArray(self.number_vao[0]["vao"])
         # Uniform for aspect ratio
         aspect_ratio_location = glGetUniformLocation(self.shaders[1], "aspect_ratio")
+        scale_loc = glGetUniformLocation(self.shaders[1], "scale")
+        glUniform1f(scale_loc, 0.25)
         glUniform1f(aspect_ratio_location, self.aspect_ratio)
+        print('time_2:', t.time() - t0)
+
+        proj_loc = glGetUniformLocation(self.shaders[1], "projection")
+        view_loc = glGetUniformLocation(self.shaders[1], "view")
+        print('time_3:', t.time() - t0)
+
+
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, camera.view_matrix)
+        print('time_4:', t.time() - t0)
 
         # Uniform for color
         color_location = glGetUniformLocation(self.shaders[1], "color_in")
         glUniform3fv(color_location, 1, np.array([.0, .0, .0], dtype=np.float32))
+        print('time_5:', t.time() - t0)
 
         # Draw instanced
-        glDrawArraysInstanced(GL_POINTS, 0, 4, self.number_vao[0]["n_instances"])
+        glDrawArrays(GL_POINTS, 0, self.number_vao[0]["n_instances"])
 
         glBindVertexArray(0)
+        print('time_end:', t.time() - t0)
