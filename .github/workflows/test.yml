@@ -37,7 +37,6 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install numpy packaging cython --system
-          python -m cython_build build_ext --inplace
           uv pip install -e '.[dev,optional]' --system
       - if: runner.os == 'Linux'
         run: |
