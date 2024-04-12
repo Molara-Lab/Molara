@@ -35,11 +35,11 @@ jobs:
       - name: Build sdist
         run: |
           pip install build
-          python -m build
+          python -m build --sdist
 
       - uses: actions/upload-artifact@v3
         with:
-          path: dist/
+          path: dist/*.tar.gz
 
   build_wheels:
     needs: test
