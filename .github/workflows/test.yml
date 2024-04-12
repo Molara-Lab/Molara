@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install numpy packaging cython --system
-          uv pip install -e '.[dev,ovito]' --system
+          uv pip install -e '.[dev,crystal]' --system
       - if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
