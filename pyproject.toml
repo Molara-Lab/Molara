@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.cibuildwheel.linux]
+skip = ["*musllinux*"]
+
 [project]
 name = "Molara"
 version = "0.0.1.5"
