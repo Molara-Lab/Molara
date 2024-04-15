@@ -43,7 +43,7 @@ def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
 class BuilderDialog(QDialog):
     """Dialog to ask for information to build molecules."""
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow | None = None) -> None:
         """Initialize the ZMatBuilder dialog.
 
         :param parent: QOpenGLWidget: The structure widget.
@@ -435,6 +435,7 @@ class BuilderDialog(QDialog):
         :param row: Index of the row of interest.
         """
         param_type_validity = True
+        angle = None
 
         if row >= 0:
             element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
@@ -452,6 +453,8 @@ class BuilderDialog(QDialog):
         if row >= 3:  # noqa: PLR2004
             dihedral = self.ui.tableWidget.item(row, 6).text()
             param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral)) and param_type_validity
+
+        assert angle is not None
 
         if not param_type_validity:
             return (None,)
