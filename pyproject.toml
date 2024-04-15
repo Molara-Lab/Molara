@@ -99,6 +99,9 @@ exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
 
+[tool.pyright]
+ignore = ["**/ui_*"]
+
 [tool.codespell]
 ignore-words-list = "nd,te"
 check-filenames = true
