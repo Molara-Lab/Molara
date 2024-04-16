@@ -40,7 +40,7 @@ class StructureWidget(QOpenGLWidget):
         QOpenGLWidget.__init__(self, parent)
 
         self.renderer = Renderer()
-        self.structure_is_set = False
+        self.structures_is_set = False
         self.vertex_attribute_objects = [-1]
         self.axes = [
             -1,
@@ -75,8 +75,8 @@ class StructureWidget(QOpenGLWidget):
     @property
     def bonds(self) -> bool:
         """Specifies whether bonds should be drawn (returns False if no bonds present whatsoever)."""
-        if self.structure_is_set:
-            return self.structure.draw_bonds and self.structure.has_bonds
+        if self.structures_is_set:
+            return self.structure[0].draw_bonds and self.structure[0].has_bonds
         return False
 
     @property
@@ -103,8 +103,8 @@ class StructureWidget(QOpenGLWidget):
         """Reset the view of the structure to the initial view."""
         self.center_structure()
         dy, dz = None, None
-        if len(self.structure.atoms) > 1:
-            x, y, z = np.array([atom.position for atom in self.structure.atoms]).T
+        if len(self.structure[0].atoms) > 1:
+            x, y, z = np.array([atom.position for atom in self.structure[0].atoms]).T
             dy = y.max() - y.min()
             dz = z.max() - z.min()
         self.camera.reset(self.width(), self.height(), dy, dz)
@@ -133,13 +133,14 @@ class StructureWidget(QOpenGLWidget):
         self.vertex_attribute_objects = [-1]
         self.update()
 
-    def set_structure(self, struct: Structure | Crystal | Molecule, reset_view: bool = True) -> None:
+    def set_structure(self, structs: list[Structure | Crystal | Molecule], reset_view: bool = True) -> None:
         """Set the structure to be drawn.
 
-        :param struct: Structure object that shall be drawn
+        :param structs: Structure object that shall be drawn
+        :param reset_view: Specifies whether the view shall be reset to the initial view
         """
-        self.structure = struct
-        self.structure_is_set = True
+        self.structure = structs
+        self.structures_is_set = True
         if reset_view:
             self.reset_view()
         else:
@@ -151,8 +152,8 @@ class StructureWidget(QOpenGLWidget):
 
     def center_structure(self) -> None:
         """Centers the structure in the widget."""
-        if self.structure_is_set:
-            self.structure.center_coordinates()
+        if self.structures_is_set:
+            #self.structure.center_coordinates()
             self.camera.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()
@@ -192,18 +193,43 @@ class StructureWidget(QOpenGLWidget):
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""
         self.makeCurrent()
-        assert isinstance(self.structure.drawer.cylinder_colors, np.ndarray)
+        assert isinstance(self.structure[0].drawer.cylinder_colors, np.ndarray)
+        sphere_vertices = self.structure[0].drawer.sphere.vertices
+        sphere_indices = self.structure[0].drawer.sphere.indices
+        cylinder_vertices = self.structure[0].drawer.cylinder.vertices
+        cylinder_indices = self.structure[0].drawer.cylinder.indices
+        sphere_model_matrices = self.structure[0].drawer.sphere_model_matrices
+        atom_colors = self.structure[0].drawer.atom_colors
+        cylinder_model_matrices = self.structure[0].drawer.cylinder_model_matrices
+        cylinder_colors = self.structure[0].drawer.cylinder_colors
+        for i in range(1,len(self.structure)):
+            sphere_model_matrices = np.concatenate(
+                (sphere_model_matrices, self.structure[i].drawer.sphere_model_matrices),
+                axis=0,
+            )
+            atom_colors = np.concatenate(
+                (atom_colors, self.structure[i].drawer.atom_colors),
+                axis=0,
+            )
+            cylinder_model_matrices = np.concatenate(
+                (cylinder_model_matrices, self.structure[i].drawer.cylinder_model_matrices),
+                axis=0,
+            )
+            cylinder_colors = np.concatenate(
+                (cylinder_colors, self.structure[i].drawer.cylinder_colors),
+                axis=0,
+            )
         self.renderer.update_atoms_vao(
-            self.structure.drawer.sphere.vertices,
-            self.structure.drawer.sphere.indices,
-            self.structure.drawer.sphere_model_matrices,
-            self.structure.drawer.atom_colors,
+            sphere_vertices,
+            sphere_indices,
+            sphere_model_matrices,
+            atom_colors,
         )
         self.renderer.update_bonds_vao(
-            self.structure.drawer.cylinder.vertices,
-            self.structure.drawer.cylinder.indices,
-            self.structure.drawer.cylinder_model_matrices,
-            self.structure.drawer.cylinder_colors,
+            cylinder_vertices,
+            cylinder_indices,
+            cylinder_model_matrices,
+            cylinder_colors,
         ) if update_bonds else None
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
@@ -371,7 +397,7 @@ class StructureWidget(QOpenGLWidget):
 
         :param update_box: specifies whether box shall be updated. If False, a drawn box will be hidden.
         """
-        if not self.structure_is_set:
+        if not self.structures_is_set:
             return
 
         self.makeCurrent()
