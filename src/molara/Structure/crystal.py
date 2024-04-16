@@ -258,7 +258,7 @@ class Crystal(Structure):
 
         :param structure: pymatgen.Structure object
         """
-        return cls(structure.atomic_numbers, structure.frac_coords, structure.lattice.matrix, supercell_dims)
+        return cls(list(structure.atomic_numbers), structure.frac_coords, structure.lattice.matrix, supercell_dims)
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:
