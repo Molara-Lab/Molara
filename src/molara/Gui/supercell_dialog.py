@@ -21,7 +21,7 @@ class SupercellDialog(QDialog):
     and passed to main window"s OpenGL widget for rendering.
     """
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow | None = None) -> None:
         """Create a CrystalDialog object.
 
         :param parent: parent widget (main window)
@@ -38,7 +38,7 @@ class SupercellDialog(QDialog):
         self.supercell_dims: list[int] = [1, 1, 1]
 
     @staticmethod
-    def get_supercell_dims(supercell_dims: list[int]) -> bool:
+    def get_supercell_dims(supercell_dims: list[int]) -> int:
         """Open dialog for supercell size specification.
 
         :param supercell_dims: supercell dimensions (e.g. [2, 4, 3] for 2x4x3 supercell)
