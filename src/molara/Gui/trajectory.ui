@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>traj_dialog</class>
+ <widget class="QDialog" name="traj_dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,7 +14,7 @@
    <cursorShape>ArrowCursor</cursorShape>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Molecules Controler</string>
   </property>
   <widget class="QPushButton" name="PrevButton">
    <property name="geometry">
@@ -68,8 +68,8 @@
   <widget class="QDial" name="speedDial">
    <property name="geometry">
     <rect>
-     <x>330</x>
-     <y>255</y>
+     <x>350</x>
+     <y>250</y>
      <width>40</width>
      <height>40</height>
     </rect>
@@ -103,14 +103,27 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>267</y>
-     <width>101</width>
+     <x>310</x>
+     <y>260</y>
+     <width>41</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Animation speed:</string>
+    <string>Speed:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="overlayButton">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>260</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show all</string>
    </property>
   </widget>
  </widget>
