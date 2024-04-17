@@ -76,7 +76,9 @@ class StructureWidget(QOpenGLWidget):
     def bonds(self) -> bool:
         """Specifies whether bonds should be drawn (returns False if no bonds present whatsoever)."""
         if self.structure_is_set:
-            return self.structure.draw_bonds and self.structure.has_bonds
+            result = self.structure.draw_bonds and self.structure.has_bonds
+            self.main_window.structure_customizer_dialog.bonds = result
+            return result
         return False
 
     @property
@@ -140,6 +142,7 @@ class StructureWidget(QOpenGLWidget):
         """
         self.structure = struct
         self.structure_is_set = True
+        self.main_window.structure_customizer_dialog.apply_changes()
         if reset_view:
             self.reset_view()
         else:
@@ -354,8 +357,9 @@ class StructureWidget(QOpenGLWidget):
 
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
-        if self.structure:
+        if self.structure and not self.main_window.structure_customizer_dialog.stick_mode:
             self.structure.toggle_bonds()
+            self.main_window.structure_customizer_dialog.toggle_bonds()
             self.set_vertex_attribute_objects()
             self.update()
             self.main_window.update_action_texts()
