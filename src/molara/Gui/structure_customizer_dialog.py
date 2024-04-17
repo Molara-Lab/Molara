@@ -1,16 +1,16 @@
+"""Dialog for manipulating appearance of structures."""
 
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-from molara.Gui.ui_structure_customizer import Ui_structure_customizer
 
 from PySide6.QtWidgets import (
     QDialog,
     QMainWindow,
 )
 
+from molara.Gui.ui_structure_customizer import Ui_structure_customizer
+
 __copyright__ = "Copyright 2024, Molara"
+
 
 class StructureCustomizerDialog(QDialog):
     """Dialog for manipulating appearance of trajectories."""

@@ -117,8 +117,9 @@ class Drawer:
 
     def set_cylinder_dimensions(self) -> None:
         """Set the dimensions of the cylinders."""
-        self.cylinder_dimensions[:,0] = self.cylinder_radius * self.cylinder_scale
-        self.cylinder_dimensions[:,2] = self.cylinder_radius * self.cylinder_scale
+        self.cylinder_dimensions = np.array(self.cylinder_dimensions, dtype=np.float32)
+        self.cylinder_dimensions[:, 0] = self.cylinder_radius * self.cylinder_scale
+        self.cylinder_dimensions[:, 2] = self.cylinder_radius * self.cylinder_scale
 
     def set_cylinder_props(self) -> None:
         """Set the colors of the bonds (cylinders)."""
@@ -168,7 +169,10 @@ class Drawer:
         self.atom_scales = []
         scaling_factor = self.sphere_default_radius * self.sphere_scale
         if self.sphere_default_radius != self.cylinder_radius:
-            self.atom_scales = np.array([3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms], dtype=np.float32)
+            self.atom_scales = np.array(
+                [3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms],
+                dtype=np.float32,
+            )
         else:
             self.atom_scales = np.array([3 * [scaling_factor] for atom in self.atoms], dtype=np.float32)
 

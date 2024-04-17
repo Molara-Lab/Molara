@@ -65,4 +65,3 @@ class Ui_structure_customizer(object):
         self.stickSizeLabel.setText(QCoreApplication.translate("structure_customizer", u"Stick Size:", None))
         self.toggleBondsButton.setText(QCoreApplication.translate("structure_customizer", u"Toggle Bonds", None))
     # retranslateUi
-

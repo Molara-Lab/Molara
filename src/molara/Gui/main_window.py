@@ -11,9 +11,9 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
+from molara.Gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
-from molara.Gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
@@ -98,7 +98,6 @@ class MainWindow(QMainWindow):
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
-
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""
