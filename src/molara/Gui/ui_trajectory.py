@@ -60,11 +60,10 @@ class Ui_traj_dialog(object):
     # setupUi
 
     def retranslateUi(self, traj_dialog):
-        traj_dialog.setWindowTitle(QCoreApplication.translate("traj_dialog", u"Molecules Controler", None))
+        traj_dialog.setWindowTitle(QCoreApplication.translate("traj_dialog", u"Molecules Controller", None))
         self.PrevButton.setText(QCoreApplication.translate("traj_dialog", u"<", None))
         self.NextButton.setText(QCoreApplication.translate("traj_dialog", u">", None))
         self.playStopButton.setText(QCoreApplication.translate("traj_dialog", u"Play", None))
         self.label.setText(QCoreApplication.translate("traj_dialog", u"Speed:", None))
         self.overlayButton.setText(QCoreApplication.translate("traj_dialog", u"Show all", None))
     # retranslateUi
-

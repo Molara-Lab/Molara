@@ -101,11 +101,11 @@ class TrajectoryDialog(QDialog):
             return
         self.show_all = not self.show_all
         if self.show_all:
-            self.ui.overlayButton.setText('Show current')
-            self.parent().structure_widget.set_structure(self.parent().mols.all_molecules)
+            self.ui.overlayButton.setText("Show current")
+            self.parent().structure_widget.set_structure(self.parent().mols.all_molecules, reset_view=False)
         else:
-            self.ui.overlayButton.setText('Show all')
-            self.parent().structure_widget.set_structure([self.parent().mols.get_current_mol()])
+            self.ui.overlayButton.setText("Show all")
+            self.parent().structure_widget.set_structure([self.parent().mols.get_current_mol()], reset_view=False)
 
     def get_next_mol(self) -> None:
         """Call molecules object to get the next molecule and update it in the GUI."""
@@ -151,6 +151,9 @@ class TrajectoryDialog(QDialog):
             reset_view=False,
         )
         self.update_energy_plot()
+        if self.show_all:
+            self.ui.overlayButton.setText("Show all")
+            self.show_all = False
 
     def change_speed(self, value: int) -> None:
         """Change speed (/ time interval) of trajectory animation.

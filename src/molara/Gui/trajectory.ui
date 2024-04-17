@@ -14,7 +14,7 @@
    <cursorShape>ArrowCursor</cursorShape>
   </property>
   <property name="windowTitle">
-   <string>Molecules Controler</string>
+   <string>Molecules Controller</string>
   </property>
   <widget class="QPushButton" name="PrevButton">
    <property name="geometry">
