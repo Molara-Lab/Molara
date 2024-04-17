@@ -195,7 +195,6 @@ class StructureWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
-        print(self.bonds)
         self.renderer.draw_scene(self.camera, self.bonds)
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
@@ -233,7 +232,6 @@ class StructureWidget(QOpenGLWidget):
             sphere_model_matrices,
             atom_colors,
         )
-        print(update_bonds)
         self.renderer.update_bonds_vao(
             cylinder_vertices,
             cylinder_indices,
