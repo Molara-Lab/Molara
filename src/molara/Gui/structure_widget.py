@@ -153,7 +153,7 @@ class StructureWidget(QOpenGLWidget):
     def center_structure(self) -> None:
         """Centers the structure in the widget."""
         if self.structures_is_set:
-            #self.structure.center_coordinates()
+            # self.structure[0].center_coordinates()
             self.camera.center_coordinates()
             self.set_vertex_attribute_objects()
         self.update()

@@ -115,7 +115,7 @@ class Drawer:
         self.cylinder_positions = []
         self.cylinder_directions = []
         self.cylinder_dimensions = []
-        radius = 0.075
+        radius = 0.2 # 0.075
 
         for bond in self.bonds:
             if bond[0] == -1:
@@ -156,7 +156,7 @@ class Drawer:
         """Set the scales of the atoms."""
         self.atom_scales = []
         scaling_factor = 1.0 / 6
-        self.atom_scales = np.array([3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms], dtype=np.float32)
+        self.atom_scales = np.array([3 * [0.2] for atom in self.atoms], dtype=np.float32) # np.array([3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms], dtype=np.float32)
 
     def reset_atom_model_matrices(self) -> None:
         """Reset the model matrices for the spheres."""
