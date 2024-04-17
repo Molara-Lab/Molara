@@ -40,7 +40,7 @@ class StructureWidget(QOpenGLWidget):
         QOpenGLWidget.__init__(self, parent)
 
         self.renderer = Renderer()
-        self.structures_is_set = False
+        self.structures: list[Structure | Molecule | Crystal] = []
         self.vertex_attribute_objects = [-1]
         self.axes = [
             -1,
@@ -75,7 +75,7 @@ class StructureWidget(QOpenGLWidget):
     @property
     def bonds(self) -> bool:
         """Specifies whether bonds should be drawn (returns False if no bonds present whatsoever)."""
-        if not self.structures_is_set:
+        if self.structures == []:
             return False
         if len(self.structures) > 1:
             return True
@@ -84,8 +84,6 @@ class StructureWidget(QOpenGLWidget):
     @property
     def draw_bonds(self) -> bool:
         """Specifies whether bonds should be drawn."""
-        if not self.structures_is_set:
-            return False
         if len(self.structures) != 1:
             return False
         return self.structures[0].draw_bonds
@@ -109,6 +107,8 @@ class StructureWidget(QOpenGLWidget):
         """Reset the view of the structure to the initial view."""
         self.center_structure()
         dy, dz = None, None
+        if not self.structures[0].atoms:
+            return
         if len(self.structures[0].atoms) > 1:
             x, y, z = np.array([atom.position for atom in self.structures[0].atoms]).T
             dy = y.max() - y.min()
@@ -146,7 +146,6 @@ class StructureWidget(QOpenGLWidget):
         :param reset_view: Specifies whether the view shall be reset to the initial view
         """
         self.structures = structs
-        self.structures_is_set = True
         if reset_view:
             self.reset_view()
         else:
@@ -158,7 +157,7 @@ class StructureWidget(QOpenGLWidget):
 
     def center_structure(self) -> None:
         """Centers the structure in the widget."""
-        if not self.structures_is_set:
+        if self.structures == []:
             return
         self.structures[0].center_coordinates()
         self.camera.center_coordinates()
@@ -387,8 +386,6 @@ class StructureWidget(QOpenGLWidget):
 
     def toggle_bonds(self) -> None:
         """Toggles the bonds on and off."""
-        if not self.structures_is_set:
-            return
         if len(self.structures) != 1:
             return
         self.structures[0].toggle_bonds()
@@ -407,8 +404,6 @@ class StructureWidget(QOpenGLWidget):
 
         :param update_box: specifies whether box shall be updated. If False, a drawn box will be hidden.
         """
-        if not self.structures_is_set:
-            return
         if len(self.structures) != 1:
             return
 

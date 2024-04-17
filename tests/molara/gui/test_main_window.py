@@ -167,7 +167,7 @@ class WorkaroundTestMainWindow:
             window.show_init_xyz()
             assert isinstance(window.mols, Molecules)
             assert isinstance(window.structure_widget.structures[0], Molecule)
-            assert window.structure_widget.structures_is_set
+            assert window.structure_widget.structures
             assert window.structure_widget.structures[0] is window.mols.get_current_mol()
 
     def test_load_molecules(self) -> None:
@@ -177,19 +177,19 @@ class WorkaroundTestMainWindow:
         window.load_molecules("examples/coord/coord1.coord")
         assert isinstance(window.mols, Molecules)
         assert isinstance(window.structure_widget.structures[0], Molecule)
-        assert window.structure_widget.structures_is_set
+        assert window.structure_widget.structures
         assert window.structure_widget.structures[0] is window.mols.get_current_mol()
         # test xyz file
         window.load_molecules("examples/xyz/ferrocene.xyz")
         assert isinstance(window.mols, Molecules)
         assert isinstance(window.structure_widget.structures[0], Molecule)
-        assert window.structure_widget.structures_is_set
+        assert window.structure_widget.structures
         assert window.structure_widget.structures[0] is window.mols.get_current_mol()
         # test POSCAR file
         window.load_molecules("examples/POSCAR/Ba2YCu3O7_POSCAR")
         assert isinstance(window.mols, Crystals)
         assert isinstance(window.structure_widget.structures[0], Crystal)
-        assert window.structure_widget.structures_is_set
+        assert window.structure_widget.structures
         assert window.structure_widget.structures[0] is window.mols.get_current_mol()
 
     def test_show_measurement_dialog(self) -> None:
