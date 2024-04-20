@@ -225,10 +225,25 @@ class WorkaroundTestMainWindow:
         """Write test code to verify the behavior of show_trajectory_dialog method."""
         window = self.window
         window.load_molecules("examples/xyz/opt.xyz")
+
+        all_molecules = window.mols.all_molecules
+        first_size = len(all_molecules)
+        assert len(all_molecules) > 1
+
+        window.mols.remove_molecule(0)
+        all_molecules = window.mols.all_molecules
+        assert len(all_molecules) == first_size - 1
+
         num_mols = window.mols.num_mols
         assert num_mols > 1
         # trajectory dialog should be opened since a trajectory has been loaded
         trajectory_dialog = window.trajectory_dialog
+
+        trajectory_dialog.show_trajectory()
+        trajectory_dialog.show_all_molecules()
+
+        trajectory_dialog.change_speed(1)
+
         assert trajectory_dialog.isVisible()
         # test the buttons
         initial_mol_id = window.mols.mol_index
