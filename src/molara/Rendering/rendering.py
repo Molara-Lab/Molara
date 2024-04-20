@@ -290,6 +290,7 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :return:
         """
+        test.makeCurrent()
         print(test.isValid())
         if self.atoms_vao["vao"] != 0:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
