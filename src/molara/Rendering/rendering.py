@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from numpy import floating
 
     from molara.Rendering.camera import Camera
+    from molara.Gui.structure_widget import StructureWidget
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -271,6 +272,7 @@ class Renderer:
 
     def update_atoms_vao(
         self,
+        test: StructureWidget,
         vertices: np.ndarray,
         indices: np.ndarray,
         model_matrices: np.ndarray,
@@ -288,6 +290,7 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :return:
         """
+        print(test.isValid())
         if self.atoms_vao["vao"] != 0:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
