@@ -33,7 +33,7 @@ class TestShaders(unittest.TestCase):
         program = shaders.compile_shaders()
         assert isinstance(program, int)
 
-    def test_vertex_src(self) -> None:
+    def test_shader_src(self) -> None:
         """Tests the vertex_src variable of the shaders module.
 
         This is done by comparing the hash of the vertex_src and fragment_src C codes with the expected hashes.
@@ -41,6 +41,7 @@ class TestShaders(unittest.TestCase):
         """
         assert isinstance(shaders.vertex_src, str)
         vertex_src_hash = hashlib.sha256(shaders.vertex_src.encode()).hexdigest()
-        assert vertex_src_hash == "2c5f85792b0479049bab350bab526d4340fa77fd3c5841a1b31bcc5d1bce8f85"
+        assert vertex_src_hash == "650efcd6e07d8d24f014d9be78edb39016949260ce5776f3f98e50893d1d30e9"
         fragment_src_hash = hashlib.sha256(shaders.fragment_src.encode()).hexdigest()
-        assert fragment_src_hash == "2ba20ad6145f29b5ea0e47405c3bad0fe484ff81e961e4f865d4bc763f6e507f"
+
+        assert fragment_src_hash == "ab6ad33c9678f8ca7b8a0be445cae2ad2f5c10ff7e08efc14aaa688e922b335e"
