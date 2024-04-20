@@ -33,8 +33,8 @@ from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 if TYPE_CHECKING:
     from numpy import floating
 
-    from molara.Rendering.camera import Camera
     from molara.Gui.structure_widget import StructureWidget
+    from molara.Rendering.camera import Camera
 
 __copyright__ = "Copyright 2024, Molara"
 
