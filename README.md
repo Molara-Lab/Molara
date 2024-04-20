@@ -33,8 +33,6 @@ python -m venv venv
 
 Subsequently, Molara may be installed as follows.
 ```
-pip install cython numpy setuptools
-python -m cython_build build_ext --inplace
 pip install -e .
 ```
 
