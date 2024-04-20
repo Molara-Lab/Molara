@@ -142,7 +142,8 @@ class StructureWidget(QOpenGLWidget):
         """
         self.structure = struct
         self.structure_is_set = True
-        self.main_window.structure_customizer_dialog.apply_changes()
+        if self.bonds:
+            self.main_window.structure_customizer_dialog.apply_changes()
         if reset_view:
             self.reset_view()
         else:
