@@ -37,11 +37,11 @@ class WorkaroundTestMainWindow:
         :param qtbot: provides methods to simulate user interaction
         """
         self.qtbot = qtbot
-        _format = QSurfaceFormat()
-        _format.setVersion(3, 3)
-        _format.setSamples(4)
-        _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
-        QSurfaceFormat.setDefaultFormat(_format)
+        # _format = QSurfaceFormat()
+        # _format.setVersion(3, 3)
+        # _format.setSamples(4)
+        # _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
+        # QSurfaceFormat.setDefaultFormat(_format)
         self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
         self.window = MainWindow()
 
