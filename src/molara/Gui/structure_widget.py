@@ -224,7 +224,6 @@ class StructureWidget(QOpenGLWidget):
                 (cylinder_colors, self.structures[i].drawer.cylinder_colors),
                 axis=0,
             )
-        self.doneCurrent()
         self.makeCurrent()
         self.renderer.update_atoms_vao(
             sphere_vertices,

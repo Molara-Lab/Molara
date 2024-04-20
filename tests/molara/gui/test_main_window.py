@@ -178,12 +178,11 @@ class WorkaroundTestMainWindow:
         """Write test code to verify the behavior of show_init_xyz method."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
-            window = self.window
-            window.show_init_xyz()
-            assert isinstance(window.mols, Molecules)
-            assert isinstance(window.structure_widget.structures[0], Molecule)
-            assert window.structure_widget.structures
-            assert window.structure_widget.structures[0] is window.mols.get_current_mol()
+            self.window.show_init_xyz()
+            assert isinstance(self.window.mols, Molecules)
+            assert isinstance(self.window.structure_widget.structures[0], Molecule)
+            assert self.window.structure_widget.structures
+            assert self.window.structure_widget.structures[0] is self.window.mols.get_current_mol()
 
     def test_load_molecules(self) -> None:
         """Write test code to verify the behavior of load_molecules method."""
