@@ -2,14 +2,19 @@
 requires = ["setuptools>=65.0.0", "cython", "numpy", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.cibuildwheel.linux]
+skip = ["*musllinux*"]
+
 [project]
 name = "Molara"
-version = "0.0.1"
 description = "A visualisation tool for chemical structures."
 authors = [
     {name = "Michel Heinz"},
     {name = "Gereon Feldmann"},
-    {name = "Adrian Usler"},
+    {name = "Adrian Usler", email = "adrian.usler@rwth-aachen.de"},
     {name = "Alexander Bonkowski", email = "alexander.bonkowski@rwth-aachen.de"},
 ]
 maintainers = [
@@ -44,11 +49,17 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+dynamic = ["version"]
 
 [project.urls]
 Repo = "https://github.com/Molara-Lab/Molara"
 
 [project.optional-dependencies]
+doc = [
+    "sphinx",
+    "sphinx_rtd_theme",
+    "myst-parser"
+]
 dev = [
     "mypy",
     "pre-commit",
@@ -59,6 +70,7 @@ dev = [
     "pytest-cov",
     "pytest-split",
     "ruff",
+    "molara[doc]",
 ]
 crystal = [
     "pymatgen",
@@ -68,12 +80,8 @@ crystal = [
 [project.scripts]
 molara = "molara.__main__:main"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-include = ["molara", "molara.*"]
-exclude = ["tests", "tests.*"]
+[tool.setuptools.dynamic]
+version = {"attr" = "molara.__version__"}
 
 [tool.ruff]
 exclude = ["ui_*",]
