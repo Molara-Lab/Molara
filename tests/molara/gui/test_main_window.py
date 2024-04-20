@@ -38,7 +38,7 @@ class WorkaroundTestMainWindow:
         """
         self.qtbot = qtbot
         _format = QSurfaceFormat()
-        _format.setVersion(4, 1)
+        _format.setVersion(3, 3)
         _format.setSamples(4)
         _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
         QSurfaceFormat.setDefaultFormat(_format)
