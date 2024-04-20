@@ -15,7 +15,7 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
@@ -37,6 +37,11 @@ class WorkaroundTestMainWindow:
         :param qtbot: provides methods to simulate user interaction
         """
         self.qtbot = qtbot
+        _format = QSurfaceFormat()
+        _format.setVersion(4, 1)
+        _format.setSamples(4)
+        _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
+        QSurfaceFormat.setDefaultFormat(_format)
         self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
         self.window = MainWindow()
 
