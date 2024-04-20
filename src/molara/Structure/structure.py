@@ -29,6 +29,7 @@ class Structure:
         :param header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
+        self.coords = coordinates
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
         self.unique_atomic_numbers: list[int] = []
@@ -57,7 +58,7 @@ class Structure:
         return type(self)(
             self.atomic_numbers,
             np.array([atom.position for atom in self.atoms]),
-            self.draw_bonds,
+            draw_bonds=self.draw_bonds,
         )
 
     def compute_collision(self: Structure, coordinate: np.ndarray) -> int | None:
@@ -74,14 +75,18 @@ class Structure:
                 return i
         return None
 
-    def center_coordinates(self: Structure) -> None:
-        """Centers the structure around the center of mass."""
-        coordinates = np.array([atom.position for atom in self.atoms])
-        self.center = np.average(
-            coordinates,
+    @property
+    def center_of_mass(self: Structure) -> np.ndarray:
+        """Returns the center of mass of the structure."""
+        return np.average(
+            [atom.position for atom in self.atoms],
             weights=[atom.atomic_mass for atom in self.atoms],
             axis=0,
         )
+
+    def center_coordinates(self: Structure) -> None:
+        """Centers the structure around the center of mass."""
+        self.center = self.center_of_mass
         for _i, atom in enumerate(self.atoms):
             position = atom.position - self.center
             atom.set_position(position)
@@ -145,6 +150,7 @@ class Structure:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
         self.atomic_numbers = np.append(self.atomic_numbers, atomic_number)
+        self.coords = np.append(self.coords, coordinate)
         self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
@@ -162,3 +168,4 @@ class Structure:
             self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
 
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
+        self.coords = np.delete(self.coords, index)
