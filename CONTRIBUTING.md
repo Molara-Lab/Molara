@@ -1,4 +1,4 @@
-# CONTRIBUTING.md
+# Contribution Guidelines
 
 Thank you for considering contributing to our project! We value your effort and to ensure smooth collaboration, we kindly ask you to follow the below conventions and rules. This will help maintain the quality and consistency of our codebase.
 
