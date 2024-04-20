@@ -75,7 +75,7 @@ class StructureWidget(QOpenGLWidget):
     @property
     def bonds(self) -> bool:
         """Specifies whether bonds should be drawn (returns False if no bonds present whatsoever)."""
-        if self.structures == []:
+        if not self.structures:
             return False
         if len(self.structures) > 1:
             return True
@@ -107,7 +107,7 @@ class StructureWidget(QOpenGLWidget):
         """Reset the view of the structure to the initial view."""
         self.center_structure()
         dy, dz = None, None
-        if not self.structures[0].atoms:
+        if not self.structures[0]:
             return
         if len(self.structures[0].atoms) > 1:
             x, y, z = np.array([atom.position for atom in self.structures[0].atoms]).T

@@ -144,6 +144,16 @@ class WorkaroundTestMainWindow:
     def test_structure_widget(self) -> None:
         """Write test code to verify the behavior of the structure_widget property."""
         structure_widget = self.window.structure_widget
+        structure_widget.toggle_bonds()
+        structure_widget.toggle_unit_cell_boundaries()
+        testargs = ["molara", "examples/xyz/pentane.xyz"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.window.show_init_xyz()
+        assert structure_widget.draw_bonds
+        assert structure_widget.bonds
+        structure_widget.toggle_bonds()
+        assert not structure_widget.bonds
+        assert not structure_widget.draw_bonds
         assert structure_widget is not None
 
     def test_show_builder_dialog(self) -> None:
