@@ -44,6 +44,7 @@ class WorkaroundTestMainWindow:
         QSurfaceFormat.setDefaultFormat(_format)
         self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
         self.window = MainWindow()
+        self.window.show()
 
     def test_init(self) -> None:
         """Write test code to verify the behavior of the __init__ method."""
