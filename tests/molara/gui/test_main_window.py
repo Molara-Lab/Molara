@@ -219,6 +219,25 @@ class WorkaroundTestMainWindow:
         measurement_dialog.reject()
         assert not measurement_dialog.isVisible()
 
+    def test_structure_customizer_dialog(self) -> None:
+        """Write test code to verify the behavior of show_measurement_dialog method.
+
+        a test where a molecule has been loaded must be executed before this test! (see test_load_molecules)
+        """
+        window = self.window
+        ui = window.ui
+        structure_customizer_dialog = window.structure_customizer_dialog
+        assert not structure_customizer_dialog.isVisible()
+        ui.actionOpen_Structure_Customizer.triggered.emit()
+        assert structure_customizer_dialog.isVisible()
+        structure_customizer_dialog.reject()
+        assert not structure_customizer_dialog.isVisible()
+        window.show_structure_customizer_dialog()
+        window.structure_customizer_dialog.save_settings()
+        window.structure_customizer_dialog.load_settings()
+        window.structure_customizer_dialog.delete_settings()
+        assert structure_customizer_dialog.isVisible()
+
     def test_show_trajectory_dialog(self) -> None:
         """Write test code to verify the behavior of show_trajectory_dialog method."""
         window = self.window
