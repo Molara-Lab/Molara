@@ -1,21 +1,17 @@
-"""This module contains the Crystal class, which is a subclass of Structure."""
+"""Contains the Crystal class, which is a subclass of Structure."""
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy import constants
 
-from molara.Structure.atom import element_symbol_to_atomic_number, elements
+from molara.Structure.atom import elements
 
 from .structure import Structure
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-    from typing import Annotated
-
     from numpy.typing import ArrayLike
 
     try:
@@ -38,12 +34,12 @@ class Crystal(Structure):
 
     def __init__(
         self,
-        atomic_nums: Sequence[int],
-        coords: Sequence[Sequence[float]],
-        basis_vectors: Sequence[Sequence[float]] | ArrayLike,
-        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
+        atomic_nums: list[int],
+        coords: list[list[float]],
+        basis_vectors: list[list[float]] | ArrayLike,
+        supercell_dims: list[int],
     ) -> None:
-        """Creates a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
+        """Create a crystal supercell based on given particle positions in unit cell and lattice basis vectors.
 
         Particle positions are given in terms of the basis vectors:
         E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
@@ -74,8 +70,8 @@ class Crystal(Structure):
         """
         return np.mod(fractional_coords, 1.0).tolist()
 
-    def make_supercell(self, supercell_dims: Annotated[Sequence[int], 3]) -> None:
-        """Creates a supercell of the crystal.
+    def make_supercell(self, supercell_dims: list[int]) -> None:
+        """Create a supercell of the crystal.
 
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
         """
@@ -159,10 +155,10 @@ class Crystal(Structure):
     @classmethod
     def make_supercell_edge_atoms(
         cls: type[Crystal],
-        atomic_nums: Sequence[float],
-        fractional_coords: Sequence[Sequence[float]],
-        supercell_dims: Sequence[int],
-    ) -> tuple[Sequence[int], Sequence[Sequence[float]]]:
+        atomic_nums: list[int],
+        fractional_coords: list[list[float]],
+        supercell_dims: list[int],
+    ) -> tuple[list[int], list[list[float]]]:
         """Extra atoms are created at supercell edges (periodic boundaries).
 
         :param atomic_nums: atomic numbers of the atoms
@@ -237,7 +233,7 @@ class Crystal(Structure):
         return extra_atomic_nums, extra_fractional_coords
 
     @staticmethod
-    def calc_volume_unitcell(basis_vectors: Sequence[Sequence[float]] | ArrayLike) -> float:
+    def calc_volume_unitcell(basis_vectors: list[list[float]] | ArrayLike) -> float:
         """Calculate unit cell volume based on given lattice basis vectors.
 
         :param volume: unit cell volume to be matched
@@ -250,59 +246,12 @@ class Crystal(Structure):
         return round(np.abs(np.linalg.det(basis_vectors)), 12)
 
     @classmethod
-    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
-        """Creates a Crystal object from a POSCAR file.
-
-        :param file_path: POSCAR input file path
-        """
-        with open(file_path) as file:
-            lines = file.readlines()
-        header_length = 9
-        if not len(lines) >= header_length:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
-        species_, numbers_ = lines[5].strip(), lines[6]
-        mode, positions_ = lines[7].strip(), lines[8:]
-        try:
-            scale = float(scale_)
-            latvec_a = [float(vec) for vec in latvec_a_.split()]
-            latvec_b = [float(vec) for vec in latvec_b_.split()]
-            latvec_c = [float(vec) for vec in latvec_c_.split()]
-            species = re.split(r"\s+", species_)
-            numbers = [int(num) for num in numbers_.split()]
-            if len(positions_) == sum(numbers) * 2 + 1:
-                positions_ = positions_[0 : sum(numbers)]
-            positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
-            basis_vectors = [latvec_a, latvec_b, latvec_c]
-        except ValueError as err:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg) from err
-        if len(numbers) != len(species) or len(positions) != sum(numbers):
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        if mode.lower() != "direct":
-            msg = "Currently, Molara can only process direct mode in POSCAR files."
-            raise NotImplementedError(msg)
-        atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-
-        atomic_numbers_extended = []
-        for num, an in zip(numbers, atomic_numbers):
-            atomic_numbers_extended.extend(num * [an])
-
-        return cls(
-            atomic_numbers_extended,
-            positions,
-            [scale * np.array(bv, dtype=float) for bv in basis_vectors],
-        )
-
-    @classmethod
     def from_pymatgen(
         cls: type[Crystal],
         structure: Pmgstructure,
-        supercell_dims: Annotated[Sequence[int], 3] = [1, 1, 1],
+        supercell_dims: list[int],
     ) -> Crystal:
-        """Creates a Crystal object from a pymatgen.Structure object.
+        """Create a Crystal object from a pymatgen.Structure object.
 
         :param structure: pymatgen.Structure object
         """
@@ -310,7 +259,7 @@ class Crystal(Structure):
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:
-        """Creates a Crystal object from an ase.Atoms object.
+        """Create a Crystal object from an ase.Atoms object.
 
         :params atoms: ase.Atoms object
         """
@@ -323,10 +272,11 @@ class Crystal(Structure):
             atoms.get_atomic_numbers(),
             atoms.get_scaled_positions(),
             atoms.get_cell(),
+            supercell_dims=[1, 1, 1],
         )
 
     def copy(self) -> Crystal:
-        """Returns a copy of the Crystal object."""
+        """Return a copy of the Crystal object."""
         return Crystal(
             self.atomic_nums_unitcell,
             self.coords_unitcell,
@@ -336,7 +286,7 @@ class Crystal(Structure):
 
     """ overloading operators """
 
-    def __mul__(self, supercell_dims: Sequence[int]) -> Crystal:
+    def __mul__(self, supercell_dims: list[int]) -> Crystal:
         """Multiply Crystal by a sequence.
 
         Current implementation: multiply Crystal by a sequence of three integers [M, N, K]
@@ -348,7 +298,7 @@ class Crystal(Structure):
         crystal_copy.make_supercell(supercell_dims)
         return crystal_copy
 
-    def __rmul__(self, supercell_dims: Sequence[int]) -> Crystal:
+    def __rmul__(self, supercell_dims: list[int]) -> Crystal:
         """Multiply Crystal by a sequence.
 
         :param supercell_dims:  side lengths of the supercell in terms of the cell constants

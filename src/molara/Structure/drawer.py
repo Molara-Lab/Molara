@@ -31,7 +31,7 @@ class Drawer:
     """Creates a Drawer object."""
 
     def __init__(self, atoms: list[Atom], bonds: np.ndarray, draw_bonds: bool) -> None:
-        """Creates a Drawer object.
+        """Create a Drawer object.
 
         :param atoms: list of atoms to be drawn
         :param bonds: list ids of bonded atoms
@@ -97,27 +97,20 @@ class Drawer:
             self.set_cylinder_model_matrices()
 
     def set_atoms(self, atoms: list[Atom]) -> None:
-        """Sets the atoms to be displayed.
+        """Set the atoms to be displayed.
 
         :param atoms: List of atoms to be displayed.
-        :return:
         """
         self.atoms = atoms
         self.set_atom_colors()
         self.set_atom_positions()
 
     def set_atom_colors(self) -> None:
-        """Sets the colors of the atoms.
-
-        :return:
-        """
+        """Set the colors of the atoms."""
         self.atom_colors = np.array([atom.cpk_color for atom in self.atoms], dtype=np.float32)
 
     def set_cylinder_props(self) -> None:
-        """Sets the colors of the bonds (cylinders).
-
-        :return:
-        """
+        """Set the colors of the bonds (cylinders)."""
         self.cylinder_colors = []
         self.cylinder_positions = []
         self.cylinder_directions = []
@@ -153,50 +146,32 @@ class Drawer:
         self.cylinder_dimensions = np.array(self.cylinder_dimensions, dtype=np.float32)
 
     def set_atom_positions(self) -> None:
-        """Sets the positions of the atoms.
-
-        :return:
-        """
+        """Set the positions of the atoms."""
         self.atom_positions = np.array(
             [np.array(atom.position, dtype=np.float32) for atom in self.atoms],
             dtype=np.float32,
         )
 
     def set_atom_scales(self) -> None:
-        """Sets the scales of the atoms.
-
-        :return:
-        """
+        """Set the scales of the atoms."""
         self.atom_scales = []
         scaling_factor = 1.0 / 6
         self.atom_scales = np.array([3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms], dtype=np.float32)
 
     def reset_atom_model_matrices(self) -> None:
-        """Resets the model matrices for the spheres.
-
-        :return:
-        """
+        """Reset the model matrices for the spheres."""
         self.sphere_model_matrices = np.array([], dtype=np.float32)
 
     def reset_cylinders_model_matrices(self) -> None:
-        """Resets the model matrices for the cylinders.
-
-        :return:
-        """
+        """Reset the model matrices for the cylinders."""
         self.cylinder_model_matrices = np.array([], dtype=np.float32)
 
     def reset_atom_colors(self) -> None:
-        """Resets the colors for the spheres.
-
-        :return:
-        """
+        """Reset the colors for the spheres."""
         self.atom_colors = np.array([], dtype=np.float32)
 
     def set_cylinder_model_matrices(self) -> None:
-        """Sets the model matrices for the cylinders.
-
-        :return:
-        """
+        """Set the model matrices for the cylinders."""
         self.reset_cylinders_model_matrices()
         self.cylinder_model_matrices = calculate_model_matrices(
             self.cylinder_translation_matrices,
@@ -206,55 +181,37 @@ class Drawer:
         )
 
     def set_cylinder_translation_matrices(self) -> None:
-        """Sets the translation matrices for the spheres.
-
-        :return:
-        """
+        """Set the translation matrices for the spheres."""
         self.cylinder_translation_matrices = calculate_translation_matrices(
             np.array(self.cylinder_positions),
         )
 
     def set_cylinder_scale_matrices(self) -> None:
-        """Sets the translation matrices for the cylinders.
-
-        :return:
-        """
+        """Set the translation matrices for the cylinders."""
         self.cylinder_scale_matrices = calculate_scale_matrices(
             np.array(self.cylinder_dimensions),
         )
 
     def set_cylinder_rotation_matrices(self) -> None:
-        """Sets the rotation matrices for the cylinders.
-
-        :return:
-        """
+        """Set the rotation matrices for the cylinders."""
         self.cylinder_rotation_matrices = calculate_rotation_matrices(
             np.array(self.cylinder_directions),
         )
 
     def set_atom_translation_matrices(self) -> None:
-        """Sets the translation matrices for the spheres.
-
-        :return:
-        """
+        """Set the translation matrices for the spheres."""
         self.sphere_translation_matrices = calculate_translation_matrices(
             np.array(self.atom_positions),
         )
 
     def set_atom_scale_matrices(self) -> None:
-        """Sets the scale matrices for the spheres.
-
-        :return:
-        """
+        """Set the scale matrices for the spheres."""
         self.sphere_scale_matrices = calculate_scale_matrices(
             np.array(self.atom_scales),
         )
 
     def set_atom_model_matrices(self) -> None:
-        """Sets the model matrices for the spheres.
-
-        :return:
-        """
+        """Set the model matrices for the spheres."""
         self.reset_atom_model_matrices()
         self.sphere_model_matrices = calculate_model_matrices(
             np.array(self.sphere_translation_matrices),
@@ -263,7 +220,7 @@ class Drawer:
 
 
 def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarray:
-    """Calculates the model matrix for a cylinder between two atoms.
+    """Calculate the model matrix for a cylinder between two atoms.
 
     :param atom1: first Atom
     :param atom2: second Atom

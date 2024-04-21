@@ -20,7 +20,7 @@ class MeasurementDialog(QDialog):
     """Dialog for displaying measurements."""
 
     def __init__(self, parent: QMainWindow) -> None:
-        """Initializes the measurement dialog.
+        """Initialize the measurement dialog.
 
         :param parent: the MainWindow widget
         """
@@ -43,7 +43,7 @@ class MeasurementDialog(QDialog):
         self.ui.tablePositions.setColumnCount(5)
         self.ui.tablePositions.setRowCount(4)
 
-        # resize modes: specify how the tables are filles with the colums / rows
+        # resize modes: specify how the tables are filled with the columns / rows
         def set_resize_modes(obj: QHeaderView, modes: list) -> None:
             for i, mode in enumerate(modes):
                 obj.setSectionResizeMode(i, mode)
@@ -60,7 +60,12 @@ class MeasurementDialog(QDialog):
         set_resize_modes(header_angles, [stretch])
 
         # create labels for the table rows & columns
-        def _set_table_labels(horizontal: bool, obj: QTableWidget, labels: list[str], colors: list[str] | None) -> None:
+        def _set_table_labels(
+            horizontal: bool,
+            obj: QTableWidget,
+            labels: list[str],
+            colors: list[None] | list[str] | None,
+        ) -> None:
             _set_item = obj.setHorizontalHeaderItem if horizontal else obj.setVerticalHeaderItem
             if colors is None:
                 colors = [None] * len(labels)
@@ -128,7 +133,7 @@ class MeasurementDialog(QDialog):
                 d = np.linalg.norm(
                     structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[k]].position,
                 )
-                self.ui.tableDistances.setItem(i, k - 1, QTableWidgetItem(f"{d.round(3):.3f}" + " \u00c5"))
+                self.ui.tableDistances.setItem(i, k - 1, QTableWidgetItem(f"{d:.3f}" + " \u00c5"))
 
     def display_angles(self, structure: Structure, selected_atoms: list) -> None:
         """Display the angles in the table.
@@ -144,7 +149,7 @@ class MeasurementDialog(QDialog):
                 a = np.arccos(
                     np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
                 )
-                self.ui.tableAngles.setItem(i, 0, QTableWidgetItem(f"{np.degrees(a).round(1):.3f}" + " \u00b0"))
+                self.ui.tableAngles.setItem(i, 0, QTableWidgetItem(f"{np.degrees(a):.3f}" + " \u00b0"))
             else:
                 self.ui.tableAngles.setItem(i, 0, QTableWidgetItem(""))
 
@@ -155,24 +160,27 @@ class MeasurementDialog(QDialog):
         :param selected_atoms: The selected atoms.
         :return:
         """
-        if selected_atoms[0] == -1 or selected_atoms[1] == -1 or selected_atoms[2] == -1 or selected_atoms[3] == -1:
+        atom_id1, atom_id2, atom_id3, atom_id4 = selected_atoms
+        if atom_id1 == -1 or atom_id2 == -1 or atom_id3 == -1 or atom_id4 == -1:
             self.ui.tableAngles.setItem(2, 0, QTableWidgetItem(""))
             return
 
-        ab = structure.atoms[selected_atoms[1]].position - structure.atoms[selected_atoms[0]].position
-        bc = structure.atoms[selected_atoms[2]].position - structure.atoms[selected_atoms[1]].position
-        cd = structure.atoms[selected_atoms[3]].position - structure.atoms[selected_atoms[2]].position
+        ab = structure.atoms[atom_id2].position - structure.atoms[atom_id1].position
+        bc = structure.atoms[atom_id3].position - structure.atoms[atom_id2].position
+        cd = structure.atoms[atom_id4].position - structure.atoms[atom_id3].position
+        # explanations on the calculation see https://math.stackexchange.com/a/47084
         nabc = np.cross(ab, bc)
         nbcd = np.cross(bc, cd)
-        t = np.cross(nabc, bc)
-        a = np.arctan2(np.dot(t, nbcd), np.dot(nabc, nbcd))
+        nabc /= np.linalg.norm(nabc)
+        nbcd /= np.linalg.norm(nbcd)
+        m1 = np.cross(nabc, bc / np.linalg.norm(bc))
+        x = np.dot(nabc, nbcd)
+        y = np.dot(m1, nbcd)
+        a = np.arctan2(y, x)
         a_deg = np.degrees(a)
-        if a_deg > 0:
-            a_deg = a_deg - 360
-        a_deg = -a_deg
         self.ui.tableAngles.setItem(2, 0, QTableWidgetItem(f"{a_deg:.3f}" + " \u00b0"))
 
     def reject(self) -> None:
-        """Function that is called when dialog window is closed."""
+        """Close the dialog window."""
         self.main_window.structure_widget.unselect_all_atoms()
-        self.close()
+        self.setVisible(False)

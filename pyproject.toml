@@ -2,14 +2,19 @@
 requires = ["setuptools>=65.0.0", "cython", "numpy", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.cibuildwheel.linux]
+skip = ["*musllinux*"]
+
 [project]
 name = "Molara"
-version = "0.0.1"
 description = "A visualisation tool for chemical structures."
 authors = [
     {name = "Michel Heinz"},
     {name = "Gereon Feldmann"},
-    {name = "Adrian Usler"},
+    {name = "Adrian Usler", email = "adrian.usler@rwth-aachen.de"},
     {name = "Alexander Bonkowski", email = "alexander.bonkowski@rwth-aachen.de"},
 ]
 maintainers = [
@@ -17,12 +22,13 @@ maintainers = [
 ]
 dependencies = [
     "PyOpenGL",
-    "PySide6",
+    "PySide6<=6.6.2",
     "matplotlib",
     "numpy",
     "pyrr",
     "scipy",
     "cython",
+    "typing_extensions",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -37,14 +43,16 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Visualization",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+dynamic = ["version"]
 
 [project.urls]
-Repo = "https://github.com/Thursday-Evening-Hackathon/Molara"
+Repo = "https://github.com/Molara-Lab/Molara"
 
 [project.optional-dependencies]
 doc = [
@@ -56,6 +64,8 @@ dev = [
     "mypy",
     "pre-commit",
     "pytest",
+    "pytest-qt",
+    "pytest-xvfb",
     "cython",
     "pytest-cov",
     "pytest-split",
@@ -70,12 +80,8 @@ crystal = [
 [project.scripts]
 molara = "molara.__main__:main"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-include = ["molara", "molara.*"]
-exclude = ["tests", "tests.*"]
+[tool.setuptools.dynamic]
+version = {"attr" = "molara.__version__"}
 
 [tool.ruff]
 exclude = ["ui_*",]
@@ -85,6 +91,8 @@ lint.select = ["ALL"]
 lint.ignore = [
   "ANN101", # Missing type annotation for `self` in method
   "ERA001", # Found commented-out code
+  "D203",   # 1 blank line required before class docstring (incompatible with D211)
+  "D213",   # Multi-line docstring summary should start at the second line (incompatible with D212)
   "FBT001", # Boolean-typed positional argument in function definition
   "FBT002", # Boolean default positional argument in function definition
   "INP001", # File {name} is part or an implicit namespace package. Add an `__init__.py`.
@@ -92,7 +100,6 @@ lint.ignore = [
   "PTH123", # `open()` should be replaced by `Path.open()`
   "S101",   # Use of assert detected
   ]
-lint.pydocstyle.convention = "google"
 lint.isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
@@ -102,7 +109,6 @@ no_implicit_optional = false
 
 [tool.codespell]
 ignore-words-list = "nd,te"
-skip = "pymatgen/analysis/aflow_prototypes.json"
 check-filenames = true
 
 [tool.cythonize]

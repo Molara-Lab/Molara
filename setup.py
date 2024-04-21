@@ -1,4 +1,4 @@
-"""This file is used to compile the cython modules.
+"""File used to compile the cython modules.
 
 It needs to be called manually with python3 cython_build.py build_ext --inplace.
 """
@@ -29,5 +29,4 @@ setup(
     # external to be compiled
     ext_modules=cythonize(extensions, compiler_directives={"language_level": 3}),
     include_dirs=[np.get_include()],
-    script_args=["build_ext", "--build-lib=src/"],
 )

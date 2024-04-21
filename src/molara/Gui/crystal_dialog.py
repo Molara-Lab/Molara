@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from contextlib import suppress
-from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
@@ -11,10 +10,6 @@ from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 from molara.Gui.ui_crystalstructure_dialog import Ui_CrystalDialog
 from molara.Structure.atom import element_symbol_to_atomic_number
 from molara.Structure.crystal import Crystal
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
 
 RIGHTANGLE = 90.0
 ENABLED, DISABLED = True, False
@@ -30,7 +25,7 @@ class CrystalDialog(QDialog):
     """
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Creates a CrystalDialog object.
+        """Create a CrystalDialog object.
 
         :param parent: parent widget (main window)
         """
@@ -53,13 +48,13 @@ class CrystalDialog(QDialog):
         self.hide_space_groups([False, True, True, True])
 
     def reset(self) -> None:
-        """Resets the dialog."""
+        """Reset the dialog."""
         self.list_of_atomic_numbers = []
         self.list_of_coordinates = []
         self.ui.listAtoms.setRowCount(0)
 
     def add_atom(self) -> None:
-        """Adds an atom to the list of atoms."""
+        """Add an atom to the list of atoms."""
         element_symbol = self.ui.inputElementSymbol.text()
         atomic_number = element_symbol_to_atomic_number(element_symbol)
         coord_a, coord_b, coord_c = (
@@ -81,13 +76,13 @@ class CrystalDialog(QDialog):
         self.ui.listAtoms.setItem(row_id, 3, item_coord_c)
 
     def accept(self) -> None:
-        """Accepts the dialog and passes the crystal to the main window."""
+        """Accept the dialog and passes the crystal to the main window."""
         dim_a, dim_b, dim_c = (
             self.ui.inputSupercell_a.value(),
             self.ui.inputSupercell_b.value(),
             self.ui.inputSupercell_c.value(),
         )
-        supercell_dims = np.array([dim_a, dim_b, dim_c])
+        supercell_dims = [dim_a, dim_b, dim_c]
         a, b, c = (
             self.ui.inputLatConst_a.value(),
             self.ui.inputLatConst_b.value(),
@@ -126,7 +121,7 @@ class CrystalDialog(QDialog):
             basis_vectors=basis_vectors,
             supercell_dims=supercell_dims,
         )
-        self.parent().ui.openGLWidget.set_structure(mycrystal)  # type: ignore[attr-defined]
+        self.parent().ui.openGLWidget.set_structure([mycrystal])  # type: ignore[attr-defined]
 
     def bc_equals_a(self, value: float) -> None:
         """Set b and c lattice constants equal to a.
@@ -175,7 +170,7 @@ class CrystalDialog(QDialog):
         self.ui.inputLatAngle_beta.setEnabled(ENABLED)
         self.ui.inputLatAngle_gamma.setEnabled(ENABLED)
 
-    def enable_lattice_constants(self, ids: Sequence[int]) -> None:
+    def enable_lattice_constants(self, ids: list[int]) -> None:
         """Enable or disable inputs for lattice constants, depending on crystal system.
 
         :param ids: list that contains ids of inputs that shall be enabled
@@ -193,7 +188,7 @@ class CrystalDialog(QDialog):
             self.ui.inputLatConst_a.valueChanged.connect(self.bc_equals_a)
             self.bc_equals_a(self.ui.inputLatConst_a.value())
 
-    def hide_space_groups(self, hide: Sequence[bool]) -> None:
+    def hide_space_groups(self, hide: list[bool]) -> None:
         """Hide space-group entries depending on crystal system.
 
         :param hide: list of bools that specify which space-group entries should be hidden
@@ -203,7 +198,7 @@ class CrystalDialog(QDialog):
             view.setRowHidden(i, hide_i)
 
     def change_crystal_system(self, value: str) -> None:
-        """Changes the crystal system.
+        """Change the crystal system.
 
         :param value: name of the crystal system
         """

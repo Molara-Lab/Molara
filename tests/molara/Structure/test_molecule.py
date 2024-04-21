@@ -7,7 +7,7 @@ from unittest import TestCase
 import numpy as np
 from molara.Structure.atom import Atom
 from molara.Structure.molecule import Molecule
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_almost_equal, assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -61,6 +61,7 @@ class TestMolecule(TestCase):
             [atom_i.position - self.ccl4.atoms[0].position for atom_i in self.ccl4.atoms[1:]],
         )
         assert_array_equal(bond_vectors_ccl4_object, bond_vectors_ccl4)
+        assert ccl4.bond_distance_factor == 1.0 / 1.75
 
         # test water
         water, num_atoms_water = self.water, self.num_atoms_water
@@ -78,3 +79,87 @@ class TestMolecule(TestCase):
             [atom_i.position - self.water.atoms[0].position for atom_i in self.water.atoms[1:]],
         )
         assert_array_equal(bond_vectors_water_object, bond_vectors_water)
+
+    def test_toggle_bonds(self) -> None:
+        """Test the toggle bonds routine."""
+        # after instantiation, draw_bonds should be True by default,
+        # and bonds should have been calculated.
+        assert self.ccl4.draw_bonds
+        assert self.ccl4.bonds_calculated
+        assert self.ccl4.has_bonds
+        # after bonds toggle, draw_bonds should be set to False.
+        self.ccl4.toggle_bonds()
+        assert not self.ccl4.draw_bonds
+        assert self.ccl4.bonds_calculated
+        assert self.ccl4.has_bonds
+        # after a further bonds toggle, draw_bonds be True again.
+        self.ccl4.toggle_bonds()
+        assert self.ccl4.draw_bonds
+        assert self.ccl4.bonds_calculated
+        assert self.ccl4.has_bonds
+
+    def test_copy(self) -> None:
+        """Test the copy routine."""
+        copy = self.ccl4.copy()
+        assert_array_equal(copy.atomic_numbers, self.ccl4.atomic_numbers)
+        assert copy.molar_mass == self.ccl4.molar_mass
+        for atom_copy, atom_ccl4 in zip(copy.atoms, self.ccl4.atoms):
+            assert_array_equal(atom_copy.position, atom_ccl4.position)
+        assert copy.draw_bonds == self.ccl4.draw_bonds
+
+        self.ccl4.toggle_bonds()
+        copy = self.ccl4.copy()
+        assert copy.draw_bonds == self.ccl4.draw_bonds
+
+    def test_compute_collision(self) -> None:
+        """Test the compute_collision routine."""
+        # def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
+        dist_threshold = 1e-10
+        just_below = 0.99 * dist_threshold
+        just_above = 1.01 * dist_threshold
+        collision_coords1 = self.coords_ccl4[0]
+        collision_coords21 = self.coords_ccl4[1] + np.array([just_below, 0.0, 0.0])
+        collision_coords22 = self.coords_ccl4[1] + np.array([0.0, just_below, 0.0])
+        collision_coords23 = self.coords_ccl4[1] + np.array([0.0, 0.0, just_below])
+        collision_coords31 = self.coords_ccl4[2] + np.array([just_above, 0.0, 0.0])
+        collision_coords32 = self.coords_ccl4[2] + np.array([0.0, just_above, 0.0])
+        collision_coords33 = self.coords_ccl4[2] + np.array([0.0, 0.0, just_above])
+        just_below = 0.99 * dist_threshold / np.sqrt(3)
+        just_above = 1.01 * dist_threshold / np.sqrt(3)
+        collision_coords4 = self.coords_ccl4[3] + np.array([just_below, -just_below, -just_below])
+        collision_coords5 = self.coords_ccl4[4] + np.array([-just_above, just_above, -just_above])
+
+        id1, id2, id4 = 0, 1, 3
+        assert self.ccl4.compute_collision(collision_coords1) == id1
+        assert self.ccl4.compute_collision(collision_coords21) == id2
+        assert self.ccl4.compute_collision(collision_coords22) == id2
+        assert self.ccl4.compute_collision(collision_coords23) == id2
+        assert self.ccl4.compute_collision(collision_coords31) is None
+        assert self.ccl4.compute_collision(collision_coords32) is None
+        assert self.ccl4.compute_collision(collision_coords33) is None
+        assert self.ccl4.compute_collision(collision_coords4) == id4
+        assert self.ccl4.compute_collision(collision_coords5) is None
+
+    def test_center_coordinates(self) -> None:
+        """Test the center_coordinates routine."""
+        # test ccl4
+        self.ccl4.center_coordinates()
+        assert_array_almost_equal(self.ccl4.center_of_mass, np.zeros(3))
+        offset = np.array([1.234, 2.345, 3.456])
+        for atom_i in self.ccl4.atoms:
+            atom_i.set_position(atom_i.position + offset)
+        self.ccl4.center_coordinates()
+        assert_array_almost_equal(self.ccl4.center_of_mass, np.zeros(3))
+        assert_array_almost_equal(self.ccl4.center, offset)
+
+        # test water
+        self.water.center_coordinates()
+        assert_array_almost_equal(self.water.center_of_mass, np.zeros(3))
+        offset = np.array([1.456, 2.567, 3.678])
+        for atom_i in self.water.atoms:
+            atom_i.set_position(atom_i.position + offset)
+        self.water.center_coordinates()
+        assert_array_almost_equal(self.water.center_of_mass, np.zeros(3))
+        assert_array_almost_equal(self.water.center, offset)
+
+        assert self.water.bond_distance_factor == 1.0 / 1.75

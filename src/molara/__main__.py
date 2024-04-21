@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import signal
 import sys
-from typing import TYPE_CHECKING
 
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication
@@ -15,24 +14,18 @@ from PySide6.QtWidgets import QApplication
 #     pyside2-uic form.ui -o ui_form.py
 from molara.Gui.main_window import MainWindow
 
-if TYPE_CHECKING:
-    from types import FrameType
-
 __copyright__ = "Copyright 2024, Molara"
 
 
 def main() -> None:
     """Run the application."""
     _format = QSurfaceFormat()
-    _format.setVersion(4, 1)
+    _format.setVersion(3, 3)
     _format.setSamples(4)
     _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
     QSurfaceFormat.setDefaultFormat(_format)
 
-    def sigint_handler(signum: int, frame: FrameType | None) -> None:  # noqa: ARG001
-        app.quit()
-
-    signal.signal(signal.SIGINT, sigint_handler)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
 
     widget = MainWindow()

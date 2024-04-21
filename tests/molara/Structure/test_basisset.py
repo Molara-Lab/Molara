@@ -108,7 +108,7 @@ def primitive_overlap(  # noqa: PLR0913
     lmn2: np.ndarray,
     b_xyz: np.ndarray,
 ) -> float:
-    """Evaluates overlap integral between two Gaussians.
+    """Evaluate overlap integral between two Gaussians.
 
     Returns a float.
     :param a: orbital exponent on Gaussian 'a' (e.g. alpha in the text)
@@ -134,7 +134,7 @@ def contracted_overlap(
     a_xyz: np.ndarray,
     b_xyz: np.ndarray,
 ) -> float:
-    """Evaluates overlap between two contracted Gaussians.
+    """Evaluate overlap between two contracted Gaussians.
 
     Returns a float.
     :param a: contracted Gaussian 'a', BasisFunction object

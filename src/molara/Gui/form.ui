@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>37</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -53,6 +53,7 @@
     <addaction name="actionCenter_Molecule"/>
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
+    <addaction name="actionToggle_Projection"/>
     <addaction name="actionDraw_Axes"/>
     <addaction name="actionOpen_Trajectory_Dialog"/>
     <addaction name="separator"/>
@@ -65,6 +66,7 @@
     <addaction name="actionRead_POSCAR"/>
     <addaction name="actionCreate_Lattice"/>
     <addaction name="actionSupercell"/>
+    <addaction name="actionToggle_UnitCellBoundaries"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -172,6 +174,16 @@
   <action name="actionExport_Snapshot">
    <property name="text">
     <string>Export Snapshot</string>
+   </property>
+  </action>
+  <action name="actionToggle_UnitCellBoundaries">
+   <property name="text">
+    <string>Toggle Unit Cell Boundaries</string>
+   </property>
+  </action>
+  <action name="actionToggle_Projection">
+   <property name="text">
+    <string>Toggle Projection (Perspective/Ortho)</string>
    </property>
   </action>
  </widget>
