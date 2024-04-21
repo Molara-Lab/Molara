@@ -57,7 +57,6 @@
     <addaction name="actionDraw_Axes"/>
     <addaction name="actionOpen_Trajectory_Dialog"/>
     <addaction name="separator"/>
-    <addaction name="actionToggle_Bonds"/>
     <addaction name="actionOpen_Structure_Customizer"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
