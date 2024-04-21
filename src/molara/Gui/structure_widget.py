@@ -142,13 +142,14 @@ class StructureWidget(QOpenGLWidget):
         """
         self.structure = struct
         self.structure_is_set = True
-        if self.bonds:
-            self.main_window.structure_customizer_dialog.apply_changes()
         if reset_view:
             self.reset_view()
         else:
             self.set_vertex_attribute_objects()
             self.update()
+
+        self.main_window.structure_customizer_dialog.set_bonds(self.bonds)
+        self.main_window.structure_customizer_dialog.apply_changes()
         self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()

@@ -64,20 +64,19 @@ class StructureCustomizerDialog(QDialog):
 
         if self.bonds:
             self.parent().structure_widget.structure.draw_bonds = True
+            self.parent().structure_widget.structure.drawer.cylinder_scale = self.ui.stickSizeSpinBox.value()
+            self.parent().structure_widget.structure.drawer.set_cylinder_dimensions()
+            self.parent().structure_widget.structure.drawer.set_cylinder_scale_matrices()
+            self.parent().structure_widget.structure.drawer.set_cylinder_model_matrices()
         else:
             self.parent().structure_widget.structure.draw_bonds = False
-
-        self.parent().structure_widget.structure.drawer.cylinder_scale = self.ui.stickSizeSpinBox.value()
-        self.parent().structure_widget.structure.drawer.set_cylinder_dimensions()
-        self.parent().structure_widget.structure.drawer.set_cylinder_scale_matrices()
-        self.parent().structure_widget.structure.drawer.set_cylinder_model_matrices()
 
         self.parent().structure_widget.set_vertex_attribute_objects()
         self.parent().structure_widget.update()
 
     def toggle_stick_mode(self) -> None:
         """Toggle between stick and ball mode."""
-        self.stick_mode = not self.stick_mode
+        self.stick_mode = not self.stick_mode and self.parent().structure_widget.draw_bonds
         if self.stick_mode:
             if not self.bonds:
                 self.toggle_bonds()
@@ -96,7 +95,13 @@ class StructureCustomizerDialog(QDialog):
 
     def toggle_bonds(self) -> None:
         """Toggle bonds on and off."""
-        self.bonds = not self.bonds
+        self.bonds = not self.bonds and self.parent().structure_widget.draw_bonds
+        self.set_bonds(self.bonds)
+        self.apply_changes()
+
+    def set_bonds(self, bonds: bool) -> None:
+        """Set bonds to True or False."""
+        self.bonds = bonds
         if self.bonds:
             self.ui.toggleBondsButton.setText("Hide Bonds")
         else:

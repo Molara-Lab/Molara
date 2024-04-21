@@ -101,8 +101,9 @@ class MainWindow(QMainWindow):
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""
-        self.structure_customizer_dialog.show()
         self.structure_customizer_dialog.bonds = self.structure_widget.bonds
+        self.structure_customizer_dialog.set_bonds(self.structure_widget.bonds)
+        self.structure_customizer_dialog.show()
 
     def update_action_texts(self) -> None:
         """Update the texts of the menu actions."""
