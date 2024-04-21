@@ -109,6 +109,8 @@ class StructureWidget(QOpenGLWidget):
         dy, dz = None, None
         if not self.structures[0]:
             return
+        if not self.structures[0].atoms:
+            return
         if len(self.structures[0].atoms) > 1:
             x, y, z = np.array([atom.position for atom in self.structures[0].atoms]).T
             dy = y.max() - y.min()
