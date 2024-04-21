@@ -107,7 +107,7 @@ class StructureWidget(QOpenGLWidget):
         """Reset the view of the structure to the initial view."""
         self.center_structure()
         dy, dz = None, None
-        if not self.structures[0]:
+        if not len(self.structures) or not self.structures[0]:
             return
         if not self.structures[0].atoms:
             return
