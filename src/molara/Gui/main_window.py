@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
         importer = GeneralImporter(path)
         self.mols = importer.load()
 
-        self.structure_widget.set_structure(self.mols.get_current_mol())
+        self.structure_widget.set_structure([self.mols.get_current_mol()])
 
         if self.mols.num_mols > 1:
             self.ui.actionOpen_Trajectory_Dialog.setEnabled(ENABLED)
@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
 
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
-        if self.structure_widget.structure_is_set:
+        if len(self.structure_widget.structures) == 1:
             self.measurement_dialog.show()
 
     def show_builder_dialog(self) -> None:
@@ -174,17 +174,17 @@ class MainWindow(QMainWindow):
 
     def edit_supercell_dims(self) -> bool:
         """Open dialog window to edit supercell dimensions."""
-        if not isinstance(self.structure_widget.structure, Crystal):
+        if not isinstance(self.structure_widget.structures[0], Crystal):
             # insert error message?
             return False
-        crystal = self.structure_widget.structure
+        crystal = self.structure_widget.structures[0]
         supercell_dims = crystal.supercell_dims
         SupercellDialog.get_supercell_dims(supercell_dims)
         # check if supercell dimensions have successfully been passed (i.e., all are >0)
         if sum(1 for component in supercell_dims if component <= 0):
             return False
         crystal.make_supercell(supercell_dims)
-        self.structure_widget.set_structure(crystal)
+        self.structure_widget.set_structure([crystal])
         return True
 
     def show_poscar(self) -> bool | None:
@@ -208,5 +208,5 @@ class MainWindow(QMainWindow):
             msg_box.setText(error_message)
             msg_box.exec()
             return False
-        self.structure_widget.set_structure(struct=crystals.get_current_mol())
+        self.structure_widget.set_structure(structs=[crystals.get_current_mol()])
         return True
