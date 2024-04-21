@@ -39,6 +39,7 @@ class Drawer:
         """
         self.subdivisions_sphere = 20
         self.subdivisions_cylinder = 20
+        self.stick_mode = False
 
         self.sphere_scale = 1.0
         self.sphere_default_radius = 1.0 / 6
@@ -168,13 +169,13 @@ class Drawer:
         """Set the scales of the atoms."""
         self.atom_scales = []
         scaling_factor = self.sphere_default_radius * self.sphere_scale
-        if self.sphere_default_radius != self.cylinder_radius:
+        if not self.stick_mode:
             self.atom_scales = np.array(
                 [3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms],
                 dtype=np.float32,
             )
         else:
-            self.atom_scales = np.array([3 * [scaling_factor] for atom in self.atoms], dtype=np.float32)
+            self.atom_scales = np.array([3 * [scaling_factor] for _ in self.atoms], dtype=np.float32)
 
     def reset_atom_model_matrices(self) -> None:
         """Reset the model matrices for the spheres."""

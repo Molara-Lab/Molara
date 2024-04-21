@@ -28,6 +28,7 @@ class Ui_structure_customizer(object):
         self.viewModeButton = QPushButton(structure_customizer)
         self.viewModeButton.setObjectName(u"viewModeButton")
         self.viewModeButton.setGeometry(QRect(10, 5, 100, 32))
+        self.viewModeButton.setAutoDefault(False)
         self.ballSizeSpinBox = QDoubleSpinBox(structure_customizer)
         self.ballSizeSpinBox.setObjectName(u"ballSizeSpinBox")
         self.ballSizeSpinBox.setGeometry(QRect(190, 10, 62, 22))
@@ -39,9 +40,6 @@ class Ui_structure_customizer(object):
         self.stickSizeSpinBox.setGeometry(QRect(190, 40, 62, 22))
         self.stickSizeSpinBox.setMinimum(0.100000000000000)
         self.stickSizeSpinBox.setSingleStep(0.100000000000000)
-        self.applyButton = QPushButton(structure_customizer)
-        self.applyButton.setObjectName(u"applyButton")
-        self.applyButton.setGeometry(QRect(280, 20, 100, 32))
         self.ballSizeLabel = QLabel(structure_customizer)
         self.ballSizeLabel.setObjectName(u"ballSizeLabel")
         self.ballSizeLabel.setGeometry(QRect(128, 10, 60, 16))
@@ -51,6 +49,7 @@ class Ui_structure_customizer(object):
         self.toggleBondsButton = QPushButton(structure_customizer)
         self.toggleBondsButton.setObjectName(u"toggleBondsButton")
         self.toggleBondsButton.setGeometry(QRect(10, 35, 100, 32))
+        self.toggleBondsButton.setAutoDefault(False)
 
         self.retranslateUi(structure_customizer)
 
@@ -60,8 +59,8 @@ class Ui_structure_customizer(object):
     def retranslateUi(self, structure_customizer):
         structure_customizer.setWindowTitle(QCoreApplication.translate("structure_customizer", u"Structure Customizer", None))
         self.viewModeButton.setText(QCoreApplication.translate("structure_customizer", u"Stick Mode", None))
-        self.applyButton.setText(QCoreApplication.translate("structure_customizer", u"Apply Changes", None))
         self.ballSizeLabel.setText(QCoreApplication.translate("structure_customizer", u"Ball Size:", None))
         self.stickSizeLabel.setText(QCoreApplication.translate("structure_customizer", u"Stick Size:", None))
-        self.toggleBondsButton.setText(QCoreApplication.translate("structure_customizer", u"Toggle Bonds", None))
+        self.toggleBondsButton.setText(QCoreApplication.translate("structure_customizer", u"Bonds Off", None))
     # retranslateUi
+

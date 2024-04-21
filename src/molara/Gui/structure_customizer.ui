@@ -37,6 +37,9 @@
    <property name="text">
     <string>Stick Mode</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QDoubleSpinBox" name="ballSizeSpinBox">
    <property name="geometry">
@@ -71,19 +74,6 @@
    </property>
    <property name="singleStep">
     <double>0.100000000000000</double>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="applyButton">
-   <property name="geometry">
-    <rect>
-     <x>280</x>
-     <y>20</y>
-     <width>100</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Apply Changes</string>
    </property>
   </widget>
   <widget class="QLabel" name="ballSizeLabel">
@@ -123,6 +113,9 @@
    </property>
    <property name="text">
     <string>Bonds Off</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

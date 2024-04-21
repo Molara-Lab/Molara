@@ -32,22 +32,28 @@ class StructureCustomizerDialog(QDialog):
         self.ui.stickSizeSpinBox.setValue(1.0)
         self.ui.toggleBondsButton.setText("Hide Bonds")
 
-        self.ui.applyButton.clicked.connect(self.apply_changes)
         self.ui.viewModeButton.clicked.connect(self.toggle_stick_mode)
         self.ui.toggleBondsButton.clicked.connect(self.toggle_bonds)
+
+        self.ui.ballSizeSpinBox.valueChanged.connect(self.apply_changes)
+        self.ui.stickSizeSpinBox.valueChanged.connect(self.apply_changes)
 
     def apply_changes(self) -> None:
         """Set the size of the cylinders."""
         if self.stick_mode:
+            self.parent().structure_widget.structure.drawer.stick_mode = True
+
             stick_radius = 0.15
-            self.parent().structure_widget.structure.drawer.cylinder_radius = stick_radius
+            self.parent().structure_widget.structure.drawer.cylinder_radius = stick_radius + 1e-3
             self.parent().structure_widget.structure.drawer.sphere_default_radius = stick_radius
 
-            self.parent().structure_widget.structure.drawer.sphere_scale = self.ui.stickSizeSpinBox.value() - 0.01
+            self.parent().structure_widget.structure.drawer.sphere_scale = self.ui.stickSizeSpinBox.value()
             self.parent().structure_widget.structure.drawer.set_atom_scales()
             self.parent().structure_widget.structure.drawer.set_atom_scale_matrices()
             self.parent().structure_widget.structure.drawer.set_atom_model_matrices()
         else:
+            self.parent().structure_widget.structure.drawer.stick_mode = False
+
             self.parent().structure_widget.structure.drawer.sphere_default_radius = 1.0 / 6
             self.parent().structure_widget.structure.drawer.cylinder_radius = 0.075
 
@@ -86,6 +92,7 @@ class StructureCustomizerDialog(QDialog):
             self.ui.toggleBondsButton.setEnabled(True)
             self.ui.stickSizeSpinBox.setEnabled(True)
             self.ui.ballSizeSpinBox.setEnabled(True)
+        self.apply_changes()
 
     def toggle_bonds(self) -> None:
         """Toggle bonds on and off."""
@@ -94,3 +101,4 @@ class StructureCustomizerDialog(QDialog):
             self.ui.toggleBondsButton.setText("Hide Bonds")
         else:
             self.ui.toggleBondsButton.setText("Show Bonds")
+        self.apply_changes()
