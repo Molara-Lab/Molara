@@ -78,7 +78,6 @@ class MainWindow(QMainWindow):
         self.ui.actionCenter_Molecule.triggered.connect(
             self.structure_widget.center_structure,
         )
-        self.ui.actionToggle_Bonds.triggered.connect(self.structure_widget.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )

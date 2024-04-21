@@ -8,6 +8,9 @@ from PySide6.QtWidgets import (
 )
 
 from molara.Gui.ui_structure_customizer import Ui_structure_customizer
+from molara.Structure.structure import Structure
+from molara.Structure.molecule import Molecule
+from molara.Structure.crystal import Crystal
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -38,66 +41,79 @@ class StructureCustomizerDialog(QDialog):
         self.ui.ballSizeSpinBox.valueChanged.connect(self.apply_changes)
         self.ui.stickSizeSpinBox.valueChanged.connect(self.apply_changes)
 
+    def set_cylinder_and_sphere_sizes(self, structure: Structure | Molecule | Crystal, ball_size: float, stick_size: float) -> None:
+        """Set the sizes of the spheres and cylinders.
+
+        :param structure: structure to set the sizes for
+        :param ball_size: size of the spheres
+        :param stick_size: size of the cylinders"""
+        structure.drawer.cylinder_radius = stick_size
+        structure.drawer.sphere_default_radius = ball_size
+
+        if self.stick_mode:
+            structure.drawer.sphere_scale = self.ui.stickSizeSpinBox.value()
+        else:
+            structure.drawer.sphere_scale = self.ui.ballSizeSpinBox.value()
+        structure.drawer.set_atom_scales()
+        structure.drawer.set_atom_scale_matrices()
+        structure.drawer.set_atom_model_matrices()
+
     def apply_changes(self) -> None:
         """Set the size of the cylinders."""
-        if self.stick_mode:
-            self.parent().structure_widget.structure.drawer.stick_mode = True
+        structures = self.parent().structure_widget.structures
+        for structure in structures:
+            if self.stick_mode:
+                structure.drawer.stick_mode = True
 
-            stick_radius = 0.15
-            self.parent().structure_widget.structure.drawer.cylinder_radius = stick_radius + 1e-3
-            self.parent().structure_widget.structure.drawer.sphere_default_radius = stick_radius
+                atom_radius = 0.15
+                stick_radius = atom_radius + 1e-3
+                self.set_cylinder_and_sphere_sizes(structure, atom_radius, stick_radius)
+            else:
+                structure.drawer.stick_mode = False
 
-            self.parent().structure_widget.structure.drawer.sphere_scale = self.ui.stickSizeSpinBox.value()
-            self.parent().structure_widget.structure.drawer.set_atom_scales()
-            self.parent().structure_widget.structure.drawer.set_atom_scale_matrices()
-            self.parent().structure_widget.structure.drawer.set_atom_model_matrices()
-        else:
-            self.parent().structure_widget.structure.drawer.stick_mode = False
+                atom_radius = 1.0 / 6
+                stick_radius = 0.075
 
-            self.parent().structure_widget.structure.drawer.sphere_default_radius = 1.0 / 6
-            self.parent().structure_widget.structure.drawer.cylinder_radius = 0.075
+                self.set_cylinder_and_sphere_sizes(structure, atom_radius, stick_radius)
 
-            self.parent().structure_widget.structure.drawer.sphere_scale = self.ui.ballSizeSpinBox.value()
-            self.parent().structure_widget.structure.drawer.set_atom_scales()
-            self.parent().structure_widget.structure.drawer.set_atom_scale_matrices()
-            self.parent().structure_widget.structure.drawer.set_atom_model_matrices()
-
-        if self.bonds:
-            self.parent().structure_widget.structure.draw_bonds = True
-            self.parent().structure_widget.structure.drawer.cylinder_scale = self.ui.stickSizeSpinBox.value()
-            self.parent().structure_widget.structure.drawer.set_cylinder_dimensions()
-            self.parent().structure_widget.structure.drawer.set_cylinder_scale_matrices()
-            self.parent().structure_widget.structure.drawer.set_cylinder_model_matrices()
-        else:
-            self.parent().structure_widget.structure.draw_bonds = False
+            if self.bonds:
+                structure.draw_bonds = True
+                structure.drawer.cylinder_scale = self.ui.stickSizeSpinBox.value()
+                structure.drawer.set_cylinder_dimensions()
+                structure.drawer.set_cylinder_scale_matrices()
+                structure.drawer.set_cylinder_model_matrices()
+            else:
+                structure.draw_bonds = False
 
         self.parent().structure_widget.set_vertex_attribute_objects()
         self.parent().structure_widget.update()
 
     def toggle_stick_mode(self) -> None:
         """Toggle between stick and ball mode."""
-        self.stick_mode = not self.stick_mode and self.parent().structure_widget.draw_bonds
-        if self.stick_mode:
-            if not self.bonds:
-                self.toggle_bonds()
-                self.bonds = True
-            self.ui.viewModeButton.setText("Ball Mode")
-            self.parent().ui.actionToggle_Bonds.setEnabled(False)
-            self.ui.toggleBondsButton.setEnabled(False)
-            self.ui.stickSizeSpinBox.setEnabled(True)
-            self.ui.ballSizeSpinBox.setEnabled(False)
-        else:
-            self.ui.viewModeButton.setText("Stick Mode")
-            self.ui.toggleBondsButton.setEnabled(True)
-            self.ui.stickSizeSpinBox.setEnabled(True)
-            self.ui.ballSizeSpinBox.setEnabled(True)
-        self.apply_changes()
+        if self.parent().structure_widget.structures[0].has_bonds:
+            self.stick_mode = not self.stick_mode
+            if self.stick_mode:
+                if not self.bonds:
+                    self.toggle_bonds()
+                    self.bonds = True
+                self.ui.viewModeButton.setText("Ball Mode")
+                self.parent().ui.actionToggle_Bonds.setEnabled(False)
+                self.ui.toggleBondsButton.setEnabled(False)
+                self.ui.stickSizeSpinBox.setEnabled(True)
+                self.ui.ballSizeSpinBox.setEnabled(False)
+            else:
+                self.ui.viewModeButton.setText("Stick Mode")
+                self.ui.toggleBondsButton.setEnabled(True)
+                self.ui.stickSizeSpinBox.setEnabled(True)
+                self.ui.ballSizeSpinBox.setEnabled(True)
+            self.apply_changes()
 
     def toggle_bonds(self) -> None:
         """Toggle bonds on and off."""
-        self.bonds = not self.bonds and self.parent().structure_widget.draw_bonds
-        self.set_bonds(self.bonds)
-        self.apply_changes()
+        if self.parent().structure_widget.structures[0].has_bonds:
+            self.bonds = not self.bonds
+            self.set_bonds(self.bonds)
+            self.apply_changes()
 
     def set_bonds(self, bonds: bool) -> None:
         """Set bonds to True or False."""
