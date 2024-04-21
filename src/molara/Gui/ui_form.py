@@ -113,7 +113,6 @@ class Ui_MainWindow(object):
         self.menuEdit.addAction(self.actionDraw_Axes)
         self.menuEdit.addAction(self.actionOpen_Trajectory_Dialog)
         self.menuEdit.addSeparator()
-        self.menuEdit.addAction(self.actionToggle_Bonds)
         self.menuEdit.addAction(self.actionOpen_Structure_Customizer)
         self.menuRotate.addAction(self.actionto_x_axis)
         self.menuRotate.addAction(self.actionto_y_axis)
