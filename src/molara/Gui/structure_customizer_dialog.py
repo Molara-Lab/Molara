@@ -88,7 +88,7 @@ class StructureCustomizerDialog(QDialog):
 
         :param save_name: name of the save file
         """
-        if save_name == "":
+        if not save_name:
             save_name = self.ui.loadSelect.currentText()
         settings_file = f"{self.src_path}/Settings/Structure/{save_name}.json"
         with open(settings_file) as f:
