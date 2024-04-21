@@ -22,7 +22,7 @@ class TestShaders(unittest.TestCase):
         QApplication.instance().shutdown() if QApplication.instance() else None  # type: ignore[union-attr]
         QApplication([])
         _format = QSurfaceFormat()
-        _format.setVersion(4, 1)
+        _format.setVersion(3, 3)
         _format.setSamples(4)
         _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
         QSurfaceFormat.setDefaultFormat(_format)
