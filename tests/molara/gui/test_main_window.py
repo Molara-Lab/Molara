@@ -15,7 +15,7 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
@@ -37,8 +37,14 @@ class WorkaroundTestMainWindow:
         :param qtbot: provides methods to simulate user interaction
         """
         self.qtbot = qtbot
+        _format = QSurfaceFormat()
+        _format.setVersion(3, 3)
+        _format.setSamples(4)
+        _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
+        QSurfaceFormat.setDefaultFormat(_format)
         self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
         self.window = MainWindow()
+        self.window.show()
 
     def test_init(self) -> None:
         """Write test code to verify the behavior of the __init__ method."""
@@ -139,6 +145,16 @@ class WorkaroundTestMainWindow:
     def test_structure_widget(self) -> None:
         """Write test code to verify the behavior of the structure_widget property."""
         structure_widget = self.window.structure_widget
+        structure_widget.toggle_bonds()
+        structure_widget.toggle_unit_cell_boundaries()
+        testargs = ["molara", "examples/xyz/pentane.xyz"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.window.show_init_xyz()
+        assert structure_widget.draw_bonds
+        assert structure_widget.bonds
+        structure_widget.toggle_bonds()
+        assert not structure_widget.bonds
+        assert not structure_widget.draw_bonds
         assert structure_widget is not None
 
     def test_show_builder_dialog(self) -> None:
@@ -163,12 +179,11 @@ class WorkaroundTestMainWindow:
         """Write test code to verify the behavior of show_init_xyz method."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
-            window = self.window
-            window.show_init_xyz()
-            assert isinstance(window.mols, Molecules)
-            assert isinstance(window.structure_widget.structure, Molecule)
-            assert window.structure_widget.structure_is_set
-            assert window.structure_widget.structure is window.mols.get_current_mol()
+            self.window.show_init_xyz()
+            assert isinstance(self.window.mols, Molecules)
+            assert isinstance(self.window.structure_widget.structures[0], Molecule)
+            assert self.window.structure_widget.structures
+            assert self.window.structure_widget.structures[0] is self.window.mols.get_current_mol()
 
     def test_load_molecules(self) -> None:
         """Write test code to verify the behavior of load_molecules method."""
@@ -176,21 +191,21 @@ class WorkaroundTestMainWindow:
         # test coord file
         window.load_molecules("examples/coord/coord1.coord")
         assert isinstance(window.mols, Molecules)
-        assert isinstance(window.structure_widget.structure, Molecule)
-        assert window.structure_widget.structure_is_set
-        assert window.structure_widget.structure is window.mols.get_current_mol()
+        assert isinstance(window.structure_widget.structures[0], Molecule)
+        assert window.structure_widget.structures
+        assert window.structure_widget.structures[0] is window.mols.get_current_mol()
         # test xyz file
         window.load_molecules("examples/xyz/ferrocene.xyz")
         assert isinstance(window.mols, Molecules)
-        assert isinstance(window.structure_widget.structure, Molecule)
-        assert window.structure_widget.structure_is_set
-        assert window.structure_widget.structure is window.mols.get_current_mol()
+        assert isinstance(window.structure_widget.structures[0], Molecule)
+        assert window.structure_widget.structures
+        assert window.structure_widget.structures[0] is window.mols.get_current_mol()
         # test POSCAR file
         window.load_molecules("examples/POSCAR/Ba2YCu3O7_POSCAR")
         assert isinstance(window.mols, Crystals)
-        assert isinstance(window.structure_widget.structure, Crystal)
-        assert window.structure_widget.structure_is_set
-        assert window.structure_widget.structure is window.mols.get_current_mol()
+        assert isinstance(window.structure_widget.structures[0], Crystal)
+        assert window.structure_widget.structures
+        assert window.structure_widget.structures[0] is window.mols.get_current_mol()
 
     def test_show_measurement_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method.
@@ -210,10 +225,25 @@ class WorkaroundTestMainWindow:
         """Write test code to verify the behavior of show_trajectory_dialog method."""
         window = self.window
         window.load_molecules("examples/xyz/opt.xyz")
+
+        all_molecules = window.mols.all_molecules
+        first_size = len(all_molecules)
+        assert len(all_molecules) > 1
+
+        window.mols.remove_molecule(0)
+        all_molecules = window.mols.all_molecules
+        assert len(all_molecules) == first_size - 1
+
         num_mols = window.mols.num_mols
         assert num_mols > 1
         # trajectory dialog should be opened since a trajectory has been loaded
         trajectory_dialog = window.trajectory_dialog
+
+        trajectory_dialog.show_trajectory()
+        trajectory_dialog.show_all_molecules()
+
+        trajectory_dialog.change_speed(1)
+
         assert trajectory_dialog.isVisible()
         # test the buttons
         initial_mol_id = window.mols.mol_index
