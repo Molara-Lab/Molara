@@ -117,7 +117,10 @@ class Drawer:
         self.atom_colors = np.array([atom.cpk_color for atom in self.atoms], dtype=np.float32)
 
     def set_cylinder_dimensions(self) -> None:
-        """Set the dimensions of the cylinders."""
+        """Set the dimensions of the cylinders.
+
+        It is important to note, that the radius ([:,1]) of the cylinders need not be changed!
+        """
         self.cylinder_dimensions = np.array(self.cylinder_dimensions, dtype=np.float32)
         self.cylinder_dimensions[:, 0] = self.cylinder_radius * self.cylinder_scale
         self.cylinder_dimensions[:, 2] = self.cylinder_radius * self.cylinder_scale

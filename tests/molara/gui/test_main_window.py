@@ -118,7 +118,6 @@ class WorkaroundTestMainWindow:
         assert isinstance(ui.menuEdit.actions(), list)
         assert ui.actionReset_View in ui.menuEdit.actions()
         assert ui.actionCenter_Molecule in ui.menuEdit.actions()
-        assert ui.actionToggle_Bonds in ui.menuEdit.actions()
         assert ui.actionOpen_Trajectory_Dialog in ui.menuEdit.actions()
         assert ui.menuRotate.menuAction() in ui.menuEdit.actions()
         assert ui.actionDraw_Axes in ui.menuEdit.actions()
@@ -145,14 +144,13 @@ class WorkaroundTestMainWindow:
     def test_structure_widget(self) -> None:
         """Write test code to verify the behavior of the structure_widget property."""
         structure_widget = self.window.structure_widget
-        structure_widget.toggle_bonds()
         structure_widget.toggle_unit_cell_boundaries()
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
             self.window.show_init_xyz()
         assert structure_widget.draw_bonds
         assert structure_widget.bonds
-        structure_widget.toggle_bonds()
+        self.window.structure_customizer_dialog.toggle_bonds()
         assert not structure_widget.bonds
         assert not structure_widget.draw_bonds
         assert structure_widget is not None
