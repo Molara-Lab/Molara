@@ -74,7 +74,7 @@ class StructureCustomizerDialog(QDialog):
         self.ui.loadSelect.clear()
         self.ui.loadSelect.addItems(self.save_names)
 
-    def delete_settings(self):
+    def delete_settings(self) -> None:
         """Delete the selected settings."""
         save_name = self.ui.loadSelect.currentText()
         if save_name == "Default":
