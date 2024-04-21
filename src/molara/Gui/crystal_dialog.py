@@ -121,7 +121,7 @@ class CrystalDialog(QDialog):
             basis_vectors=basis_vectors,
             supercell_dims=supercell_dims,
         )
-        self.parent().ui.openGLWidget.set_structure(mycrystal)  # type: ignore[attr-defined]
+        self.parent().ui.openGLWidget.set_structure([mycrystal])  # type: ignore[attr-defined]
 
     def bc_equals_a(self, value: float) -> None:
         """Set b and c lattice constants equal to a.

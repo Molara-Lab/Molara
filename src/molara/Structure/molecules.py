@@ -36,6 +36,11 @@ class Molecules(Structures):
         return self._num_structures
 
     @property
+    def all_molecules(self) -> list[Molecule]:
+        """Return all molecules."""
+        return self.mols
+
+    @property
     def mol_index(self) -> int:
         """Index of currently displayed molecule."""
         return self._structure_id

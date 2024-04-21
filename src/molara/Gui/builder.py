@@ -109,7 +109,7 @@ class BuilderDialog(QDialog):
 
         self.disable_slot = False
         if not self.err and self.colliding_idx is None:
-            self.structure_widget.set_structure(mol)
+            self.structure_widget.set_structure([mol])
             self.structure_widget.update()
             self.z_matrix.append({"parameter": params, "atom_nums": atom_nums})
             self._set_z_matrix_row(mol.n_at, mol.n_at - 1)
@@ -139,7 +139,7 @@ class BuilderDialog(QDialog):
         self.structure_widget.delete_structure()
 
         if mol.n_at > 0:
-            self.structure_widget.set_structure(mol)
+            self.structure_widget.set_structure([mol])
         else:
             self.main_window.mols.remove_molecule(0)
             self.structure_widget.update()
@@ -198,7 +198,7 @@ class BuilderDialog(QDialog):
                     break
 
             self.structure_widget.delete_structure()
-            self.structure_widget.set_structure(mol)
+            self.structure_widget.set_structure([mol])
 
             self._update_z_matrix(mol.n_at)
 
