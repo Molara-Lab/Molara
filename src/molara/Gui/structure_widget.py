@@ -226,7 +226,6 @@ class StructureWidget(QOpenGLWidget):
             )
         self.makeCurrent()
         self.renderer.update_atoms_vao(
-            self,
             sphere_vertices,
             sphere_indices,
             sphere_model_matrices,

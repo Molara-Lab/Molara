@@ -33,7 +33,6 @@ from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 if TYPE_CHECKING:
     from numpy import floating
 
-    from molara.Gui.structure_widget import StructureWidget
     from molara.Rendering.camera import Camera
 
 __copyright__ = "Copyright 2024, Molara"
@@ -272,7 +271,6 @@ class Renderer:
 
     def update_atoms_vao(
         self,
-        test: StructureWidget,
         vertices: np.ndarray,
         indices: np.ndarray,
         model_matrices: np.ndarray,
