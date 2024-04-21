@@ -389,7 +389,6 @@ class StructureWidget(QOpenGLWidget):
 
         self.main_window.update_action_texts()
 
-
     def toggle_projection(self) -> None:
         """Toggles between orthographic and perspective projection."""
         self.camera.toggle_projection()
