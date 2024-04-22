@@ -137,9 +137,9 @@ class TestAtom(TestCase):
     def test_element_symbol_to_atomic_number(self) -> None:
         """Test the routine that converts element symbols to atomic numbers (i.e., nuclear charge numbers)."""
         # test some elements directly
-        z_h, z_he, z_c, z_n, z_o, z_f, z_s, z_tc, z_rn, z_sb = 1, 2, 6, 7, 8, 9, 16, 43, 86, 51
+        z_h, z_d, z_c, z_n, z_o, z_f, z_s, z_tc, z_rn, z_sb = 1, 1, 6, 7, 8, 9, 16, 43, 86, 51
         assert element_symbol_to_atomic_number("H") == z_h
-        assert element_symbol_to_atomic_number("He") == z_he
+        assert element_symbol_to_atomic_number("D", h_isotopes=True) == z_d
         assert element_symbol_to_atomic_number("C") == z_c
         assert element_symbol_to_atomic_number("N") == z_n
         assert element_symbol_to_atomic_number("O") == z_o
