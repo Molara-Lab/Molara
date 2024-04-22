@@ -18,6 +18,8 @@ repos:
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
+        exclude_types:
+          - "json"
       - id: trailing-whitespace
 
   - repo: https://github.com/pre-commit/mirrors-mypy
