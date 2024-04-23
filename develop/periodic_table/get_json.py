@@ -20,6 +20,6 @@ with urllib.request.urlopen(
 ) as url:
     license_text = url.read().decode("utf-8")
 
-with open(file_path + "periodic_table_copyright.txt", mode="w") as file:
-    file.write("Periodic Table data from pymatgen.\nThe data is licensed under the following terms.\n\n")
+with open(file_path + "periodic_table_copyright", mode="w") as file:
+    file.write("Periodic Table data from pymatgen.\nThe data is licensed under the following terms:\n\n")
     file.write(license_text)
