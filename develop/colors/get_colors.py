@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 file_path = "../../src/molara/Structure/"
 
+
 def fetch_color_table() -> bs4.element.Tag:
     """Fetch the color table from the wikipedia page."""
     url = "https://en.wikipedia.org/wiki/CPK_coloring"
@@ -25,6 +26,7 @@ def fetch_color_table() -> bs4.element.Tag:
     assert table is not None, "Table not found."
 
     return table
+
 
 def parse_color_table(table: bs4.element.Tag) -> dict[str, dict[str, str]]:
     """Parse the color table."""
@@ -54,7 +56,7 @@ def parse_color_table(table: bs4.element.Tag) -> dict[str, dict[str, str]]:
     for idx, scheme in enumerate(data[0]):
         colors_dict[str(scheme)] = {}
         for row in data[1:]:
-            colors_dict[str(scheme)][str(row[1])] = str(row[idx+3])
+            colors_dict[str(scheme)][str(row[1])] = str(row[idx + 3])
 
     return colors_dict
 
