@@ -176,3 +176,11 @@ class Structure:
 
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
         self.coords = np.delete(self.coords, index)
+
+    def set_custom_colors(self: Structure | Crystal | Molecule, colors: list[list[float]]) -> None:
+        """Set custom colors for the atoms.
+
+        :param colors: list of colors for each atom
+        """
+        for i, color in enumerate(colors):
+            self.atoms[i].cpk_color = color

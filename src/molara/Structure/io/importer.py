@@ -80,7 +80,7 @@ class CrystalImporter(ABC):
 class XyzImporter(MoleculesImporter):
     """Import xyz files."""
 
-    def _molecule_from_xyz(self, lines: list[str]) -> Molecule:
+    def _molecule_from_xyz(self, lines: list[str]) -> Molecule | None:
         """Create a Molecule object from the lines of an xyz file.
 
         :param lines: The lines of the xyz file.
@@ -89,17 +89,27 @@ class XyzImporter(MoleculesImporter):
         num_atoms = int(lines[0])
         atomic_numbers = []
         coordinates = []
+        colors = []
 
-        for line in lines[2 : 2 + num_atoms]:
-            atom_info = line.split()
+        MIN_COLS_WITH_COLORS = 7
+
+        atom_info_lines = [line.split() for line in lines[2 : 2 + num_atoms]]
+        num_atom_info_entries = len(atom_info_lines[0])
+        for atom_info in atom_info_lines:
+            if len(atom_info) != num_atom_info_entries:
+                return None  # Faulty file format
             if atom_info[0].isnumeric():
                 atomic_numbers.append(int(atom_info[0]))
             else:
                 token = atom_info[0].capitalize()
                 atomic_numbers.append(element_symbol_to_atomic_number(token))
             coordinates.append([float(coord) for coord in atom_info[1:4]])
+            if num_atom_info_entries >= MIN_COLS_WITH_COLORS:
+                colors.append([float(component) for component in atom_info[4:7]])
 
-        return Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1])
+        molecule = Molecule(np.array(atomic_numbers), np.array(coordinates), lines[1])
+        molecule.set_custom_colors(colors)
+        return molecule
 
     def load(self) -> Molecules:
         """Read the file in self.path and creates a Molecules object."""
@@ -108,9 +118,11 @@ class XyzImporter(MoleculesImporter):
         with open(self.path, encoding="utf-8") as file:
             lines = file.readlines()
 
-        molecules.add_molecule(
-            self._molecule_from_xyz(lines),
-        )
+        molecule = self._molecule_from_xyz(lines)
+        if not molecule:
+            msg = "Faulty file format."
+            raise FileFormatError(msg)
+        molecules.add_molecule(molecule)
         num_atoms = int(lines[0])
 
         # Read in for a single xyz file
@@ -126,9 +138,11 @@ class XyzImporter(MoleculesImporter):
         start_line = 0
         while not finished and max_mols >= molecules.num_mols:
             start_line += 2 + num_atoms
-            molecules.add_molecule(
-                self._molecule_from_xyz(lines[start_line : start_line + num_atoms]),
-            )
+            molecule = self._molecule_from_xyz(lines)
+            if not molecule:
+                msg = "Faulty file format."
+                raise FileFormatError(msg)
+            molecules.add_molecule(molecule)
             finished = (
                 start_line + 2 + num_atoms >= len(lines) or not lines[start_line + 2 + num_atoms].strip().isdigit()
             )
