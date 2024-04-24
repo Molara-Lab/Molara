@@ -31,6 +31,7 @@ jobs:
       run: |
         mypy --version
         rm -rf .mypy_cache
+        mypy --install-types
         mypy . #  ${{ github.event.repository.name }}
 
     - name: cython-lint
