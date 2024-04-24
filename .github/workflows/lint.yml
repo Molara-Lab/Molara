@@ -18,8 +18,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install ruff mypy cython-lint --upgrade
-        pip install -e .
+        pip install uv
+        uv pip install ruff mypy cython-lint --upgrade
+        uv pip install types-requests
+        uv pip install -e .
 
     - name: ruff
       run: |
@@ -31,7 +33,6 @@ jobs:
       run: |
         mypy --version
         rm -rf .mypy_cache
-        mypy --install-types
         mypy . #  ${{ github.event.repository.name }}
 
     - name: cython-lint
