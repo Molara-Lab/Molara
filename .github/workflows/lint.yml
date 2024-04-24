@@ -19,9 +19,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install uv
-        uv pip install ruff mypy cython-lint --upgrade
-        uv pip install types-requests
-        uv pip install -e .
+        uv pip install ruff mypy cython-lint --upgrade --system
+        uv pip install types-requests --system
+        uv pip install -e . --system
 
     - name: ruff
       run: |
