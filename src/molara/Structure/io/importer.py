@@ -443,6 +443,8 @@ class GeneralImporter(MoleculesImporter):
 
     _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzImporter,
+        ".trj": XyzImporter,
+        ".log": XyzImporter,
         ".coord": CoordImporter,
         ".POSCAR": PoscarImporter,
         ".CONTCAR": PoscarImporter,
