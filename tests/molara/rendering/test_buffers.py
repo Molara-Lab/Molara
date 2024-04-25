@@ -1,4 +1,4 @@
-"""This module contains the unit tests for the buffers module of the Rendering package."""
+"""Contains the unit tests for the buffers module of the Rendering package."""
 
 from __future__ import annotations
 
@@ -14,10 +14,10 @@ from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 
 class WorkaroundTestBuffers:
-    """This class contains the tests for the buffers module."""
+    """Contains the tests for the buffers module."""
 
     def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
-        """Instantiates the WorkaroundTestMainWindow object.
+        """Instantiate the WorkaroundTestMainWindow object.
 
         :param qtbot: provides methods to simulate user interaction
         """

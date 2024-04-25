@@ -1,4 +1,4 @@
-"""This module contains functions to set up vertex attribute objects and vertex buffer objects."""
+"""Contains functions to set up vertex attribute objects and vertex buffer objects."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ def setup_vao(
     model_matrices: np.ndarray,
     colors: np.ndarray,
 ) -> tuple[int, list[int]]:
-    """Sets up a vertex attribute object and binds it to the GPU.
+    """Set up a vertex attribute object and binds it to the GPU.
 
     :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates,
         and nxnynz are the components of the normal vector.

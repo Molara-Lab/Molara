@@ -1,4 +1,4 @@
-"""This module contains the main window of the application."""
+"""Contains the main window of the application."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
-from molara.Gui.mos_dialog import MOsDialog
+from molara.Gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Creates a MainWindow object.
+        """Create a MainWindow object.
 
         :param parent: parent widget
         """
@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.crystal_dialog = CrystalDialog(self)
         self.measurement_dialog = MeasurementDialog(self)
         self.builder_dialog = BuilderDialog(self)
-        self.display_mos_dialog = MOsDialog(self)
+        self.structure_customizer_dialog = StructureCustomizerDialog(self)
 
         self.mols = Molecules()
 
@@ -78,11 +78,13 @@ class MainWindow(QMainWindow):
         self.ui.actionCenter_Molecule.triggered.connect(
             self.structure_widget.center_structure,
         )
-        self.ui.actionToggle_Bonds.triggered.connect(self.structure_widget.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )
         self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
+        self.ui.actionOpen_Structure_Customizer.triggered.connect(
+            self.show_structure_customizer_dialog,
+        )
         # Tools
         self.ui.actionBuilder.triggered.connect(
             self.show_builder_dialog,
@@ -90,14 +92,17 @@ class MainWindow(QMainWindow):
         self.ui.actionMeasure.triggered.connect(
             self.show_measurement_dialog,
         )
-        self.ui.actionDisplay_MOs.triggered.connect(
-            self.display_mos_dialog.show,
-        )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
+
+    def show_structure_customizer_dialog(self) -> None:
+        """Show the structure customizer dialog."""
+        self.structure_customizer_dialog.bonds = self.structure_widget.bonds
+        self.structure_customizer_dialog.set_bonds(self.structure_widget.bonds)
+        self.structure_customizer_dialog.show()
 
     def update_action_texts(self) -> None:
         """Update the texts of the menu actions."""
@@ -139,7 +144,8 @@ class MainWindow(QMainWindow):
         """
         importer = GeneralImporter(path)
         self.mols = importer.load()
-        self.structure_widget.set_structure(self.mols.get_current_mol())
+
+        self.structure_widget.set_structure([self.mols.get_current_mol()])
 
         if self.mols.num_mols > 1:
             self.ui.actionOpen_Trajectory_Dialog.setEnabled(ENABLED)
@@ -169,7 +175,7 @@ class MainWindow(QMainWindow):
 
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
-        if self.structure_widget.structure_is_set:
+        if len(self.structure_widget.structures) == 1:
             self.measurement_dialog.show()
 
     def show_builder_dialog(self) -> None:
@@ -178,21 +184,21 @@ class MainWindow(QMainWindow):
 
     def edit_supercell_dims(self) -> bool:
         """Open dialog window to edit supercell dimensions."""
-        if not isinstance(self.structure_widget.structure, Crystal):
+        if not isinstance(self.structure_widget.structures[0], Crystal):
             # insert error message?
             return False
-        crystal = self.structure_widget.structure
+        crystal = self.structure_widget.structures[0]
         supercell_dims = crystal.supercell_dims
         SupercellDialog.get_supercell_dims(supercell_dims)
         # check if supercell dimensions have successfully been passed (i.e., all are >0)
         if sum(1 for component in supercell_dims if component <= 0):
             return False
         crystal.make_supercell(supercell_dims)
-        self.structure_widget.set_structure(crystal)
+        self.structure_widget.set_structure([crystal])
         return True
 
     def show_poscar(self) -> bool | None:
-        """Reads poscar file and shows the first structure in this file."""
+        """Read poscar file and shows the first structure in this file."""
         file_name = QFileDialog.getOpenFileName(
             self,
             caption="Open POSCAR file",
@@ -212,5 +218,5 @@ class MainWindow(QMainWindow):
             msg_box.setText(error_message)
             msg_box.exec()
             return False
-        self.structure_widget.set_structure(struct=crystals.get_current_mol())
+        self.structure_widget.set_structure(structs=[crystals.get_current_mol()])
         return True

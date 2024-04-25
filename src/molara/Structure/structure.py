@@ -29,13 +29,14 @@ class Structure:
         coordinates: np.ndarray,
         draw_bonds: bool = True,
     ) -> None:
-        """Creates a new Structure object.
+        """Create a new Structure object.
 
         :param atomic_numbers: np.ndarray: atomic numbers of a atoms
         :param coordinates: np.ndarray: coordinates of the atoms
         :param header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
+        self.coords = coordinates
         self.atoms = []
         self.vdw_rads: list[np.float32] = []
         self.unique_atomic_numbers: list[int] = []
@@ -60,15 +61,15 @@ class Structure:
         self.n_at = len(self.atoms)
 
     def copy(self: Structure | Crystal | Molecule) -> Structure:
-        """Creates a copy of the structure."""
+        """Create a copy of the structure."""
         return type(self)(
             self.atomic_numbers,
             np.array([atom.position for atom in self.atoms]),
-            self.draw_bonds,
+            draw_bonds=self.draw_bonds,
         )
 
     def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
-        """Computes if the given coordinate is equal to the coordinate of an existing atom.
+        """Compute if the given coordinate is equal to the coordinate of an existing atom.
 
         Return None if no atom collides.
 
@@ -81,14 +82,18 @@ class Structure:
                 return i
         return None
 
-    def center_coordinates(self: Structure | Crystal | Molecule) -> None:
-        """Centers the structure around the center of mass."""
-        coordinates = np.array([atom.position for atom in self.atoms])
-        self.center = np.average(
-            coordinates,
+    @property
+    def center_of_mass(self: Structure | Crystal | Molecule) -> np.ndarray:
+        """Returns the center of mass of the structure."""
+        return np.average(
+            [atom.position for atom in self.atoms],
             weights=[atom.atomic_mass for atom in self.atoms],
             axis=0,
         )
+
+    def center_coordinates(self: Structure | Crystal | Molecule) -> None:
+        """Centers the structure around the center of mass."""
+        self.center = self.center_of_mass
         for _i, atom in enumerate(self.atoms):
             position = atom.position - self.center
             atom.set_position(position)
@@ -98,7 +103,7 @@ class Structure:
             self.drawer.update_bonds()
 
     def calculate_bonds(self: Structure | Crystal | Molecule) -> np.ndarray:
-        """Calculates the bonded pairs of atoms."""
+        """Calculate the bonded pairs of atoms."""
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
@@ -142,7 +147,7 @@ class Structure:
         atomic_number: int,
         coordinate: np.ndarray,
     ) -> None:
-        """Adds an atom to the structure.
+        """Add an atom to the structure.
 
         :param atomic_number: atomic number (nuclear charge number) of the atom
         :param coordinate: cartesian coordinates of atom location
@@ -152,11 +157,12 @@ class Structure:
         self.bonded_pairs = self.calculate_bonds()
         self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
         self.atomic_numbers = np.append(self.atomic_numbers, atomic_number)
+        self.coords = np.append(self.coords, coordinate)
         self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
     def remove_atom(self: Structure | Crystal | Molecule, index: int) -> None:
-        """Removes an atom from the structure.
+        """Remove an atom from the structure.
 
         :param index: list index of the atom that shall be removed
         """
@@ -169,3 +175,4 @@ class Structure:
             self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
 
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
+        self.coords = np.delete(self.coords, index)

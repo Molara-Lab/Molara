@@ -1,12 +1,39 @@
 {
     "files": [
         "src/molara/__main__.py",
+
         "src/molara/Gui/form.ui",
+
         "src/molara/Gui/builder.ui",
         "src/molara/Gui/crystalstructure_dialog.ui",
         "src/molara/Gui/measuring_tool.ui",
         "src/molara/Gui/supercell_dialog.ui",
         "src/molara/Gui/trajectory.ui",
+        "src/molara/Gui/structure_customizer.ui",
+
+        "src/molara/Gui/main_window.py",
+        "src/molara/Gui/structure_widget.py",
+
+        "src/molara/Gui/builder.py",
+        "src/molara/Gui/crystal_dialog.py",
+        "src/molara/Gui/measuring_tool_dialog.py",
+        "src/molara/Gui/supercell_dialog.py",
+        "src/molara/Gui/trajectory_dialog.py",
+
+        "src/molara/Rendering/buffers.py",
+        "src/molara/Rendering/camera.py",
+        "src/molara/Rendering/rendering.py",
+        "src/molara/Rendering/shaders.py",
+
+        "src/molara/Structure/atom.py",
+        "src/molara/Structure/basisset.py",
+        "src/molara/Structure/crystal.py",
+        "src/molara/Structure/crystals.py",
+        "src/molara/Structure/drawer.py",
+        "src/molara/Structure/molecule.py",
+        "src/molara/Structure/molecules.py",
+        "src/molara/Structure/structure.py",
+        "src/molara/Structure/structures.py"
         "src/molara/Gui/mos_dialog.ui"
     ]
 }

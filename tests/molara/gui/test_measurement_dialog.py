@@ -13,13 +13,13 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestMeasurementDialog:
-    """This class contains the tests for the MeasurementDialog class.
+    """Contains the tests for the MeasurementDialog class.
 
     It does not inherit from unittest.TestCase, because that does not work with pytest-qt.
     """
 
     def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
-        """Instantiates the WorkaroundTestMeasurementDialog object.
+        """Instantiate the WorkaroundTestMeasurementDialog object.
 
         :param qtbot: provides methods to simulate user interaction
         """
@@ -38,7 +38,7 @@ class WorkaroundTestMeasurementDialog:
     def _test_position_texts(self, selected_atoms: list[int]) -> None:
         """Test the texts in the position table."""
         measurement_dialog = self.measurement_dialog
-        structure = self.main_window.structure_widget.structure
+        structure = self.main_window.structure_widget.structures[0]
         ui = measurement_dialog.ui
         for i in range(4):
             atom_id = selected_atoms[i]
@@ -59,7 +59,7 @@ class WorkaroundTestMeasurementDialog:
     def _test_distance_texts(self, selected_atoms: list[int]) -> None:
         """Test the texts in the distance table."""
         ui = self.measurement_dialog.ui
-        structure = self.main_window.structure_widget.structure
+        structure = self.main_window.structure_widget.structures[0]
         for i in range(4):
             for k in range(i + 1, 4):
                 atom_id1, atom_id2 = selected_atoms[i], selected_atoms[k]
@@ -78,7 +78,7 @@ class WorkaroundTestMeasurementDialog:
     def _test_angle_texts(self, selected_atoms: list[int]) -> None:
         """Test the texts in the angle table."""
         ui = self.measurement_dialog.ui
-        structure = self.main_window.structure_widget.structure
+        structure = self.main_window.structure_widget.structures[0]
         for i in range(2):
             atom_id1, atom_id2, atom_id3 = selected_atoms[i], selected_atoms[i + 1], selected_atoms[i + 2]
             if atom_id1 == -1 or atom_id2 == -1 or atom_id3 == -1:
@@ -95,7 +95,7 @@ class WorkaroundTestMeasurementDialog:
     def _test_dihedral_texts(self, selected_atoms: list[int]) -> None:
         """Test the texts in the dihedral table."""
         ui = self.measurement_dialog.ui
-        structure = self.main_window.structure_widget.structure
+        structure = self.main_window.structure_widget.structures[0]
         dihedral_angle_item = ui.tableAngles.item(2, 0)
 
         atom_id1, atom_id2, atom_id3, atom_id4 = selected_atoms
@@ -129,7 +129,7 @@ class WorkaroundTestMeasurementDialog:
         window = self.main_window
         measurement_dialog = self.measurement_dialog
 
-        structure = window.structure_widget.structure
+        structure = window.structure_widget.structures[0]
         assert isinstance(structure, Structure)
         assert len(structure.atoms) >= 4  # noqa: PLR2004
 

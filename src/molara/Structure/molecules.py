@@ -16,7 +16,7 @@ class Molecules(Structures):
     """A class to store and manipulate a list of Molecules."""
 
     def __init__(self) -> None:
-        """Initializes the Molecules Class."""
+        """Initialize the Molecules Class."""
         super().__init__()
         self.energies: list = []
 
@@ -34,6 +34,11 @@ class Molecules(Structures):
     def num_mols(self) -> int:
         """Number of molecules."""
         return self._num_structures
+
+    @property
+    def all_molecules(self) -> list[Molecule]:
+        """Return all molecules."""
+        return self.mols
 
     @property
     def mol_index(self) -> int:

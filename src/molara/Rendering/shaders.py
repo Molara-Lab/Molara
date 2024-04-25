@@ -1,4 +1,4 @@
-"""This module contains the shader source code for the rendering of the structures."""
+"""Contains the shader source code for the rendering of the structures."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ def compile_shaders() -> GLuint:
 
 
 vertex_src = """
-# version 410 core
+# version 330 core
 
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
@@ -61,7 +61,7 @@ void main()
 """
 
 fragment_src = """
-# version 410 core
+# version 330 core
 
 in vec3 v_color;
 in vec3 v_light_dir;

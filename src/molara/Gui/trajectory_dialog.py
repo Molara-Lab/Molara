@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from molara.Gui.ui_trajectory import Ui_Dialog
+from molara.Gui.ui_trajectory import Ui_traj_dialog
 
 if TYPE_CHECKING:
     from molara.Gui.main_window import MainWindow
@@ -36,7 +36,7 @@ class MplCanvas(FigureCanvasQTAgg):
         height: int = 4,
         dpi: int = 100,
     ) -> None:
-        """Initializes a Figure by generating a subplot.
+        """Initialize a Figure by generating a subplot.
 
         :param parent: MainWindow: The widget of the MainWindow
         :param width: int: Width of the figure
@@ -52,7 +52,7 @@ class TrajectoryDialog(QDialog):
     """Dialog for manipulating appearance of trajectories."""
 
     def __init__(self, parent: QMainWindow = None) -> None:
-        """Initializes the trajectory dialog.
+        """Initialize the trajectory dialog.
 
         :param parent: parent widget (main window)
         """
@@ -60,7 +60,7 @@ class TrajectoryDialog(QDialog):
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
 
-        self.ui = Ui_Dialog()
+        self.ui = Ui_traj_dialog()
         self.ui.setupUi(self)
 
         self.timer = QTimer(self)
@@ -71,6 +71,7 @@ class TrajectoryDialog(QDialog):
         self.ui.playStopButton.clicked.connect(self.show_trajectory)
         self.ui.PrevButton.clicked.connect(self.get_prev_mol)
         self.ui.NextButton.clicked.connect(self.get_next_mol)
+        self.ui.overlayButton.clicked.connect(self.show_all_molecules)
         # self.ui.verticalSlider.valueChanged.connect(self.slide_molecule)
         self.ui.verticalSlider.sliderMoved.connect(self.slide_molecule)
         self.ui.speedDial.valueChanged.connect(self.change_speed)
@@ -80,8 +81,10 @@ class TrajectoryDialog(QDialog):
         layout.addWidget(self.sc)
         self.ui.widget.setLayout(layout)
 
+        self.show_all = False
+
     def show_trajectory(self) -> None:
-        """Shows the all molecules in the current Molecules class automatically."""
+        """Show the all molecules in the current Molecules class automatically."""
         if not self.parent().mols.num_mols > 1:
             return
 
@@ -92,8 +95,20 @@ class TrajectoryDialog(QDialog):
         self.timer.start()
         self.ui.playStopButton.setText("Stop")
 
+    def show_all_molecules(self) -> None:
+        """Show all molecules in the current Molecules class automatically."""
+        if not self.parent().mols.num_mols > 1:
+            return
+        self.show_all = not self.show_all
+        if self.show_all:
+            self.ui.overlayButton.setText("Show current")
+            self.parent().structure_widget.set_structure(self.parent().mols.all_molecules, reset_view=False)
+        else:
+            self.ui.overlayButton.setText("Show all")
+            self.parent().structure_widget.set_structure([self.parent().mols.get_current_mol()], reset_view=False)
+
     def get_next_mol(self) -> None:
-        """Calls molecules object to get the next molecule and update it in the GUI."""
+        """Call molecules object to get the next molecule and update it in the GUI."""
         if not self.parent().mols.num_mols > 1:
             return
 
@@ -106,7 +121,7 @@ class TrajectoryDialog(QDialog):
             self.ui.playStopButton.setText("Play")
 
     def get_prev_mol(self) -> None:
-        """Calls molecules object to get the previous molecule and update it in the GUI."""
+        """Call molecules object to get the previous molecule and update it in the GUI."""
         if not self.parent().mols.num_mols > 1:
             return
 
@@ -120,7 +135,7 @@ class TrajectoryDialog(QDialog):
         self.ui.verticalSlider.setRange(0, int(self.parent().mols.num_mols) - 1)
 
     def slide_molecule(self) -> None:
-        """Updates the molecule and energy plot in dependence of the slider position."""
+        """Update the molecule and energy plot in dependence of the slider position."""
         if not self.parent().mols.num_mols > 1:
             return
 
@@ -132,10 +147,13 @@ class TrajectoryDialog(QDialog):
         """Update molecule and delete old molecule."""
         self.parent().structure_widget.delete_structure()
         self.parent().structure_widget.set_structure(
-            self.parent().mols.get_current_mol(),
+            [self.parent().mols.get_current_mol()],
             reset_view=False,
         )
         self.update_energy_plot()
+        if self.show_all:
+            self.ui.overlayButton.setText("Show all")
+            self.show_all = False
 
     def change_speed(self, value: int) -> None:
         """Change speed (/ time interval) of trajectory animation.

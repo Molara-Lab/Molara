@@ -1,4 +1,4 @@
-"""This module contains the tests for the rendering module."""
+"""Contains the tests for the rendering module."""
 
 from __future__ import annotations
 
@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestRenderer:
-    """This class contains the tests for the Renderer class."""
+    """Contains the tests for the Renderer class."""
 
     def __init__(self, qtbot: QtBot, main_window: MainWindow) -> None:
-        """Instantiates the Renderer object.
+        """Instantiate the Renderer object.
 
         :param qtbot: provides methods to simulate user interaction
         """
@@ -55,7 +55,7 @@ class WorkaroundTestRenderer:
         cylinder_total_counter = 0
 
         def _test_ids_and_counters(result: int) -> None:
-            """Tests most recent cylinder ids, cylinder vao entries and...?"""
+            """Test most recent cylinder ids, cylinder vao entries and...?."""
             assert result == mostrecent_cylinder_id
             assert self.renderer.cylinders[mostrecent_cylinder_id]["vao"] == cylinder_total_counter
             start_id = 1 + (cylinder_total_counter - 1) * 4
@@ -91,7 +91,7 @@ class WorkaroundTestRenderer:
         self.openGLWidget.makeCurrent()
 
         def _remove_tests(cylinder_id: int) -> None:
-            """Tests the removal of a cylinder."""
+            """Test the removal of a cylinder."""
             self.renderer.remove_cylinder(cylinder_id)
             if cylinder_id >= len(self.renderer.cylinders):
                 return
@@ -147,7 +147,7 @@ class WorkaroundTestRenderer:
         sphere_total_counter = 0
 
         def _test_ids_and_counters(result: int) -> None:
-            """Tests most recent sphere ids, sphere vao entries and...?"""
+            """Test most recent sphere ids, sphere vao entries and...?."""
             assert result == mostrecent_sphere_id
             assert self.renderer.spheres[mostrecent_sphere_id]["vao"] == sphere_total_counter
             start_id = 1 + (sphere_total_counter - 1) * 4
@@ -178,7 +178,7 @@ class WorkaroundTestRenderer:
         self.openGLWidget.makeCurrent()
 
         def _remove_tests(sphere_id: int) -> None:
-            """Tests the removal of a sphere."""
+            """Test the removal of a sphere."""
             self.renderer.remove_sphere(sphere_id)
             if sphere_id >= len(self.renderer.spheres):
                 return
