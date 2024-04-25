@@ -176,6 +176,21 @@ class StructureWidget(QOpenGLWidget):
         )
         self.grabFramebuffer().save(filename[0])
 
+    def export_camera_settings(self, filename: str) -> None:
+        """Export camera settings to .npz file.
+
+        :param filename: name of the file to which the camera settings shall be saved
+        """
+        self.camera.export_settings(filename)
+
+    def import_camera_settings(self, filename: str) -> None:
+        """Import camera settings from .npz file.
+
+        :param filename: name of the file from which the camera settings shall be loaded
+        """
+        self.camera.import_settings(filename)
+        self.update()
+
     def initializeGL(self) -> None:  # noqa: N802
         """Initialize the widget."""
         glClearColor(1, 1, 1, 1.0)

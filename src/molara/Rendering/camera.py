@@ -31,11 +31,12 @@ class Camera:
         self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
-        self.last_rotation = self.rotation
         self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
-        self.last_translation = self.translation
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+
+        self.last_rotation = self.rotation
+        self.last_translation = self.translation
         self.initial_target = self.target
         self.initial_position = pyrr.Vector3(
             pyrr.vector3.normalize(self.position),
@@ -77,6 +78,7 @@ class Camera:
             100,
             dtype=np.float32,
         )
+        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def reset(
         self,
@@ -297,3 +299,63 @@ class Camera:
             )
         else:
             self.rotation = self.last_rotation
+
+    def export_settings(self, file_name: str) -> None:
+        """Export camera settings to .npz file.
+
+        :param file_name: Name of the file to which camera settings are saved.
+        """
+        np.savez(
+            file_name,
+            orthographic_projection=self.orthographic_projection,
+            fov=self.fov,
+            width=self.width,
+            height=self.height,
+            zoom_sensitivity=self.zoom_sensitivity,
+            distance_from_target=self.distance_from_target,
+            position=self.position,
+            up_vector=self.up_vector,
+            right_vector=self.right_vector,
+            target=self.target,
+            translation=self.translation,
+            initial_position=self.initial_position,
+            initial_up_vector=self.initial_up_vector,
+            initial_right_vector=self.initial_right_vector,
+            initial_target=self.initial_target,
+            last_translation=self.last_translation,
+            rotation=self.rotation,
+            last_rotation=self.last_rotation,
+        )
+
+    def import_settings(self, file_name: str) -> None:
+        """Import camera settings from .npz file.
+
+        :param file_name: Name of the file from which camera settings are loaded.
+        """
+        with np.load(file_name) as data:
+            self.orthographic_projection = data["orthographic_projection"]
+            self.fov = data["fov"]
+
+            # do something with width and height?
+
+            self.zoom_sensitivity = data["zoom_sensitivity"]
+            self.set_position(
+                data["position"],
+                data["up_vector"],
+                data["right_vector"],
+                data["distance_from_target"],
+            )
+            self.initial_position = pyrr.Vector3(data["initial_position"], dtype=np.float32)
+            self.initial_up_vector = pyrr.Vector3(data["initial_up_vector"], dtype=np.float32)
+            self.initial_right_vector = pyrr.Vector3(data["initial_right_vector"], dtype=np.float32)
+
+            self.target = pyrr.Vector3(data["target"], dtype=np.float32)
+            self.initial_target = pyrr.Vector3(data["initial_target"], dtype=np.float32)
+            self.translation = pyrr.Vector3(data["translation"], dtype=np.float32)
+            self.last_translation = pyrr.Vector3(data["last_translation"], dtype=np.float32)
+
+            self.rotation = pyrr.Quaternion(data["rotation"])
+            self.last_rotation = pyrr.Quaternion(data["last_rotation"])
+
+            self.calculate_projection_matrix()
+            self.update()

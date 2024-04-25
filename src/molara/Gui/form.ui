@@ -36,6 +36,7 @@
     <addaction name="actionImport"/>
     <addaction name="actionExport"/>
     <addaction name="actionExport_Snapshot"/>
+    <addaction name="actionExport_CameraSettings"/>
     <addaction name="quit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -54,10 +55,12 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionToggle_Projection"/>
-    <addaction name="actionDraw_Axes"/>
-    <addaction name="actionOpen_Trajectory_Dialog"/>
+    <addaction name="actionImport_CameraSettings"/>
     <addaction name="separator"/>
+    <addaction name="actionDraw_Axes"/>
     <addaction name="actionToggle_Bonds"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_Trajectory_Dialog"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -184,6 +187,16 @@
   <action name="actionToggle_Projection">
    <property name="text">
     <string>Toggle Projection (Perspective/Ortho)</string>
+   </property>
+  </action>
+  <action name="actionExport_CameraSettings">
+   <property name="text">
+    <string>Export Camera Settings</string>
+   </property>
+  </action>
+  <action name="actionImport_CameraSettings">
+   <property name="text">
+    <string>Import Camera Settings</string>
    </property>
   </action>
  </widget>
