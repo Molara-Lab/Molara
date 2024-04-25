@@ -14,6 +14,7 @@ from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
+from molara.Gui.mos_dialog import MOsDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
@@ -50,6 +51,7 @@ class MainWindow(QMainWindow):
         self.measurement_dialog = MeasurementDialog(self)
         self.builder_dialog = BuilderDialog(self)
         self.structure_customizer_dialog = StructureCustomizerDialog(self)
+        self.mo_dialog = MOsDialog(self)
 
         self.mols = Molecules()
 
@@ -92,6 +94,10 @@ class MainWindow(QMainWindow):
         self.ui.actionMeasure.triggered.connect(
             self.show_measurement_dialog,
         )
+        self.ui.actionDisplay_MOs.triggered.connect(
+            self.mo_dialog.show,
+        )
+
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)

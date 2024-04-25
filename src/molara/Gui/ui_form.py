@@ -70,8 +70,8 @@ class Ui_MainWindow(object):
         self.actionToggle_Projection.setObjectName(u"actionToggle_Projection")
         self.actionOpen_Structure_Customizer = QAction(MainWindow)
         self.actionOpen_Structure_Customizer.setObjectName(u"actionOpen_Structure_Customizer")
-        self.actionDisplay_MOs.setObjectName(u"actionDisplay_MOs")
         self.actionDisplay_MOs = QAction(MainWindow)
+        self.actionDisplay_MOs.setObjectName(u"actionDisplay_MOs")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -124,8 +124,8 @@ class Ui_MainWindow(object):
         self.menuCrystal.addAction(self.actionSupercell)
         self.menuCrystal.addAction(self.actionToggle_UnitCellBoundaries)
         self.menuTools.addAction(self.actionMeasure)
-        self.menuTools.addAction(self.actionBuilder)
         self.menuTools.addAction(self.actionDisplay_MOs)
+        self.menuTools.addAction(self.actionBuilder)
 
         self.retranslateUi(MainWindow)
 
@@ -152,14 +152,15 @@ class Ui_MainWindow(object):
         self.actionSupercell.setText(QCoreApplication.translate("MainWindow", u"Supercell", None))
         self.actionBuilder.setText(QCoreApplication.translate("MainWindow", u"Builder", None))
         self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export", None))
-        self.actionDisplay_MOs.setText(QCoreApplication.translate("MainWindow", u"Display MOs", None))
         self.actionExport_Snapshot.setText(QCoreApplication.translate("MainWindow", u"Export Snapshot", None))
         self.actionToggle_UnitCellBoundaries.setText(QCoreApplication.translate("MainWindow", u"Toggle Unit Cell Boundaries", None))
         self.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", u"Toggle Projection (Perspective/Ortho)", None))
         self.actionOpen_Structure_Customizer.setText(QCoreApplication.translate("MainWindow", u"Open Structure Customizer", None))
+        self.actionDisplay_MOs.setText(QCoreApplication.translate("MainWindow", u"Display MOs", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
         self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Rotate", None))
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
     # retranslateUi
+

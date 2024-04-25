@@ -17,7 +17,7 @@ from molara.Eval.mos import calculate_mo_cartesian
 from molara.Eval.generate_voxel_grid import generate_voxel_grid
 
 if TYPE_CHECKING:
-    from molara.Molecule.structure import Structure
+    from molara.Structure.molecule import Molecule
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -44,13 +44,13 @@ class MOsDialog(QDialog):
 
     def check_if_mos(self):
         """Check if MOs are available."""
-        if self.parent().structure_widget.structure is None:
+        if not self.parent().structure_widget.structures:
             return False
-        if self.parent().structure_widget.structure.mos.coefficients.size == 0:
+        if self.parent().structure_widget.structures[0].mos.coefficients.size == 0:
             return False
-        self.mos = self.parent().structure_widget.structure.mos
-        self.aos = self.parent().structure_widget.structure.aos
-        self.atoms = self.parent().structure_widget.structure.atoms
+        self.mos = self.parent().structure_widget.structures[0].mos
+        self.aos = self.parent().structure_widget.structures[0].aos
+        self.atoms = self.parent().structure_widget.structures[0].atoms
         return True
 
     def test(self):
