@@ -21,6 +21,7 @@ with open(Path(__file__).absolute().parent / "periodic_table.json", encoding="ut
 with open(Path(__file__).absolute().parent / "atom_colors.json", encoding="utf-8") as atom_colors_json:
     _atom_colors = json.load(atom_colors_json)
 
+
 class Atom:
     """Creates an Atom object."""
 
@@ -34,8 +35,11 @@ class Atom:
         self.name = _pt_data[self.symbol]["Name"]
         self.atomic_number = atomic_number
         self.atomic_mass = _pt_data[self.symbol]["Atomic mass"]
-        self.electronegativity = _pt_data[self.symbol]["X"]
-        # self.cpk_color: np.ndarray = np.array(elements[atomic_number]["cpk_color"]) / 255
+        try:
+            self.electronegativity = _pt_data[self.symbol]["X"]
+        except KeyError:
+            self.electronegativity = None
+        self.cpk_color: np.ndarray = np.array((1, 1, 1))  # np.array(elements[atomic_number]["cpk_color"]) / 255
         self.vdw_radius = _pt_data[self.symbol]["Van der waals radius"]
         self.basis_set = Basisset()
         self.position = np.array([])
@@ -73,3 +77,6 @@ def atomic_number_to_symbol(atomic_number: int) -> str:
         _pt_data[element]["Atomic no"]: element for element in _pt_data if element not in ["D", "T"]
     }
     return symbol_to_atomic_number[atomic_number]
+
+
+elements = _pt_data
