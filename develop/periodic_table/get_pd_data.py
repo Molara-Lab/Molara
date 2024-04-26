@@ -1,4 +1,8 @@
-"""Get the periotic table data from pymatgen and save it to a file."""
+"""Get the periotic table data from pymatgen and save it to a file.
+
+The periodic table data is fetched from the pymatgen repository and saved to a file. This is a developer script to
+ generate the periodic_table.json file.
+"""
 
 from __future__ import annotations
 

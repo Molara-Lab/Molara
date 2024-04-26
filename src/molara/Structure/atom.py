@@ -39,7 +39,8 @@ class Atom:
             self.electronegativity = _pt_data[self.symbol]["X"]
         except KeyError:
             self.electronegativity = None
-        self.cpk_color: np.ndarray = np.array((1, 1, 1))  # np.array(elements[atomic_number]["cpk_color"]) / 255
+        self.jmol_color = tuple(int(_atom_colors["Jmol"][self.symbol].strip("#")[i : i + 2], 16) for i in (0, 2, 4))
+        self.cpk_color = np.array(_atom_colors["CPK_ase"][self.symbol], dtype=np.float64)
         self.vdw_radius = _pt_data[self.symbol]["Van der waals radius"]
         self.basis_set = Basisset()
         self.position = np.array([])

@@ -1,4 +1,8 @@
-"""Get colors table."""
+"""Get the colors for the atoms from the wikipedia page and store them in a json file.
+
+The colors are fetched from the wikipedia page: https://en.wikipedia.org/wiki/CPK_coloring. Additionally, the colors
+ from the ASE package are included. This is a developer script to generate the atom_colors.json file.
+"""
 
 from __future__ import annotations
 
@@ -6,9 +10,9 @@ import json
 
 import bs4
 import requests
+from ase.data.colors import cpk_colors, jmol_colors
 from bs4 import BeautifulSoup
-
-# from ase.data.colors import cpk_colors, jmol_colors
+from molara.Structure.atom import atomic_number_to_symbol
 
 file_path = "../../src/molara/Structure/"
 
@@ -61,9 +65,20 @@ def parse_color_table(table: bs4.element.Tag) -> dict[str, dict[str, str]]:
     return colors_dict
 
 
+def get_ase_colors() -> dict[str, dict[str, tuple]]:
+    """Get the ASE colors."""
+    ase_colors: dict[str, dict[str, tuple]] = {}
+    for scheme_name, values in {"Jmol_ase": jmol_colors, "CPK_ase": cpk_colors}.items():
+        ase_colors[scheme_name] = {}
+        ase_colors[scheme_name]["None"] = tuple(values[0])
+        for atomic_number in range(1, len(values)):
+            ase_colors[scheme_name][atomic_number_to_symbol(atomic_number)] = tuple(values[atomic_number])
+
+    return ase_colors
+
+
 if __name__ == "__main__":
     c_table = fetch_color_table()
-    colors_dict = parse_color_table(c_table)
 
     with open(file_path + "atom_colors.json", "w") as file:
-        json.dump(colors_dict, file)
+        json.dump(parse_color_table(c_table) | get_ase_colors(), file)
