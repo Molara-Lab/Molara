@@ -37,8 +37,15 @@ class Drawer:
         :param bonds: list ids of bonded atoms
         :param draw_bonds: bool that specifies whether bonds shall be drawn (as cylinders)
         """
-        self.subdivisions_sphere = 15
+        self.subdivisions_sphere = 20
         self.subdivisions_cylinder = 20
+        self.stick_mode = False
+
+        self.sphere_scale = 1.0
+        self.sphere_default_radius = 1.0 / 6
+        self.cylinder_scale = 1.0
+        self.cylinder_radius = 0.075
+
         self.sphere = Sphere(self.subdivisions_sphere)
         self.cylinder = Cylinder(self.subdivisions_cylinder)
         self.sphere_model_matrices = np.array([], dtype=np.float32)
@@ -109,13 +116,22 @@ class Drawer:
         """Set the colors of the atoms."""
         self.atom_colors = np.array([atom.cpk_color for atom in self.atoms], dtype=np.float32)
 
+    def set_cylinder_dimensions(self) -> None:
+        """Set the dimensions of the cylinders.
+
+        It is important to note, that the radius ([:,1]) of the cylinders need not be changed!
+        """
+        self.cylinder_dimensions = np.array(self.cylinder_dimensions, dtype=np.float32)
+        self.cylinder_dimensions[:, 0] = self.cylinder_radius * self.cylinder_scale
+        self.cylinder_dimensions[:, 2] = self.cylinder_radius * self.cylinder_scale
+
     def set_cylinder_props(self) -> None:
         """Set the colors of the bonds (cylinders)."""
         self.cylinder_colors = []
         self.cylinder_positions = []
         self.cylinder_directions = []
         self.cylinder_dimensions = []
-        radius = 0.075
+        radius = self.cylinder_radius * self.cylinder_scale
 
         for bond in self.bonds:
             if bond[0] == -1:
@@ -155,8 +171,14 @@ class Drawer:
     def set_atom_scales(self) -> None:
         """Set the scales of the atoms."""
         self.atom_scales = []
-        scaling_factor = 1.0 / 6
-        self.atom_scales = np.array([3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms], dtype=np.float32)
+        scaling_factor = self.sphere_default_radius * self.sphere_scale
+        if not self.stick_mode:
+            self.atom_scales = np.array(
+                [3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms],
+                dtype=np.float32,
+            )
+        else:
+            self.atom_scales = np.array([3 * [scaling_factor] for _ in self.atoms], dtype=np.float32)
 
     def reset_atom_model_matrices(self) -> None:
         """Reset the model matrices for the spheres."""
