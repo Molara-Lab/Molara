@@ -8,8 +8,13 @@ from __future__ import annotations
 
 import json
 import urllib.request
+from pathlib import Path
 
-file_path = "../../src/molara/Structure/"
+MODULE_DIR = Path(__file__).parent
+PKG_DIR = Path(MODULE_DIR).parent
+ROOT = (PKG_DIR).parent
+
+file_path = ROOT / "src/molara/Structure/"
 
 
 def fetch_periodic_table() -> dict[str, dict[str, str]]:
@@ -30,10 +35,10 @@ def fetch_license() -> str:
 
 if __name__ == "__main__":
     pt_data = fetch_periodic_table()
-    with open(file_path + "periodic_table.json", mode="w") as file:
+    with open(file_path / "periodic_table.json", mode="w") as file:
         json.dump(pt_data, file)
 
     license_text = fetch_license()
-    with open(file_path + "periodic_table_copyright", mode="w") as file:
+    with open(file_path / "periodic_table_copyright", mode="w") as file:
         file.write("Periodic Table data from pymatgen.\nThe data is licensed under the following terms:\n\n")
         file.write(license_text)
