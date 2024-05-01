@@ -145,7 +145,6 @@ def setup_vao_numbers(digits: np.ndarray, positions_3d: np.ndarray) -> tuple[int
     glBufferData(GL_ARRAY_BUFFER, digits, GL_DYNAMIC_DRAW)
     glEnableVertexAttribArray(0)
     glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, digits.itemsize, ctypes.c_void_p(0))
-    #glVertexAttribDivisor(0, 1)  # Set instance data divisor
 
     # Generate and bind VBO for instance data
     instance_vbo_positions_3d = glGenBuffers(1)
@@ -153,7 +152,6 @@ def setup_vao_numbers(digits: np.ndarray, positions_3d: np.ndarray) -> tuple[int
     glBufferData(GL_ARRAY_BUFFER, positions_3d, GL_DYNAMIC_DRAW)
     glEnableVertexAttribArray(1)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, instance_vbo_positions_3d.itemsize*3, ctypes.c_void_p(0))
-    #glVertexAttribDivisor(1, 1)  # Set instance data divisor
 
     buffers = [instance_vbo_digits, instance_vbo_positions_3d]
     glBindVertexArray(0)
