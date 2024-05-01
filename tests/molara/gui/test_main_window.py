@@ -15,8 +15,8 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
-from PySide6.QtCore import QPoint, Qt
-from PySide6.QtGui import QAction, QSurfaceFormat
+from PySide6.QtCore import QEvent, QPoint, Qt
+from PySide6.QtGui import QAction, QMouseEvent, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
@@ -156,6 +156,7 @@ class WorkaroundTestMainWindow:
         assert not structure_widget.draw_bonds
         assert structure_widget is not None
 
+        # Test mouse moves and clicks
         self.qtbot.mousePress(structure_widget, Qt.LeftButton, pos=QPoint(50, 50))
 
         # Simulate mouse move events to rotate the structure
@@ -173,6 +174,25 @@ class WorkaroundTestMainWindow:
 
         # Simulate a left mouse button release event to end rotation
         self.qtbot.mouseRelease(structure_widget, Qt.RightButton, pos=QPoint(70, 70))
+
+        # Test toggle axes:
+        structure_widget.toggle_axes()
+        assert structure_widget.draw_axes
+        structure_widget.toggle_axes()
+        assert not structure_widget.draw_axes
+
+        # Test measurement select sphere
+        event = QMouseEvent(
+            QEvent.MouseButtonPress,  # Event type
+            QPoint(50, 50),  # Position
+            Qt.LeftButton,  # Button
+            Qt.LeftButton,  # Buttons (pressed buttons)
+            Qt.NoModifier,  # Modifiers (keyboard modifiers)
+        )
+        structure_widget.update_measurement_selected_atoms(event)
+
+        # Test builder select sphere
+        structure_widget.update_builder_selected_atoms(event)
 
     def test_show_builder_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""
