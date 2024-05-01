@@ -38,7 +38,7 @@ class WorkaroundTestRenderer:
         assert isinstance(self.renderer.cylinders, list)
         assert self.renderer.shaders == [0]
 
-    def test_set_shader(self) -> None:
+    def test_set_shaders(self) -> None:
         """Tests the set_shader method of the Renderer class."""
         shader_int = [192837465, 42]
         self.renderer.set_shaders(shader_int)

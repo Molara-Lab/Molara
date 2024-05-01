@@ -60,7 +60,7 @@ def _test_renderer(qtbot: QtBot, main_window: MainWindow) -> None:
     # The order of the tests is important, as the tests are not independent.
     # Changing the order of the tests may lead to failing tests.
     workaround_test_renderer.test_init()
-    workaround_test_renderer.test_set_shader()
+    workaround_test_renderer.test_set_shaders()
     workaround_test_renderer.test_draw_cylinders()
     workaround_test_renderer.test_remove_cylinder()
     workaround_test_renderer.test_draw_cylinders_from_to()

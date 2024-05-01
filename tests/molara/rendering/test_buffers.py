@@ -54,7 +54,7 @@ class WorkaroundTestBuffers:
             assert isinstance(buffers[i], (np.integer, int))
 
     def test_setup_vao_numbers(self) -> None:
-        """Tests the draw_numbers method of the Renderer class."""
+        """Tests the setup_vao_numbers function of the buffers module."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
             self.main_window.show_init_xyz()

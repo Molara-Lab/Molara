@@ -241,7 +241,7 @@ class StructureCustomizerDialog(QDialog):
         if self.numbers:
             if len(structure.atoms) < self.max_atoms_for_numbers:
                 self.ui.toggleNumbersButton.setText("Hide Numbers")
-            elif len(structure.atoms) > self.max_atoms_for_numbers:
+            else:
                 self.numbers = False
                 self.atom_indices_arrays = (np.zeros(1), np.zeros(1), np.zeros(1))
         else:

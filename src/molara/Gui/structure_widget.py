@@ -108,6 +108,8 @@ class StructureWidget(QOpenGLWidget):
 
     def update_atom_number_labels(self) -> None:
         """Update the positions of the labels."""
+        assert self.structures
+
         calculate_atom_number_arrays(
             self.atom_indices_arrays[0],
             self.atom_indices_arrays[1],
