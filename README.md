@@ -55,3 +55,7 @@ make html
 Note that, for the Cython build, a C compiler must be installed on the system (a more detailed description can be found [here](https://cython.readthedocs.io/en/latest/src/quickstart/install.html)).
 
 After the installation, Molara may then be started (within the virtual environment) by calling `molara` from the command line.
+
+## Known issues
+
+Due to Apple's non existing support for OpenGL, displaying the indices of the atoms takes long for the first time. However after that it is instantaneous, even after restarting the program and rebooting the machine. As a solution we need to rework this routine with another strategy.
