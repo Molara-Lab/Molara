@@ -15,6 +15,7 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
+from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QAction, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
@@ -154,6 +155,24 @@ class WorkaroundTestMainWindow:
         assert not structure_widget.bonds
         assert not structure_widget.draw_bonds
         assert structure_widget is not None
+
+        self.qtbot.mousePress(structure_widget, Qt.LeftButton, pos=QPoint(50, 50))
+
+        # Simulate mouse move events to rotate the structure
+        self.qtbot.mouseMove(structure_widget, QPoint(60, 60))
+        self.qtbot.mouseMove(structure_widget, QPoint(70, 70))
+
+        # Simulate a left mouse button release event to end rotation
+        self.qtbot.mouseRelease(structure_widget, Qt.LeftButton, pos=QPoint(70, 70))
+
+        self.qtbot.mousePress(structure_widget, Qt.RightButton, pos=QPoint(50, 50))
+
+        # Simulate mouse move events to rotate the structure
+        self.qtbot.mouseMove(structure_widget, QPoint(60, 60))
+        self.qtbot.mouseMove(structure_widget, QPoint(70, 70))
+
+        # Simulate a left mouse button release event to end rotation
+        self.qtbot.mouseRelease(structure_widget, Qt.RightButton, pos=QPoint(70, 70))
 
     def test_show_builder_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""
