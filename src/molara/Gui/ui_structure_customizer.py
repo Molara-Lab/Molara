@@ -24,8 +24,8 @@ class Ui_structure_customizer(object):
         if not structure_customizer.objectName():
             structure_customizer.setObjectName(u"structure_customizer")
         structure_customizer.resize(256, 152)
-        structure_customizer.setMinimumSize(QSize(0, 0))
-        structure_customizer.setMaximumSize(QSize(8000, 90000))
+        structure_customizer.setMinimumSize(QSize(256, 152))
+        structure_customizer.setMaximumSize(QSize(256, 152))
         self.viewModeButton = QPushButton(structure_customizer)
         self.viewModeButton.setObjectName(u"viewModeButton")
         self.viewModeButton.setGeometry(QRect(6, 5, 107, 32))
@@ -98,3 +98,4 @@ class Ui_structure_customizer(object):
         self.deleteButton.setText(QCoreApplication.translate("structure_customizer", u"Delete", None))
         self.toggleNumbersButton.setText(QCoreApplication.translate("structure_customizer", u"Show Indices", None))
     # retranslateUi
+
