@@ -64,6 +64,7 @@ def _test_renderer(qtbot: QtBot, main_window: MainWindow) -> None:
     workaround_test_renderer.test_draw_cylinders_from_to()
     workaround_test_renderer.test_draw_spheres()
     workaround_test_renderer.test_remove_sphere()
+    workaround_test_renderer.test_numbers()
 
     workaround_test_renderer.openGLWidget.doneCurrent()
 
