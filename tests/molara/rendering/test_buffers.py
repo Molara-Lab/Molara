@@ -9,7 +9,9 @@ if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
 
 import numpy as np
-from molara.Rendering.buffers import setup_vao
+from unittest import mock
+import sys
+from molara.Rendering.buffers import setup_vao, setup_vao_numbers
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 
@@ -49,3 +51,20 @@ class WorkaroundTestBuffers:
         assert len(buffers) == 4  # noqa: PLR2004
         for i in range(4):
             assert isinstance(buffers[i], (np.integer, int))
+
+    def test_setup_vao_numbers(self) -> None:
+        """Tests the draw_numbers method of the Renderer class."""
+        testargs = ["molara", "examples/xyz/pentane.xyz"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.main_window.show_init_xyz()
+        digits = np.array([1, 2, 3, 4, 5], dtype=np.int32)
+        positions_3d = np.array([[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]], dtype=np.float32)
+        self.openGLWidget.makeCurrent()
+        (vao, buffers) = setup_vao_numbers(digits, positions_3d)
+        assert isinstance(vao, (np.integer, int))
+        assert isinstance(buffers, list)
+        # len(buffers) must always be 2.
+        assert len(buffers) == 2  # noqa: PLR2004
+        for i in range(2):
+            assert isinstance(buffers[i], (np.integer, int))
+
