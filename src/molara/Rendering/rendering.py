@@ -7,33 +7,33 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from OpenGL.GL import (
-    glPolygonMode,
-    GL_FRONT_AND_BACK,
-    GL_LINE,
-    GL_FILL,
     GL_ARRAY_BUFFER,
     GL_COLOR_BUFFER_BIT,
     GL_DEPTH_BUFFER_BIT,
     GL_ELEMENT_ARRAY_BUFFER,
     GL_FALSE,
-    glUniform1f,
-    GL_UNSIGNED_INT,
-    GLuint,
-    glEnable,
-    GL_VERTEX_PROGRAM_POINT_SIZE,
-    glBindBuffer,
+    GL_FILL,
+    GL_FRONT_AND_BACK,
+    GL_LINE,
     GL_POINTS,
     GL_TRIANGLES,
+    GL_UNSIGNED_INT,
+    GL_VERTEX_PROGRAM_POINT_SIZE,
+    GLuint,
+    glBindBuffer,
     glBindVertexArray,
     glClear,
     glDeleteBuffers,
     glDeleteVertexArrays,
-    glDrawElementsInstanced,
-    glGetUniformLocation,
-    glUniform3fv,
     glDrawArrays,
-    glUseProgram,
+    glDrawElementsInstanced,
+    glEnable,
+    glGetUniformLocation,
+    glPolygonMode,
+    glUniform1f,
+    glUniform3fv,
     glUniformMatrix4fv,
+    glUseProgram,
 )
 
 from molara.Rendering.buffers import setup_vao, setup_vao_numbers
@@ -338,7 +338,6 @@ class Renderer:
         vao, buffers = setup_vao_numbers(digits, positions_3d)
         self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
 
-
     def update_bonds_vao(
         self,
         vertices: np.ndarray,
@@ -451,7 +450,6 @@ class Renderer:
 
     def display_numbers(self, camera: Camera) -> None:
         """Draws the lines."""
-
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
         glUseProgram(self.shaders[1])
 
@@ -470,7 +468,7 @@ class Renderer:
 
         # Uniform for color
         color_location = glGetUniformLocation(self.shaders[1], "color_in")
-        glUniform3fv(color_location, 1, np.array([.0, .0, .0], dtype=np.float32))
+        glUniform3fv(color_location, 1, np.array([0.0, 0.0, 0.0], dtype=np.float32))
 
         # Draw instanced
         glDrawArrays(GL_POINTS, 0, self.number_vao[0]["n_instances"])

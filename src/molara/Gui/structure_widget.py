@@ -11,10 +11,10 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QFileDialog
 
+from molara.Rendering.atom_labels import calculate_atom_number_arrays
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
-from molara.Rendering.atom_labels import init_atom_number, calculate_atom_number_arrays
 from molara.Structure.crystal import Crystal
 from molara.Tools.raycasting import select_sphere
 
@@ -73,7 +73,7 @@ class StructureWidget(QOpenGLWidget):
         ]
         self.show_atom_indices = False
         self.show_atom_indices_is_initialized = False
-        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1), np.zeros(1))
+        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1))
 
     @property
     def bonds(self) -> bool:
@@ -106,20 +106,18 @@ class StructureWidget(QOpenGLWidget):
         """Specifies whether the projection is orthographic or not."""
         return self.camera.orthographic_projection
 
-    def toggle_atom_indices(self) -> None:
-        """Toggle the display of atom indices."""
-        self.show_atom_indices = not self.show_atom_indices
-        self.show_atom_indices_is_initialized = not self.show_atom_indices_is_initialized
-        self.set_atom_numbers()
-
     def update_atom_number_labels(self) -> None:
         """Update the positions of the labels."""
-        calculate_atom_number_arrays(self.atom_indices_arrays[0],
-                                     self.atom_indices_arrays[1],
-                                     self.structures[0], self.camera)
-        self.renderer.draw_numbers(self.atom_indices_arrays[0],
-                                   self.atom_indices_arrays[1],
-                                   )
+        calculate_atom_number_arrays(
+            self.atom_indices_arrays[0],
+            self.atom_indices_arrays[1],
+            self.structures[0],
+            self.camera,
+        )
+        self.renderer.draw_numbers(
+            self.atom_indices_arrays[0],
+            self.atom_indices_arrays[1],
+        )
 
     def reset_view(self) -> None:
         """Reset the view of the structure to the initial view."""
@@ -159,18 +157,6 @@ class StructureWidget(QOpenGLWidget):
         self.vertex_attribute_objects = [-1]
         self.update()
 
-    def set_atom_numbers(self) -> None:
-        """Set the atom numbers."""
-        if self.show_atom_indices and len(self.structures[0].atoms) < 999:
-            self.atom_indices_arrays = init_atom_number(self.structures[0])
-            self.update_atom_number_labels()
-            self.update()
-        elif len(self.structures[0].atoms) > 999:
-            print('Cannot display indices for more than 999 atoms.')
-            self.show_atom_indices = False
-            self.show_atom_indices_is_initialized = False
-            self.atom_indices_arrays = (np.zeros(1), np.zeros(1))
-
     def set_structure(self, structs: list[Structure | Crystal | Molecule], reset_view: bool = True) -> None:
         """Set the structures to be drawn.
 
@@ -178,7 +164,6 @@ class StructureWidget(QOpenGLWidget):
         :param reset_view: Specifies whether the view shall be reset to the initial view
         """
         self.structures = structs
-        self.set_atom_numbers()
         if reset_view:
             self.reset_view()
         else:
@@ -236,7 +221,6 @@ class StructureWidget(QOpenGLWidget):
         if self.show_atom_indices:
             self.update_atom_number_labels()
             self.renderer.display_numbers(self.camera)
-
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""

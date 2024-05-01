@@ -6,16 +6,15 @@ import json
 from os import listdir
 from pathlib import Path
 from typing import TYPE_CHECKING
+
 import numpy as np
-from molara.Rendering.atom_labels import init_atom_number, calculate_atom_number_arrays
-
-
 from PySide6.QtWidgets import (
     QDialog,
     QMainWindow,
 )
 
 from molara.Gui.ui_structure_customizer import Ui_structure_customizer
+from molara.Rendering.atom_labels import init_atom_number
 
 if TYPE_CHECKING:
     from molara.Structure.crystal import Crystal
@@ -46,6 +45,7 @@ class StructureCustomizerDialog(QDialog):
         self.stick_mode = False
         self.bonds = True
         self.numbers = False
+        self.max_atoms_for_numbers = 999
         self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1), np.zeros(1))
 
         self.ui.ballSizeSpinBox.setValue(1.0)
@@ -132,7 +132,6 @@ class StructureCustomizerDialog(QDialog):
         self.ui.ballSizeSpinBox.setValue(settings["ball_size"])
         self.ui.stickSizeSpinBox.setValue(settings["stick_size"])
         self.numbers = settings["atom_numbers"]
-
 
     def save_settings(self) -> None:
         """Save the settings to a file."""
@@ -240,10 +239,9 @@ class StructureCustomizerDialog(QDialog):
         self.numbers = numbers
         structure = self.parent().structure_widget.structures[0]
         if self.numbers:
-            if len(structure.atoms) < 999:
+            if len(structure.atoms) < self.max_atoms_for_numbers:
                 self.ui.toggleNumbersButton.setText("Hide Numbers")
-            elif len(structure.atoms) > 999:
-                print('Cannot display indices for more than 999 atoms.')
+            elif len(structure.atoms) > self.max_atoms_for_numbers:
                 self.numbers = False
                 self.atom_indices_arrays = (np.zeros(1), np.zeros(1), np.zeros(1))
         else:

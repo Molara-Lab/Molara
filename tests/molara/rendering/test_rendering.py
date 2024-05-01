@@ -33,13 +33,13 @@ class WorkaroundTestRenderer:
         assert isinstance(self.renderer.bonds_vao, dict)
         assert isinstance(self.renderer.spheres, list)
         assert isinstance(self.renderer.cylinders, list)
-        assert self.renderer.shader == 0
+        assert self.renderer.shaders == [0]
 
     def test_set_shader(self) -> None:
         """Tests the set_shader method of the Renderer class."""
-        shader_int = 192837465
-        self.renderer.set_shader(shader_int)
-        assert self.renderer.shader == shader_int
+        shader_int = [192837465, 42]
+        self.renderer.set_shaders(shader_int)
+        assert self.renderer.shaders == shader_int
 
     def test_draw_cylinders(self) -> None:
         """Tests the draw_cylinders method of the Renderer class."""

@@ -1,9 +1,16 @@
 """Function for rendering atom labels."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
-from molara.Structure.structure import Structure
+
 from molara.Structure.molecule import Molecule
-from molara.Rendering.camera import Camera
+
+if TYPE_CHECKING:
+    from molara.Rendering.camera import Camera
+    from molara.Structure.structure import Structure
 
 
 def init_atom_number(structure: Structure) -> tuple[np.ndarray, np.ndarray]:
@@ -21,9 +28,12 @@ def init_atom_number(structure: Structure) -> tuple[np.ndarray, np.ndarray]:
     return digits, positions_3d
 
 
-def calculate_atom_number_arrays(digits: np.ndarray,
-                                 positions_3d: np.ndarray,
-                                 structure: Structure, camera: Camera) -> None:
+def calculate_atom_number_arrays(
+    digits: np.ndarray,
+    positions_3d: np.ndarray,
+    structure: Structure,
+    camera: Camera,
+) -> None:
     """Calculate the arrays for the atom numbers.
 
     :param digits: The digits to be displayed.
@@ -40,7 +50,14 @@ def calculate_atom_number_arrays(digits: np.ndarray,
 
         atom_cam_vec = camera.position - atom_position_3d
         atom_cam_vec /= np.linalg.norm(atom_cam_vec)
-        position_number_3d = atom_position_3d + atom_cam_vec * 1/5 * structure.atoms[i].vdw_radius
+        position_number_3d = (
+            atom_position_3d
+            + atom_cam_vec
+            * structure.drawer.sphere_default_radius
+            * structure.drawer.sphere_scale
+            * structure.atoms[i].vdw_radius
+            * 1.75
+        )
         positions_3d[i] = position_number_3d
         digits[i] = i + 1
 

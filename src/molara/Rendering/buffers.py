@@ -4,17 +4,16 @@ from __future__ import annotations
 
 import ctypes
 from typing import TYPE_CHECKING
-import numpy as np
 
+import numpy as np
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
     GL_DYNAMIC_DRAW,
     GL_ELEMENT_ARRAY_BUFFER,
     GL_FALSE,
     GL_FLOAT,
-    glVertexAttribIPointer,
-    GL_UNSIGNED_INT,
     GL_STATIC_DRAW,
+    GL_UNSIGNED_INT,
     glBindBuffer,
     glBindVertexArray,
     glBufferData,
@@ -22,6 +21,7 @@ from OpenGL.GL import (
     glGenBuffers,
     glGenVertexArrays,
     glVertexAttribDivisor,
+    glVertexAttribIPointer,
     glVertexAttribPointer,
 )
 
@@ -151,11 +151,9 @@ def setup_vao_numbers(digits: np.ndarray, positions_3d: np.ndarray) -> tuple[int
     glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_positions_3d)
     glBufferData(GL_ARRAY_BUFFER, positions_3d, GL_DYNAMIC_DRAW)
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, instance_vbo_positions_3d.itemsize*3, ctypes.c_void_p(0))
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, instance_vbo_positions_3d.itemsize * 3, ctypes.c_void_p(0))
 
     buffers = [instance_vbo_digits, instance_vbo_positions_3d]
     glBindVertexArray(0)
 
     return vao, buffers
-
-

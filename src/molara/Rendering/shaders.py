@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from OpenGL.GL import (
     GL_FRAGMENT_SHADER,
-    GL_VERTEX_SHADER,
     GL_GEOMETRY_SHADER,
+    GL_VERTEX_SHADER,
     GLuint,
     glAttachShader,
     glCreateProgram,
@@ -39,6 +39,7 @@ def compile_shaders() -> list[GLuint]:
     glLinkProgram(shader)
     shaders.append(shader)
     return shaders
+
 
 vertex_src_main = """
 # version 330 core
@@ -146,7 +147,7 @@ in uint digit_v[];
 in float scale_v[];
 
 void draw_horizontal_line(vec4 position, float aspect_ratio, float scale)
-{    
+{
     float radius = 0.05 * scale;
     float angle = 0.0;
     int subsections = 2;
@@ -155,9 +156,9 @@ void draw_horizontal_line(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     float x = 0.2 * inv_ar * scale;
     float y = 0.05 * scale;
-    
+
     gl_Position = position + vec4(-x, -y, 0.0, 0.0);    // 1:bottom-left
-    EmitVertex();   
+    EmitVertex();
     gl_Position = position + vec4( x, -y, 0.0, 0.0);    // 2:bottom-right
     EmitVertex();
     gl_Position = position + vec4(-x,  y, 0.0, 0.0);    // 3:top-left
@@ -167,7 +168,7 @@ void draw_horizontal_line(vec4 position, float aspect_ratio, float scale)
     vec4 temp_pos = position + vec4(x, 0.0, 0.0, 0.0);
     gl_Position = temp_pos;
     EmitVertex();
-    
+
     for (int i = 0; i <= subsections; i++)
     {
         gl_Position = temp_pos + vec4(radius * cos(angle - pi_2) * inv_ar, radius * sin(angle - pi_2), 0.0, 0.0);
@@ -177,11 +178,11 @@ void draw_horizontal_line(vec4 position, float aspect_ratio, float scale)
         angle += 3.14159265359 / subsections;
     }
     EndPrimitive();
-    
+
     temp_pos = position + vec4(-x, 0.0, 0.0, 0.0);
     gl_Position = temp_pos;
     EmitVertex();
-    
+
     angle = 0.0;
     for (int i = 0; i <= subsections; i++)
     {
@@ -194,7 +195,7 @@ void draw_horizontal_line(vec4 position, float aspect_ratio, float scale)
     EndPrimitive();
 }
 void draw_vertical_line(vec4 position_, float aspect_ratio, float scale)
-{    
+{
     float radius = 0.05 * scale;
     float angle = 0.0;
     int subsections = 2;
@@ -203,9 +204,9 @@ void draw_vertical_line(vec4 position_, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     float x = 0.05 * inv_ar * scale;
     float y = 0.2 * scale;
-    
+
     gl_Position = position_ + vec4(-x, -y, 0.0, 0.0);    // 1:bottom-left
-    EmitVertex();   
+    EmitVertex();
     gl_Position = position_ + vec4( x, -y, 0.0, 0.0);    // 2:bottom-right
     EmitVertex();
     gl_Position = position_ + vec4(-x,  y, 0.0, 0.0);    // 3:top-left
@@ -215,7 +216,7 @@ void draw_vertical_line(vec4 position_, float aspect_ratio, float scale)
     vec4 temp_pos = position_ + vec4(0.0, y, 0.0, 0.0);
     gl_Position = temp_pos;
     EmitVertex();
-    
+
     for (int i = 0; i <= subsections; i++)
     {
         gl_Position = temp_pos + vec4(radius * cos(angle) * inv_ar, radius * sin(angle), 0.0, 0.0);
@@ -225,11 +226,11 @@ void draw_vertical_line(vec4 position_, float aspect_ratio, float scale)
         angle += 3.14159265359 / subsections;
     }
     EndPrimitive();
-    
+
     temp_pos = position_ + vec4(0.0, -y, 0.0, 0.0);
     gl_Position = temp_pos;
     EmitVertex();
-    
+
     angle = 0.0;
     for (int i = 0; i <= subsections; i++)
     {
@@ -247,19 +248,19 @@ void display_0(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -267,10 +268,10 @@ void display_0(vec4 position, float aspect_ratio, float scale)
 void display_1(vec4 position, float aspect_ratio, float scale)
 {
     float inv_ar = 1 / aspect_ratio;
-    
+
     vec4 temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -280,16 +281,16 @@ void display_2(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x * 1.0, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x* 1.0, position.y - 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x* 1.0, position.y, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -299,16 +300,16 @@ void display_3(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -318,14 +319,14 @@ void display_4(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x, position.y, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
-    
+
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -335,16 +336,16 @@ void display_5(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -354,19 +355,19 @@ void display_6(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -374,13 +375,13 @@ void display_6(vec4 position, float aspect_ratio, float scale)
 void display_7(vec4 position, float aspect_ratio, float scale)
 {
     float inv_ar = 1 / aspect_ratio;
-    
+
     vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -390,22 +391,22 @@ void display_8(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -415,19 +416,19 @@ void display_9(vec4 position, float aspect_ratio, float scale)
     float inv_ar = 1 / aspect_ratio;
     vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4(position.x, position.y, position.z, position.w);
     draw_horizontal_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
-    
+
     temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
     draw_vertical_line(temp_pos, aspect_ratio, scale);
 }
@@ -486,7 +487,7 @@ void main() {
         uint digit3 = tempgg % 10u;
         display_digit(gl_in[0].gl_Position + vec4(0.1,0.0,0.0,0.0), aspect_ratio_v[0], digit3, scale_v[0]);
     }
-}  
+}
 """
 
 """if (tempgg < 10u){
@@ -536,4 +537,3 @@ void main() {
     EndPrimitive();
 }
 """
-
