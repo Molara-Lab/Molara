@@ -72,7 +72,6 @@ class StructureWidget(QOpenGLWidget):
             np.array([1, 1, 0], dtype=np.float32),
         ]
         self.show_atom_indices = False
-        self.show_atom_indices_is_initialized = False
         self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1))
 
     @property
