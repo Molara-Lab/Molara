@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import pytest
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
+from rendering.test_atom_labels import WorkaroundTestAtomLabels
 from rendering.test_buffers import WorkaroundTestBuffers
 from rendering.test_rendering import WorkaroundTestRenderer
 
@@ -27,6 +28,7 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     _test_renderer(qtbot, main_window_tests.window)
     _test_measurement_window(qtbot, main_window_tests.window)
     _test_buffers(qtbot, main_window_tests.window)
+    _test_atom_labels(qtbot, main_window_tests.window)
     main_window_tests.tearDown()
 
 
@@ -65,6 +67,21 @@ def _test_renderer(qtbot: QtBot, main_window: MainWindow) -> None:
     workaround_test_renderer.test_draw_spheres()
     workaround_test_renderer.test_remove_sphere()
     workaround_test_renderer.test_numbers()
+
+    workaround_test_renderer.openGLWidget.doneCurrent()
+
+
+def _test_atom_labels(qtbot: QtBot, main_window: MainWindow) -> None:
+    """Test the atom labels calculation.
+
+    :param qtbot: provides methods to simulate user interaction
+    :param main_window: the main window
+    """
+    workaround_test_renderer = WorkaroundTestAtomLabels(qtbot, main_window)
+
+    # The order of the tests is important, as the tests are not independent.
+    # Changing the order of the tests may lead to failing tests.
+    workaround_test_renderer.test_atom_numbers()
 
     workaround_test_renderer.openGLWidget.doneCurrent()
 
