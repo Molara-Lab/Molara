@@ -82,7 +82,6 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show,
         )
         self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
-        self.ui.actionNumber_Atoms.triggered.connect(self.structure_widget.toggle_atom_indices)
 
         self.ui.actionOpen_Structure_Customizer.triggered.connect(
             self.show_structure_customizer_dialog,
