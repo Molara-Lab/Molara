@@ -98,4 +98,3 @@ class Ui_structure_customizer(object):
         self.deleteButton.setText(QCoreApplication.translate("structure_customizer", u"Delete", None))
         self.toggleNumbersButton.setText(QCoreApplication.translate("structure_customizer", u"Show Indices", None))
     # retranslateUi
-
