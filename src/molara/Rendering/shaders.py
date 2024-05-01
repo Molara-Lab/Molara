@@ -40,9 +40,8 @@ def compile_shaders() -> list[GLuint]:
     shaders.append(shader)
     return shaders
 
-
 vertex_src_main = """
-# version 410 core
+# version 330 core
 
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
@@ -71,7 +70,7 @@ void main()
 """
 
 fragment_src_main = """
-# version 410 core
+# version 330 core
 
 in vec3 v_color;
 in vec3 v_light_dir;
