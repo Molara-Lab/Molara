@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy import constants
 
-from molara.Structure.atom import elements
+from molara.Structure.atom import atomic_number_to_symbol, elements
 
 from .structure import Structure
 
@@ -51,12 +51,13 @@ class Crystal(Structure):
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
         """
         self.atomic_nums_unitcell = atomic_nums
+        self.elements = [atomic_number_to_symbol(i) for i in self.atomic_nums_unitcell]
         self.coords_unitcell = self._fold_coords_into_unitcell(coords)
         self.basis_vectors = basis_vectors
         self.energy = 0.0  # TD: implement energy calculation
 
         self.make_supercell(supercell_dims)
-        self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
+        self.molar_mass = np.sum([elements[i]["Atomic mass"] for i in self.elements])
         self.volume_unitcell = Crystal.calc_volume_unitcell(self.basis_vectors)
         self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
