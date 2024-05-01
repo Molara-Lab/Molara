@@ -8,9 +8,10 @@ if TYPE_CHECKING:
     from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
-import numpy as np
-from unittest import mock
 import sys
+from unittest import mock
+
+import numpy as np
 from molara.Rendering.buffers import setup_vao, setup_vao_numbers
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
@@ -67,4 +68,3 @@ class WorkaroundTestBuffers:
         assert len(buffers) == 2  # noqa: PLR2004
         for i in range(2):
             assert isinstance(buffers[i], (np.integer, int))
-
