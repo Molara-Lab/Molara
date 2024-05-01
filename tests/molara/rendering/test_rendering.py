@@ -205,5 +205,9 @@ class WorkaroundTestRenderer:
         digits = np.array([1, 2, 3, 4, 5], dtype=np.int32)
         positions_3d = np.array([[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]], dtype=np.float32)
         self.renderer.draw_numbers(digits, positions_3d)
+
+        # Test if the vaos are deleted correctly.
+        self.renderer.draw_numbers(digits, positions_3d)
+
         camera = self.main_window.structure_widget.camera
         self.renderer.display_numbers(camera)
