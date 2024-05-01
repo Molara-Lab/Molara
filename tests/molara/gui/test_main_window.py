@@ -265,6 +265,9 @@ class WorkaroundTestMainWindow:
         """
         window = self.window
         ui = window.ui
+        testargs = ["molara", "examples/xyz/pentane.xyz"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.window.show_init_xyz()
         structure_customizer_dialog = window.structure_customizer_dialog
         assert not structure_customizer_dialog.isVisible()
         ui.actionOpen_Structure_Customizer.triggered.emit()
@@ -272,10 +275,14 @@ class WorkaroundTestMainWindow:
         structure_customizer_dialog.reject()
         assert not structure_customizer_dialog.isVisible()
         window.show_structure_customizer_dialog()
+        assert structure_customizer_dialog.isVisible()
+
         window.structure_customizer_dialog.save_settings()
         window.structure_customizer_dialog.load_settings()
         window.structure_customizer_dialog.delete_settings()
-        assert structure_customizer_dialog.isVisible()
+
+        window.structure_customizer_dialog.toggle_stick_mode()
+        window.structure_customizer_dialog.toggle_numbers()
 
     def test_show_trajectory_dialog(self) -> None:
         """Write test code to verify the behavior of show_trajectory_dialog method."""
