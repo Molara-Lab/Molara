@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import molara
+from molara import __version__
 
 __copyright__ = f"Copyright {datetime.now(timezone.utc).year}, Molara"
 
@@ -30,7 +30,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # -- General configuration ---------------------------------------------------
 # grab the release from the package's __init__.py file
-release = molara.__version__
+release = __version__
 # to distinguish X.Y version (assume PEP 440 compliant versioning) from release,
 # uncomment the following:
 # version = re.match(r"(\d+!)?(\d+\.\d+).*", release).group(2)
