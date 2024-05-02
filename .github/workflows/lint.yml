@@ -30,15 +30,10 @@ jobs:
         ruff format --check .
 
     - name: mypy
-      run: |
-        mypy --version
-        rm -rf .mypy_cache
-        mypy . #  ${{ github.event.repository.name }}
+      run: mypy . #  ${{ github.event.repository.name }}
 
     - name: pyright
-      run: |
-        pyright --version
-        pyright .
+      run: pyright
 
     - name: cython-lint
       run: |
