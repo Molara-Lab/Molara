@@ -20,6 +20,8 @@ class ExportImageDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
+        self.ui.tabWidget.setTabEnabled(1, False)  # noqa: FBT003 (disable the "Advanced" tab for now)
+
         self.main_window = parent
 
     def show_dialog(self) -> None:
