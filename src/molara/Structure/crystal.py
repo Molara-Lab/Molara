@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy import constants
 
-from molara.Structure.atom import element_symbol_to_atomic_number, elements
+from molara.Structure.atom import atomic_number_to_symbol, elements
 
 from .structure import Structure
 
@@ -52,12 +51,13 @@ class Crystal(Structure):
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
         """
         self.atomic_nums_unitcell = atomic_nums
+        self.elements = [atomic_number_to_symbol(i) for i in self.atomic_nums_unitcell]
         self.coords_unitcell = self._fold_coords_into_unitcell(coords)
         self.basis_vectors = basis_vectors
         self.energy = 0.0  # TD: implement energy calculation
 
         self.make_supercell(supercell_dims)
-        self.molar_mass = np.sum([elements[i]["atomic_weight"] for i in self.atomic_nums_unitcell])
+        self.molar_mass = np.sum([elements[i]["Atomic mass"] for i in self.elements])
         self.volume_unitcell = Crystal.calc_volume_unitcell(self.basis_vectors)
         self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
@@ -246,54 +246,6 @@ class Crystal(Structure):
             raise ValueError(msg)
         # result is rounded to 12 digits because the det function tends to give results like 63.99999999999998
         return round(np.abs(np.linalg.det(basis_vectors)), 12)
-
-    @classmethod
-    def from_poscar(cls: type[Crystal], file_path: str) -> Crystal:
-        """Create a Crystal object from a POSCAR file.
-
-        :param file_path: POSCAR input file path
-        """
-        with open(file_path) as file:
-            lines = file.readlines()
-        header_length = 9
-        if not len(lines) >= header_length:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        scale_, latvec_a_, latvec_b_, latvec_c_ = lines[1:5]
-        species_, numbers_ = lines[5].strip(), lines[6]
-        mode, positions_ = lines[7].strip(), lines[8:]
-        try:
-            scale = float(scale_)
-            latvec_a = [float(vec) for vec in latvec_a_.split()]
-            latvec_b = [float(vec) for vec in latvec_b_.split()]
-            latvec_c = [float(vec) for vec in latvec_c_.split()]
-            species = re.split(r"\s+", species_)
-            numbers = [int(num) for num in numbers_.split()]
-            if len(positions_) == sum(numbers) * 2 + 1:
-                positions_ = positions_[0 : sum(numbers)]
-            positions = [np.fromstring(pos, sep=" ").tolist() for pos in positions_]
-            basis_vectors = [latvec_a, latvec_b, latvec_c]
-        except ValueError as err:
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg) from err
-        if len(numbers) != len(species) or len(positions) != sum(numbers):
-            msg = "Error: faulty formatting of the POSCAR file."
-            raise ValueError(msg)
-        if mode.lower() != "direct":
-            msg = "Currently, Molara can only process direct mode in POSCAR files."
-            raise NotImplementedError(msg)
-        atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
-
-        atomic_numbers_extended = []
-        for num, an in zip(numbers, atomic_numbers):
-            atomic_numbers_extended.extend(num * [an])
-
-        return cls(
-            atomic_numbers_extended,
-            positions,
-            [scale * np.array(bv, dtype=float) for bv in basis_vectors],
-            supercell_dims=[1, 1, 1],
-        )
 
     @classmethod
     def from_pymatgen(

@@ -40,7 +40,7 @@ class StructureWidget(QOpenGLWidget):
         QOpenGLWidget.__init__(self, parent)
 
         self.renderer = Renderer()
-        self.structure_is_set = False
+        self.structures: list[Structure | Molecule | Crystal] = []
         self.vertex_attribute_objects = [-1]
         self.axes = [
             -1,
@@ -75,14 +75,18 @@ class StructureWidget(QOpenGLWidget):
     @property
     def bonds(self) -> bool:
         """Specifies whether bonds should be drawn (returns False if no bonds present whatsoever)."""
-        if self.structure_is_set:
-            return self.structure.draw_bonds and self.structure.has_bonds
+        if self.structures:
+            result = self.structures[0].draw_bonds and self.structures[0].has_bonds
+            self.main_window.structure_customizer_dialog.bonds = result
+            return result
         return False
 
     @property
     def draw_bonds(self) -> bool:
         """Specifies whether bonds should be drawn."""
-        return self.structure.draw_bonds
+        if len(self.structures) != 1:
+            return False
+        return self.structures[0].draw_bonds
 
     @property
     def draw_axes(self) -> bool:
@@ -103,8 +107,12 @@ class StructureWidget(QOpenGLWidget):
         """Reset the view of the structure to the initial view."""
         self.center_structure()
         dy, dz = None, None
-        if len(self.structure.atoms) > 1:
-            x, y, z = np.array([atom.position for atom in self.structure.atoms]).T
+        if not len(self.structures) or not self.structures[0]:
+            return
+        if not self.structures[0].atoms:
+            return
+        if len(self.structures[0].atoms) > 1:
+            x, y, z = np.array([atom.position for atom in self.structures[0].atoms]).T
             dy = y.max() - y.min()
             dz = z.max() - z.min()
         self.camera.reset(self.width(), self.height(), dy, dz)
@@ -129,32 +137,36 @@ class StructureWidget(QOpenGLWidget):
         self.update()
 
     def delete_structure(self) -> None:
-        """Delete structure and reset vertex attributes."""
+        """Delete structures and reset vertex attributes."""
         self.vertex_attribute_objects = [-1]
         self.update()
 
-    def set_structure(self, struct: Structure | Crystal | Molecule, reset_view: bool = True) -> None:
-        """Set the structure to be drawn.
+    def set_structure(self, structs: list[Structure | Crystal | Molecule], reset_view: bool = True) -> None:
+        """Set the structures to be drawn.
 
-        :param struct: Structure object that shall be drawn
+        :param structs: list of Structure object that shall be drawn
+        :param reset_view: Specifies whether the view shall be reset to the initial view
         """
-        self.structure = struct
-        self.structure_is_set = True
+        self.structures = structs
         if reset_view:
             self.reset_view()
         else:
             self.set_vertex_attribute_objects()
             self.update()
+
+        self.main_window.structure_customizer_dialog.set_bonds(self.bonds)
+        self.main_window.structure_customizer_dialog.apply_changes()
         self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()
 
     def center_structure(self) -> None:
         """Centers the structure in the widget."""
-        if self.structure_is_set:
-            self.structure.center_coordinates()
-            self.camera.center_coordinates()
-            self.set_vertex_attribute_objects()
+        if not self.structures:
+            return
+        self.structures[0].center_coordinates()
+        self.camera.center_coordinates()
+        self.set_vertex_attribute_objects()
         self.update()
 
     def export_snapshot(self) -> None:
@@ -191,19 +203,44 @@ class StructureWidget(QOpenGLWidget):
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""
+        assert isinstance(self.structures[0].drawer.cylinder_colors, np.ndarray)
+        sphere_vertices = self.structures[0].drawer.sphere.vertices
+        sphere_indices = self.structures[0].drawer.sphere.indices
+        cylinder_vertices = self.structures[0].drawer.cylinder.vertices
+        cylinder_indices = self.structures[0].drawer.cylinder.indices
+        sphere_model_matrices = self.structures[0].drawer.sphere_model_matrices
+        atom_colors = self.structures[0].drawer.atom_colors
+        cylinder_model_matrices = self.structures[0].drawer.cylinder_model_matrices
+        cylinder_colors = self.structures[0].drawer.cylinder_colors
+        for i in range(1, len(self.structures)):
+            sphere_model_matrices = np.concatenate(
+                (sphere_model_matrices, self.structures[i].drawer.sphere_model_matrices),
+                axis=0,
+            )
+            atom_colors = np.concatenate(
+                (atom_colors, self.structures[i].drawer.atom_colors),
+                axis=0,
+            )
+            cylinder_model_matrices = np.concatenate(
+                (cylinder_model_matrices, self.structures[i].drawer.cylinder_model_matrices),
+                axis=0,
+            )
+            cylinder_colors = np.concatenate(
+                (cylinder_colors, self.structures[i].drawer.cylinder_colors),
+                axis=0,
+            )
         self.makeCurrent()
-        assert isinstance(self.structure.drawer.cylinder_colors, np.ndarray)
         self.renderer.update_atoms_vao(
-            self.structure.drawer.sphere.vertices,
-            self.structure.drawer.sphere.indices,
-            self.structure.drawer.sphere_model_matrices,
-            self.structure.drawer.atom_colors,
+            sphere_vertices,
+            sphere_indices,
+            sphere_model_matrices,
+            atom_colors,
         )
         self.renderer.update_bonds_vao(
-            self.structure.drawer.cylinder.vertices,
-            self.structure.drawer.cylinder.indices,
-            self.structure.drawer.cylinder_model_matrices,
-            self.structure.drawer.cylinder_colors,
+            cylinder_vertices,
+            cylinder_indices,
+            cylinder_model_matrices,
+            cylinder_colors,
         ) if update_bonds else None
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
@@ -352,14 +389,6 @@ class StructureWidget(QOpenGLWidget):
 
         self.main_window.update_action_texts()
 
-    def toggle_bonds(self) -> None:
-        """Toggles the bonds on and off."""
-        if self.structure:
-            self.structure.toggle_bonds()
-            self.set_vertex_attribute_objects()
-            self.update()
-            self.main_window.update_action_texts()
-
     def toggle_projection(self) -> None:
         """Toggles between orthographic and perspective projection."""
         self.camera.toggle_projection()
@@ -371,7 +400,7 @@ class StructureWidget(QOpenGLWidget):
 
         :param update_box: specifies whether box shall be updated. If False, a drawn box will be hidden.
         """
-        if not self.structure_is_set:
+        if len(self.structures) != 1:
             return
 
         self.makeCurrent()
@@ -391,7 +420,7 @@ class StructureWidget(QOpenGLWidget):
                 self.update()
                 self.main_window.update_action_texts()
                 return
-            if not isinstance(self.structure, Crystal):
+            if not isinstance(self.structures[0], Crystal):
                 self.box = [-1, -1]
                 self.update()
                 self.main_window.update_action_texts()
@@ -400,8 +429,8 @@ class StructureWidget(QOpenGLWidget):
         # the unit cell boundaries shall be drawn anew if:
         # 1.) a box was not drawn before and function is called as a "toggle", not an update
         # 2.) a box was drawn before, but shall be updated (crystal structure changed)
-        assert isinstance(self.structure, Crystal)
-        basis_vectors_matrix = np.array(self.structure.basis_vectors)
+        assert isinstance(self.structures[0], Crystal)
+        basis_vectors_matrix = np.array(self.structures[0].basis_vectors)
         zero_vec = np.array([0, 0, 0])
         positions = np.array(
             [
@@ -431,7 +460,7 @@ class StructureWidget(QOpenGLWidget):
         )
 
         radius = 0.02
-        positions -= self.structure.center
+        positions -= self.structures[0].center
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
         self.box[0] = self.renderer.draw_cylinders_from_to(
@@ -450,6 +479,9 @@ class StructureWidget(QOpenGLWidget):
         :param xpos: x position of the mouse-click event
         :param ypos: y position of the mouse-click event
         """
+        if len(self.structures) != 1:
+            return -1
+
         click_position = np.array(
             [
                 (xpos * 2 - self.width()) / self.width(),
@@ -464,28 +496,31 @@ class StructureWidget(QOpenGLWidget):
             self.camera.projection_matrix_inv,
             self.camera.fov,
             self.height() / self.width(),
-            self.structure.drawer.atom_positions,
-            self.structure.drawer.atom_scales[:, 0],  # type: ignore[call-overload]
+            self.structures[0].drawer.atom_positions,
+            self.structures[0].drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
 
-    def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:
+    def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:  # noqa: C901
         """Update the selected atoms in the measurement dialog.
 
         :param event: mouse event (such as left click, right click...)
         :return:
         """
+        if len(self.structures) != 1:
+            return
+
         self.makeCurrent()
         selected_sphere = self.select_sphere(event.x(), event.y())
 
         def measurement_select_sphere(sphere_id: int) -> None:
             id_in_selection = self.measurement_selected_spheres.index(-1)
             self.measurement_selected_spheres[id_in_selection] = sphere_id
-            self.old_sphere_colors[id_in_selection] = self.structure.drawer.atom_colors[sphere_id].copy()
-            self.structure.drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+            self.old_sphere_colors[id_in_selection] = self.structures[0].drawer.atom_colors[sphere_id].copy()
+            self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
 
         def measurement_unselect_sphere(sphere_id: int) -> None:
             id_in_selection = self.measurement_selected_spheres.index(sphere_id)
-            self.structure.drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
+            self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
             self.measurement_selected_spheres[id_in_selection] = -1
 
         if selected_sphere != -1:
@@ -503,22 +538,24 @@ class StructureWidget(QOpenGLWidget):
                 measurement_unselect_sphere(selected_sphere_i)
 
         self.renderer.update_atoms_vao(
-            self.structure.drawer.sphere.vertices,
-            self.structure.drawer.sphere.indices,
-            self.structure.drawer.sphere_model_matrices,
-            self.structure.drawer.atom_colors,
+            self.structures[0].drawer.sphere.vertices,
+            self.structures[0].drawer.sphere.indices,
+            self.structures[0].drawer.sphere_model_matrices,
+            self.structures[0].drawer.atom_colors,
         )
         self.update()
         self.main_window.measurement_dialog.display_metrics(
-            self.structure,
+            self.structures[0],
             self.measurement_selected_spheres,
         )
 
     def reset_measurement(self) -> None:
         """Reset measurement arrays and measurement dialog."""
+        if len(self.structures) != 1:
+            return
         self.measurement_selected_spheres = [-1] * 4
         self.main_window.measurement_dialog.display_metrics(
-            self.structure,
+            self.structures[0],
             self.measurement_selected_spheres,
         )
 
@@ -528,6 +565,8 @@ class StructureWidget(QOpenGLWidget):
         :param event: The mouse event.
         :return:
         """
+        if len(self.structures) != 1:
+            return
         self.makeCurrent()
 
         selected_sphere = self.select_sphere(event.x(), event.y())
@@ -535,12 +574,12 @@ class StructureWidget(QOpenGLWidget):
         def builder_select_sphere(sphere_id: int) -> None:
             id_in_selection = self.builder_selected_spheres.index(-1)
             self.builder_selected_spheres[id_in_selection] = sphere_id
-            self.old_sphere_colors[id_in_selection] = self.structure.drawer.atom_colors[sphere_id].copy()
-            self.structure.drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+            self.old_sphere_colors[id_in_selection] = self.structures[0].drawer.atom_colors[sphere_id].copy()
+            self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
 
         def builder_unselect_sphere(sphere_id: int) -> None:
             id_in_selection = self.builder_selected_spheres.index(sphere_id)
-            self.structure.drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
+            self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
             self.builder_selected_spheres[id_in_selection] = -1
 
         if selected_sphere != -1:
@@ -553,20 +592,22 @@ class StructureWidget(QOpenGLWidget):
                 builder_unselect_sphere(selected_sphere)
 
         self.renderer.update_atoms_vao(
-            self.structure.drawer.sphere.vertices,
-            self.structure.drawer.sphere.indices,
-            self.structure.drawer.sphere_model_matrices,
-            self.structure.drawer.atom_colors,
+            self.structures[0].drawer.sphere.vertices,
+            self.structures[0].drawer.sphere.indices,
+            self.structures[0].drawer.sphere_model_matrices,
+            self.structures[0].drawer.atom_colors,
         )
         self.update()
 
     def unselect_all_atoms(self) -> None:
         """Unselect all selected atoms."""
+        if len(self.structures) != 1:
+            return
         for selected_sphere_i in self.measurement_selected_spheres:
             if selected_sphere_i == -1:
                 continue
             color = self.old_sphere_colors[self.measurement_selected_spheres.index(selected_sphere_i)].copy()
-            self.structure.drawer.atom_colors[selected_sphere_i] = color
+            self.structures[0].drawer.atom_colors[selected_sphere_i] = color
         for i in range(4):
             self.measurement_selected_spheres[i] = -1
         self.set_vertex_attribute_objects(update_bonds=False)

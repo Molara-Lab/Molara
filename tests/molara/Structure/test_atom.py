@@ -45,13 +45,13 @@ class TestAtom(TestCase):
         z_h, z_c, z_sr, z_n, z_nd, z_li, z_o, z_ar = 1, 6, 38, 7, 60, 3, 8, 18
         #     atomic masses
         (molmass_h, molmass_c, molmass_sr, molmass_n, molmass_nd, molmass_li, molmass_o, molmass_ar) = (
-            1.008,  # h
-            12.011,  # c
+            1.00794,  # h
+            12.0107,  # c
             87.62,  # sr
             14.0067,  # n
-            144.24,  # nd
-            6.94,  # li
-            15.999,  # o
+            144.242,  # nd
+            6.941,  # li
+            15.9994,  # o
             39.948,  # ar
         )
         #     electronegativities
@@ -66,11 +66,11 @@ class TestAtom(TestCase):
             None,  # ar
         )
         (vdwrad_h, vdwrad_c, vdwrad_sr, vdwrad_n, vdwrad_nd, vdwrad_li, vdwrad_o, vdwrad_ar) = (
-            1.20,  # h
+            1.1,  # h
             1.70,  # c
             2.49,  # sr
             1.55,  # n
-            2.45,  # nd
+            2.39,  # nd
             1.82,  # li
             1.52,  # o
             1.88,  # ar
@@ -137,9 +137,9 @@ class TestAtom(TestCase):
     def test_element_symbol_to_atomic_number(self) -> None:
         """Test the routine that converts element symbols to atomic numbers (i.e., nuclear charge numbers)."""
         # test some elements directly
-        z_h, z_he, z_c, z_n, z_o, z_f, z_s, z_tc, z_rn, z_sb = 1, 2, 6, 7, 8, 9, 16, 43, 86, 51
+        z_h, z_d, z_c, z_n, z_o, z_f, z_s, z_tc, z_rn, z_sb = 1, 1, 6, 7, 8, 9, 16, 43, 86, 51
         assert element_symbol_to_atomic_number("H") == z_h
-        assert element_symbol_to_atomic_number("He") == z_he
+        assert element_symbol_to_atomic_number("D", h_isotopes=True) == z_d
         assert element_symbol_to_atomic_number("C") == z_c
         assert element_symbol_to_atomic_number("N") == z_n
         assert element_symbol_to_atomic_number("O") == z_o
@@ -151,6 +151,6 @@ class TestAtom(TestCase):
         # test all elements for consistency
         for i in elements:
             element_i = elements[i]
-            symbol = element_i["symbol"]
-            atomic_number = element_i["atomic_number"]
-            assert element_symbol_to_atomic_number(symbol) == atomic_number
+            atomic_number = element_i["Atomic no"]
+            symbol = i
+            assert element_symbol_to_atomic_number(symbol, h_isotopes=True) == atomic_number

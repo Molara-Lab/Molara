@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -57,7 +57,7 @@
     <addaction name="actionDraw_Axes"/>
     <addaction name="actionOpen_Trajectory_Dialog"/>
     <addaction name="separator"/>
-    <addaction name="actionToggle_Bonds"/>
+    <addaction name="actionOpen_Structure_Customizer"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -184,6 +184,11 @@
   <action name="actionToggle_Projection">
    <property name="text">
     <string>Toggle Projection (Perspective/Ortho)</string>
+   </property>
+  </action>
+  <action name="actionOpen_Structure_Customizer">
+   <property name="text">
+    <string>Open Structure Customizer</string>
    </property>
   </action>
  </widget>

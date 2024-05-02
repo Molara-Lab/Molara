@@ -11,6 +11,7 @@
         "src/molara/Gui/supercell_dialog.ui",
         "src/molara/Gui/trajectory.ui",
         "src/molara/Gui/virtual_rendering_window.ui",
+        "src/molara/Gui/structure_customizer.ui",
 
         "src/molara/Gui/main_window.py",
         "src/molara/Gui/structure_widget.py",
