@@ -155,6 +155,14 @@ class WorkaroundTestMainWindow:
         assert not structure_widget.draw_bonds
         assert structure_widget is not None
 
+    def test_export_image_dialog(self) -> None:
+        """Write test code to verify the behavior of export_image_dialog property."""
+        assert not self.window.export_image_dialog.isVisible()
+        self.window.ui.actionExport_Snapshot.triggered.emit()
+        assert self.window.export_image_dialog.isVisible()
+        self.window.export_image_dialog.reject()
+        assert not self.window.export_image_dialog.isVisible()
+
     def test_show_builder_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""
         assert not self.window.builder_dialog.isVisible()
