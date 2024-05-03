@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from PySide6.QtWidgets import QDialog, QMainWindow
+from PySide6.QtWidgets import QDialog, QFileDialog, QMainWindow
 
 from molara.Gui.ui_export_image_dialog import Ui_Dialog
 from molara.Gui.virtual_rendering_window import VirtualRenderingWindow
@@ -32,6 +32,22 @@ class ExportImageDialog(QDialog):
         """Connect the dialog events to functions."""
         self.ui.widthSpinBox.valueChanged.connect(self.update_height)
         self.ui.heightSpinBox.valueChanged.connect(self.update_width)
+        self.ui.pushButton.clicked.connect(self.choose_filename)
+
+    def choose_filename(self) -> None:
+        """Open a file dialog to choose a filename."""
+        filename, suffix = QFileDialog.getSaveFileName(
+            self,
+            "Export Image",
+            ".",
+            "*.png;;*.jpg",
+        )
+        if not filename:
+            return
+        if filename.endswith((".png", ".jpg")):
+            self.ui.filenameInput.setText(filename)
+        filename += suffix[1:]
+        self.ui.filenameInput.setText(filename)
 
     def update_height(self) -> None:
         """Update the height value in the form."""
