@@ -36,6 +36,9 @@ Subsequently, Molara may be installed as follows.
 pip install -e .
 ```
 
+Molara can then be started (if applicable, within the virtual environment) by calling `molara` from the command line. 
+
+## Building the documentation locally
 To generate the documentation, install molara as follows:
 
 ```bash
