@@ -634,5 +634,5 @@ class StructureWidget(QOpenGLWidget):
 
         self.setGeometry(geometry)
         self.camera.adopt_config(other_widget.camera)
-        self.set_structure(other_widget.structure, reset_view=False)
+        self.set_structure(other_widget.structures, reset_view=False)
         # self.update()

@@ -19,10 +19,35 @@ class ExportImageDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-
-        self.ui.tabWidget.setTabEnabled(1, False)  # noqa: FBT003 (disable the "Advanced" tab for now)
+        self.set_event_connections()
 
         self.main_window = parent
+
+        # temporary adjustments for the dialog until features are implemented
+        self.ui.tabWidget.setTabEnabled(1, False)  # noqa: FBT003 (disable the "Advanced" tab for now)
+        self.ui.checkBox.setChecked(True)
+        self.ui.checkBox.setDisabled(True)
+
+    def set_event_connections(self) -> None:
+        """Connect the dialog events to functions."""
+        self.ui.widthSpinBox.valueChanged.connect(self.update_height)
+        self.ui.heightSpinBox.valueChanged.connect(self.update_width)
+
+    def update_height(self) -> None:
+        """Update the height value in the form."""
+        width = self.ui.widthSpinBox.value()
+        height = self.main_window.structure_widget.height() * width // self.main_window.structure_widget.width()
+        self.ui.heightSpinBox.blockSignals(True)  # noqa: FBT003 (block signals to prevent infinite loop)
+        self.ui.heightSpinBox.setValue(height)
+        self.ui.heightSpinBox.blockSignals(False)  # noqa: FBT003 (block signals to prevent infinite loop)
+
+    def update_width(self) -> None:
+        """Update the width value in the form."""
+        height = self.ui.heightSpinBox.value()
+        width = self.main_window.structure_widget.width() * height // self.main_window.structure_widget.height()
+        self.ui.widthSpinBox.blockSignals(True)  # noqa: FBT003 (block signals to prevent infinite loop)
+        self.ui.widthSpinBox.setValue(width)
+        self.ui.widthSpinBox.blockSignals(False)  # noqa: FBT003 (block signals to prevent infinite loop)
 
     def show_dialog(self) -> None:
         """Show the dialog and set default values in the form."""
