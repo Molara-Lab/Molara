@@ -46,6 +46,20 @@ class WorkaroundTestMainWindow:
         self.window = MainWindow()
         self.window.show()
 
+    def run_tests(self) -> None:
+        """Run all tests."""
+        self.test_init()
+        self.test_ui()
+        self.test_structure_widget()
+        self.test_export_image_dialog()
+        self.test_show_builder_dialog()
+        self.test_show_crystal_dialog()
+        self.test_show_init_xyz()
+        self.test_load_molecules()
+        self.test_show_measurement_dialog()
+        self.test_structure_customizer_dialog()
+        self.test_show_trajectory_dialog()
+
     def test_init(self) -> None:
         """Write test code to verify the behavior of the __init__ method."""
         assert isinstance(self.window, MainWindow)

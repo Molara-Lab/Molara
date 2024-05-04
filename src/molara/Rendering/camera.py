@@ -50,7 +50,6 @@ class Camera:
             dtype=np.float32,
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
-        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def calculate_projection_matrix(self) -> None:
         """Calculate the projection matrix to get from world to camera space."""
@@ -77,6 +76,7 @@ class Camera:
             100,
             dtype=np.float32,
         )
+        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def reset(
         self,
@@ -306,6 +306,7 @@ class Camera:
         """
         self.distance_from_target = other_camera.distance_from_target
         self.fov = other_camera.fov
+        self.zoom_sensitivity = other_camera.zoom_sensitivity
         if custom_geometry is None:
             self.width = other_camera.width
             self.height = other_camera.height
@@ -324,4 +325,5 @@ class Camera:
         self.translation = other_camera.translation
         self.up_vector = other_camera.up_vector
         self.orthographic_projection = other_camera.orthographic_projection
+        self.calculate_projection_matrix()
         self.update()
