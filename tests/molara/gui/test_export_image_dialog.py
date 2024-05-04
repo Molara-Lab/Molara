@@ -1,18 +1,16 @@
 """Test the MeasurementDialog class."""
 
-
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pathlib import Path
-
 if TYPE_CHECKING:
-    from molara.Gui.export_image_dialog import ExportImageDialog
     from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
 import time
+
 
 class WorkaroundTestExportImageDialog:
     """Contains the tests for the ExportImageDialog class.
