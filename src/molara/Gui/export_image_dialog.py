@@ -44,9 +44,8 @@ class ExportImageDialog(QDialog):
         )
         if not filename:
             return
-        if filename.endswith((".png", ".jpg")):
-            self.ui.filenameInput.setText(filename)
-        filename += suffix[1:]
+        if not filename.endswith(suffix[1:]):
+            filename += suffix[1:]
         self.ui.filenameInput.setText(filename)
 
     def update_height(self) -> None:

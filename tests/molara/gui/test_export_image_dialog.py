@@ -30,6 +30,7 @@ class WorkaroundTestExportImageDialog:
     def run_tests(self) -> None:
         """Run the tests."""
         self._test_init()
+        self._test_show_dialog()
         self._test_change_width()
         self._test_change_height()
         self._test_export_image()
@@ -38,13 +39,23 @@ class WorkaroundTestExportImageDialog:
         """Test the initialization of the ExportImageDialog class."""
         assert self.export_image_dialog is not None
         assert self.export_image_dialog.main_window == self.main_window
+
+    def _test_show_dialog(self) -> None:
+        """Test showing the dialog."""
+        assert not self.export_image_dialog.isVisible()
+        ui_main = self.main_window.ui
+        ui_main.actionExport_Snapshot.trigger()
+        assert self.export_image_dialog.isVisible()
+
         structure_widget = self.main_window.structure_widget
         width, height = structure_widget.width(), structure_widget.height()
         assert self.export_image_dialog.ui.widthSpinBox.value() == width
         assert self.export_image_dialog.ui.heightSpinBox.value() == height
+        ui_export_image = self.export_image_dialog.ui
+        assert ui_export_image.filenameInput.text().startswith(f"{Path.cwd()}/molara_image_")
 
-        ui = self.export_image_dialog.ui
-        assert ui.filenameInput.text() != ""
+        self.export_image_dialog.reject()
+        assert not self.export_image_dialog.isVisible()
 
     def _test_change_width(self) -> None:
         """Test changing the width of the image."""
