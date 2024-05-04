@@ -231,7 +231,8 @@ class Crystal(Structure):
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 extra_fractional_coords[-1][id3] = dim3  # (0,0,dim3)
             else:
-                raise (ValueError)
+                msg = "Unexpected number of zero-valued coordinates encountered."
+                raise ValueError(msg)
         return extra_atomic_nums, extra_fractional_coords
 
     @staticmethod

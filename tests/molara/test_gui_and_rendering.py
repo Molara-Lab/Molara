@@ -6,6 +6,7 @@ import sys
 from typing import TYPE_CHECKING
 
 import pytest
+from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
 from rendering.test_buffers import WorkaroundTestBuffers
@@ -29,6 +30,9 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
 
     workaround_test_measurement_window = WorkaroundTestMeasurementDialog(qtbot, main_window_tests.window)
     workaround_test_measurement_window.run_tests()
+
+    workaround_test_export_image_dialog = WorkaroundTestExportImageDialog(qtbot, main_window_tests.window)
+    workaround_test_export_image_dialog.run_tests()
 
     workaround_test_buffers = WorkaroundTestBuffers(qtbot, main_window_tests.window)
     workaround_test_buffers.run_tests()
