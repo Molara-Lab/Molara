@@ -183,7 +183,6 @@ class Camera:
             rotation_angle,
         )
         self.last_rotation = self.rotation
-        print(axis, self.rotation.tolist())
         self.update()
 
     def center_coordinates(self) -> None:
