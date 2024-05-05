@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+import time
+from pathlib import Path
 from unittest import TestCase
 
 import numpy as np
@@ -131,6 +134,89 @@ class TestCamera(TestCase):
             former_distance + zoom_factor * np.sign(zoom_factor - 1) * zoom_sensitivity,
         )
         assert self.camera.distance_from_target == new_distance
+
+    def test_export_and_import_settings(self) -> None:
+        """Test exporting camera settings."""
+        camera = self.camera
+        # set some random values
+        camera.orthographic_projection = True
+        camera.fov = 46.3
+        camera.width, camera.height = 468, 325
+        camera.distance_from_target = 3.4
+        camera.zoom_sensitivity = 0.23
+        camera.initial_position = pyrr.Vector3([10.764, -2.543, 1.543], dtype=np.float32)
+        camera.initial_up_vector = pyrr.Vector3([0.1, 0.2, 0.7], dtype=np.float32)
+        camera.initial_right_vector = pyrr.Vector3([0.9, 0.2, 0.11], dtype=np.float32)
+        camera.last_translation = pyrr.Vector3([0.1, 0.2, 0.3], dtype=np.float32)
+        camera.initial_target = pyrr.Vector3([0.41, 0.52, 0.63], dtype=np.float32)
+        camera.last_rotation = pyrr.Quaternion([0.01, 0.22, 0.13, 0.41], dtype=np.float32)
+
+        filename = f"test_export_camera_settings_{time.time():1.0f}.json"
+        assert not Path(filename).exists()
+        camera.export_settings(filename)
+
+        assert Path(filename).exists()
+        with open(filename) as file:
+            data = json.load(file)
+
+        # check if settings are correct
+        self.assert_camera_settings_equal_data(data)
+        # check if position, up_vector, right_vector, translation, target, and rotation are correct
+        # (they are not checked in assert_camera_settings_equal_data)
+        assert_array_equal(data["position"], camera.position.tolist())
+        assert_array_equal(data["up_vector"], camera.up_vector.tolist())
+        assert_array_equal(data["right_vector"], camera.right_vector.tolist())
+        assert_array_equal(data["translation"], camera.translation.tolist())
+        assert_array_equal(data["target"], camera.target.tolist())
+        assert_array_equal(data["rotation"], camera.rotation.tolist())
+
+        # reset camera settings
+        self.set_camera_settings_to_zeros()
+
+        # import settings again, then delete json file to clean up
+        camera.import_settings(filename)
+        Path(filename).unlink()
+
+        # check if settings are correct
+        self.assert_camera_settings_equal_data(data)
+
+    def assert_camera_settings_equal_data(self, data: dict) -> None:
+        """Assert that the camera settings are equal to the data in the json file."""
+        camera = self.camera
+        assert camera.orthographic_projection == data["orthographic_projection"]
+        assert camera.fov == data["fov"]
+        assert camera.width == data["width"]
+        assert camera.height == data["height"]
+        assert camera.distance_from_target == data["distance_from_target"]
+        assert camera.zoom_sensitivity == data["zoom_sensitivity"]
+        # position, up_vector, right_vector, and target are not checked,
+        # because they are re-calculated in Camera.update(),
+        # so they may differ from the values in the json file.
+        assert_array_equal(camera.translation.tolist(), data["translation"])
+        assert_array_equal(camera.rotation.tolist(), data["rotation"])
+        assert_array_equal(camera.initial_position.tolist(), data["initial_position"])
+        assert_array_equal(camera.initial_up_vector.tolist(), data["initial_up_vector"])
+        assert_array_equal(camera.initial_right_vector.tolist(), data["initial_right_vector"])
+        assert_array_equal(camera.last_translation.tolist(), data["last_translation"])
+        assert_array_equal(camera.initial_target.tolist(), data["initial_target"])
+        assert_array_equal(camera.last_rotation.tolist(), data["last_rotation"])
+
+    def set_camera_settings_to_zeros(self) -> None:
+        """Set all camera settings to zero."""
+        camera = self.camera
+        camera.orthographic_projection = False
+        camera.fov = 0.0
+        camera.width = 0
+        camera.height = 0
+        camera.distance_from_target = 0.0
+        camera.zoom_sensitivity = 0.0
+        camera.position = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        camera.initial_position = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        camera.up_vector = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        camera.right_vector = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        camera.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        camera.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+        camera.rotation = pyrr.Quaternion([0.0, 0.0, 0.0, 0.0], dtype=np.float32)
 
     def set_translation_vector(self) -> None:
         """Test setting the translation of the camera."""
