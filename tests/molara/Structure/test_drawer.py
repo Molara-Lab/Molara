@@ -56,7 +56,7 @@ class TestDrawer(TestCase):
 
     def test_setup(self) -> None:
         """Test the Drawer setup."""
-        subdivisions_sphere = 15
+        subdivisions_sphere = 20
         subdivisions_cylinder = 20
         assert self.drawer_glucose.subdivisions_sphere == subdivisions_sphere
         assert self.drawer_glucose.subdivisions_cylinder == subdivisions_cylinder

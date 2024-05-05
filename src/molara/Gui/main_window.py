@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
+from molara.Gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.Gui.supercell_dialog import SupercellDialog
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
@@ -48,6 +49,7 @@ class MainWindow(QMainWindow):
         self.crystal_dialog = CrystalDialog(self)
         self.measurement_dialog = MeasurementDialog(self)
         self.builder_dialog = BuilderDialog(self)
+        self.structure_customizer_dialog = StructureCustomizerDialog(self)
 
         self.mols = Molecules()
 
@@ -76,14 +78,15 @@ class MainWindow(QMainWindow):
         self.ui.actionCenter_Molecule.triggered.connect(
             self.structure_widget.center_structure,
         )
-        self.ui.actionToggle_Bonds.triggered.connect(self.structure_widget.toggle_bonds)
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )
         self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
         self.ui.actionExport_CameraSettings.triggered.connect(self.export_camera_settings)
         self.ui.actionImport_CameraSettings.triggered.connect(self.import_camera_settings)
-
+        self.ui.actionOpen_Structure_Customizer.triggered.connect(
+            self.show_structure_customizer_dialog,
+        )
         # Tools
         self.ui.actionBuilder.triggered.connect(
             self.show_builder_dialog,
@@ -96,6 +99,12 @@ class MainWindow(QMainWindow):
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
+
+    def show_structure_customizer_dialog(self) -> None:
+        """Show the structure customizer dialog."""
+        self.structure_customizer_dialog.bonds = self.structure_widget.bonds
+        self.structure_customizer_dialog.set_bonds(self.structure_widget.bonds)
+        self.structure_customizer_dialog.show()
 
     def update_action_texts(self) -> None:
         """Update the texts of the menu actions."""

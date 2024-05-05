@@ -55,12 +55,9 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionToggle_Projection"/>
+    <addaction name="separator"/>
     <addaction name="actionImport_CameraSettings"/>
-    <addaction name="separator"/>
-    <addaction name="actionDraw_Axes"/>
-    <addaction name="actionToggle_Bonds"/>
-    <addaction name="separator"/>
-    <addaction name="actionOpen_Trajectory_Dialog"/>
+    <addaction name="actionOpen_Structure_Customizer"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
@@ -197,6 +194,11 @@
   <action name="actionImport_CameraSettings">
    <property name="text">
     <string>Import Camera Settings</string>
+   </property>
+  </action>
+  <action name="actionOpen_Structure_Customizer">
+   <property name="text">
+    <string>Open Structure Customizer</string>
    </property>
   </action>
  </widget>

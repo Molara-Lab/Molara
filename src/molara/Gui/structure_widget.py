@@ -75,11 +75,11 @@ class StructureWidget(QOpenGLWidget):
     @property
     def bonds(self) -> bool:
         """Specifies whether bonds should be drawn (returns False if no bonds present whatsoever)."""
-        if not self.structures:
-            return False
-        if len(self.structures) > 1:
-            return True
-        return self.structures[0].draw_bonds and self.structures[0].has_bonds
+        if self.structures:
+            result = self.structures[0].draw_bonds and self.structures[0].has_bonds
+            self.main_window.structure_customizer_dialog.bonds = result
+            return result
+        return False
 
     @property
     def draw_bonds(self) -> bool:
@@ -153,6 +153,9 @@ class StructureWidget(QOpenGLWidget):
         else:
             self.set_vertex_attribute_objects()
             self.update()
+
+        self.main_window.structure_customizer_dialog.set_bonds(self.bonds)
+        self.main_window.structure_customizer_dialog.apply_changes()
         self.toggle_unit_cell_boundaries(update_box=True)
 
         self.reset_measurement()
@@ -399,15 +402,6 @@ class StructureWidget(QOpenGLWidget):
         self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
         self.update()
 
-        self.main_window.update_action_texts()
-
-    def toggle_bonds(self) -> None:
-        """Toggles the bonds on and off."""
-        if len(self.structures) != 1:
-            return
-        self.structures[0].toggle_bonds()
-        self.set_vertex_attribute_objects()
-        self.update()
         self.main_window.update_action_texts()
 
     def toggle_projection(self) -> None:
