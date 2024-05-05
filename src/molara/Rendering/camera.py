@@ -327,7 +327,9 @@ class Camera:
             "rotation": self.rotation.tolist(),
             "last_rotation": self.last_rotation.tolist(),
         }
-        with open(file_name.replace(".npz", ".json"), "w") as file:
+        if not file_name.endswith(".json"):
+            file_name += ".json"
+        with open(file_name, "w") as file:
             json.dump(settings, file, indent=4)
 
     def import_settings(self, file_name: str) -> None:

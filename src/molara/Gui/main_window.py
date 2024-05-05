@@ -172,7 +172,7 @@ class MainWindow(QMainWindow):
             self,
             "Export camera settings to file",
             ".",
-            "*",
+            ".json",
         )[0]
         if file_name == "":
             return
