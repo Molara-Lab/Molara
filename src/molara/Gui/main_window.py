@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
             self,
             "Import camera settings from file",
             ".",
-            "*",
+            "*.json",
         )[0]
         if file_name == "":
             return
