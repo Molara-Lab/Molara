@@ -108,30 +108,19 @@ class XyzImporter(MoleculesImporter):
         with open(self.path, encoding="utf-8") as file:
             lines = file.readlines()
 
-        molecules.add_molecule(
-            self._molecule_from_xyz(lines),
-        )
         num_atoms = int(lines[0])
-
-        # Read in for a single xyz file
-        # Goes on if file has more than one structure stored
-        if len(lines) <= 2 + num_atoms:
-            return molecules
-        first_line_after_first_mol = lines[2 + num_atoms].strip()
-        if not first_line_after_first_mol.isdigit():
-            return molecules
-
         finished = False
-        max_mols = 10000
+        max_mols = int(1e100)
         start_line = 0
         while not finished and max_mols >= molecules.num_mols:
-            start_line += 2 + num_atoms
+            end_line = start_line + num_atoms + 2
             molecules.add_molecule(
-                self._molecule_from_xyz(lines[start_line : start_line + num_atoms]),
+                self._molecule_from_xyz(lines[start_line:end_line]),
             )
             finished = (
                 start_line + 2 + num_atoms >= len(lines) or not lines[start_line + 2 + num_atoms].strip().isdigit()
             )
+            start_line = end_line
         return molecules
 
 
