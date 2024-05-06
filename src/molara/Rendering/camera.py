@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Literal
-
 import numpy as np
 import numpy.typing as npt
 import pyrr
@@ -159,7 +157,7 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-    def set_rotation(self, axis: Literal["x", "y", "z"]) -> None:
+    def set_rotation(self, axis: str) -> None:
         """Align the camera rotation with one of the major axes ("x", "y", "z").
 
         :param axis: specifies along which axis camera view shall be aligned.
