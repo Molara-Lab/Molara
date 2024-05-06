@@ -167,7 +167,7 @@ class MainWindow(QMainWindow):
 
     def export_structure(self) -> None:
         """Save structure to file."""
-        if not self.structure_widget.structure:
+        if not self.structure_widget.structures:
             return
         file_name = QFileDialog.getSaveFileName(
             self,
