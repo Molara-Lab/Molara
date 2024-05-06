@@ -39,7 +39,7 @@ class ExportImageDialog(QDialog):
         filename, suffix = QFileDialog.getSaveFileName(
             self,
             "Export Image",
-            ".",
+            f"{Path.home()}",
             "*.png;;*.jpg",
         )
         if not filename:
@@ -68,7 +68,7 @@ class ExportImageDialog(QDialog):
         """Show the dialog and set default values in the form."""
         self.ui.widthSpinBox.setValue(self.main_window.structure_widget.width())
         self.ui.heightSpinBox.setValue(self.main_window.structure_widget.height())
-        self.ui.filenameInput.setText(f"{Path.cwd()}/molara_image_{time.time():1.0f}.png")
+        self.ui.filenameInput.setText(f"{Path.home()}/molara_image_{time.time():1.0f}.png")
         self.show()
 
     def accept(self) -> None:

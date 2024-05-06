@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QCoreApplication
@@ -172,7 +173,7 @@ class MainWindow(QMainWindow):
         file_name = QFileDialog.getSaveFileName(
             self,
             "Export structure to file",
-            ".",
+            f"{Path.home()}",
             "*",
         )[0]
         if file_name == "":

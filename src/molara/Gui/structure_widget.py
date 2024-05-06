@@ -9,7 +9,6 @@ from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glV
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QFileDialog
 
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
@@ -168,16 +167,6 @@ class StructureWidget(QOpenGLWidget):
         self.camera.center_coordinates()
         self.set_vertex_attribute_objects()
         self.update()
-
-    def export_snapshot(self) -> None:
-        """Save a snapshot of the structure (as png)."""
-        filename = QFileDialog.getSaveFileName(
-            self,
-            "Export structure to file",
-            ".",
-            "*.png",
-        )
-        self.grabFramebuffer().save(filename[0])
 
     def initializeGL(self) -> None:  # noqa: N802
         """Initialize the widget."""
