@@ -128,7 +128,7 @@ class TestCamera(TestCase):
         self.camera.set_distance_from_target(num_steps)
         new_distance = max(
             1.0,
-            former_distance + zoom_factor * np.sign(zoom_factor - 1) * zoom_sensitivity,
+            former_distance + np.log10(zoom_factor * zoom_sensitivity) * (np.sign(zoom_factor - 1)),
         )
         assert self.camera.distance_from_target == new_distance
 
