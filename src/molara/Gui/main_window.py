@@ -195,7 +195,7 @@ class MainWindow(QMainWindow):
             return
         try:
             self.structure_widget.export_camera_settings(file_name)
-        except Exception as e:# noqa: BLE001
+        except Exception as e:  # noqa: BLE001
             QMessageBox.critical(self, "Error", f"Error: {e}")
 
     def import_camera_settings(self) -> None:
@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
             return
         try:
             self.structure_widget.import_camera_settings(file_name)
-        except Exception as e:# noqa: BLE001
+        except Exception as e:  # noqa: BLE001
             QMessageBox.critical(self, "Error", f"Error: {e}")
 
     def show_measurement_dialog(self) -> None:
