@@ -9,7 +9,11 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html#project-informatio
 
 from __future__ import annotations
 
+import os
+import sys
 from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.abspath("../../src"))
 
 from molara import __version__
 
