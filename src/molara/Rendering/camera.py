@@ -50,7 +50,6 @@ class Camera:
             dtype=np.float32,
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
-        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def calculate_projection_matrix(self) -> None:
         """Calculate the projection matrix to get from world to camera space."""
@@ -77,6 +76,7 @@ class Camera:
             100,
             dtype=np.float32,
         )
+        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def reset(
         self,
@@ -297,3 +297,33 @@ class Camera:
             )
         else:
             self.rotation = self.last_rotation
+
+    def adopt_config(self, other_camera: Camera, custom_geometry: tuple[int, int] | None = None) -> None:
+        """Adopt the configuration of another Camera object.
+
+        :param other_camera: the other Camera object
+        :param custom_geometry: custom geometry (width, height) for the Camera object
+        """
+        self.distance_from_target = other_camera.distance_from_target
+        self.fov = other_camera.fov
+        self.zoom_sensitivity = other_camera.zoom_sensitivity
+        if custom_geometry is None:
+            self.width = other_camera.width
+            self.height = other_camera.height
+        else:
+            self.width, self.height = custom_geometry[0], custom_geometry[1]
+        self.initial_position = other_camera.initial_position
+        self.initial_right_vector = other_camera.initial_right_vector
+        self.initial_target = other_camera.initial_target
+        self.initial_up_vector = other_camera.initial_up_vector
+        self.last_rotation = other_camera.last_rotation
+        self.last_translation = other_camera.last_translation
+        self.position = other_camera.position
+        self.right_vector = other_camera.right_vector
+        self.rotation = other_camera.rotation
+        self.target = other_camera.target
+        self.translation = other_camera.translation
+        self.up_vector = other_camera.up_vector
+        self.orthographic_projection = other_camera.orthographic_projection
+        self.calculate_projection_matrix()
+        self.update()

@@ -127,6 +127,13 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>PrevButton</tabstop>
+  <tabstop>NextButton</tabstop>
+  <tabstop>playStopButton</tabstop>
+  <tabstop>speedDial</tabstop>
+  <tabstop>verticalSlider</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

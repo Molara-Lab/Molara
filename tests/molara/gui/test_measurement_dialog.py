@@ -27,6 +27,11 @@ class WorkaroundTestMeasurementDialog:
         self.main_window = main_window
         self.measurement_dialog = main_window.measurement_dialog
 
+    def run_tests(self) -> None:
+        """Run the tests."""
+        self.test_init()
+        self.test_display_distances_angles()
+
     def test_init(self) -> None:
         """Write test code to verify the behavior of the __init__ method."""
         # test e.g. that tablePositions is a QTableWidget,

@@ -748,6 +748,27 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>selectCrystalSystem</tabstop>
+  <tabstop>selectSpaceGroup</tabstop>
+  <tabstop>inputLatConst_a</tabstop>
+  <tabstop>inputLatConst_b</tabstop>
+  <tabstop>inputLatConst_c</tabstop>
+  <tabstop>inputLatAngle_alpha</tabstop>
+  <tabstop>inputLatAngle_beta</tabstop>
+  <tabstop>inputLatAngle_gamma</tabstop>
+  <tabstop>inputSupercell_a</tabstop>
+  <tabstop>inputSupercell_b</tabstop>
+  <tabstop>inputSupercell_c</tabstop>
+  <tabstop>inputElementSymbol</tabstop>
+  <tabstop>inputAtomCoord_a</tabstop>
+  <tabstop>inputAtomCoord_b</tabstop>
+  <tabstop>inputAtomCoord_c</tabstop>
+  <tabstop>buttonAddAtom</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>listAtoms</tabstop>
+  <tabstop>checkBoxPreview</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

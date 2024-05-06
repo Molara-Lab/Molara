@@ -12,6 +12,11 @@ from numpy.testing import assert_array_equal
 __copyright__ = "Copyright 2024, Molara"
 
 
+def assert_vec3_equal(vector1: pyrr.Vector3, vector2: pyrr.Vector3) -> None:
+    """Assert that two Vector3 objects are equal."""
+    assert_array_equal(np.array(vector1), np.array(vector2))
+
+
 class TestCamera(TestCase):
     """Test the Camera class."""
 
@@ -45,6 +50,56 @@ class TestCamera(TestCase):
         assert camera.projection_matrix.shape == (4, 4)
         assert isinstance(camera.projection_matrix_inv, np.ndarray)
         assert camera.projection_matrix_inv.shape == (4, 4)
+
+    def test_adopt_config(self) -> None:
+        """Test Camera configuration adoption."""
+        other_camera = Camera(1000, 800)
+
+        other_camera.fov = 60.0
+        other_camera.distance_from_target = 10.0
+        other_camera.zoom_sensitivity = 0.2
+        other_camera.initial_position = pyrr.Vector3([10.0, 20.0, 30.0], dtype=np.float32)
+        other_camera.initial_up_vector = pyrr.Vector3([1.0, 2.0, 3.0], dtype=np.float32)
+        other_camera.initial_right_vector = pyrr.Vector3([3.0, 2.0, 1.0], dtype=np.float32)
+        other_camera.initial_target = pyrr.Vector3([-1.0, -2.0, -3.0], dtype=np.float32)
+        other_camera.translation = pyrr.Vector3([7.0, 8.0, 9.0], dtype=np.float32)
+        other_camera.rotation = pyrr.Quaternion([6.0, 2.0, 4.0, 1.0], dtype=np.float32)
+
+        other_camera.calculate_projection_matrix()
+        other_camera.update()
+
+        camera = self.camera
+        assert not camera.orthographic_projection
+        assert not other_camera.orthographic_projection
+        assert camera.fov != other_camera.fov
+        assert camera.width != other_camera.width
+        assert camera.height != other_camera.height
+        assert camera.distance_from_target != other_camera.distance_from_target
+        assert camera.zoom_sensitivity != other_camera.zoom_sensitivity
+
+        camera.adopt_config(other_camera)
+        assert camera.fov == other_camera.fov
+        assert camera.width == other_camera.width
+        assert camera.height == other_camera.height
+        assert camera.distance_from_target == other_camera.distance_from_target
+        assert camera.zoom_sensitivity == other_camera.zoom_sensitivity
+        assert_vec3_equal(camera.position, other_camera.position)
+        assert_vec3_equal(camera.up_vector, other_camera.up_vector)
+        assert_vec3_equal(camera.right_vector, other_camera.right_vector)
+        assert_vec3_equal(camera.translation, other_camera.translation)
+        assert_vec3_equal(camera.target, other_camera.target)
+        assert_vec3_equal(camera.initial_position, other_camera.initial_position)
+        assert_vec3_equal(camera.initial_up_vector, other_camera.initial_up_vector)
+        assert_vec3_equal(camera.initial_right_vector, other_camera.initial_right_vector)
+        assert_vec3_equal(camera.last_translation, other_camera.last_translation)
+        assert_vec3_equal(camera.initial_target, other_camera.initial_target)
+
+        assert_array_equal(np.array(camera.rotation), np.array(other_camera.rotation))
+        assert_array_equal(np.array(camera.last_rotation), np.array(other_camera.last_rotation))
+        assert_array_equal(np.array(camera.view_matrix), np.array(other_camera.view_matrix))
+        assert_array_equal(np.array(camera.view_matrix_inv), np.array(other_camera.view_matrix_inv))
+        assert_array_equal(np.array(camera.projection_matrix), np.array(other_camera.projection_matrix))
+        assert_array_equal(np.array(camera.projection_matrix_inv), np.array(other_camera.projection_matrix_inv))
 
     def test_reset(self) -> None:
         """Test Camera reset."""
