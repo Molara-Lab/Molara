@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
-import time
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from unittest import TestCase
 
 import numpy as np
@@ -206,7 +206,8 @@ class TestCamera(TestCase):
         camera.initial_target = pyrr.Vector3([0.41, 0.52, 0.63], dtype=np.float32)
         camera.last_rotation = pyrr.Quaternion([0.01, 0.22, 0.13, 0.41], dtype=np.float32)
 
-        filename = f"test_export_camera_settings_{time.time():1.0f}.json"
+        with NamedTemporaryFile(suffix=".json") as file:
+            filename = file.name
         assert not Path(filename).exists()
         camera.export_settings(filename)
 
@@ -230,7 +231,7 @@ class TestCamera(TestCase):
 
         # import settings again, then delete json file to clean up
         camera.import_settings(filename)
-        Path(filename).unlink()
+        # Path(filename).unlink()
 
         # check if settings are correct
         self.assert_camera_settings_equal_data(data)
