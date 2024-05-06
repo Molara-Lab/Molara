@@ -31,6 +31,7 @@ class Molecule(Structure):
         :param coordinates:np.ndarray: coordinates of the molecule
         :param header:str: header from the imported file
         :param dummy: bool: a dummy object.
+        :param draw_bonds: bool: draw bonds between atoms (Default is True)
         """
         if dummy:
             self.dummy = True

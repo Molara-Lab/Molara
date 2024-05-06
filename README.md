@@ -36,6 +36,11 @@ Subsequently, Molara may be installed as follows.
 pip install -e .
 ```
 
+Note that, for the Cython build, a C compiler must be installed on the system (a more detailed description can be found [here](https://cython.readthedocs.io/en/latest/src/quickstart/install.html)).
+
+After the installation, Molara can then be started (if applicable, within the virtual environment) by calling `molara` from the command line.
+
+## Building the documentation locally
 To generate the documentation, install molara as follows:
 
 ```bash
@@ -45,13 +50,7 @@ pip install -e . molara[doc]
 
 then run
 
-
 ```bash
 cd docs
 make html
-
 ```
-
-Note that, for the Cython build, a C compiler must be installed on the system (a more detailed description can be found [here](https://cython.readthedocs.io/en/latest/src/quickstart/install.html)).
-
-After the installation, Molara may then be started (within the virtual environment) by calling `molara` from the command line.
