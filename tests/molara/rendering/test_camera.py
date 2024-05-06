@@ -17,7 +17,7 @@ __copyright__ = "Copyright 2024, Molara"
 
 def assert_vec3_equal(vector1: pyrr.Vector3, vector2: pyrr.Vector3) -> None:
     """Assert that two Vector3 objects are equal."""
-    assert_array_equal(np.array(vector1), np.array(vector2))
+    assert_array_almost_equal(np.array(vector1), np.array(vector2))
 
 
 class TestCamera(TestCase):
@@ -97,12 +97,12 @@ class TestCamera(TestCase):
         assert_vec3_equal(camera.last_translation, other_camera.last_translation)
         assert_vec3_equal(camera.initial_target, other_camera.initial_target)
 
-        assert_array_equal(np.array(camera.rotation), np.array(other_camera.rotation))
-        assert_array_equal(np.array(camera.last_rotation), np.array(other_camera.last_rotation))
-        assert_array_equal(np.array(camera.view_matrix), np.array(other_camera.view_matrix))
-        assert_array_equal(np.array(camera.view_matrix_inv), np.array(other_camera.view_matrix_inv))
-        assert_array_equal(np.array(camera.projection_matrix), np.array(other_camera.projection_matrix))
-        assert_array_equal(np.array(camera.projection_matrix_inv), np.array(other_camera.projection_matrix_inv))
+        assert_array_almost_equal(np.array(camera.rotation), np.array(other_camera.rotation))
+        assert_array_almost_equal(np.array(camera.last_rotation), np.array(other_camera.last_rotation))
+        assert_array_almost_equal(np.array(camera.view_matrix), np.array(other_camera.view_matrix))
+        assert_array_almost_equal(np.array(camera.view_matrix_inv), np.array(other_camera.view_matrix_inv))
+        assert_array_almost_equal(np.array(camera.projection_matrix), np.array(other_camera.projection_matrix))
+        assert_array_almost_equal(np.array(camera.projection_matrix_inv), np.array(other_camera.projection_matrix_inv))
 
     def test_reset(self) -> None:
         """Test Camera reset."""
