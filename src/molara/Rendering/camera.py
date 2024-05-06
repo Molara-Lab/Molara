@@ -202,7 +202,7 @@ class Camera:
             0.1,
             zoom_factor,
         )  # Limit zoom factor to avoid zooming too far
-        self.distance_from_target += np.log10(zoom_factor  * self.zoom_sensitivity) * (np.sign(zoom_factor - 1))
+        self.distance_from_target += np.log10(zoom_factor * self.zoom_sensitivity) * (np.sign(zoom_factor - 1))
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def toggle_projection(self) -> None:
