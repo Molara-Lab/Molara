@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/Molara.svg)](https://badge.fury.io/py/Molara)
 [![CI Status](https://github.com/Molara-Lab/Molara/actions/workflows/test.yml/badge.svg)](https://github.com/Molara-Lab/Molara/actions/workflows/test.yml)
 [![code coverage](https://img.shields.io/codecov/c/gh/Molara-Lab/Molara)](https://codecov.io/gh/Molara-Lab/Molara)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Molara-Lab/Molara/main.svg)](https://results.pre-commit.ci/latest/github/Molara-Lab/Molara/main)
