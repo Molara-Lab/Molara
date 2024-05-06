@@ -24,7 +24,7 @@ class CrystalDialog(QDialog):
     object of type Crystal is instantiated and passed to main window"s OpenGL widget for rendering.
     """
 
-    def __init__(self, parent: QMainWindow | None = None) -> None:
+    def __init__(self, parent: QMainWindow = None) -> None:
         """Create a CrystalDialog object.
 
         :param parent: parent widget (main window)

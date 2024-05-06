@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 from unittest import TestCase
 
 import numpy as np
@@ -101,16 +100,16 @@ class TestMolecule(TestCase):
 
     def test_copy(self) -> None:
         """Test the copy routine."""
-        _copy = copy.copy(self.ccl4)
-        assert_array_equal(_copy.atomic_numbers, self.ccl4.atomic_numbers)
-        assert _copy.molar_mass == self.ccl4.molar_mass
-        for atom_copy, atom_ccl4 in zip(_copy.atoms, self.ccl4.atoms):
+        copy = self.ccl4.copy()
+        assert_array_equal(copy.atomic_numbers, self.ccl4.atomic_numbers)
+        assert copy.molar_mass == self.ccl4.molar_mass
+        for atom_copy, atom_ccl4 in zip(copy.atoms, self.ccl4.atoms):
             assert_array_equal(atom_copy.position, atom_ccl4.position)
-        assert _copy.draw_bonds == self.ccl4.draw_bonds
+        assert copy.draw_bonds == self.ccl4.draw_bonds
 
         self.ccl4.toggle_bonds()
-        _copy = copy.copy(self.ccl4)
-        assert _copy.draw_bonds == self.ccl4.draw_bonds
+        copy = self.ccl4.copy()
+        assert copy.draw_bonds == self.ccl4.draw_bonds
 
     def test_compute_collision(self) -> None:
         """Test the compute_collision routine."""

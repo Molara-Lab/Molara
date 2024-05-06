@@ -84,9 +84,6 @@ molara = "molara.__main__:main"
 [tool.setuptools.dynamic]
 version = {"attr" = "molara.__version__"}
 
-[tool.setuptools.package-data]
-"molara" = ["py.typed"]
-
 [tool.ruff]
 exclude = ["ui_*",]
 target-version = "py39"
@@ -110,9 +107,6 @@ lint.isort.required-imports = ["from __future__ import annotations"]
 exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
-
-[tool.pyright]
-ignore = ["**/ui_*"]
 
 [tool.codespell]
 ignore-words-list = "nd,te"

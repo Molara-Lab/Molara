@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+# if TYPE_CHECKING:
 import numpy as np
 from scipy import spatial
 
@@ -10,6 +13,10 @@ from molara.Structure.drawer import Drawer
 
 __copyright__ = "Copyright 2024, Molara"
 
+if TYPE_CHECKING:
+    from molara.Structure.crystal import Crystal
+    from molara.Structure.molecule import Molecule
+
 NO_BONDS = np.array([[-1, -1]], dtype=np.int_)
 
 
@@ -17,7 +24,7 @@ class Structure:
     """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
 
     def __init__(
-        self: Structure,
+        self: Structure | Crystal | Molecule,
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
         draw_bonds: bool = True,
@@ -53,7 +60,7 @@ class Structure:
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
 
-    def __copy__(self: Structure) -> Structure:
+    def copy(self: Structure | Crystal | Molecule) -> Structure:
         """Create a copy of the structure."""
         return type(self)(
             self.atomic_numbers,
@@ -61,7 +68,7 @@ class Structure:
             draw_bonds=self.draw_bonds,
         )
 
-    def compute_collision(self: Structure, coordinate: np.ndarray) -> int | None:
+    def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
         """Compute if the given coordinate is equal to the coordinate of an existing atom.
 
         Return None if no atom collides.
@@ -76,7 +83,7 @@ class Structure:
         return None
 
     @property
-    def center_of_mass(self: Structure) -> np.ndarray:
+    def center_of_mass(self: Structure | Crystal | Molecule) -> np.ndarray:
         """Returns the center of mass of the structure."""
         return np.average(
             [atom.position for atom in self.atoms],
@@ -84,7 +91,7 @@ class Structure:
             axis=0,
         )
 
-    def center_coordinates(self: Structure) -> None:
+    def center_coordinates(self: Structure | Crystal | Molecule) -> None:
         """Centers the structure around the center of mass."""
         self.center = self.center_of_mass
         for _i, atom in enumerate(self.atoms):
@@ -95,7 +102,7 @@ class Structure:
         if self.draw_bonds:
             self.drawer.update_bonds()
 
-    def calculate_bonds(self: Structure) -> np.ndarray:
+    def calculate_bonds(self: Structure | Crystal | Molecule) -> np.ndarray:
         """Calculate the bonded pairs of atoms."""
         bonded_pairs = []
 
@@ -123,7 +130,7 @@ class Structure:
         """Specifies whether structure contains any bonds that could be displayed."""
         return self.bonded_pairs[0][0] != -1
 
-    def toggle_bonds(self: Structure) -> None:
+    def toggle_bonds(self: Structure | Crystal | Molecule) -> None:
         """Toggles the bonds on and off."""
         self.draw_bonds = not self.draw_bonds
         if not self.draw_bonds:
@@ -136,7 +143,7 @@ class Structure:
         self.drawer.update_bonds()
 
     def add_atom(
-        self: Structure,
+        self: Structure | Crystal | Molecule,
         atomic_number: int,
         coordinate: np.ndarray,
     ) -> None:
@@ -154,7 +161,7 @@ class Structure:
         self.n_at += 1
         self.molar_mass += atom.atomic_mass
 
-    def remove_atom(self: Structure, index: int) -> None:
+    def remove_atom(self: Structure | Crystal | Molecule, index: int) -> None:
         """Remove an atom from the structure.
 
         :param index: list index of the atom that shall be removed
