@@ -13,6 +13,7 @@ import os
 import sys
 from datetime import datetime, timezone
 
+# Add the project source directory to sys.path to make it discoverable by Sphinx
 sys.path.insert(0, os.path.abspath("../../src"))
 
 from molara import __version__
