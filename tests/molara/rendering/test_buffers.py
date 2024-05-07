@@ -25,8 +25,12 @@ class WorkaroundTestBuffers:
         self.main_window = main_window
         self.openGLWidget = main_window.structure_widget
 
-    def test_setup_vao(self) -> None:
-        """Tests the setup_vao function of the buffers module."""
+    def run_tests(self) -> None:
+        """Run the tests."""
+        self._test_setup_vao()
+
+    def _test_setup_vao(self) -> None:
+        """Test the setup_vao function of the buffers module."""
         # Define the input data for a sphere
         subdivisions = 10
         sphere_mesh = Sphere(subdivisions)

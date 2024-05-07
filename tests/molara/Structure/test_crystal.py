@@ -129,7 +129,7 @@ class TestCrystal(TestCase):
     def test_properties(self) -> None:
         """Test the properties of the crystal."""
         assert self.crystal.molar_mass == float(
-            (elements[5]["atomic_weight"] + elements[7]["atomic_weight"]),
+            (elements["B"]["Atomic mass"] + elements["N"]["Atomic mass"]),
         )
         assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
         assert_almost_equal(self.crystal.density_unitcell, 3.6229802861472007, decimal=5)

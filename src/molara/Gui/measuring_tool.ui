@@ -121,6 +121,11 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tablePositions</tabstop>
+  <tabstop>tableDistances</tabstop>
+  <tabstop>tableAngles</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
