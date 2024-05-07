@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Z-Matrix Builder</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">

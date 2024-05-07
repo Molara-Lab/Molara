@@ -97,7 +97,7 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
+        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Export Snapshot", None))
         self.label_2.setText(QCoreApplication.translate("Dialog", u"Height (pixels)", None))
         self.checkBox.setText(QCoreApplication.translate("Dialog", u"Keep aspect ratio", None))
         self.label.setText(QCoreApplication.translate("Dialog", u"Width (pixels)", None))

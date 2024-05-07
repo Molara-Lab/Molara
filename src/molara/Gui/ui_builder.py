@@ -84,7 +84,7 @@ class Ui_builder(object):
     # setupUi
 
     def retranslateUi(self, builder):
-        builder.setWindowTitle(QCoreApplication.translate("builder", u"Dialog", None))
+        builder.setWindowTitle(QCoreApplication.translate("builder", u"Z-Matrix Builder", None))
         self.AddAtomButton.setText(QCoreApplication.translate("builder", u"Add", None))
         self.DeleteAtomButton.setText(QCoreApplication.translate("builder", u"Delete", None))
     # retranslateUi

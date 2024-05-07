@@ -141,6 +141,7 @@ class MainWindow(QMainWindow):
         """Select a file in the file open dialog."""
         file_name = QFileDialog.getOpenFileName(
             self,
+            "Import structure from file",
             dir=".",
         )[0]
         if file_name == "":
