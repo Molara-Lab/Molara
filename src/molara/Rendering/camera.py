@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import numpy.typing as npt
 import pyrr
@@ -31,11 +33,12 @@ class Camera:
         self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
-        self.last_rotation = self.rotation
         self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
-        self.last_translation = self.translation
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+
+        self.last_rotation = self.rotation
+        self.last_translation = self.translation
         self.initial_target = self.target
         self.initial_position = pyrr.Vector3(
             pyrr.vector3.normalize(self.position),
@@ -297,6 +300,69 @@ class Camera:
             )
         else:
             self.rotation = self.last_rotation
+
+    def export_settings(self, file_name: str) -> None:
+        """Export camera settings to .npz file.
+
+        :param file_name: Name of the file to which camera settings are saved.
+        """
+        settings = {
+            "orthographic_projection": self.orthographic_projection,
+            "fov": self.fov,
+            "width": self.width,
+            "height": self.height,
+            "zoom_sensitivity": self.zoom_sensitivity,
+            "distance_from_target": self.distance_from_target,
+            "position": self.position.tolist(),
+            "up_vector": self.up_vector.tolist(),
+            "right_vector": self.right_vector.tolist(),
+            "target": self.target.tolist(),
+            "translation": self.translation.tolist(),
+            "initial_position": self.initial_position.tolist(),
+            "initial_up_vector": self.initial_up_vector.tolist(),
+            "initial_right_vector": self.initial_right_vector.tolist(),
+            "initial_target": self.initial_target.tolist(),
+            "last_translation": self.last_translation.tolist(),
+            "rotation": self.rotation.tolist(),
+            "last_rotation": self.last_rotation.tolist(),
+        }
+        if not file_name.endswith(".json"):
+            file_name += ".json"
+        with open(file_name, "w") as file:
+            json.dump(settings, file, indent=4)
+
+    def import_settings(self, file_name: str) -> None:
+        """Import camera settings from .npz file.
+
+        :param file_name: Name of the file from which camera settings are loaded.
+        """
+        if not file_name.endswith(".json"):
+            # Show warning
+            return
+        with open(file_name) as file:
+            data = json.load(file)
+        self.orthographic_projection = data["orthographic_projection"]
+        self.fov = data["fov"]
+        self.width = data["width"]
+        self.height = data["height"]
+        self.zoom_sensitivity = data["zoom_sensitivity"]
+        self.set_position(
+            data["position"],
+            data["up_vector"],
+            data["right_vector"],
+            data["distance_from_target"],
+        )
+        self.initial_position = pyrr.Vector3(data["initial_position"], dtype=np.float32)
+        self.initial_up_vector = pyrr.Vector3(data["initial_up_vector"], dtype=np.float32)
+        self.initial_right_vector = pyrr.Vector3(data["initial_right_vector"], dtype=np.float32)
+        self.target = pyrr.Vector3(data["target"], dtype=np.float32)
+        self.initial_target = pyrr.Vector3(data["initial_target"], dtype=np.float32)
+        self.translation = pyrr.Vector3(data["translation"], dtype=np.float32)
+        self.last_translation = pyrr.Vector3(data["last_translation"], dtype=np.float32)
+        self.rotation = pyrr.Quaternion(data["rotation"])
+        self.last_rotation = pyrr.Quaternion(data["last_rotation"])
+        self.calculate_projection_matrix()
+        self.update()
 
     def adopt_config(self, other_camera: Camera, custom_geometry: tuple[int, int] | None = None) -> None:
         """Adopt the configuration of another Camera object.

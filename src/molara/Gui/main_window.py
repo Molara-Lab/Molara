@@ -90,6 +90,8 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show,
         )
         self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
+        self.ui.actionExport_CameraSettings.triggered.connect(self.export_camera_settings)
+        self.ui.actionImport_CameraSettings.triggered.connect(self.import_camera_settings)
         self.ui.actionOpen_Structure_Customizer.triggered.connect(
             self.show_structure_customizer_dialog,
         )
@@ -180,6 +182,36 @@ class MainWindow(QMainWindow):
             return
         exporter = GeneralExporter(file_name)
         exporter.write_structure(self.structure_widget.structure)
+
+    def export_camera_settings(self) -> None:
+        """Export camera settings to .npz file."""
+        file_name = QFileDialog.getSaveFileName(
+            self,
+            "Export camera settings to file",
+            ".",
+            ".json",
+        )[0]
+        if file_name == "":
+            return
+        try:
+            self.structure_widget.export_camera_settings(file_name)
+        except Exception as e:  # noqa: BLE001
+            QMessageBox.critical(self, "Error", f"Error: {e}")
+
+    def import_camera_settings(self) -> None:
+        """Import camera settings from .npz file."""
+        file_name = QFileDialog.getOpenFileName(
+            self,
+            "Import camera settings from file",
+            ".",
+            "*.json",
+        )[0]
+        if file_name == "":
+            return
+        try:
+            self.structure_widget.import_camera_settings(file_name)
+        except Exception as e:  # noqa: BLE001
+            QMessageBox.critical(self, "Error", f"Error: {e}")
 
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
