@@ -48,7 +48,7 @@ jobs:
         run: |
           pytest --cov=src --cov-report=xml tests
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v4.3.1
         if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest' && github.repository == 'Molara-Lab/Molara'
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
