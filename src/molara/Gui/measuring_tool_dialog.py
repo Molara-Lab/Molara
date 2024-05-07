@@ -182,5 +182,7 @@ class MeasurementDialog(QDialog):
 
     def reject(self) -> None:
         """Close the dialog window."""
+        structure_widget = self.main_window.structure_widget
         self.main_window.structure_widget.unselect_all_atoms()
+        self.display_metrics(structure_widget.structures[0], structure_widget.measurement_selected_spheres)
         self.setVisible(False)
