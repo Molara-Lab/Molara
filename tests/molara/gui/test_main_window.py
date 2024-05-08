@@ -47,6 +47,20 @@ class WorkaroundTestMainWindow:
         self.window = MainWindow()
         self.window.show()
 
+    def run_tests(self) -> None:
+        """Run all tests."""
+        self.test_init()
+        self.test_ui()
+        self.test_structure_widget()
+        self.test_export_image_dialog()
+        self.test_show_builder_dialog()
+        self.test_show_crystal_dialog()
+        self.test_show_init_xyz()
+        self.test_load_molecules()
+        self.test_show_measurement_dialog()
+        self.test_structure_customizer_dialog()
+        self.test_show_trajectory_dialog()
+
     def test_init(self) -> None:
         """Write test code to verify the behavior of the __init__ method."""
         assert isinstance(self.window, MainWindow)
@@ -109,9 +123,13 @@ class WorkaroundTestMainWindow:
         ui = self.window.ui
         assert isinstance(ui.menuFile.actions(), list)
         assert ui.quit in ui.menuFile.actions()
-        assert ui.actionImport in ui.menuFile.actions()
-        assert ui.actionExport in ui.menuFile.actions()
-        assert ui.actionExport_Snapshot in ui.menuFile.actions()
+        assert ui.menuImport.menuAction() in ui.menuFile.actions()
+        assert ui.menuExport.menuAction() in ui.menuFile.actions()
+        assert ui.actionImport in ui.menuImport.actions()
+        assert ui.actionImport_CameraSettings in ui.menuImport.actions()
+        assert ui.actionExport in ui.menuExport.actions()
+        assert ui.actionExport_Snapshot in ui.menuExport.actions()
+        assert ui.actionExport_CameraSettings in ui.menuExport.actions()
 
     def test_ui_edit_menu(self) -> None:
         """Tests the edit menu of the ui."""
@@ -119,9 +137,8 @@ class WorkaroundTestMainWindow:
         assert isinstance(ui.menuEdit.actions(), list)
         assert ui.actionReset_View in ui.menuEdit.actions()
         assert ui.actionCenter_Molecule in ui.menuEdit.actions()
-        assert ui.actionOpen_Trajectory_Dialog in ui.menuEdit.actions()
         assert ui.menuRotate.menuAction() in ui.menuEdit.actions()
-        assert ui.actionDraw_Axes in ui.menuEdit.actions()
+        assert ui.actionOpen_Structure_Customizer in ui.menuEdit.actions()
         # menu "view"->rotate
         assert isinstance(ui.menuRotate.actions(), list)
         assert ui.actionto_x_axis in ui.menuRotate.actions()
@@ -132,7 +149,6 @@ class WorkaroundTestMainWindow:
         """Tests the crystal menu of the ui."""
         ui = self.window.ui
         assert isinstance(ui.menuCrystal.actions(), list)
-        assert ui.actionRead_POSCAR in ui.menuCrystal.actions()
         assert ui.actionCreate_Lattice in ui.menuCrystal.actions()
         assert ui.actionSupercell in ui.menuCrystal.actions()
         assert ui.actionToggle_UnitCellBoundaries in ui.menuCrystal.actions()
@@ -193,6 +209,14 @@ class WorkaroundTestMainWindow:
 
         # Test builder select sphere
         structure_widget.update_builder_selected_atoms(event)
+
+    def test_export_image_dialog(self) -> None:
+        """Write test code to verify the behavior of export_image_dialog property."""
+        assert not self.window.export_image_dialog.isVisible()
+        self.window.ui.actionExport_Snapshot.triggered.emit()
+        assert self.window.export_image_dialog.isVisible()
+        self.window.export_image_dialog.reject()
+        assert not self.window.export_image_dialog.isVisible()
 
     def test_show_builder_dialog(self) -> None:
         """Write test code to verify the behavior of show_measurement_dialog method."""

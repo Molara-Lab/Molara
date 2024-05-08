@@ -9,7 +9,6 @@ from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glV
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QFileDialog
 
 from molara.Rendering.atom_labels import calculate_atom_number_arrays
 from molara.Rendering.camera import Camera
@@ -186,15 +185,20 @@ class StructureWidget(QOpenGLWidget):
         self.set_vertex_attribute_objects()
         self.update()
 
-    def export_snapshot(self) -> None:
-        """Save a snapshot of the structure (as png)."""
-        filename = QFileDialog.getSaveFileName(
-            self,
-            "Export structure to file",
-            ".",
-            "*.png",
-        )
-        self.grabFramebuffer().save(filename[0])
+    def export_camera_settings(self, filename: str) -> None:
+        """Export camera settings to .npz file.
+
+        :param filename: name of the file to which the camera settings shall be saved
+        """
+        self.camera.export_settings(filename)
+
+    def import_camera_settings(self, filename: str) -> None:
+        """Import camera settings from .npz file.
+
+        :param filename: name of the file from which the camera settings shall be loaded
+        """
+        self.camera.import_settings(filename)
+        self.update()
 
     def initializeGL(self) -> None:  # noqa: N802
         """Initialize the widget."""
@@ -638,3 +642,23 @@ class StructureWidget(QOpenGLWidget):
     def clear_builder_selected_atoms(self) -> None:
         """Reset the selected spheres builder spheres."""
         self.builder_selected_spheres = [-1] * 3
+
+    def adopt_config(self, other_widget: StructureWidget, custom_geometry: tuple[int, int] | None = None) -> None:
+        """Adopt the configuration of another StructureWidget object.
+
+        :param other_widget: the other StructureWidget object
+        :param custom_geometry: custom geometry (width, height) for the widget
+        """
+        geometry = self.geometry()
+        if custom_geometry is None:
+            other_geometry = other_widget.geometry()
+            geometry.setWidth(other_geometry.width())
+            geometry.setHeight(other_geometry.height())
+        else:
+            geometry.setWidth(custom_geometry[0])
+            geometry.setHeight(custom_geometry[1])
+
+        self.setGeometry(geometry)
+        self.camera.adopt_config(other_widget.camera)
+        self.set_structure(other_widget.structures, reset_view=False)
+        # self.update()

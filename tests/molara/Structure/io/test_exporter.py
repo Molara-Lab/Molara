@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import time
 import unittest
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import numpy as np
 from molara.Structure.io.exporter import GeneralExporter, XyzExporter
@@ -17,8 +17,9 @@ class TestXyzExporter(unittest.TestCase):
 
     def setUp(self) -> None:
         """Instantiate the XyzExporter object."""
-        self.timestamp = int(time.time())
-        self.filename = f"output_temporary_{self.timestamp}.xyz"
+        # self.timestamp = int(time.time())
+        with NamedTemporaryFile(suffix=".xyz") as file:
+            self.filename = file.name
         self.exporter = XyzExporter(self.filename)
         self.atomic_numbers = np.array([6, 8, 2, 3, 1, 7])  # C, O, He, Li, H, N
         self.coordinates = np.array(
@@ -57,17 +58,14 @@ class TestXyzExporter(unittest.TestCase):
         coordinates = data[:, 1:].astype(float)
         assert_array_equal(coordinates, self.coordinates)
 
-        # Delete file
-        Path(self.filename).unlink()
-
 
 class TestGeneralExporter(unittest.TestCase):
     """Contains the tests for the GeneralExporter class."""
 
     def setUp(self) -> None:
         """Instantiate the GeneralExporter object."""
-        self.timestamp = int(time.time())
-        self.filename_xyz = f"output_temporary_{self.timestamp}.xyz"
+        with NamedTemporaryFile(suffix=".xyz") as file:
+            self.filename_xyz = file.name
         self.exporter_xyz = GeneralExporter(self.filename_xyz)
         self.atomic_numbers = np.array([9, 10, 17, 30, 15, 3])  # F, Ne, Cl, Zn, P, Li
         self.coordinates = np.array(
@@ -105,6 +103,3 @@ class TestGeneralExporter(unittest.TestCase):
         assert data[:, 0].tolist() == ["F", "Ne", "Cl", "Zn", "P", "Li"]
         coordinates = data[:, 1:].astype(float)
         assert_array_equal(coordinates, self.coordinates)
-
-        # Delete file
-        Path(self.filename_xyz).unlink()

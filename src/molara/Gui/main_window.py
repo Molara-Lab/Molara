@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QCoreApplication
@@ -10,6 +11,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
+from molara.Gui.export_image_dialog import ExportImageDialog
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
 from molara.Gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.Gui.supercell_dialog import SupercellDialog
@@ -44,11 +46,14 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.export_image_dialog = ExportImageDialog(self)
+
         # instantiate dialog windows, pass main window as parent.
         self.trajectory_dialog = TrajectoryDialog(self)
         self.crystal_dialog = CrystalDialog(self)
         self.measurement_dialog = MeasurementDialog(self)
         self.builder_dialog = BuilderDialog(self)
+        self.supercell_dialog = SupercellDialog(self)
         self.structure_customizer_dialog = StructureCustomizerDialog(self)
 
         self.mols = Molecules()
@@ -66,8 +71,11 @@ class MainWindow(QMainWindow):
         # Start
         self.ui.actionImport.triggered.connect(self.show_file_open_dialog)
         self.ui.actionExport.triggered.connect(self.export_structure)
-        self.ui.actionExport_Snapshot.triggered.connect(self.structure_widget.export_snapshot)
         self.ui.quit.triggered.connect(self.close)
+
+        self.ui.actionExport_Snapshot.triggered.connect(
+            self.export_image_dialog.show_dialog,
+        )  # self.virtual_rendering_window.draw_spheres_and_export)
 
         # View
         self.ui.actionReset_View.triggered.connect(self.structure_widget.reset_view)
@@ -82,7 +90,8 @@ class MainWindow(QMainWindow):
             self.trajectory_dialog.show,
         )
         self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
-
+        self.ui.actionExport_CameraSettings.triggered.connect(self.export_camera_settings)
+        self.ui.actionImport_CameraSettings.triggered.connect(self.import_camera_settings)
         self.ui.actionOpen_Structure_Customizer.triggered.connect(
             self.show_structure_customizer_dialog,
         )
@@ -161,18 +170,48 @@ class MainWindow(QMainWindow):
 
     def export_structure(self) -> None:
         """Save structure to file."""
-        if not self.structure_widget.structure:
+        if not self.structure_widget.structures:
             return
         file_name = QFileDialog.getSaveFileName(
             self,
             "Export structure to file",
-            ".",
+            f"{Path.home()}",
             "*",
         )[0]
         if file_name == "":
             return
         exporter = GeneralExporter(file_name)
         exporter.write_structure(self.structure_widget.structure)
+
+    def export_camera_settings(self) -> None:
+        """Export camera settings to .npz file."""
+        file_name = QFileDialog.getSaveFileName(
+            self,
+            "Export camera settings to file",
+            ".",
+            ".json",
+        )[0]
+        if file_name == "":
+            return
+        try:
+            self.structure_widget.export_camera_settings(file_name)
+        except Exception as e:  # noqa: BLE001
+            QMessageBox.critical(self, "Error", f"Error: {e}")
+
+    def import_camera_settings(self) -> None:
+        """Import camera settings from .npz file."""
+        file_name = QFileDialog.getOpenFileName(
+            self,
+            "Import camera settings from file",
+            ".",
+            "*.json",
+        )[0]
+        if file_name == "":
+            return
+        try:
+            self.structure_widget.import_camera_settings(file_name)
+        except Exception as e:  # noqa: BLE001
+            QMessageBox.critical(self, "Error", f"Error: {e}")
 
     def show_measurement_dialog(self) -> None:
         """Show the measurement dialog."""
@@ -190,7 +229,8 @@ class MainWindow(QMainWindow):
             return False
         crystal = self.structure_widget.structures[0]
         supercell_dims = crystal.supercell_dims
-        SupercellDialog.get_supercell_dims(supercell_dims)
+        self.supercell_dialog.show()
+        self.supercell_dialog.get_supercell_dims(supercell_dims)
         # check if supercell dimensions have successfully been passed (i.e., all are >0)
         if sum(1 for component in supercell_dims if component <= 0):
             return False
