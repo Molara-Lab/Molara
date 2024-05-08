@@ -15,7 +15,8 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
-from PySide6.QtGui import QAction, QSurfaceFormat
+from PySide6.QtCore import QEvent, QPoint, Qt
+from PySide6.QtGui import QAction, QMouseEvent, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
@@ -171,6 +172,44 @@ class WorkaroundTestMainWindow:
         assert not structure_widget.draw_bonds
         assert structure_widget is not None
 
+        # Test mouse moves and clicks
+        self.qtbot.mousePress(structure_widget, Qt.LeftButton, pos=QPoint(50, 50))
+
+        # Simulate mouse move events to rotate the structure
+        self.qtbot.mouseMove(structure_widget, QPoint(60, 60))
+        self.qtbot.mouseMove(structure_widget, QPoint(70, 70))
+
+        # Simulate a left mouse button release event to end rotation
+        self.qtbot.mouseRelease(structure_widget, Qt.LeftButton, pos=QPoint(70, 70))
+
+        self.qtbot.mousePress(structure_widget, Qt.RightButton, pos=QPoint(50, 50))
+
+        # Simulate mouse move events to rotate the structure
+        self.qtbot.mouseMove(structure_widget, QPoint(60, 60))
+        self.qtbot.mouseMove(structure_widget, QPoint(70, 70))
+
+        # Simulate a left mouse button release event to end rotation
+        self.qtbot.mouseRelease(structure_widget, Qt.RightButton, pos=QPoint(70, 70))
+
+        # Test toggle axes:
+        structure_widget.toggle_axes()
+        assert structure_widget.draw_axes
+        structure_widget.toggle_axes()
+        assert not structure_widget.draw_axes
+
+        # Test measurement select sphere
+        event = QMouseEvent(
+            QEvent.MouseButtonPress,  # Event type
+            QPoint(50, 50),  # Position
+            Qt.LeftButton,  # Button
+            Qt.LeftButton,  # Buttons (pressed buttons)
+            Qt.NoModifier,  # Modifiers (keyboard modifiers)
+        )
+        structure_widget.update_measurement_selected_atoms(event)
+
+        # Test builder select sphere
+        structure_widget.update_builder_selected_atoms(event)
+
     def test_export_image_dialog(self) -> None:
         """Write test code to verify the behavior of export_image_dialog property."""
         assert not self.window.export_image_dialog.isVisible()
@@ -250,6 +289,9 @@ class WorkaroundTestMainWindow:
         """
         window = self.window
         ui = window.ui
+        testargs = ["molara", "examples/xyz/pentane.xyz"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.window.show_init_xyz()
         structure_customizer_dialog = window.structure_customizer_dialog
         assert not structure_customizer_dialog.isVisible()
         ui.actionOpen_Structure_Customizer.triggered.emit()
@@ -257,10 +299,14 @@ class WorkaroundTestMainWindow:
         structure_customizer_dialog.reject()
         assert not structure_customizer_dialog.isVisible()
         window.show_structure_customizer_dialog()
+        assert structure_customizer_dialog.isVisible()
+
         window.structure_customizer_dialog.save_settings()
         window.structure_customizer_dialog.load_settings()
         window.structure_customizer_dialog.delete_settings()
-        assert structure_customizer_dialog.isVisible()
+
+        window.structure_customizer_dialog.toggle_stick_mode()
+        window.structure_customizer_dialog.toggle_numbers()
 
     def test_show_trajectory_dialog(self) -> None:
         """Write test code to verify the behavior of show_trajectory_dialog method."""

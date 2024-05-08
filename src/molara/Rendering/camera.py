@@ -23,6 +23,8 @@ class Camera:
         self.fov = 45.0
         self.width = width
         self.height = height
+        self.near = 0.1
+        self.far = 100.0
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
@@ -67,16 +69,16 @@ class Camera:
                 w,
                 -h,
                 h,
-                0.1,
-                100,
+                self.near,
+                self.far,
                 dtype=np.float32,
             )
             return
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
             self.fov,
             width / height,
-            0.1,
-            100,
+            self.near,
+            self.far,
             dtype=np.float32,
         )
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
