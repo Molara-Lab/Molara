@@ -38,6 +38,7 @@ class WorkaroundTestRenderer:
         self._test_draw_cylinders_from_to()
         self._test_draw_spheres()
         self._test_remove_sphere()
+        self._test_numbers()
 
         self.openGLWidget.doneCurrent()
 
@@ -208,8 +209,8 @@ class WorkaroundTestRenderer:
         # also test removing a sphere that does not exist. Nothing should happen.
         _remove_tests(543210)
 
-    def test_numbers(self) -> None:
-        """Tests the draw_numbers method of the Renderer class."""
+    def _test_numbers(self) -> None:
+        """Test the draw_numbers method of the Renderer class."""
         self.renderer.set_shaders(compile_shaders())
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):

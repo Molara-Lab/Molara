@@ -31,6 +31,7 @@ class WorkaroundTestBuffers:
     def run_tests(self) -> None:
         """Run the tests."""
         self._test_setup_vao()
+        self._test_setup_vao_numbers()
 
     def _test_setup_vao(self) -> None:
         """Test the setup_vao function of the buffers module."""
@@ -57,8 +58,8 @@ class WorkaroundTestBuffers:
         for i in range(4):
             assert isinstance(buffers[i], (np.integer, int))
 
-    def test_setup_vao_numbers(self) -> None:
-        """Tests the setup_vao_numbers function of the buffers module."""
+    def _test_setup_vao_numbers(self) -> None:
+        """Test the setup_vao_numbers function of the buffers module."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
             self.main_window.show_init_xyz()
