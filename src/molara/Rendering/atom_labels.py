@@ -6,9 +6,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.Structure.crystal import Crystal
-from molara.Structure.molecule import Molecule
-
 if TYPE_CHECKING:
     from molara.Rendering.camera import Camera
     from molara.Structure.structure import Structure
@@ -19,7 +16,6 @@ def init_atom_number(structure: Structure) -> tuple[np.ndarray, np.ndarray]:
 
     :param structure: Structure object
     """
-    assert isinstance(structure, Molecule | Crystal)
     number_of_atoms = len(structure.atoms)
 
     # Initialize the arrays for the atom numbers.
@@ -42,7 +38,6 @@ def calculate_atom_number_arrays(
     :param structure: Structure object
     :param camera: Camera object
     """
-    assert isinstance(structure, Molecule | Crystal)
     number_of_atoms = len(structure.atoms)
 
     i = 0
