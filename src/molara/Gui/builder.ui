@@ -155,6 +155,16 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>ErrorMessageBrowser</tabstop>
+  <tabstop>Box_0Element</tabstop>
+  <tabstop>Box_1BondDistance</tabstop>
+  <tabstop>Box_2BondAngle</tabstop>
+  <tabstop>Box_3DihedralAngle</tabstop>
+  <tabstop>AddAtomButton</tabstop>
+  <tabstop>DeleteAtomButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

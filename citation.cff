@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Heinz"
+  given-names: "Michel V."
+  orcid: "https://orcid.org/0000-0002-8179-1435"
+- family-names: "Usler"
+  given-names: "Adrian L."
+  orcid: "https://orcid.org/0000-0001-5554-8485"
+- family-names: "Bonkowski"
+  given-names: "Alexander"
+  orcid: "https://orcid.org/0000-0002-0525-4742"
+- family-names: "Feldmann"
+  given-names: "Gereon"
+  orcid: "https://orcid.org/0009-0009-1466-4610"
+title: "Molara"
+version: 0.0.1
+doi: 10.5281/zenodo.11120925
+date-released: 2024-02-29
+url: "https://github.com/Molara-Lab/Molara"

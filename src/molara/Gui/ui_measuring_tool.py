@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'measuring_tool.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -49,6 +49,8 @@ class Ui_measuring_tool(object):
         self.info_text_2 = QLabel(measuring_tool)
         self.info_text_2.setObjectName(u"info_text_2")
         self.info_text_2.setGeometry(QRect(10, 40, 371, 20))
+        QWidget.setTabOrder(self.tablePositions, self.tableDistances)
+        QWidget.setTabOrder(self.tableDistances, self.tableAngles)
 
         self.retranslateUi(measuring_tool)
 

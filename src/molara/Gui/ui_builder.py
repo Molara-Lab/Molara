@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'builder.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,7 @@ class Ui_builder(object):
         if not builder.objectName():
             builder.setObjectName(u"builder")
         builder.resize(447, 310)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(builder.sizePolicy().hasHeightForWidth())
@@ -68,6 +68,13 @@ class Ui_builder(object):
         self.DeleteAtomButton = QPushButton(builder)
         self.DeleteAtomButton.setObjectName(u"DeleteAtomButton")
         self.DeleteAtomButton.setGeometry(QRect(370, 230, 51, 31))
+        QWidget.setTabOrder(self.tableWidget, self.ErrorMessageBrowser)
+        QWidget.setTabOrder(self.ErrorMessageBrowser, self.Box_0Element)
+        QWidget.setTabOrder(self.Box_0Element, self.Box_1BondDistance)
+        QWidget.setTabOrder(self.Box_1BondDistance, self.Box_2BondAngle)
+        QWidget.setTabOrder(self.Box_2BondAngle, self.Box_3DihedralAngle)
+        QWidget.setTabOrder(self.Box_3DihedralAngle, self.AddAtomButton)
+        QWidget.setTabOrder(self.AddAtomButton, self.DeleteAtomButton)
 
         self.retranslateUi(builder)
         self.buttonBox.accepted.connect(builder.accept)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import numpy.typing as npt
 import pyrr
@@ -21,6 +23,8 @@ class Camera:
         self.fov = 45.0
         self.width = width
         self.height = height
+        self.near = 0.1
+        self.far = 100.0
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
@@ -31,11 +35,12 @@ class Camera:
         self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
-        self.last_rotation = self.rotation
         self.translation = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
-        self.last_translation = self.translation
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
+
+        self.last_rotation = self.rotation
+        self.last_translation = self.translation
         self.initial_target = self.target
         self.initial_position = pyrr.Vector3(
             pyrr.vector3.normalize(self.position),
@@ -50,7 +55,6 @@ class Camera:
             dtype=np.float32,
         )
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
-        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def calculate_projection_matrix(self) -> None:
         """Calculate the projection matrix to get from world to camera space."""
@@ -65,18 +69,19 @@ class Camera:
                 w,
                 -h,
                 h,
-                0.1,
-                100,
+                self.near,
+                self.far,
                 dtype=np.float32,
             )
             return
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
             self.fov,
             width / height,
-            0.1,
-            100,
+            self.near,
+            self.far,
             dtype=np.float32,
         )
+        self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
     def reset(
         self,
@@ -297,3 +302,96 @@ class Camera:
             )
         else:
             self.rotation = self.last_rotation
+
+    def export_settings(self, file_name: str) -> None:
+        """Export camera settings to .npz file.
+
+        :param file_name: Name of the file to which camera settings are saved.
+        """
+        settings = {
+            "orthographic_projection": self.orthographic_projection,
+            "fov": self.fov,
+            "width": self.width,
+            "height": self.height,
+            "zoom_sensitivity": self.zoom_sensitivity,
+            "distance_from_target": self.distance_from_target,
+            "position": self.position.tolist(),
+            "up_vector": self.up_vector.tolist(),
+            "right_vector": self.right_vector.tolist(),
+            "target": self.target.tolist(),
+            "translation": self.translation.tolist(),
+            "initial_position": self.initial_position.tolist(),
+            "initial_up_vector": self.initial_up_vector.tolist(),
+            "initial_right_vector": self.initial_right_vector.tolist(),
+            "initial_target": self.initial_target.tolist(),
+            "last_translation": self.last_translation.tolist(),
+            "rotation": self.rotation.tolist(),
+            "last_rotation": self.last_rotation.tolist(),
+        }
+        if not file_name.endswith(".json"):
+            file_name += ".json"
+        with open(file_name, "w") as file:
+            json.dump(settings, file, indent=4)
+
+    def import_settings(self, file_name: str) -> None:
+        """Import camera settings from .npz file.
+
+        :param file_name: Name of the file from which camera settings are loaded.
+        """
+        if not file_name.endswith(".json"):
+            # Show warning
+            return
+        with open(file_name) as file:
+            data = json.load(file)
+        self.orthographic_projection = data["orthographic_projection"]
+        self.fov = data["fov"]
+        self.width = data["width"]
+        self.height = data["height"]
+        self.zoom_sensitivity = data["zoom_sensitivity"]
+        self.set_position(
+            data["position"],
+            data["up_vector"],
+            data["right_vector"],
+            data["distance_from_target"],
+        )
+        self.initial_position = pyrr.Vector3(data["initial_position"], dtype=np.float32)
+        self.initial_up_vector = pyrr.Vector3(data["initial_up_vector"], dtype=np.float32)
+        self.initial_right_vector = pyrr.Vector3(data["initial_right_vector"], dtype=np.float32)
+        self.target = pyrr.Vector3(data["target"], dtype=np.float32)
+        self.initial_target = pyrr.Vector3(data["initial_target"], dtype=np.float32)
+        self.translation = pyrr.Vector3(data["translation"], dtype=np.float32)
+        self.last_translation = pyrr.Vector3(data["last_translation"], dtype=np.float32)
+        self.rotation = pyrr.Quaternion(data["rotation"])
+        self.last_rotation = pyrr.Quaternion(data["last_rotation"])
+        self.calculate_projection_matrix()
+        self.update()
+
+    def adopt_config(self, other_camera: Camera, custom_geometry: tuple[int, int] | None = None) -> None:
+        """Adopt the configuration of another Camera object.
+
+        :param other_camera: the other Camera object
+        :param custom_geometry: custom geometry (width, height) for the Camera object
+        """
+        self.distance_from_target = other_camera.distance_from_target
+        self.fov = other_camera.fov
+        self.zoom_sensitivity = other_camera.zoom_sensitivity
+        if custom_geometry is None:
+            self.width = other_camera.width
+            self.height = other_camera.height
+        else:
+            self.width, self.height = custom_geometry[0], custom_geometry[1]
+        self.initial_position = other_camera.initial_position
+        self.initial_right_vector = other_camera.initial_right_vector
+        self.initial_target = other_camera.initial_target
+        self.initial_up_vector = other_camera.initial_up_vector
+        self.last_rotation = other_camera.last_rotation
+        self.last_translation = other_camera.last_translation
+        self.position = other_camera.position
+        self.right_vector = other_camera.right_vector
+        self.rotation = other_camera.rotation
+        self.target = other_camera.target
+        self.translation = other_camera.translation
+        self.up_vector = other_camera.up_vector
+        self.orthographic_projection = other_camera.orthographic_projection
+        self.calculate_projection_matrix()
+        self.update()
