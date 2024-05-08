@@ -213,6 +213,11 @@
     <string>Structure Customizer</string>
    </property>
   </action>
+  <action name="actionNumber_Atoms">
+   <property name="text">
+    <string>Number Atoms</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

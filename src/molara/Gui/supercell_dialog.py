@@ -68,9 +68,9 @@ class SupercellDialog(QDialog):
 
     def update_num_atoms_label(self) -> None:
         """Update number of atoms label."""
-        if not self.main_window.structure_widget.structure:
+        if not self.main_window.structure_widget.structures:
             return
-        crystal = self.main_window.structure_widget.structure
+        crystal = self.main_window.structure_widget.structures[0]
         if not isinstance(crystal, Crystal):
             return
 
