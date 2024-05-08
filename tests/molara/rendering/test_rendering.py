@@ -51,7 +51,7 @@ class WorkaroundTestRenderer:
         assert self.renderer.shaders == [0]
 
     def _test_set_shaders(self) -> None:
-        """Tests the set_shader method of the Renderer class."""
+        """Test the set_shader method of the Renderer class."""
         shader_int = [192837465, 42]
         self.renderer.set_shaders(shader_int)
         assert self.renderer.shaders == shader_int

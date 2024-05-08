@@ -9,7 +9,6 @@ import pytest
 from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
-from rendering.test_atom_labels import WorkaroundTestAtomLabels
 from rendering.test_buffers import WorkaroundTestBuffers
 from rendering.test_rendering import WorkaroundTestRenderer
 
