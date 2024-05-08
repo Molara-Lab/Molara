@@ -33,9 +33,24 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionImport"/>
-    <addaction name="actionExport"/>
-    <addaction name="actionExport_Snapshot"/>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="actionImport"/>
+     <addaction name="actionImport_CameraSettings"/>
+     <addaction name="actionRead_POSCAR"/>
+    </widget>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="actionExport"/>
+     <addaction name="actionExport_Snapshot"/>
+     <addaction name="actionExport_CameraSettings"/>
+    </widget>
+    <addaction name="menuImport"/>
+    <addaction name="menuExport"/>
     <addaction name="quit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -44,7 +59,7 @@
     </property>
     <widget class="QMenu" name="menuRotate">
      <property name="title">
-      <string>Rotate</string>
+      <string>Set View</string>
      </property>
      <addaction name="actionto_x_axis"/>
      <addaction name="actionto_y_axis"/>
@@ -54,16 +69,13 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionToggle_Projection"/>
-    <addaction name="actionDraw_Axes"/>
-    <addaction name="actionOpen_Trajectory_Dialog"/>
     <addaction name="separator"/>
-    <addaction name="actionToggle_Bonds"/>
+    <addaction name="actionOpen_Structure_Customizer"/>
    </widget>
    <widget class="QMenu" name="menuCrystal">
     <property name="title">
      <string>Crystal</string>
     </property>
-    <addaction name="actionRead_POSCAR"/>
     <addaction name="actionCreate_Lattice"/>
     <addaction name="actionSupercell"/>
     <addaction name="actionToggle_UnitCellBoundaries"/>
@@ -128,7 +140,7 @@
   </action>
   <action name="actionRead_POSCAR">
    <property name="text">
-    <string>Read POSCAR</string>
+    <string>Import POSCAR</string>
    </property>
   </action>
   <action name="action_coord">
@@ -143,7 +155,7 @@
   </action>
   <action name="actionImport">
    <property name="text">
-    <string>Import</string>
+    <string>Import Structure File</string>
    </property>
   </action>
   <action name="actionToggle_Bonds">
@@ -158,17 +170,17 @@
   </action>
   <action name="actionSupercell">
    <property name="text">
-    <string>Supercell</string>
+    <string>Supercell Dimensions</string>
    </property>
   </action>
   <action name="actionBuilder">
    <property name="text">
-    <string>Builder</string>
+    <string>Z-Matrix Builder</string>
    </property>
   </action>
   <action name="actionExport">
    <property name="text">
-    <string>Export</string>
+    <string>Export Structure File</string>
    </property>
   </action>
   <action name="actionExport_Snapshot">
@@ -184,6 +196,26 @@
   <action name="actionToggle_Projection">
    <property name="text">
     <string>Toggle Projection (Perspective/Ortho)</string>
+   </property>
+  </action>
+  <action name="actionExport_CameraSettings">
+   <property name="text">
+    <string>Export Camera Settings</string>
+   </property>
+  </action>
+  <action name="actionImport_CameraSettings">
+   <property name="text">
+    <string>Import Camera Settings</string>
+   </property>
+  </action>
+  <action name="actionOpen_Structure_Customizer">
+   <property name="text">
+    <string>Structure Customizer</string>
+   </property>
+  </action>
+  <action name="actionNumber_Atoms">
+   <property name="text">
+    <string>Number Atoms</string>
    </property>
   </action>
  </widget>

@@ -53,6 +53,10 @@ class Ui_traj_dialog(object):
         self.overlayButton = QPushButton(traj_dialog)
         self.overlayButton.setObjectName(u"overlayButton")
         self.overlayButton.setGeometry(QRect(180, 260, 100, 32))
+        QWidget.setTabOrder(self.PrevButton, self.NextButton)
+        QWidget.setTabOrder(self.NextButton, self.playStopButton)
+        QWidget.setTabOrder(self.playStopButton, self.speedDial)
+        QWidget.setTabOrder(self.speedDial, self.verticalSlider)
 
         self.retranslateUi(traj_dialog)
 

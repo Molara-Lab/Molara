@@ -6,8 +6,6 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from molara.Structure.atom import elements
-
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from os import PathLike
@@ -55,9 +53,7 @@ class XyzExporter(StructureExporter):
         :param structure: Structure object to be exported to xyz-file
         """
         lines = [
-            elements[atom.atomic_number]["symbol"]
-            + "  "
-            + rf"{atom.position[0]}  {atom.position[1]}  {atom.position[2]}"
+            atom.symbol + "  " + rf"{atom.position[0]}  {atom.position[1]}  {atom.position[2]}"
             for atom in structure.atoms
         ]
         with open(self.path, "w") as file:
