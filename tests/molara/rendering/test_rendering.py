@@ -223,4 +223,4 @@ class WorkaroundTestRenderer:
         self.renderer.draw_numbers(digits, positions_3d)
 
         camera = self.main_window.structure_widget.camera
-        self.renderer.display_numbers(camera)
+        self.renderer.display_numbers(camera, 0.25)

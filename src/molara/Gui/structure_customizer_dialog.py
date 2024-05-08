@@ -51,7 +51,7 @@ class StructureCustomizerDialog(QDialog):
         self.ui.ballSizeSpinBox.setValue(1.0)
         self.ui.stickSizeSpinBox.setValue(1.0)
         self.ui.toggleBondsButton.setText("Hide Bonds")
-        self.ui.toggleNumbersButton.setText("Show Numbers")
+        self.ui.toggleNumbersButton.setText("Show Indices")
 
         self.ui.viewModeButton.clicked.connect(self.toggle_stick_mode)
         self.ui.toggleBondsButton.clicked.connect(self.toggle_bonds)
@@ -62,6 +62,7 @@ class StructureCustomizerDialog(QDialog):
 
         self.ui.ballSizeSpinBox.valueChanged.connect(self.apply_changes)
         self.ui.stickSizeSpinBox.valueChanged.connect(self.apply_changes)
+        self.ui.indexSizeSpinBox.valueChanged.connect(self.apply_changes)
 
         self.load_default_settings()
 
@@ -112,6 +113,7 @@ class StructureCustomizerDialog(QDialog):
             "ball_size": float(self.ui.ballSizeSpinBox.value()),
             "stick_size": float(self.ui.stickSizeSpinBox.value()),
             "atom_numbers": bool(self.numbers),
+            "atom_numbers_size": float(self.ui.indexSizeSpinBox.value()),
         }
 
     def load_settings_dict(self, settings: dict) -> None:
@@ -132,6 +134,7 @@ class StructureCustomizerDialog(QDialog):
         self.ui.ballSizeSpinBox.setValue(settings["ball_size"])
         self.ui.stickSizeSpinBox.setValue(settings["stick_size"])
         self.numbers = settings["atom_numbers"]
+        self.ui.indexSizeSpinBox.setValue(settings["atom_numbers_size"])
 
     def save_settings(self) -> None:
         """Save the settings to a file."""
@@ -195,11 +198,13 @@ class StructureCustomizerDialog(QDialog):
             else:
                 structure.draw_bonds = False
 
-        if self.numbers:
-            self.parent().structure_widget.atom_indices_arrays = init_atom_number(structures[0])
-        self.parent().structure_widget.show_atom_indices = self.numbers
+        if structures:
+            if self.numbers:
+                self.parent().structure_widget.atom_indices_arrays = init_atom_number(structures[0])
+                self.parent().structure_widget.number_scale = self.ui.indexSizeSpinBox.value()
+            self.parent().structure_widget.show_atom_indices = self.numbers
 
-        self.parent().structure_widget.set_vertex_attribute_objects()
+            self.parent().structure_widget.set_vertex_attribute_objects()
         self.parent().structure_widget.update()
 
     def toggle_stick_mode(self) -> None:
@@ -240,12 +245,12 @@ class StructureCustomizerDialog(QDialog):
         structure = self.parent().structure_widget.structures[0]
         if self.numbers:
             if len(structure.atoms) < self.max_atoms_for_numbers:
-                self.ui.toggleNumbersButton.setText("Hide Numbers")
+                self.ui.toggleNumbersButton.setText("Hide Indices")
             else:
                 self.numbers = False
                 self.atom_indices_arrays = (np.zeros(1), np.zeros(1), np.zeros(1))
         else:
-            self.ui.toggleNumbersButton.setText("Show Numbers")
+            self.ui.toggleNumbersButton.setText("Show Indices")
         self.apply_changes()
 
     def set_bonds(self, bonds: bool) -> None:

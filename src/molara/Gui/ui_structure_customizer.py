@@ -73,6 +73,16 @@ class Ui_structure_customizer(object):
         self.toggleNumbersButton.setObjectName(u"toggleNumbersButton")
         self.toggleNumbersButton.setGeometry(QRect(6, 65, 107, 32))
         self.toggleNumbersButton.setAutoDefault(False)
+        self.indexSizeLabel = QLabel(structure_customizer)
+        self.indexSizeLabel.setObjectName(u"indexSizeLabel")
+        self.indexSizeLabel.setGeometry(QRect(118, 70, 71, 20))
+        self.indexSizeSpinBox = QDoubleSpinBox(structure_customizer)
+        self.indexSizeSpinBox.setObjectName(u"indexSizeSpinBox")
+        self.indexSizeSpinBox.setGeometry(QRect(186, 70, 62, 22))
+        self.indexSizeSpinBox.setMinimum(0.100000000000000)
+        self.indexSizeSpinBox.setMaximum(3.000000000000000)
+        self.indexSizeSpinBox.setSingleStep(0.050000000000000)
+        self.indexSizeSpinBox.setValue(1.000000000000000)
 
         self.retranslateUi(structure_customizer)
 
@@ -97,4 +107,5 @@ class Ui_structure_customizer(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
         self.deleteButton.setText(QCoreApplication.translate("structure_customizer", u"Delete", None))
         self.toggleNumbersButton.setText(QCoreApplication.translate("structure_customizer", u"Show Indices", None))
+        self.indexSizeLabel.setText(QCoreApplication.translate("structure_customizer", u"Index Size:", None))
     # retranslateUi

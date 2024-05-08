@@ -469,44 +469,26 @@ void display_digit(vec4 position, float aspect_ratio, uint digit, float scale)
 
 void main() {
     float ooo = 0.0;
-    uint tempgg = digit_v[0];
-    if (tempgg < 10u){
-        display_digit(gl_in[0].gl_Position, aspect_ratio_v[0], tempgg, scale_v[0]);
+    uint digit = digit_v[0];
+    if (digit < 10u){
+        display_digit(gl_in[0].gl_Position, aspect_ratio_v[0], digit, scale_v[0]);
     }
-    else if (tempgg < 100u){
-        uint digit1 = tempgg / 10u;
-        display_digit(gl_in[0].gl_Position - vec4(0.05,0.0,0.0,0.0), aspect_ratio_v[0], digit1, scale_v[0]);
-        uint digit2 = tempgg % 10u;
-        display_digit(gl_in[0].gl_Position + vec4(0.05,0.0,0.0,0.0), aspect_ratio_v[0], digit2, scale_v[0]);
+    else if (digit < 100u){
+        uint digit1 = digit / 10u;
+        display_digit(gl_in[0].gl_Position - vec4(0.2,0.0,0.0,0.0) * scale_v[0], aspect_ratio_v[0], digit1, scale_v[0]);
+        uint digit2 = digit % 10u;
+        display_digit(gl_in[0].gl_Position + vec4(0.2,0.0,0.0,0.0) * scale_v[0], aspect_ratio_v[0], digit2, scale_v[0]);
     }
-    else if (tempgg < 1000u){
-        uint digit1 = tempgg / 100u;
-        display_digit(gl_in[0].gl_Position - vec4(0.1,0.0,0.0,0.0), aspect_ratio_v[0], digit1, scale_v[0]);
-        uint digit2 = (tempgg % 100u) / 10u;
+    else if (digit < 1000u){
+        uint digit1 = digit / 100u;
+        display_digit(gl_in[0].gl_Position - vec4(0.4,0.0,0.0,0.0) * scale_v[0], aspect_ratio_v[0], digit1, scale_v[0]);
+        uint digit2 = (digit % 100u) / 10u;
         display_digit(gl_in[0].gl_Position, aspect_ratio_v[0], digit2, scale_v[0]);
-        uint digit3 = tempgg % 10u;
-        display_digit(gl_in[0].gl_Position + vec4(0.1,0.0,0.0,0.0), aspect_ratio_v[0], digit3, scale_v[0]);
+        uint digit3 = digit % 10u;
+        display_digit(gl_in[0].gl_Position + vec4(0.4,0.0,0.0,0.0) * scale_v[0], aspect_ratio_v[0], digit3, scale_v[0]);
     }
 }
 """
-
-"""if (tempgg < 10u){
-        display_digit(gl_in[0].gl_Position, aspect_ratio_v[0], tempgg, scale_v[0]);
-    }
-    else if (tempgg < 100u){
-        uint digit1 = tempgg / 10u;
-        display_digit(gl_in[0].gl_Position - vec4(0.05,0.0,0.0,0.0), aspect_ratio_v[0], digit1, scale_v[0]);
-        uint digit2 = tempgg % 10u;
-        display_digit(gl_in[0].gl_Position + vec4(0.05,0.0,0.0,0.0), aspect_ratio_v[0], digit2, scale_v[0]);
-    }
-    else if (tempgg < 1000u){
-        uint digit1 = tempgg / 100u;
-        display_digit(gl_in[0].gl_Position - vec4(0.1,0.0,0.0,0.0), aspect_ratio_v[0], digit1, scale_v[0]);
-        uint digit2 = (tempgg % 100u) / 10u;
-        display_digit(gl_in[0].gl_Position, aspect_ratio_v[0], digit2, scale_v[0]);
-        uint digit3 = tempgg % 10u;
-        display_digit(gl_in[0].gl_Position + vec4(0.1,0.0,0.0,0.0), aspect_ratio_v[0], digit3, scale_v[0]);
-    }"""
 
 geometry_src_lines_with_linewidth = """
 #version 330 core

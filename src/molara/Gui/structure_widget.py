@@ -72,6 +72,7 @@ class StructureWidget(QOpenGLWidget):
         ]
         self.show_atom_indices = False
         self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1))
+        self.number_scale = 1.0
 
     @property
     def bonds(self) -> bool:
@@ -225,7 +226,7 @@ class StructureWidget(QOpenGLWidget):
         self.renderer.draw_scene(self.camera, self.bonds)
         if self.show_atom_indices:
             self.update_atom_number_labels()
-            self.renderer.display_numbers(self.camera)
+            self.renderer.display_numbers(self.camera, self.number_scale)
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""

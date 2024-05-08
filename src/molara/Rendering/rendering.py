@@ -448,8 +448,11 @@ class Renderer:
                 )
         glBindVertexArray(0)
 
-    def display_numbers(self, camera: Camera) -> None:
+    def display_numbers(self, camera: Camera, scale_factor: float) -> None:
         """Draws the lines."""
+        number_scale = 0.25
+        scale = number_scale * scale_factor
+
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
         glUseProgram(self.shaders[1])
 
@@ -457,7 +460,7 @@ class Renderer:
         # Uniform for aspect ratio
         aspect_ratio_location = glGetUniformLocation(self.shaders[1], "aspect_ratio")
         scale_loc = glGetUniformLocation(self.shaders[1], "scale")
-        glUniform1f(scale_loc, 0.25)
+        glUniform1f(scale_loc, scale)
         glUniform1f(aspect_ratio_location, self.aspect_ratio)
 
         proj_loc = glGetUniformLocation(self.shaders[1], "projection")
