@@ -3,7 +3,7 @@
 [![code coverage](https://img.shields.io/codecov/c/gh/Molara-Lab/Molara)](https://codecov.io/gh/Molara-Lab/Molara)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Molara-Lab/Molara/main.svg)](https://results.pre-commit.ci/latest/github/Molara-Lab/Molara/main)
 [![Zenodo](https://img.shields.io/badge/DOI-10.5281/zenodo.11120926-blue?logo=Zenodo&logoColor=white)](https://zenodo.org/records/11120926)
-# <img src="img/MolaraLogo.png" alt="inPsights Logo" height="128"/>
+# <img src="img/MolaraLogo.svg" alt="inPsights Logo" height="128"/>
 # Molara
 Molara is an open-source program for the 3-dimensional visualization of molecules and crystal structures. These are some of its main features:
 

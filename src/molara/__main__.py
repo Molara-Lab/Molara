@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import signal
 import sys
+from pathlib import Path
 
-from PySide6.QtGui import QSurfaceFormat
+from PySide6.QtGui import QIcon, QSurfaceFormat
 from PySide6.QtWidgets import QApplication
 
 # Important:
@@ -27,6 +28,7 @@ def main() -> None:
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(f"{Path(__file__).resolve().parent}/MolaraLogo.png"))
 
     widget = MainWindow()
 
