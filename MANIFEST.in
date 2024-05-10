@@ -1,1 +1,3 @@
 global-include *.pyx
+global-include *.json
+include ./src/molara/MolaraLogo.png
