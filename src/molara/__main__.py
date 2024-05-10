@@ -37,11 +37,12 @@ def main(test: bool = False) -> None:
 
     widget.setWindowTitle("Molara")
 
-    if len(sys.argv) > 1:
-        widget.show_init_xyz()
-
     if not test:
         widget.show()
+
+        if len(sys.argv) > 1:
+            widget.show_init_xyz()
+
         sys.exit(app.exec())
 
 
