@@ -114,7 +114,7 @@ class Drawer:
 
     def set_atom_colors(self) -> None:
         """Set the colors of the atoms."""
-        self.atom_colors = np.array([atom.cpk_color for atom in self.atoms], dtype=np.float32)
+        self.atom_colors = np.array([atom.color for atom in self.atoms], dtype=np.float32)
 
     def set_cylinder_dimensions(self) -> None:
         """Set the dimensions of the cylinders.
@@ -152,8 +152,8 @@ class Drawer:
             self.cylinder_directions.append(difference)
             self.cylinder_dimensions.append([radius, length, radius])
             self.cylinder_colors += [
-                np.array([atom1.cpk_color], dtype=np.float32),
-                np.array([atom2.cpk_color], dtype=np.float32),
+                np.array([atom1.color], dtype=np.float32),
+                np.array([atom2.color], dtype=np.float32),
             ]
 
         self.cylinder_colors = np.array(self.cylinder_colors, dtype=np.float32)
