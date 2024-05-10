@@ -18,8 +18,11 @@ from molara.Gui.main_window import MainWindow
 __copyright__ = "Copyright 2024, Molara"
 
 
-def main() -> None:
-    """Run the application."""
+def main(test: bool = False) -> None:
+    """Run the application.
+
+    :param test: True if the application is run in test mode, False otherwise
+    """
     _format = QSurfaceFormat()
     _format.setVersion(3, 3)
     _format.setSamples(4)
@@ -34,13 +37,13 @@ def main() -> None:
 
     widget.setWindowTitle("Molara")
 
-    widget.show()
-
     if len(sys.argv) > 1:
         widget.show_init_xyz()
 
-    sys.exit(app.exec())
+    if not test:
+        widget.show()
+        sys.exit(app.exec())
 
 
 if __name__ == "__main__":
-    main()
+    main(test=False)
