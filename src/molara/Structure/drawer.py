@@ -40,6 +40,7 @@ class Drawer:
         self.subdivisions_sphere = 20
         self.subdivisions_cylinder = 20
         self.stick_mode = False
+        self.color_scheme = "Jmol"
 
         self.sphere_scale = 1.0
         self.sphere_default_radius = 1.0 / 6
@@ -114,7 +115,7 @@ class Drawer:
 
     def set_atom_colors(self) -> None:
         """Set the colors of the atoms."""
-        self.atom_colors = np.array([atom.color for atom in self.atoms], dtype=np.float32)
+        self.atom_colors = np.array([atom.color[self.color_scheme] for atom in self.atoms], dtype=np.float32)
 
     def set_cylinder_dimensions(self) -> None:
         """Set the dimensions of the cylinders.
@@ -152,14 +153,27 @@ class Drawer:
             self.cylinder_directions.append(difference)
             self.cylinder_dimensions.append([radius, length, radius])
             self.cylinder_colors += [
-                np.array([atom1.color], dtype=np.float32),
-                np.array([atom2.color], dtype=np.float32),
+                np.array([atom1.color[self.color_scheme]], dtype=np.float32),
+                np.array([atom2.color[self.color_scheme]], dtype=np.float32),
             ]
 
         self.cylinder_colors = np.array(self.cylinder_colors, dtype=np.float32)
         self.cylinder_positions = np.array(self.cylinder_positions, dtype=np.float32)
         self.cylinder_directions = np.array(self.cylinder_directions, dtype=np.float64)
         self.cylinder_dimensions = np.array(self.cylinder_dimensions, dtype=np.float32)
+
+    def set_cylinder_colors(self) -> None:
+        """Set the colors of the bonds (cylinders)."""
+        self.cylinder_colors = []
+        for bond in self.bonds:
+            if bond[0] == -1:
+                continue
+            atom1, atom2 = self.atoms[bond[0]], self.atoms[bond[1]]
+            self.cylinder_colors += [
+                np.array([atom1.color[self.color_scheme]], dtype=np.float32),
+                np.array([atom2.color[self.color_scheme]], dtype=np.float32),
+            ]
+        self.cylinder_colors = np.array(self.cylinder_colors, dtype=np.float32)
 
     def set_atom_positions(self) -> None:
         """Set the positions of the atoms."""
