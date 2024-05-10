@@ -303,8 +303,7 @@ class Renderer:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
             for buffer in self.atoms_vao["buffers"]:
-                buffer = int(buffer)
-                glDeleteBuffers(1, buffer)
+                glDeleteBuffers(1, int(buffer))
             glDeleteVertexArrays(1, int(self.atoms_vao["vao"]))
         self.atoms_vao["vao"], self.atoms_vao["buffers"] = setup_vao(
             vertices,
@@ -362,8 +361,7 @@ class Renderer:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
             for buffer in self.bonds_vao["buffers"]:
-                buffer = int(buffer)
-                glDeleteBuffers(1, buffer)
+                glDeleteBuffers(1, int(buffer))
             glDeleteVertexArrays(1, int(self.bonds_vao["vao"]))
         self.bonds_vao["vao"], self.bonds_vao["buffers"] = setup_vao(
             vertices,
