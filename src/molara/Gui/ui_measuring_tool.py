@@ -23,7 +23,8 @@ class Ui_measuring_tool(object):
         if not measuring_tool.objectName():
             measuring_tool.setObjectName(u"measuring_tool")
         measuring_tool.resize(431, 438)
-        measuring_tool.setMinimumSize(QSize(382, 404))
+        measuring_tool.setMinimumSize(QSize(431, 438))
+        measuring_tool.setMaximumSize(QSize(431, 438))
         self.info_text = QLabel(measuring_tool)
         self.info_text.setObjectName(u"info_text")
         self.info_text.setGeometry(QRect(10, 10, 371, 20))
