@@ -52,6 +52,7 @@ class StructureCustomizerDialog(QDialog):
         self.ui.stickSizeSpinBox.setValue(1.0)
         self.ui.toggleBondsButton.setText("Hide Bonds")
         self.ui.toggleNumbersButton.setText("Show Indices")
+        self.ui.colorSchemeSelect.addItems(["Jmol", "CPK"])
 
         self.ui.viewModeButton.clicked.connect(self.toggle_stick_mode)
         self.ui.toggleBondsButton.clicked.connect(self.toggle_bonds)
@@ -63,6 +64,7 @@ class StructureCustomizerDialog(QDialog):
         self.ui.ballSizeSpinBox.valueChanged.connect(self.apply_changes)
         self.ui.stickSizeSpinBox.valueChanged.connect(self.apply_changes)
         self.ui.indexSizeSpinBox.valueChanged.connect(self.apply_changes)
+        self.ui.colorSchemeSelect.currentIndexChanged.connect(self.apply_changes)
 
         self.load_default_settings()
 
@@ -114,6 +116,7 @@ class StructureCustomizerDialog(QDialog):
             "stick_size": float(self.ui.stickSizeSpinBox.value()),
             "atom_numbers": bool(self.numbers),
             "atom_numbers_size": float(self.ui.indexSizeSpinBox.value()),
+            "color_scheme": self.ui.colorSchemeSelect.currentText(),
         }
 
     def load_settings_dict(self, settings: dict) -> None:
@@ -136,6 +139,11 @@ class StructureCustomizerDialog(QDialog):
         self.numbers = settings["atom_numbers"]
         self.ui.indexSizeSpinBox.setValue(settings["atom_numbers_size"])
 
+        if settings["color_scheme"] == "Jmol":
+            self.ui.colorSchemeSelect.setCurrentIndex(0)
+        else:
+            self.ui.colorSchemeSelect.setCurrentIndex(1)
+
     def save_settings(self) -> None:
         """Save the settings to a file."""
         save_name = self.ui.saveName.toPlainText()
@@ -148,7 +156,7 @@ class StructureCustomizerDialog(QDialog):
                 json.dump(settings, f)
         self.update_settings_box()
 
-    def set_cylinder_and_sphere_sizes(
+    def set_cylinder_and_sphere_att(
         self,
         structure: Structure | Molecule | Crystal,
         ball_size: float,
@@ -163,10 +171,15 @@ class StructureCustomizerDialog(QDialog):
         structure.drawer.cylinder_radius = stick_size
         structure.drawer.sphere_default_radius = ball_size
 
+        # Set the color scheme
+        structure.drawer.color_scheme = self.ui.colorSchemeSelect.currentText()
+
         if self.stick_mode:
             structure.drawer.sphere_scale = self.ui.stickSizeSpinBox.value()
         else:
             structure.drawer.sphere_scale = self.ui.ballSizeSpinBox.value()
+        structure.drawer.set_atom_colors()
+        structure.drawer.set_cylinder_colors()
         structure.drawer.set_atom_scales()
         structure.drawer.set_atom_scale_matrices()
         structure.drawer.set_atom_model_matrices()
@@ -180,14 +193,13 @@ class StructureCustomizerDialog(QDialog):
 
                 atom_radius = 0.15
                 stick_radius = atom_radius + 1e-3
-                self.set_cylinder_and_sphere_sizes(structure, atom_radius, stick_radius)
             else:
                 structure.drawer.stick_mode = False
 
                 atom_radius = 1.0 / 6
                 stick_radius = 0.075
 
-                self.set_cylinder_and_sphere_sizes(structure, atom_radius, stick_radius)
+            self.set_cylinder_and_sphere_att(structure, atom_radius, stick_radius)
 
             if self.bonds:
                 structure.draw_bonds = True
