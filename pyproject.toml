@@ -75,7 +75,7 @@ dev = [
 ]
 crystal = [
     "pymatgen",
-    "ase",
+    "ase@git+https://gitlab.com/ase/ase",
 ]
 
 [project.scripts]
