@@ -82,7 +82,7 @@ class MainWindow(QMainWindow):
         self.ui.actionto_x_axis.triggered.connect(self.structure_widget.set_view_to_x_axis)
         self.ui.actionto_y_axis.triggered.connect(self.structure_widget.set_view_to_y_axis)
         self.ui.actionto_z_axis.triggered.connect(self.structure_widget.set_view_to_z_axis)
-        self.ui.actionDraw_Axes.triggered.connect(self.structure_widget.toggle_axes)
+        self.ui.actionToggle_Axes.triggered.connect(self.structure_widget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
             self.structure_widget.center_structure,
         )
@@ -107,12 +107,18 @@ class MainWindow(QMainWindow):
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
+        self.update_action_texts()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""
         self.structure_customizer_dialog.bonds = self.structure_widget.bonds
         self.structure_customizer_dialog.set_bonds(self.structure_widget.bonds)
         self.structure_customizer_dialog.show()
+
+    def toggle_axes(self) -> None:
+        """Toggle the axes."""
+        self.structure_widget.toggle_axes()
+        self.update_action_texts()
 
     def update_action_texts(self) -> None:
         """Update the texts of the menu actions."""
@@ -125,7 +131,7 @@ class MainWindow(QMainWindow):
             if self.structure_widget.draw_unit_cell_boundaries
             else "Show Unit Cell Boundaries"
         )
-        self.ui.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", text_axes, None))
+        self.ui.actionToggle_Axes.setText(QCoreApplication.translate("MainWindow", text_axes, None))
         self.ui.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", text_projection, None))
         self.ui.actionToggle_UnitCellBoundaries.setText(
             QCoreApplication.translate("MainWindow", text_unit_cell_boundaries, None),
