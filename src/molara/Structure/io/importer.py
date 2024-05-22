@@ -108,30 +108,19 @@ class XyzImporter(MoleculesImporter):
         with open(self.path, encoding="utf-8") as file:
             lines = file.readlines()
 
-        molecules.add_molecule(
-            self._molecule_from_xyz(lines),
-        )
         num_atoms = int(lines[0])
-
-        # Read in for a single xyz file
-        # Goes on if file has more than one structure stored
-        if len(lines) <= 2 + num_atoms:
-            return molecules
-        first_line_after_first_mol = lines[2 + num_atoms].strip()
-        if not first_line_after_first_mol.isdigit():
-            return molecules
-
         finished = False
-        max_mols = 10000
+        max_mols = int(1e100)
         start_line = 0
         while not finished and max_mols >= molecules.num_mols:
-            start_line += 2 + num_atoms
+            end_line = start_line + num_atoms + 2
             molecules.add_molecule(
-                self._molecule_from_xyz(lines[start_line : start_line + num_atoms]),
+                self._molecule_from_xyz(lines[start_line:end_line]),
             )
             finished = (
                 start_line + 2 + num_atoms >= len(lines) or not lines[start_line + 2 + num_atoms].strip().isdigit()
             )
+            start_line = end_line
         return molecules
 
 
@@ -180,8 +169,6 @@ class MoldenImporter(MoleculesImporter):
 
         i = 0
         spherical_harmonics = ["[5D]", "[7F]", "[9G]"]
-        atomic_numbers, coordinates, basisset = None, None, None
-        mo_coefficients, labels, energies, spins, occupations = None, None, None, None, None
 
         while i < len(lines):
             if "[Atoms]" in lines[i]:
@@ -215,22 +202,11 @@ class MoldenImporter(MoleculesImporter):
                     occupations,
                 ) = self.get_mo_coefficients(lines[i_start:i])
             i += 1
-
-        assert atomic_numbers is not None
-        assert coordinates is not None
-        assert basisset is not None
-        assert mo_coefficients is not None
-        assert labels is not None
-        assert energies is not None
-        assert spins is not None
-        assert occupations is not None
-
         molecules.add_molecule(
             Molecule(np.array(atomic_numbers), np.array(coordinates)),
         )
         molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
         molecules.mols[0].mos.coefficients = np.array(mo_coefficients)
-
         for i, atom in enumerate(basisset):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_orbitals(
@@ -403,7 +379,6 @@ class QmImporter(MoleculesImporter):
 
     def load(self) -> Molecules:
         """Read the file in self.path and creates a Molecules object."""
-        assert self._ccparser is not None
         data = self._ccparser.parse()
 
         mols: list[Molecule] = self._get_geometries(data)

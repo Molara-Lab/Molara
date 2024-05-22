@@ -114,11 +114,8 @@ class Crystal(Structure):
             )
 
         # create extra atoms at edges of supercell (quasi periodic boundaries)
-        extra_atomic_nums, extra_fractional_coords = Crystal.make_supercell_edge_atoms(
-            self.atomic_nums_supercell.tolist(),
-            self.fractional_coords_supercell.tolist(),
-            supercell_dims,
-        )
+        extra_atomic_nums, extra_fractional_coords = self.make_supercell_edge_atoms()
+
         self.atomic_nums_supercell = np.append(
             self.atomic_nums_supercell,
             extra_atomic_nums,
@@ -153,13 +150,16 @@ class Crystal(Structure):
         """
         return np.dot(fractional_coords, basis_vectors)
 
-    @classmethod
-    def make_supercell_edge_atoms(
-        cls: type[Crystal],
-        atomic_nums: list[int],
-        fractional_coords: list[list[float]],
-        supercell_dims: list[int],
-    ) -> tuple[list[int], list[list[float]]]:
+    def edge_atom_coords(self) -> tuple[np.ndarray, np.ndarray]:
+        """Return the coordinates of the edge atoms in the supercell."""
+        _fractional_coords_np = np.array(self.fractional_coords_supercell)
+        if len(_fractional_coords_np.shape) != 2:  # noqa: PLR2004
+            msg = "Faulty shape of fractional_coords_np array. Shape must be (N,3)."
+            raise ValueError(msg)
+        edges = np.where(_fractional_coords_np == 0)
+        return edges[0], edges[1]
+
+    def make_supercell_edge_atoms(self) -> tuple[list[int], list[list[float]]]:
         """Extra atoms are created at supercell edges (periodic boundaries).
 
         :param atomic_nums: atomic numbers of the atoms
@@ -172,10 +172,11 @@ class Crystal(Structure):
         # ids_edge_atom_coords contains the 1st-axis ids, i.e., the ids of the specific coords that are zero-valued.
         # example: if there are five atoms, the 0th and the 3rd of which have coordinates (0, .5, .5) and (.5, 0, 0),
         # respectively, then ids_edge_atoms would be [0, 3, 3], and ids_edge_atom_coords would be [0, 1, 2].
-        _fractional_coords_np = np.array(fractional_coords)
-        _supercell_dims_np = np.array(supercell_dims)
+        _fractional_coords_np = np.array(self.fractional_coords_supercell)
+        _supercell_dims_np = np.array(self.supercell_dims)
+        atomic_nums = self.atomic_nums_supercell
 
-        ids_edge_atoms, ids_edge_atom_coords = np.where(_fractional_coords_np == 0)
+        ids_edge_atoms, ids_edge_atom_coords = self.edge_atom_coords()
         extra_atomic_nums = []  # atomic numbers of the newly created atoms
         extra_fractional_coords = []  # fractional coordinates of the newly created atoms
 
@@ -230,7 +231,8 @@ class Crystal(Structure):
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 extra_fractional_coords[-1][id3] = dim3  # (0,0,dim3)
             else:
-                raise (ValueError)
+                msg = "Unexpected number of zero-valued coordinates encountered."
+                raise ValueError(msg)
         return extra_atomic_nums, extra_fractional_coords
 
     @staticmethod
@@ -256,7 +258,7 @@ class Crystal(Structure):
 
         :param structure: pymatgen.Structure object
         """
-        return cls(list(structure.atomic_numbers), structure.frac_coords, structure.lattice.matrix, supercell_dims)
+        return cls(structure.atomic_numbers, structure.frac_coords, structure.lattice.matrix, supercell_dims)
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:

@@ -12,21 +12,31 @@ from OpenGL.GL import (
     GL_DEPTH_BUFFER_BIT,
     GL_ELEMENT_ARRAY_BUFFER,
     GL_FALSE,
+    GL_FILL,
+    GL_FRONT_AND_BACK,
+    GL_LINE,
+    GL_POINTS,
     GL_TRIANGLES,
     GL_UNSIGNED_INT,
+    GL_VERTEX_PROGRAM_POINT_SIZE,
     GLuint,
     glBindBuffer,
     glBindVertexArray,
     glClear,
     glDeleteBuffers,
     glDeleteVertexArrays,
+    glDrawArrays,
     glDrawElementsInstanced,
+    glEnable,
     glGetUniformLocation,
+    glPolygonMode,
+    glUniform1f,
     glUniform3fv,
     glUniformMatrix4fv,
+    glUseProgram,
 )
 
-from molara.Rendering.buffers import setup_vao
+from molara.Rendering.buffers import setup_vao, setup_vao_numbers
 from molara.Rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
 from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
 
@@ -46,16 +56,17 @@ class Renderer:
         self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": []}
         self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
         self.spheres: list[dict] = []
+        self.aspect_ratio: float = 1.0
         self.cylinders: list[dict] = []
-        self.shader: GLuint = 0
+        self.number_vao: list[dict] = []
+        self.shaders: list[GLuint] = [0]
 
-    def set_shader(self, shader: GLuint) -> None:
+    def set_shaders(self, shaders: list[GLuint]) -> None:
         """Set the shader program for the opengl widget.
 
-        :param shader: The shader program of the opengl widget.
-        :type shader: pyopengl program
+        :param shaders: The shader programs of the opengl widget.
         """
-        self.shader = shader
+        self.shaders = shaders
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -188,15 +199,12 @@ class Renderer:
         """
         n_instances = len(positions)
         sphere_mesh = Sphere(subdivisions)
-        model_matrices = None
         if n_instances == 1:
             model_matrices = calculate_sphere_model_matrix(positions[0], radii[0])
         else:
             for i in range(n_instances):
                 model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
                 model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
-
-        assert model_matrices is not None
 
         sphere = {
             "vao": 0,
@@ -295,8 +303,8 @@ class Renderer:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
             for buffer in self.atoms_vao["buffers"]:
-                glDeleteBuffers(1, buffer)
-            glDeleteVertexArrays(1, self.atoms_vao["vao"])
+                glDeleteBuffers(1, int(buffer))
+            glDeleteVertexArrays(1, int(self.atoms_vao["vao"]))
         self.atoms_vao["vao"], self.atoms_vao["buffers"] = setup_vao(
             vertices,
             indices,
@@ -305,6 +313,30 @@ class Renderer:
         )
         self.atoms_vao["n_atoms"] = len(model_matrices)
         self.atoms_vao["n_vertices"] = len(vertices)
+
+    def draw_numbers(
+        self,
+        digits: np.ndarray,
+        positions_3d: np.ndarray,
+    ) -> None:
+        """Update the vertex attribute object for the numbers.
+
+        :param digits: Digits of the numbers.
+        :param positions_3d: 3D positions of the numbers.
+        :return:
+        """
+        if len(self.number_vao) != 0:
+            for number in self.number_vao:
+                if number["vao"] != 0:
+                    glBindBuffer(GL_ARRAY_BUFFER, 0)
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+                    for buffer in number["buffers"]:
+                        glDeleteBuffers(1, buffer)
+                    glDeleteVertexArrays(1, number["vao"])
+        self.number_vao = []
+
+        vao, buffers = setup_vao_numbers(digits, positions_3d)
+        self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
 
     def update_bonds_vao(
         self,
@@ -329,8 +361,8 @@ class Renderer:
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
             for buffer in self.bonds_vao["buffers"]:
-                glDeleteBuffers(1, buffer)
-            glDeleteVertexArrays(1, self.bonds_vao["vao"])
+                glDeleteBuffers(1, int(buffer))
+            glDeleteVertexArrays(1, int(self.bonds_vao["vao"]))
         self.bonds_vao["vao"], self.bonds_vao["buffers"] = setup_vao(
             vertices,
             indices,
@@ -353,10 +385,13 @@ class Renderer:
         :type bonds: bool
         :return:
         """
-        light_direction_loc = glGetUniformLocation(self.shader, "light_direction")
-        proj_loc = glGetUniformLocation(self.shader, "projection")
-        camera_loc = glGetUniformLocation(self.shader, "camera_position")
-        view_loc = glGetUniformLocation(self.shader, "view")
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+        glUseProgram(self.shaders[0])
+        light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
+        proj_loc = glGetUniformLocation(self.shaders[0], "projection")
+        camera_loc = glGetUniformLocation(self.shaders[0], "camera_position")
+        view_loc = glGetUniformLocation(self.shaders[0], "view")
 
         light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
         glUniform3fv(light_direction_loc, 1, light_direction)
@@ -411,4 +446,34 @@ class Renderer:
                     None,
                     cylinder["n_instances"],
                 )
+        glBindVertexArray(0)
+
+    def display_numbers(self, camera: Camera, scale_factor: float) -> None:
+        """Draws the lines."""
+        number_scale = 0.25
+        scale = number_scale * scale_factor
+
+        glEnable(GL_VERTEX_PROGRAM_POINT_SIZE)
+        glUseProgram(self.shaders[1])
+
+        glBindVertexArray(self.number_vao[0]["vao"])
+        # Uniform for aspect ratio
+        aspect_ratio_location = glGetUniformLocation(self.shaders[1], "aspect_ratio")
+        scale_loc = glGetUniformLocation(self.shaders[1], "scale")
+        glUniform1f(scale_loc, scale)
+        glUniform1f(aspect_ratio_location, self.aspect_ratio)
+
+        proj_loc = glGetUniformLocation(self.shaders[1], "projection")
+        view_loc = glGetUniformLocation(self.shaders[1], "view")
+
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, camera.view_matrix)
+
+        # Uniform for color
+        color_location = glGetUniformLocation(self.shaders[1], "color_in")
+        glUniform3fv(color_location, 1, np.array([0.0, 0.0, 0.0], dtype=np.float32))
+
+        # Draw instanced
+        glDrawArrays(GL_POINTS, 0, self.number_vao[0]["n_instances"])
+
         glBindVertexArray(0)

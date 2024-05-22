@@ -43,7 +43,7 @@ def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
 class BuilderDialog(QDialog):
     """Dialog to ask for information to build molecules."""
 
-    def __init__(self, parent: QMainWindow | None = None) -> None:
+    def __init__(self, parent: QMainWindow = None) -> None:
         """Initialize the ZMatBuilder dialog.
 
         :param parent: QOpenGLWidget: The structure widget.
@@ -150,7 +150,6 @@ class BuilderDialog(QDialog):
 
         :param item: passed item from the visualization table
         """
-        mol: Molecule | None = None
         row = item.row()
 
         self.disable_slot = False
@@ -180,7 +179,7 @@ class BuilderDialog(QDialog):
                     atom_nums = self.z_matrix[0]["atom_nums"]
                     self.disable_slot = False
                     self.add_first_atom(params)
-                    mol = self.main_window.mols.mols[0]
+                    mol: Molecule = self.main_window.mols.mols[0]
                 else:
                     mol = self.main_window.mols.mols[0]
                     params = self.z_matrix[i]["parameter"]
@@ -197,8 +196,6 @@ class BuilderDialog(QDialog):
                     self.z_matrix = self.z_matrix_temp
                     self.main_window.mols.mols[0] = mol_temp
                     break
-
-            assert mol is not None
 
             self.structure_widget.delete_structure()
             self.structure_widget.set_structure([mol])
@@ -438,7 +435,6 @@ class BuilderDialog(QDialog):
         :param row: Index of the row of interest.
         """
         param_type_validity = True
-        element, angle, dist, dihedral = None, None, None, None
 
         if row >= 0:
             element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
@@ -456,11 +452,6 @@ class BuilderDialog(QDialog):
         if row >= 3:  # noqa: PLR2004
             dihedral = self.ui.tableWidget.item(row, 6).text()
             param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral)) and param_type_validity
-
-        assert element is not None
-        assert angle is not None
-        assert dist is not None
-        assert dihedral is not None
 
         if not param_type_validity:
             return (None,)
