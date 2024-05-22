@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -69,6 +69,7 @@
     <addaction name="actionReset_View"/>
     <addaction name="menuRotate"/>
     <addaction name="actionToggle_Projection"/>
+    <addaction name="actionToggle_Axes"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_Structure_Customizer"/>
    </widget>
@@ -216,6 +217,11 @@
   <action name="actionNumber_Atoms">
    <property name="text">
     <string>Number Atoms</string>
+   </property>
+  </action>
+  <action name="actionToggle_Axes">
+   <property name="text">
+    <string>Show Axes</string>
    </property>
   </action>
  </widget>
