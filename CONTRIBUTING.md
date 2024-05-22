@@ -2,7 +2,7 @@
 
 Thank you for considering contributing to our project! We value your effort and to ensure smooth collaboration, we kindly ask you to follow the below conventions and rules. This will help maintain the quality and consistency of our codebase.
 
-## Coding Style:
+## Coding Style
 
 1. **PEP8 Compliance**: Make sure your code strictly adheres to the [PEP8 Style Guide](https://peps.python.org/pep-0008/).
 
@@ -14,7 +14,7 @@ Thank you for considering contributing to our project! We value your effort and 
 
 5. **Canonical Abbreviations**: We have agreed upon a set of standard abbreviations that shall be used in the code, see abbreviations.txt
 
-## Commit Messages:
+## Commit Messages
 
 1. **Descriptiveness**: Your commit messages should clearly convey the change you've made. Ambiguous messages like "fix bug" are discouraged.
 
@@ -22,7 +22,7 @@ Thank you for considering contributing to our project! We value your effort and 
 
 3. **First Line Constraints**: The first line of your commit message should be concise, aiming for no more than 50 characters. If more details are needed, provide them after a blank line.
 
-## Branch Names:
+## Branch Names
 
 1. **Naming Convention**:
    - For features: `feature/<issue-number>-<description>`. Example: `feature/123-user-authentication`.
