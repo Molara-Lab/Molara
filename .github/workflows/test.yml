@@ -36,7 +36,7 @@ jobs:
         run: |
           pip install uv
       - name: Install dependencies
-        if: matrix.python-version == '3.9'
+        if: matrix.python-version == '3.11'
         run: |
           uv pip install packaging --system
           uv pip install -e '.[dev]' --system
