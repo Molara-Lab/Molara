@@ -36,14 +36,8 @@ jobs:
         run: |
           pip install uv
       - name: Install dependencies
-        if: matrix.python-version == '3.11'
         run: |
-          uv pip install packaging --system
-          uv pip install -e '.[dev]' --system
-      - name: Install dependencies
-        if: matrix.python-version == '3.9'
-        run: |
-          uv pip install packaging -r requirements.txt -e '.[dev]' --system
+          uv pip install -r requirements.txt -e '.[dev]' --system
       - if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
