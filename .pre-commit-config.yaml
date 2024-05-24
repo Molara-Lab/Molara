@@ -32,7 +32,6 @@ repos:
     rev: v1.1.364
     hooks:
     - id: pyright
-      additional_dependencies: ["numpy", "scipy", "matplotlib", "PySide6", "PyOpenGL", "pytest", "pytest-qt", "pyrr"]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.3.0
