@@ -28,6 +28,11 @@ repos:
       - id: mypy
         additional_dependencies: ["types-requests"]
 
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.358
+    hooks:
+    - id: pyright
+
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:

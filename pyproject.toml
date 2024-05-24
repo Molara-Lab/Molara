@@ -108,6 +108,15 @@ exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
 
+[tool.pyright]
+typeCheckingMode = "off"
+reportPossiblyUnboundVariable = true
+reportUnboundVariable = true
+reportMissingImports = false
+reportMissingModuleSource = false
+reportInvalidTypeForm = false
+exclude = ["tests"]
+
 [tool.codespell]
 ignore-words-list = "nd,te"
 check-filenames = true
