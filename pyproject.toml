@@ -28,7 +28,6 @@ dependencies = [
     "numpy",
     "pyrr",
     "scipy",
-    "cython",
     "typing_extensions",
 ]
 requires-python = ">=3.9"
@@ -62,6 +61,7 @@ doc = [
     "myst-parser"
 ]
 dev = [
+    "cython",
     "mypy",
     "pre-commit",
     "pytest",
