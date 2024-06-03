@@ -56,13 +56,13 @@ Repo = "https://github.com/Molara-Lab/Molara"
 
 [project.optional-dependencies]
 doc = [
-    "sphinx",
-    "sphinx_rtd_theme",
+    "sphinx>=4.0.0",
+    "sphinx_rtd_theme>=1.0.0",
     "myst-parser"
 ]
 dev = [
     "cython",
-    "mypy",
+    "mypy>=1.0.0",
     "pre-commit",
     "pytest>=7.0.0",
     "pytest-qt>=4.0.0",
