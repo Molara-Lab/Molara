@@ -67,7 +67,7 @@ dev = [
     "pytest>=7.0.0",
     "pytest-qt>=4.0.0",
     "pytest-xvfb",
-    "pytest-cov",
+    "pytest-cov>=5.0.0",
     "pytest-split",
     "ruff",
     "molara[doc]",
