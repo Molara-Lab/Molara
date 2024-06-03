@@ -67,11 +67,17 @@ dev = [
     "pytest",
     "pytest-qt",
     "pytest-xvfb",
-    "cython",
     "pytest-cov",
     "pytest-split",
     "ruff",
     "molara[doc]",
+]
+strict = [
+    "PySide6==6.6.2",
+    "numpy==1.26.2",
+    "pyrr==0.10.3",
+    "scipy==1.11.4",
+    "cython==0.29.24",
 ]
 crystal = [
     "pymatgen",
