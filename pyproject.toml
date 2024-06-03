@@ -64,7 +64,7 @@ dev = [
     "cython",
     "mypy",
     "pre-commit",
-    "pytest",
+    "pytest>=7.0.0",
     "pytest-qt>=4.0.0",
     "pytest-xvfb",
     "pytest-cov",
