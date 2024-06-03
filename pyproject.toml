@@ -22,7 +22,7 @@ maintainers = [
     {name = "Michel Heinz, Gereon Feldmann, Adrian Usler, Alexander Bonkowski"},
 ]
 dependencies = [
-    "PyOpenGL",
+    "PyOpenGL>=3.1.6",
     "PySide6",
     "matplotlib>=3.4.0",
     "numpy>=1.22.0",
