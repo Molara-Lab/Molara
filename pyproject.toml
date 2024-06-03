@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=65.0.0", "cython", "numpy", "wheel"]
+requires = ["setuptools>=65.0.0", "cython", "oldest-supported-numpy", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -24,8 +24,8 @@ maintainers = [
 dependencies = [
     "PyOpenGL",
     "PySide6",
-    "matplotlib>=3.5.0",
-    "numpy",
+    "matplotlib>=3.4.0",
+    "numpy>=1.22.0",
     "pyrr",
     "scipy",
     "typing_extensions",
