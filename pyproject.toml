@@ -65,7 +65,7 @@ dev = [
     "mypy",
     "pre-commit",
     "pytest",
-    "pytest-qt",
+    "pytest-qt>=4.0.0",
     "pytest-xvfb",
     "pytest-cov",
     "pytest-split",
