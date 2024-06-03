@@ -21,8 +21,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         version:
-          - { python: "3.9", resolution: highest }
-          - { python: "3.12", resolution: lowest-direct }
+          - { python: "3.9", resolution: lowest-direct }
+          - { python: "3.12", resolution: highest }
 
     runs-on: ${{ matrix.os }}
 
