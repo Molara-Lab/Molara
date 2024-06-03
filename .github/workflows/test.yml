@@ -39,7 +39,7 @@ jobs:
           pip install uv
       - name: Install dependencies
         run: |
-          uv pip install -r requirements.txt -e .[dev,crystal] --resolution=${{ matrix.version.resolution }} --system
+          uv pip install -e .[dev,strict,crystal] --resolution=${{ matrix.version.resolution }} --system
       - if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
