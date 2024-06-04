@@ -1,3 +1,7 @@
+<p align="center">
+<img src="img/MolaraLogo.svg" alt="inPsights Logo" height="128"/>
+</p>
+
 [![PyPI version](https://badge.fury.io/py/Molara.svg)](https://badge.fury.io/py/Molara)
 [![CI Status](https://github.com/Molara-Lab/Molara/actions/workflows/test.yml/badge.svg)](https://github.com/Molara-Lab/Molara/actions/workflows/test.yml)
 [![code coverage](https://img.shields.io/codecov/c/gh/Molara-Lab/Molara)](https://codecov.io/gh/Molara-Lab/Molara)
