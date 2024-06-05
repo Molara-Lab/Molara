@@ -23,7 +23,7 @@ jobs:
         version:
           - { python: "3.9", resolution: lowest-direct, extra: tests,crystal,compchem }
           - { python: "3.12", resolution: highest, extra: tests,strict,crystal,compchem }
-        # Add macOS wihtout optional dependencies, running only on python 3.10
+        # Add macOS without optional dependencies, running only on python 3.10
         include:
           - os: macos-latest
             version: { python: "3.10", resolution: highest, extra: tests,strict }
