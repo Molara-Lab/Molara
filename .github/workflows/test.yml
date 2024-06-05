@@ -21,12 +21,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         version:
-          - { python: "3.9", resolution: lowest-direct, extra: strict,crystal,compchem }
-          - { python: "3.12", resolution: highest, extra: strict,crystal,compchem }
+          - { python: "3.9", resolution: lowest-direct, extra: tests,crystal,compchem }
+          - { python: "3.12", resolution: highest, extra: tests,strict,crystal,compchem }
         # Add macOS wihtout optional dependencies, running only on python 3.10
         include:
           - os: macos-latest
-            version: { python: "3.10", resolution: highest, extra: strict }
+            version: { python: "3.10", resolution: highest, extra: tests,strict }
 
     runs-on: ${{ matrix.os }}
 
