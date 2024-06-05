@@ -21,8 +21,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         version:
-          - { python: "3.9", resolution: lowest-direct }
-          - { python: "3.12", resolution: highest }
+          - { python: "3.9", resolution: lowest-direct, extra: strict,crystal }
+          - { python: "3.12", resolution: highest, extra: strict,crystal }
+        # Add macOS to the matrix, 
+        include:
+          - os: macos-latest
+            version: { python: "3.10", resolution: highest, extra: strict }
 
     runs-on: ${{ matrix.os }}
 
@@ -39,7 +43,7 @@ jobs:
           pip install uv
       - name: Install dependencies
         run: |
-          uv pip install -e .[dev,strict,crystal] --resolution=${{ matrix.version.resolution }} --system
+          uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} --system
       - if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
