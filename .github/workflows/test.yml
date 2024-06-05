@@ -21,9 +21,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         version:
-          - { python: "3.9", resolution: lowest-direct, extra: strict,crystal }
-          - { python: "3.12", resolution: highest, extra: strict,crystal }
-        # Add macOS to the matrix, 
+          - { python: "3.9", resolution: lowest-direct, extra: strict,crystal,compchem }
+          - { python: "3.12", resolution: highest, extra: strict,crystal,compchem }
+        # Add macOS wihtout optional dependencies, running only on python 3.10
         include:
           - os: macos-latest
             version: { python: "3.10", resolution: highest, extra: strict }

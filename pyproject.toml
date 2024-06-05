@@ -79,9 +79,12 @@ strict = [
     "scipy==1.11.4",
     "cython==0.29.24",
 ]
+compchem = [
+    "cclib>=1.7",
+]
 crystal = [
-    "pymatgen",
-    "ase",
+    "pymatgen>=2024",
+    "ase>=3.23",
 ]
 
 [project.scripts]
