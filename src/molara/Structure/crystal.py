@@ -116,15 +116,16 @@ class Crystal(Structure):
         # create extra atoms at edges of supercell (quasi periodic boundaries)
         extra_atomic_nums, extra_fractional_coords = self.make_supercell_edge_atoms()
 
-        self.atomic_nums_supercell = np.append(
-            self.atomic_nums_supercell,
-            extra_atomic_nums,
-        )
-        self.fractional_coords_supercell = np.append(
-            self.fractional_coords_supercell,
-            extra_fractional_coords,
-            axis=0,
-        )
+        if extra_atomic_nums:
+            self.atomic_nums_supercell = np.append(
+                self.atomic_nums_supercell,
+                extra_atomic_nums,
+            )
+            self.fractional_coords_supercell = np.append(
+                self.fractional_coords_supercell,
+                extra_fractional_coords,
+                axis=0,
+            )
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
         self.cartesian_coordinates_supercell = Crystal.fractional_to_cartesian_coords(
