@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
-ONE, TWO, THREE = 1, 2, 3
+dimension = range(1, 4)
 
 
 class Crystal(Structure):
@@ -187,14 +187,14 @@ class Crystal(Structure):
             _ids_atom_coords = ids_edge_atom_coords[ids_edge_atoms == _id_atom_unique]
             _fractional_coords_atom = _fractional_coords_np[_id_atom_unique]
 
-            if len(_ids_atom_coords) == ONE:  # e.g., (.5, 0, .5)
+            if len(_ids_atom_coords) == dimension[0]:  # e.g., (.5, 0, .5)
                 extra_atomic_nums += [_atomic_num]
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 id1 = _ids_atom_coords[0]
                 dim1 = _supercell_dims_np[id1]
                 extra_fractional_coords[-1][id1] = dim1
 
-            elif len(_ids_atom_coords) == TWO:  # e.g., (.5, 0, 0)
+            elif len(_ids_atom_coords) == dimension[1]:  # e.g., (.5, 0, 0)
                 extra_atomic_nums += [_atomic_num] * 3
                 id1, id2 = _ids_atom_coords
                 dim1, dim2 = _supercell_dims_np[_ids_atom_coords]
@@ -207,7 +207,7 @@ class Crystal(Structure):
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 extra_fractional_coords[-1][id2] = dim2  # (0,dim2)
 
-            elif len(_ids_atom_coords) == THREE:  # i.e., (0, 0, 0)
+            elif len(_ids_atom_coords) == dimension[2]:  # i.e., (0, 0, 0)
                 extra_atomic_nums += [_atomic_num] * 7
                 id1, id2, id3 = _ids_atom_coords
                 dim1, dim2, dim3 = _supercell_dims_np[_ids_atom_coords]
