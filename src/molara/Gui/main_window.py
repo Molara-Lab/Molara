@@ -37,7 +37,7 @@ ENABLED, DISABLED = True, False
 class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow | None = None) -> None:
         """Create a MainWindow object.
 
         :param parent: parent widget

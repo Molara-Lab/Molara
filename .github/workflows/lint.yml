@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install uv
-        uv pip install ruff mypy cython-lint --upgrade --system
+        uv pip install ruff mypy pyright cython-lint --upgrade --system
         uv pip install types-requests --system
         uv pip install -e . --system
 
@@ -34,6 +34,11 @@ jobs:
         mypy --version
         rm -rf .mypy_cache
         mypy . #  ${{ github.event.repository.name }}
+
+    - name: pyright
+      run: |
+        pyright --version
+        pyright .
 
     - name: cython-lint
       run: |

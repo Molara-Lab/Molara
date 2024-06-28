@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -104,14 +105,15 @@ class PoscarImporter(Importer):
             try:
                 from monty.io import zopen
                 from pymatgen.core import Structure as PymatgenStructure
-            except ImportError:
-                PymatgenStructure = None  # noqa: N806
 
-        if use_pymatgen and PymatgenStructure is not None:
-            with zopen(self.path, "rt", errors="replace") as f:
-                contents = f.read()
-            structure = PymatgenStructure.from_str(contents, fmt="poscar")
-            crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
+                with zopen(self.path, "rt", errors="replace") as f:
+                    contents = f.read()
+                structure = PymatgenStructure.from_str(contents, fmt="poscar")
+                crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
+            except ImportError:
+                warnings.warn("pymatgen is not installed, using internal parser", stacklevel=2)
+                crystal = self.parse_poscar()
+
         else:
             crystal = self.parse_poscar()
 
