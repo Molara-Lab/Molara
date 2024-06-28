@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
-from typing_extensions import ParamSpec
 
 from molara.Gui.ui_builder import Ui_builder
 from molara.Structure.atom import element_symbol_to_atomic_number
@@ -17,12 +16,13 @@ from molara.Structure.molecules import Molecules
 
 if TYPE_CHECKING:
     from PySide6.QtWidgets import QMainWindow
+    from typing_extensions import ParamSpec
 
     from molara.Gui.main_window import MainWindow
     from molara.Gui.structure_widget import StructureWidget
 
-T = TypeVar("T")
-P = ParamSpec("P")
+    T = TypeVar("T")
+    P = ParamSpec("P")
 
 __copyright__ = "Copyright 2024, Molara"
 
