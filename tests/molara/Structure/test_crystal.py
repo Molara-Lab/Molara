@@ -167,3 +167,9 @@ class TestCrystal(TestCase):
         assert copy.molar_mass == self.crystal.molar_mass
         assert copy.volume_unitcell == self.crystal.volume_unitcell
         assert copy.density_unitcell == self.crystal.density_unitcell
+
+    def test_no_edge_atoms(self) -> None:
+        """Test the no_edge_atoms method."""
+        importer = PoscarImporter("examples/POSCAR/O2_POSCAR")
+        crystal = importer.load().get_current_mol()
+        assert len(crystal.atoms) == 1 + 1
