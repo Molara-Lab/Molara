@@ -35,11 +35,10 @@ class WorkaroundTestBuilderDialog:
         builder_dialog = self.builder_dialog
         builder_dialog.show()
         assert builder_dialog.isVisible()
-    
+
     def _test_select_add(self) -> None:
         """Test the selection of the add button."""
         builder_dialog = self.builder_dialog
         builder_dialog.select_add()
         assert builder_dialog.err == True
         assert builder_dialog.colliding_idx == None
-
