@@ -28,6 +28,7 @@ class WorkaroundTestBuilderDialog:
         """Run the tests."""
         self._test_init()
         self._test_select_add()
+        self._test_delete_atom()
 
     def _test_init(self) -> None:
         """Test the initialization of the BuilderDialog class."""
@@ -40,5 +41,10 @@ class WorkaroundTestBuilderDialog:
         """Test the selection of the add button."""
         builder_dialog = self.builder_dialog
         builder_dialog.select_add()
-        assert builder_dialog.err == True
-        assert builder_dialog.colliding_idx == None
+        assert builder_dialog.err is True
+        assert builder_dialog.colliding_idx is None
+
+    def _test_delete_atom(self) -> None:
+        """Test the deletion of an atom."""
+        builder_dialog = self.builder_dialog
+        builder_dialog.delete_atom()
