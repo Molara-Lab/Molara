@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from unittest import TestCase
 
+import pytest
 from molara.Structure.atom import elements
 from molara.Structure.crystal import Crystal
 from molara.Structure.io.importer import PoscarImporter
@@ -39,7 +41,14 @@ class TestCrystal(TestCase):
         supercell_dims = self.supercell_dims
 
         importer = PoscarImporter("examples/POSCAR/BN_POSCAR")
-        self.crystals_from_POSCAR_pymatgen = importer.load(use_pymatgen=True)
+        if find_spec("pymatgen"):
+            print("pymatgen found")
+            self.crystals_from_POSCAR_pymatgen = importer.load(use_pymatgen=True)
+        else:
+            print("pymatgen not found")
+            with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
+                self.crystals_from_POSCAR_pymatgen = importer.load(use_pymatgen=True)
+
         self.crystals_from_POSCAR_parser = importer.load(use_pymatgen=False)
 
         self.crystal_from_POSCAR_pymatgen = self.crystals_from_POSCAR_pymatgen.get_current_mol()
@@ -103,7 +112,7 @@ class TestCrystal(TestCase):
     def test_from_poscar_cartesian(self) -> None:
         """Test the creation of a crystal from a POSCAR file with cartesian coords."""
         importer = PoscarImporter("examples/POSCAR/BN_cartesian_POSCAR")
-        self.crystals_from_POSCAR_c = importer.load()
+        self.crystals_from_POSCAR_c = importer.load(use_pymatgen=False)
         self.crystal_from_POSCAR_c = self.crystals_from_POSCAR_c.get_current_mol()
         self.crystal_from_POSCAR_c.make_supercell(self.supercell_dims)
 
