@@ -6,10 +6,10 @@ import sys
 from typing import TYPE_CHECKING
 
 import pytest
+from gui.test_builder import WorkaroundTestBuilderDialog
 from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
-from gui.test_builder import WorkaroundTestBuilderDialog
 from rendering.test_buffers import WorkaroundTestBuffers
 from rendering.test_rendering import WorkaroundTestRenderer
 

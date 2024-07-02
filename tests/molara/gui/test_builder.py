@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
-import time
 
 class WorkaroundTestBuilderDialog:
     """Contains the tests for the BuilderDialog class.
@@ -29,7 +27,6 @@ class WorkaroundTestBuilderDialog:
     def run_tests(self) -> None:
         """Run the tests."""
         self._test_init()
-
 
     def _test_init(self) -> None:
         """Test the initialization of the BuilderDialog class."""
