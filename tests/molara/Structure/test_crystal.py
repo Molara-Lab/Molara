@@ -42,10 +42,8 @@ class TestCrystal(TestCase):
 
         importer = PoscarImporter("examples/POSCAR/BN_POSCAR")
         if find_spec("pymatgen"):
-            print("pymatgen found")
             self.crystals_from_POSCAR_pymatgen = importer.load(use_pymatgen=True)
         else:
-            print("pymatgen not found")
             with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
                 self.crystals_from_POSCAR_pymatgen = importer.load(use_pymatgen=True)
 
