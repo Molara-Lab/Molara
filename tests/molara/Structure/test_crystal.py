@@ -85,7 +85,7 @@ class TestCrystal(TestCase):
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
 
         atoms = Atoms(
-            positions=coordinates,
+            scaled_positions=coordinates,
             numbers=atomic_numbers,
             cell=basis_vectors,
             pbc=True,
