@@ -27,10 +27,12 @@ class WorkaroundTestBuilderDialog:
     def run_tests(self) -> None:
         """Run the tests."""
         self._test_init()
+        self._test_add_first_atom()
+        self._test_current_mol([1])
+        self._test_add_second_atom()
+        self._test_add_third_atom()
         self._test_select_add()
         self._test_delete_atom()
-        self._test_current_mol()
-        self._test_add_first_atom()
 
     def _test_init(self) -> None:
         """Test the initialization of the BuilderDialog class."""
@@ -38,6 +40,29 @@ class WorkaroundTestBuilderDialog:
         builder_dialog = self.builder_dialog
         builder_dialog.show()
         assert builder_dialog.isVisible()
+
+    def _test_add_first_atom(self) -> None:
+        """Test the addition of the first atom."""
+        builder_dialog = self.builder_dialog
+        builder_dialog.add_first_atom(("H", None))
+        assert self.main_window.mols.get_current_mol().atomic_numbers == [1]
+
+    def _test_current_mol(self, atomic_numbers: list[int]) -> None:
+        """Test the current molecule."""
+        assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == atomic_numbers
+
+    def _test_add_second_atom(self) -> None:
+        builder_dialog = self.builder_dialog
+        builder_dialog.add_second_atom(self.main_window.mols.get_current_mol(), ("C", 1.2))  # type: ignore[arg-type]
+        assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6]
+
+    def _test_add_third_atom(self) -> None:
+        builder_dialog = self.builder_dialog
+        builder_dialog.add_third_atom(self.main_window.mols.get_current_mol(), ("H", 1.2, 0), [1, 0])  # type: ignore[arg-type]
+        assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6]
+        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "Parameter values are not valid."
+        builder_dialog.add_third_atom(self.main_window.mols.get_current_mol(), ("H", 1.2, 1), [1, 0])  # type: ignore[arg-type]
+        assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 1]
 
     def _test_select_add(self) -> None:
         """Test the selection of the add button."""
@@ -51,35 +76,3 @@ class WorkaroundTestBuilderDialog:
         builder_dialog = self.builder_dialog
         builder_dialog.delete_atom()
         assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "No Atom was chosen to be deleted."
-
-    def _test_current_mol(self) -> None:
-        """Test the current molecule."""
-        assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [
-            6,
-            1,
-            1,
-            6,
-            1,
-            1,
-            6,
-            1,
-            1,
-            1,
-            6,
-            1,
-            1,
-            6,
-            1,
-            1,
-            1,
-        ]
-
-    def _test_add_first_atom(self) -> None:
-        """Test the addition of the first atom."""
-        builder_dialog = self.builder_dialog
-        builder_dialog.add_first_atom(("H", None))
-        assert builder_dialog.err is True
-        assert builder_dialog.colliding_idx is None
-        assert builder_dialog.z_matrix == []
-        # print(self.main_window.mols.get_current_mol().atomic_numbers)
-        # assert self.main_window.mols.get_current_mol().atomic_numbers == [1]
