@@ -132,7 +132,7 @@ exclude = ["tests"]
 ignore = ["**/ui_*"]
 
 [tool.codespell]
-ignore-words-list = "nd,te"
+ignore-words-list = "nd,te,TITEL"
 check-filenames = true
 
 [tool.cythonize]
