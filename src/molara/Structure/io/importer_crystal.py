@@ -12,17 +12,10 @@ import numpy as np
 from molara.Structure.atom import element_symbol_to_atomic_number
 from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
+from molara.Structure.io.exceptions import FileFormatError
 
 if TYPE_CHECKING:
     from os import PathLike
-
-
-class FileImporterError(Exception):
-    """base class for errors occurring when loading molecules from file."""
-
-
-class FileFormatError(FileImporterError):
-    """raised when the file format is wrong or unsupported."""
 
 
 def robust_split(text: str) -> list[str]:
