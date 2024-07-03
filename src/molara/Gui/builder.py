@@ -150,7 +150,6 @@ class BuilderDialog(QDialog):
 
         :param item: passed item from the visualization table
         """
-        mol: Molecule | None = None
         row = item.row()
 
         self.disable_slot = False
@@ -180,7 +179,7 @@ class BuilderDialog(QDialog):
                     atom_nums = self.z_matrix[0]["atom_nums"]
                     self.disable_slot = False
                     self.add_first_atom(params)
-                    mol = self.main_window.mols.mols[0]
+                    mol: Molecule = self.main_window.mols.mols[0]
                 else:
                     mol = self.main_window.mols.mols[0]
                     params = self.z_matrix[i]["parameter"]
@@ -198,12 +197,10 @@ class BuilderDialog(QDialog):
                     self.main_window.mols.mols[0] = mol_temp
                     break
 
-            assert mol is not None
-
             self.structure_widget.delete_structure()
-            self.structure_widget.set_structure([mol])
+            self.structure_widget.set_structure([mol])  # type: ignore[reportPossiblyUnboundVariable]
 
-            self._update_z_matrix(mol.n_at)
+            self._update_z_matrix(mol.n_at)  # type: ignore[reportPossiblyUnboundVariable]
 
             self.colliding_idx = None
 
@@ -438,7 +435,6 @@ class BuilderDialog(QDialog):
         :param row: Index of the row of interest.
         """
         param_type_validity = True
-        element, angle, dist, dihedral = None, None, None, None
 
         if row >= 0:
             element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
@@ -457,22 +453,17 @@ class BuilderDialog(QDialog):
             dihedral = self.ui.tableWidget.item(row, 6).text()
             param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral)) and param_type_validity
 
-        assert element is not None
-        assert angle is not None
-        assert dist is not None
-        assert dihedral is not None
-
         if not param_type_validity:
             return (None,)
 
         if row == 0:
-            return (element, None)
+            return (element, None)  # type: ignore[reportPossiblyUnboundVariable]
         if row == 1:
-            return (element, float(dist))
+            return (element, float(dist))  # type: ignore[reportPossiblyUnboundVariable]
         if row == 2:  # noqa: PLR2004
-            return (element, float(dist), np.deg2rad(float(angle)))
+            return (element, float(dist), np.deg2rad(float(angle)))  # type: ignore[reportPossiblyUnboundVariable]
 
-        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
+        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))  # type: ignore[reportPossiblyUnboundVariable]
 
     def _check_z_matrix_deletion(self, idx: int) -> bool:
         """Check if the deletion of the z-matrix entry is valid.
