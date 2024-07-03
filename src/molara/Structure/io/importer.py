@@ -169,8 +169,6 @@ class MoldenImporter(MoleculesImporter):
 
         i = 0
         spherical_harmonics = ["[5D]", "[7F]", "[9G]"]
-        atomic_numbers, coordinates, basisset = None, None, None
-        mo_coefficients, labels, energies, spins, occupations = None, None, None, None, None
 
         while i < len(lines):
             if "[Atoms]" in lines[i]:
@@ -205,22 +203,14 @@ class MoldenImporter(MoleculesImporter):
                 ) = self.get_mo_coefficients(lines[i_start:i])
             i += 1
 
-        assert atomic_numbers is not None
-        assert coordinates is not None
-        assert basisset is not None
-        assert mo_coefficients is not None
-        assert labels is not None
-        assert energies is not None
-        assert spins is not None
-        assert occupations is not None
-
         molecules.add_molecule(
-            Molecule(np.array(atomic_numbers), np.array(coordinates)),
+            Molecule(np.array(atomic_numbers), np.array(coordinates)),  # type: ignore[reportPossiblyUnboundVariable]
         )
-        molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
-        molecules.mols[0].mos.coefficients = np.array(mo_coefficients)
+        molecules.mols[0].mos = Mos(labels, energies, spins, occupations)  # type: ignore[reportPossiblyUnboundVariable]
+        molecules.mols[0].mos.coefficients = np.array(mo_coefficients)  # type: ignore[reportPossiblyUnboundVariable]
 
-        for i, atom in enumerate(basisset):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
+        # WATCH OUT ONLY FOR GTOs!!!!!!!!
+        for i, atom in enumerate(basisset):  # type: ignore[reportPossiblyUnboundVariable]
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_orbitals(
                 atom["shells"],
@@ -392,7 +382,6 @@ class QmImporter(MoleculesImporter):
 
     def load(self) -> Molecules:
         """Read the file in self.path and creates a Molecules object."""
-        assert self._ccparser is not None
         data = self._ccparser.parse()
 
         mols: list[Molecule] = self._get_geometries(data)
