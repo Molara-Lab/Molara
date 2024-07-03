@@ -54,8 +54,6 @@ class WorkaroundTestBuilderDialog:
 
     def _test_current_mol(self) -> None:
         """Test the current molecule."""
-        builder_dialog = self.builder_dialog
-        builder_dialog.adapt_z_matrix
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [
             6,
             1,
