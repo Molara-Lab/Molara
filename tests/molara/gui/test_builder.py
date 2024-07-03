@@ -29,6 +29,8 @@ class WorkaroundTestBuilderDialog:
         self._test_init()
         self._test_select_add()
         self._test_delete_atom()
+        self._test_current_mol()
+        self._test_add_first_atom()
 
     def _test_init(self) -> None:
         """Test the initialization of the BuilderDialog class."""
@@ -48,3 +50,38 @@ class WorkaroundTestBuilderDialog:
         """Test the deletion of an atom."""
         builder_dialog = self.builder_dialog
         builder_dialog.delete_atom()
+        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "No Atom was chosen to be deleted."
+
+    def _test_current_mol(self) -> None:
+        """Test the current molecule."""
+        builder_dialog = self.builder_dialog
+        builder_dialog.adapt_z_matrix
+        assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [
+            6,
+            1,
+            1,
+            6,
+            1,
+            1,
+            6,
+            1,
+            1,
+            1,
+            6,
+            1,
+            1,
+            6,
+            1,
+            1,
+            1,
+        ]
+
+    def _test_add_first_atom(self) -> None:
+        """Test the addition of the first atom."""
+        builder_dialog = self.builder_dialog
+        builder_dialog.add_first_atom(("H", None))
+        assert builder_dialog.err is True
+        assert builder_dialog.colliding_idx is None
+        assert builder_dialog.z_matrix == []
+        #print(self.main_window.mols.get_current_mol().atomic_numbers)
+        #assert self.main_window.mols.get_current_mol().atomic_numbers == [1]
