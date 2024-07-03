@@ -199,15 +199,12 @@ class Renderer:
         """
         n_instances = len(positions)
         sphere_mesh = Sphere(subdivisions)
-        model_matrices = None
         if n_instances == 1:
             model_matrices = calculate_sphere_model_matrix(positions[0], radii[0])
         else:
             for i in range(n_instances):
                 model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
-                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
-
-        assert model_matrices is not None
+                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
 
         sphere = {
             "vao": 0,
@@ -218,7 +215,7 @@ class Renderer:
         sphere["vao"], sphere["buffers"] = setup_vao(
             sphere_mesh.vertices,
             sphere_mesh.indices,
-            model_matrices,
+            model_matrices,  # type: ignore[reportPossiblyUnboundVariable]
             colors,
         )
 
