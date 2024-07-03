@@ -83,5 +83,5 @@ class WorkaroundTestBuilderDialog:
         assert builder_dialog.err is True
         assert builder_dialog.colliding_idx is None
         assert builder_dialog.z_matrix == []
-        #print(self.main_window.mols.get_current_mol().atomic_numbers)
-        #assert self.main_window.mols.get_current_mol().atomic_numbers == [1]
+        # print(self.main_window.mols.get_current_mol().atomic_numbers)
+        # assert self.main_window.mols.get_current_mol().atomic_numbers == [1]
