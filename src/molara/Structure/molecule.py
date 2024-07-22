@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class Molecule(Structure):
     """Creates a new Molecule object."""
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         atomic_numbers: np.ndarray,
         coordinates: np.ndarray,
