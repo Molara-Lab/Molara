@@ -43,7 +43,7 @@ def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
 class BuilderDialog(QDialog):
     """Dialog to ask for information to build molecules."""
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow | None = None) -> None:
         """Initialize the ZMatBuilder dialog.
 
         :param parent: QOpenGLWidget: The structure widget.
@@ -198,9 +198,9 @@ class BuilderDialog(QDialog):
                     break
 
             self.structure_widget.delete_structure()
-            self.structure_widget.set_structure([mol])
+            self.structure_widget.set_structure([mol])  # type: ignore[reportPossiblyUnboundVariable]
 
-            self._update_z_matrix(mol.n_at)
+            self._update_z_matrix(mol.n_at)  # type: ignore[reportPossiblyUnboundVariable]
 
             self.colliding_idx = None
 
@@ -457,13 +457,13 @@ class BuilderDialog(QDialog):
             return (None,)
 
         if row == 0:
-            return (element, None)
+            return (element, None)  # type: ignore[reportPossiblyUnboundVariable]
         if row == 1:
-            return (element, float(dist))
+            return (element, float(dist))  # type: ignore[reportPossiblyUnboundVariable]
         if row == 2:  # noqa: PLR2004
-            return (element, float(dist), np.deg2rad(float(angle)))
+            return (element, float(dist), np.deg2rad(float(angle)))  # type: ignore[reportPossiblyUnboundVariable]
 
-        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
+        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))  # type: ignore[reportPossiblyUnboundVariable]
 
     def _check_z_matrix_deletion(self, idx: int) -> bool:
         """Check if the deletion of the z-matrix entry is valid.

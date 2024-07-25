@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -11,17 +12,10 @@ import numpy as np
 from molara.Structure.atom import element_symbol_to_atomic_number
 from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
+from molara.Structure.io.exceptions import FileFormatError
 
 if TYPE_CHECKING:
     from os import PathLike
-
-
-class FileImporterError(Exception):
-    """base class for errors occurring when loading molecules from file."""
-
-
-class FileFormatError(FileImporterError):
-    """raised when the file format is wrong or unsupported."""
 
 
 def robust_split(text: str) -> list[str]:
@@ -104,14 +98,15 @@ class PoscarImporter(Importer):
             try:
                 from monty.io import zopen
                 from pymatgen.core import Structure as PymatgenStructure
-            except ImportError:
-                PymatgenStructure = None  # noqa: N806
 
-        if use_pymatgen and PymatgenStructure is not None:
-            with zopen(self.path, "rt", errors="replace") as f:
-                contents = f.read()
-            structure = PymatgenStructure.from_str(contents, fmt="poscar")
-            crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
+                with zopen(self.path, "rt", errors="replace") as f:
+                    contents = f.read()
+                structure = PymatgenStructure.from_str(contents, fmt="poscar")
+                crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
+            except ImportError:
+                warnings.warn("pymatgen is not installed, using internal parser", stacklevel=2)
+                crystal = self.parse_poscar()
+
         else:
             crystal = self.parse_poscar()
 

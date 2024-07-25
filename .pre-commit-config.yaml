@@ -2,6 +2,7 @@ exclude: ^(examples)
 
 ci:
   autoupdate_schedule: weekly
+  skip: [pyright]
   autofix_commit_msg: pre-commit auto-fixes
   autoupdate_commit_msg: pre-commit autoupdate
 
@@ -27,6 +28,11 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: ["types-requests"]
+
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.370
+    hooks:
+    - id: pyright
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.3.0
