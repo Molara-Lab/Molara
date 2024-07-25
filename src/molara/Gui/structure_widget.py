@@ -663,3 +663,6 @@ class StructureWidget(QOpenGLWidget):
         self.camera.adopt_config(other_widget.camera)
         self.set_structure(other_widget.structures, reset_view=False)
         # self.update()
+
+        if other_widget.box[0] != -1:
+            self.toggle_unit_cell_boundaries()
