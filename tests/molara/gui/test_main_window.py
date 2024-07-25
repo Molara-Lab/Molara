@@ -54,6 +54,7 @@ class WorkaroundTestMainWindow:
         self.test_init()
         self.test_ui()
         self.test_structure_widget()
+        self.test_set_view_to_axes()
         self.test_export_image_dialog()
         self.test_show_builder_dialog()
         self.test_show_crystal_dialog()
