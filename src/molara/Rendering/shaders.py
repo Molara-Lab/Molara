@@ -11,7 +11,7 @@ from OpenGL.GL import (
     glCreateProgram,
     glLinkProgram,
 )
-from OpenGL.GL.shaders import compileShader
+from OpenGL.GL.shaders import ShaderCompilationError, compileShader
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -31,7 +31,11 @@ def compile_shaders() -> list[GLuint]:
 
     vertex_shader = compileShader(vertex_src_numbers, GL_VERTEX_SHADER)
     fragment_shader = compileShader(fragment_src_numbers, GL_FRAGMENT_SHADER)
-    geometry_shader = compileShader(geometry_src_numbers, GL_GEOMETRY_SHADER)
+    try:
+        geometry_shader = compileShader(geometry_src_numbers_indices, GL_GEOMETRY_SHADER)
+    except ShaderCompilationError:
+        geometry_shader = compileShader(geometry_src_numbers_no_indices, GL_GEOMETRY_SHADER)
+        print("Using geometry shader without indices")  # noqa: T201
     shader = glCreateProgram()
     glAttachShader(shader, vertex_shader)
     glAttachShader(shader, fragment_shader)
@@ -137,10 +141,10 @@ void main()
 }
 """
 
-geometry_src_numbers = """
+geometry_src_numbers_indices = """
 #version 330 core
 layout (points) in;
-layout (triangle_strip, max_vertices = 1000) out;
+layout (triangle_strip, max_vertices = 350) out;
 
 in float aspect_ratio_v[];
 in uint digit_v[];
@@ -487,6 +491,342 @@ void main() {
         uint digit3 = digit % 10u;
         display_digit(gl_in[0].gl_Position + vec4(0.4,0.0,0.0,0.0) * scale_v[0], aspect_ratio_v[0], digit3, scale_v[0]);
     }
+}
+"""
+
+geometry_src_numbers_no_indices = """
+#version 330 core
+layout (points) in;
+layout (triangle_strip, max_vertices = 100) out;
+
+in float aspect_ratio_v[];
+in uint digit_v[];
+in float scale_v[];
+
+void draw_horizontal_line(vec4 position, float aspect_ratio, float scale)
+{
+    float radius = 0.05 * scale;
+    float angle = 0.0;
+    int subsections = 2;
+    float pi = 3.14159265359;
+    float pi_2 = pi / 2;
+    float inv_ar = 1 / aspect_ratio;
+    float x = 0.2 * inv_ar * scale;
+    float y = 0.05 * scale;
+
+    gl_Position = position + vec4(-x, -y, 0.0, 0.0);    // 1:bottom-left
+    EmitVertex();
+    gl_Position = position + vec4( x, -y, 0.0, 0.0);    // 2:bottom-right
+    EmitVertex();
+    gl_Position = position + vec4(-x,  y, 0.0, 0.0);    // 3:top-left
+    EmitVertex();
+    gl_Position = position + vec4( x,  y, 0.0, 0.0);    // 4:top-right
+    EmitVertex();
+    vec4 temp_pos = position + vec4(x, 0.0, 0.0, 0.0);
+    gl_Position = temp_pos;
+    EmitVertex();
+
+    for (int i = 0; i <= subsections; i++)
+    {
+        gl_Position = temp_pos + vec4(radius * cos(angle - pi_2) * inv_ar, radius * sin(angle - pi_2), 0.0, 0.0);
+        EmitVertex();
+        gl_Position = temp_pos;
+        EmitVertex();
+        angle += 3.14159265359 / subsections;
+    }
+    EndPrimitive();
+
+    temp_pos = position + vec4(-x, 0.0, 0.0, 0.0);
+    gl_Position = temp_pos;
+    EmitVertex();
+
+    angle = 0.0;
+    for (int i = 0; i <= subsections; i++)
+    {
+        gl_Position = temp_pos + vec4(radius * cos(angle + pi_2) * inv_ar, radius * sin(angle + pi_2), 0.0, 0.0);
+        EmitVertex();
+        gl_Position = temp_pos;
+        EmitVertex();
+        angle += 3.14159265359 / subsections;
+    }
+    EndPrimitive();
+}
+void draw_vertical_line(vec4 position_, float aspect_ratio, float scale)
+{
+    float radius = 0.05 * scale;
+    float angle = 0.0;
+    int subsections = 2;
+    float pi = 3.14159265359;
+    float pi_2 = pi / 2;
+    float inv_ar = 1 / aspect_ratio;
+    float x = 0.05 * inv_ar * scale;
+    float y = 0.2 * scale;
+
+    gl_Position = position_ + vec4(-x, -y, 0.0, 0.0);    // 1:bottom-left
+    EmitVertex();
+    gl_Position = position_ + vec4( x, -y, 0.0, 0.0);    // 2:bottom-right
+    EmitVertex();
+    gl_Position = position_ + vec4(-x,  y, 0.0, 0.0);    // 3:top-left
+    EmitVertex();
+    gl_Position = position_ + vec4( x,  y, 0.0, 0.0);    // 4:top-right
+    EmitVertex();
+    vec4 temp_pos = position_ + vec4(0.0, y, 0.0, 0.0);
+    gl_Position = temp_pos;
+    EmitVertex();
+
+    for (int i = 0; i <= subsections; i++)
+    {
+        gl_Position = temp_pos + vec4(radius * cos(angle) * inv_ar, radius * sin(angle), 0.0, 0.0);
+        EmitVertex();
+        gl_Position = temp_pos;
+        EmitVertex();
+        angle += 3.14159265359 / subsections;
+    }
+    EndPrimitive();
+
+    temp_pos = position_ + vec4(0.0, -y, 0.0, 0.0);
+    gl_Position = temp_pos;
+    EmitVertex();
+
+    angle = 0.0;
+    for (int i = 0; i <= subsections; i++)
+    {
+        gl_Position = temp_pos + vec4(radius * cos(angle) * inv_ar, radius * sin(angle), 0.0, 0.0);
+        EmitVertex();
+        gl_Position = temp_pos;
+        EmitVertex();
+        angle -= 3.14159265359 / subsections;
+    }
+    EndPrimitive();
+}
+
+void display_0(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_1(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+
+    vec4 temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_2(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x * 1.0, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x* 1.0, position.y - 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x* 1.0, position.y, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_3(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_4(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x, position.y, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_5(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_6(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_7(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+
+    vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_8(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_9(vec4 position, float aspect_ratio, float scale)
+{
+    float inv_ar = 1 / aspect_ratio;
+    vec4 temp_pos = vec4(position.x, position.y + 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y - 0.4 * scale, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4(position.x, position.y, position.z, position.w);
+    draw_horizontal_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x - 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y + 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+
+    temp_pos = vec4((position.x + 0.2 * scale * inv_ar), position.y - 0.2*scale, position.z, position.w);
+    draw_vertical_line(temp_pos, aspect_ratio, scale);
+}
+
+void display_digit(vec4 position, float aspect_ratio, uint digit, float scale)
+{
+    if (digit == 0u){
+        display_0(position, aspect_ratio, scale);
+    }
+    else if (digit == 1u){
+        display_1(position, aspect_ratio, scale);
+    }
+    else if (digit == 2u){
+        display_2(position, aspect_ratio, scale);
+    }
+    else if (digit == 3u){
+        display_3(position, aspect_ratio, scale);
+    }
+    else if (digit == 4u){
+        display_4(position, aspect_ratio, scale);
+    }
+    else if (digit == 5u){
+        display_5(position, aspect_ratio, scale);
+    }
+    else if (digit == 6u){
+        display_6(position, aspect_ratio, scale);
+    }
+    else if (digit == 7u){
+        display_7(position, aspect_ratio, scale);
+    }
+    else if (digit == 8u){
+        display_8(position, aspect_ratio, scale);
+    }
+    else if (digit == 9u){
+        display_9(position, aspect_ratio, scale);
+    }
+}
+
+void main() {
+    float ooo = 0.0;
+    uint digit = digit_v[0];
 }
 """
 
