@@ -140,7 +140,7 @@ void main()
 geometry_src_numbers = """
 #version 330 core
 layout (points) in;
-layout (triangle_strip, max_vertices = 1000) out;
+layout (triangle_strip, max_vertices = 350) out;
 
 in float aspect_ratio_v[];
 in uint digit_v[];
