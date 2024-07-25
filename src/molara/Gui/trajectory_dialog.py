@@ -186,8 +186,8 @@ class TrajectoryDialog(QDialog):
     def update_energy_plot(self) -> None:
         """Update the energy plot, where the current structure is shown in a different color."""
         energies, mol_index = self.parent().mols.energies, self.parent().mols.mol_index
-        self.current_energy_plot.set_xdata(mol_index)
-        self.current_energy_plot.set_ydata(energies[mol_index])
+        self.current_energy_plot.set_xdata([mol_index])
+        self.current_energy_plot.set_ydata([energies[mol_index]])
         self.sc.draw()
 
     def reset(self) -> None:
