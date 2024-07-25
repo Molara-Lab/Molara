@@ -94,6 +94,9 @@ molara = "molara.__main__:main"
 [tool.setuptools.dynamic]
 version = {"attr" = "molara.__version__"}
 
+[tool.setuptools.package-data]
+"molara" = ["py.typed"]
+
 [tool.ruff]
 exclude = ["ui_*",]
 target-version = "py39"
@@ -118,8 +121,18 @@ exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
 
+[tool.pyright]
+typeCheckingMode = "off"
+reportPossiblyUnboundVariable = true
+reportUnboundVariable = true
+reportMissingImports = false
+reportMissingModuleSource = false
+reportInvalidTypeForm = false
+exclude = ["tests"]
+ignore = ["**/ui_*"]
+
 [tool.codespell]
-ignore-words-list = "nd,te"
+ignore-words-list = "nd,te,TITEL"
 check-filenames = true
 
 [tool.cythonize]

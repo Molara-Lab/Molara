@@ -43,7 +43,7 @@ def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
 class BuilderDialog(QDialog):
     """Dialog to ask for information to build molecules."""
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow | None = None) -> None:
         """Initialize the ZMatBuilder dialog.
 
         :param parent: the parent widget (main window).
@@ -162,6 +162,10 @@ class BuilderDialog(QDialog):
         mol_temp = self.main_window.mols.mols[0]
         self.main_window.mols.remove_molecule(0)
 
+        if not self.z_matrix:
+            return
+
+        mol: Molecule = Molecule(np.array([]), np.array([]), None, dummy=True)
         for i in range(len(self.z_matrix)):
             params = self.z_matrix[i]["parameter"]
             atom_ids = self.z_matrix[i]["atom_ids"]
@@ -178,10 +182,7 @@ class BuilderDialog(QDialog):
 
         self.structure_widget.delete_structure()
         self.structure_widget.set_structure([mol])
-
         self._update_z_matrix(mol.n_at)
-
-        self.colliding_idx = None
 
     def _orth(self, vec: np.ndarray, unitvec: np.ndarray) -> np.ndarray:
         """Calculate a vector that is orthogonal to the two given vectors.
@@ -435,13 +436,13 @@ class BuilderDialog(QDialog):
             return (None,)
 
         if row == 0:
-            return (element, None)
+            return (element, None)  # type: ignore[reportPossiblyUnboundVariable]
         if row == 1:
-            return (element, float(dist))
+            return (element, float(dist))  # type: ignore[reportPossiblyUnboundVariable]
         if row == 2:  # noqa: PLR2004
-            return (element, float(dist), np.deg2rad(float(angle)))
+            return (element, float(dist), np.deg2rad(float(angle)))  # type: ignore[reportPossiblyUnboundVariable]
 
-        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
+        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))  # type: ignore[reportPossiblyUnboundVariable]
 
     def _check_z_matrix_deletion(self, idx: int) -> bool:
         """Check if the deletion of the z-matrix entry is valid.
