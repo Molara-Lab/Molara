@@ -172,7 +172,7 @@ class BuilderDialog(QDialog):
             if i == 0:
                 self.disable_slot = False
             self.add_atom(i, params, atom_ids)
-            mol: Molecule = self.main_window.mols.mols[0]
+            mol = self.main_window.mols.mols[0]
 
             if self.colliding_idx is not None:
                 mol = mol_temp
