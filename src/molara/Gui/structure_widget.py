@@ -533,12 +533,6 @@ class StructureWidget(QOpenGLWidget):
         :param event: mouse event (such as left click, right click...)
         :return:
         """
-        if len(self.structures) != 1:
-            return
-
-        self.makeCurrent()
-        selected_sphere = self.select_sphere(event.x(), event.y())
-
         def measurement_select_sphere(sphere_id: int) -> None:
             id_in_selection = self.measurement_selected_spheres.index(-1)
             self.measurement_selected_spheres[id_in_selection] = sphere_id
@@ -549,6 +543,12 @@ class StructureWidget(QOpenGLWidget):
             id_in_selection = self.measurement_selected_spheres.index(sphere_id)
             self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
             self.measurement_selected_spheres[id_in_selection] = -1
+
+        if len(self.structures) != 1:
+            return
+
+        self.makeCurrent()
+        selected_sphere = self.select_sphere(event.x(), event.y())
 
         if selected_sphere != -1:
             if -1 in self.measurement_selected_spheres:

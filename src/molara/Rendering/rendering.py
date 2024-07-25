@@ -179,6 +179,7 @@ class Renderer:
         radii: np.ndarray,
         colors: np.ndarray,
         subdivisions: int,
+        solid: bool = True,
     ) -> int:
         """Draws one or multiple spheres.
 
@@ -188,13 +189,10 @@ class Renderer:
         instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
 
         :param positions: Positions of the spheres.
-        :type positions: numpy.array of numpy.float32
         :param radii: Radii of the spheres.
-        :type radii: numpy.array of numpy.float32
         :param colors: Colors of the spheres.
-        :type colors: numpy.array of numpy.float32
         :param subdivisions: Number of subdivisions of the sphere.
-        :type subdivisions: int
+        :param solid: Draw a solid sphere or draw only the grid.
         :return: Returns the index of the sphere in the list of spheres.
         """
         n_instances = len(positions)
@@ -211,6 +209,7 @@ class Renderer:
             "n_instances": n_instances,
             "n_vertices": len(sphere_mesh.vertices),
             "buffers": [],
+            "solid": solid,
         }
         sphere["vao"], sphere["buffers"] = setup_vao(
             sphere_mesh.vertices,
@@ -385,7 +384,6 @@ class Renderer:
         :type bonds: bool
         :return:
         """
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glUseProgram(self.shaders[0])
         light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
@@ -426,6 +424,10 @@ class Renderer:
         # Draw spheres
         for sphere in self.spheres:
             if sphere["vao"] != 0:
+                if sphere["solid"]:
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+                else:
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
                 glBindVertexArray(sphere["vao"])
                 glDrawElementsInstanced(
                     GL_TRIANGLES,
