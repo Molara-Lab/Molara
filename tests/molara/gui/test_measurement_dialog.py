@@ -139,7 +139,7 @@ class WorkaroundTestMeasurementDialog:
         assert len(structure.atoms) >= 4  # noqa: PLR2004
 
         def _tests(selected_atoms: list[int]) -> None:
-            measurement_dialog.display_distances(structure, selected_atoms)
+            measurement_dialog.display_positions_distances(structure, selected_atoms)
             self._test_distance_texts(selected_atoms)
             self._test_position_texts(selected_atoms)
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import ctypes
 from typing import TYPE_CHECKING
 
+import numpy as np
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
     GL_DYNAMIC_DRAW,
@@ -12,6 +13,7 @@ from OpenGL.GL import (
     GL_FALSE,
     GL_FLOAT,
     GL_STATIC_DRAW,
+    GL_UNSIGNED_INT,
     glBindBuffer,
     glBindVertexArray,
     glBufferData,
@@ -19,6 +21,7 @@ from OpenGL.GL import (
     glGenBuffers,
     glGenVertexArrays,
     glVertexAttribDivisor,
+    glVertexAttribIPointer,
     glVertexAttribPointer,
 )
 
@@ -38,13 +41,9 @@ def setup_vao(
 
     :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
         rgb are the color values [0,1], and nxnynz are the components of the normal vector.
-    :type vertices: numpy.array of numpy.float32
     :param indices: Gives the connectivity of the vertices.
-    :type indices: numpy.array of numpy.uint32
     :param model_matrices: Each matrix gives the transformation from object space to world.
-    :type model_matrices: numpy.array of numpy.float32
     :param colors: Colors of the vertices.
-    :type colors: numpy.array of numpy.float32
     :return: Returns a bound vertex attribute object
     """
     vao = glGenVertexArrays(1)
@@ -124,6 +123,37 @@ def setup_vao(
         )
         glVertexAttribDivisor(3 + i, 1)
     buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
+    glBindVertexArray(0)
+
+    return vao, buffers
+
+
+def setup_vao_numbers(digits: np.ndarray, positions_3d: np.ndarray) -> tuple[int, list[int]]:
+    """Set up a vertex attribute object and binds it to the GPU.
+
+    :param digits: The digits to be displayed.
+    :param positions_3d: The 3D positions of the atoms.
+    :return: Returns a bound vertex attribute object
+    """
+    # Generate and bind VAO
+    vao = glGenVertexArrays(1)
+    glBindVertexArray(vao)
+
+    # Generate and bind VBO for instance data
+    instance_vbo_digits = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_digits)
+    glBufferData(GL_ARRAY_BUFFER, digits, GL_DYNAMIC_DRAW)
+    glEnableVertexAttribArray(0)
+    glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, digits.itemsize, ctypes.c_void_p(0))
+
+    # Generate and bind VBO for instance data
+    instance_vbo_positions_3d = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_positions_3d)
+    glBufferData(GL_ARRAY_BUFFER, positions_3d, GL_DYNAMIC_DRAW)
+    glEnableVertexAttribArray(1)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, instance_vbo_positions_3d.itemsize * 3, ctypes.c_void_p(0))
+
+    buffers = [instance_vbo_digits, instance_vbo_positions_3d]
     glBindVertexArray(0)
 
     return vao, buffers

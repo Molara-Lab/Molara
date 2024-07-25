@@ -7,12 +7,14 @@ from os import listdir
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 from PySide6.QtWidgets import (
     QDialog,
     QMainWindow,
 )
 
 from molara.Gui.ui_structure_customizer import Ui_structure_customizer
+from molara.Rendering.atom_labels import init_atom_number
 
 if TYPE_CHECKING:
     from molara.Structure.crystal import Crystal
@@ -42,19 +44,27 @@ class StructureCustomizerDialog(QDialog):
 
         self.stick_mode = False
         self.bonds = True
+        self.numbers = False
+        self.max_atoms_for_numbers = 999
+        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1), np.zeros(1))
 
         self.ui.ballSizeSpinBox.setValue(1.0)
         self.ui.stickSizeSpinBox.setValue(1.0)
         self.ui.toggleBondsButton.setText("Hide Bonds")
+        self.ui.toggleNumbersButton.setText("Show Indices")
+        self.ui.colorSchemeSelect.addItems(["Jmol", "CPK"])
 
         self.ui.viewModeButton.clicked.connect(self.toggle_stick_mode)
         self.ui.toggleBondsButton.clicked.connect(self.toggle_bonds)
+        self.ui.toggleNumbersButton.clicked.connect(self.toggle_numbers)
         self.ui.saveButton.clicked.connect(self.save_settings)
         self.ui.loadButton.clicked.connect(self.load_settings)
         self.ui.deleteButton.clicked.connect(self.delete_settings)
 
         self.ui.ballSizeSpinBox.valueChanged.connect(self.apply_changes)
         self.ui.stickSizeSpinBox.valueChanged.connect(self.apply_changes)
+        self.ui.indexSizeSpinBox.valueChanged.connect(self.apply_changes)
+        self.ui.colorSchemeSelect.currentIndexChanged.connect(self.apply_changes)
 
         self.load_default_settings()
 
@@ -104,6 +114,9 @@ class StructureCustomizerDialog(QDialog):
             "bonds": bool(self.bonds),
             "ball_size": float(self.ui.ballSizeSpinBox.value()),
             "stick_size": float(self.ui.stickSizeSpinBox.value()),
+            "atom_numbers": bool(self.numbers),
+            "atom_numbers_size": float(self.ui.indexSizeSpinBox.value()),
+            "color_scheme": self.ui.colorSchemeSelect.currentText(),
         }
 
     def load_settings_dict(self, settings: dict) -> None:
@@ -123,6 +136,13 @@ class StructureCustomizerDialog(QDialog):
         self.set_bonds(settings["bonds"])
         self.ui.ballSizeSpinBox.setValue(settings["ball_size"])
         self.ui.stickSizeSpinBox.setValue(settings["stick_size"])
+        self.numbers = settings["atom_numbers"]
+        self.ui.indexSizeSpinBox.setValue(settings["atom_numbers_size"])
+
+        if settings["color_scheme"] == "Jmol":
+            self.ui.colorSchemeSelect.setCurrentIndex(0)
+        else:
+            self.ui.colorSchemeSelect.setCurrentIndex(1)
 
     def save_settings(self) -> None:
         """Save the settings to a file."""
@@ -136,7 +156,7 @@ class StructureCustomizerDialog(QDialog):
                 json.dump(settings, f)
         self.update_settings_box()
 
-    def set_cylinder_and_sphere_sizes(
+    def set_cylinder_and_sphere_att(
         self,
         structure: Structure | Molecule | Crystal,
         ball_size: float,
@@ -151,10 +171,15 @@ class StructureCustomizerDialog(QDialog):
         structure.drawer.cylinder_radius = stick_size
         structure.drawer.sphere_default_radius = ball_size
 
+        # Set the color scheme
+        structure.drawer.color_scheme = self.ui.colorSchemeSelect.currentText()
+
         if self.stick_mode:
             structure.drawer.sphere_scale = self.ui.stickSizeSpinBox.value()
         else:
             structure.drawer.sphere_scale = self.ui.ballSizeSpinBox.value()
+        structure.drawer.set_atom_colors()
+        structure.drawer.set_cylinder_colors()
         structure.drawer.set_atom_scales()
         structure.drawer.set_atom_scale_matrices()
         structure.drawer.set_atom_model_matrices()
@@ -168,14 +193,13 @@ class StructureCustomizerDialog(QDialog):
 
                 atom_radius = 0.15
                 stick_radius = atom_radius + 1e-3
-                self.set_cylinder_and_sphere_sizes(structure, atom_radius, stick_radius)
             else:
                 structure.drawer.stick_mode = False
 
                 atom_radius = 1.0 / 6
                 stick_radius = 0.075
 
-                self.set_cylinder_and_sphere_sizes(structure, atom_radius, stick_radius)
+            self.set_cylinder_and_sphere_att(structure, atom_radius, stick_radius)
 
             if self.bonds:
                 structure.draw_bonds = True
@@ -186,7 +210,13 @@ class StructureCustomizerDialog(QDialog):
             else:
                 structure.draw_bonds = False
 
-        self.parent().structure_widget.set_vertex_attribute_objects()
+        if structures:
+            if self.numbers:
+                self.parent().structure_widget.atom_indices_arrays = init_atom_number(structures[0])
+                self.parent().structure_widget.number_scale = self.ui.indexSizeSpinBox.value()
+            self.parent().structure_widget.show_atom_indices = self.numbers
+
+            self.parent().structure_widget.set_vertex_attribute_objects()
         self.parent().structure_widget.update()
 
     def toggle_stick_mode(self) -> None:
@@ -215,6 +245,25 @@ class StructureCustomizerDialog(QDialog):
             self.bonds = not self.bonds
             self.set_bonds(self.bonds)
             self.apply_changes()
+
+    def toggle_numbers(self) -> None:
+        """Toggle atom numbers on and off."""
+        self.numbers = not self.numbers
+        self.set_numbers(self.numbers)
+
+    def set_numbers(self, numbers: bool) -> None:
+        """Set numbers to True or False."""
+        self.numbers = numbers
+        structure = self.parent().structure_widget.structures[0]
+        if self.numbers:
+            if len(structure.atoms) < self.max_atoms_for_numbers:
+                self.ui.toggleNumbersButton.setText("Hide Indices")
+            else:
+                self.numbers = False
+                self.atom_indices_arrays = (np.zeros(1), np.zeros(1), np.zeros(1))
+        else:
+            self.ui.toggleNumbersButton.setText("Show Indices")
+        self.apply_changes()
 
     def set_bonds(self, bonds: bool) -> None:
         """Set bonds to True or False."""
