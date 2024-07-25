@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
 from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.main_window import MainWindow
@@ -15,6 +16,7 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
+from numpy.testing import assert_array_almost_equal
 from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QAction, QMouseEvent, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
@@ -52,6 +54,7 @@ class WorkaroundTestMainWindow:
         self.test_init()
         self.test_ui()
         self.test_structure_widget()
+        self.test_set_view_to_axes()
         self.test_export_image_dialog()
         self.test_show_builder_dialog()
         self.test_show_crystal_dialog()
@@ -209,6 +212,22 @@ class WorkaroundTestMainWindow:
 
         # Test builder select sphere
         structure_widget.update_builder_selected_atoms(event)
+
+    def test_set_view_to_axes(self) -> None:
+        """Test setting the rotation of the camera. See also test_set_rotation in test_camera.py."""
+        structure_widget = self.window.structure_widget
+        camera = structure_widget.camera
+        quaternion_x = [0.0, 0.0, 0.0, 1.0]
+        quaternion_y = [0.0, 0.0, np.sqrt(2) / 2, np.sqrt(2) / 2]
+        quaternion_z = [0.0, np.sqrt(2) / 2, 0.0, np.sqrt(2) / 2]
+        # quaternion_y = [0.0, 0.0, 0.7071067690849304, 0.7071067690849304]
+        # quaternion_z = [0.0, 0.7071067690849304, 0.0, 0.7071067690849304]
+        structure_widget.set_view_to_x_axis()
+        assert_array_almost_equal(camera.rotation.tolist(), quaternion_x)
+        structure_widget.set_view_to_y_axis()
+        assert_array_almost_equal(camera.rotation.tolist(), quaternion_y)
+        structure_widget.set_view_to_z_axis()
+        assert_array_almost_equal(camera.rotation.tolist(), quaternion_z)
 
     def test_export_image_dialog(self) -> None:
         """Write test code to verify the behavior of export_image_dialog property."""
