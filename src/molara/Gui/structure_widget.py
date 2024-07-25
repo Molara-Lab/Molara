@@ -486,7 +486,8 @@ class StructureWidget(QOpenGLWidget):
             dtype=np.float32,
         )
 
-        radius = 0.02
+        vectors_lengths = np.linalg.norm(basis_vectors_matrix, axis=1)
+        radius = vectors_lengths.max() / 150  # just some arbitrary scaling that looks nice
         positions -= self.structures[0].center
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
