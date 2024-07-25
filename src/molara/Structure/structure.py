@@ -104,6 +104,7 @@ class Structure:
 
     def calculate_bonds(self: Structure | Crystal | Molecule) -> np.ndarray:
         """Calculate the bonded pairs of atoms."""
+        same_position_threshold = 1e-3
         bonded_pairs = []
 
         vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
@@ -117,7 +118,7 @@ class Structure:
             distance = np.linalg.norm(coordinates[j] - coordinates[i])
 
             mean_radii = (atom1_radius + atom2_radius) * self.bond_distance_factor
-            if distance <= mean_radii:
+            if distance <= mean_radii and distance > same_position_threshold:
                 bonded_pairs.append((i, j))
 
         if bonded_pairs:
