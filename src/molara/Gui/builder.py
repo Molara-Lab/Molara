@@ -97,6 +97,7 @@ class BuilderDialog(QDialog):
         mol = self.main_window.mols.mols[0]
 
         if not self.err and self.colliding_idx is None:
+            self.ui.ErrorMessageBrowser.setText("")
             self.structure_widget.set_structure([mol])
             self.structure_widget.update()
             self.z_matrix.append({"parameter": params, "atom_ids": atom_ids})
@@ -191,7 +192,7 @@ class BuilderDialog(QDialog):
         """Add an atom to the molecule.
 
         :param count_atoms: number of atoms that have been added so far
-        :param params: parameters that are passed for the atom
+        :param params: parameters that are passed for the atom (angles in rad)
         :param atom_ids: atom ids of the selected atoms
         """
         self.err = False
@@ -227,7 +228,7 @@ class BuilderDialog(QDialog):
         # check for collisions
         self.colliding_idx = mol.compute_collision(pos) if count_atoms >= 3 else None  # noqa: PLR2004
         if self.colliding_idx is not None:
-            error_msg = f"The atom would collide with atom {self.colliding_idx+1}"
+            error_msg = f"The atom would collide with atom {self.colliding_idx+1}."
             self.ui.ErrorMessageBrowser.setText(error_msg)
             return
 
