@@ -160,7 +160,7 @@ class BuilderDialog(QDialog):
         if not self.z_matrix:
             return
 
-        mol: Molecule = Molecule(np.array([]), np.array([]), None, dummy=True)
+        mol: Molecule = Molecule(np.array([1]), np.array([[0.0, 0.0, 0.0]]), None, dummy=True, draw_bonds=False)
         for i in range(len(self.z_matrix)):
             params = self.z_matrix[i]["parameter"]
             atom_ids = self.z_matrix[i]["atom_ids"]
