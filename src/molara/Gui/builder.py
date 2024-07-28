@@ -86,20 +86,16 @@ class BuilderDialog(QDialog):
     @toggle_slot
     def select_add(self) -> None:
         """Select the add procedure. Depends on the number of atoms in the molecule."""
-        self.err = False
-        self.colliding_idx = None
-
-        if self.main_window.mols.num_mols == 0:
-            self.disable_slot = False
-            num_atoms = 0
-        else:
-            num_atoms = self.main_window.mols.mols[0].n_at
+        self.disable_slot = False
+        num_atoms = 0 if self.main_window.mols.num_mols == 0 else self.main_window.mols.mols[0].n_at
         params, atom_ids = self._get_parameters(num_atoms)
+        self.exec_add_atom(num_atoms, params, atom_ids)
 
-        self.add_atom(num_atoms, params, atom_ids)
+    def exec_add_atom(self, count_atoms: int, params: tuple, atom_ids: list) -> None:
+        """Execute the addition of an atom."""
+        self.add_atom(count_atoms, params, atom_ids)
         mol = self.main_window.mols.mols[0]
 
-        self.disable_slot = False
         if not self.err and self.colliding_idx is None:
             self.structure_widget.set_structure([mol])
             self.structure_widget.update()
@@ -146,8 +142,6 @@ class BuilderDialog(QDialog):
 
         self.disable_slot = False
         self._clear_upper_table_entries(self.main_window.mols.mols[0].n_at)
-
-        self.colliding_idx = None
 
         params = self._get_parameters_from_table(row)
 
@@ -200,6 +194,7 @@ class BuilderDialog(QDialog):
         :param params: parameters that are passed for the atom
         :param atom_ids: atom ids of the selected atoms
         """
+        self.err = False
         element, dist = params[0], params[1]
         angle = params[2] if len(params) > 2 else None  # noqa: PLR2004
         # dihedral = params[3] if len(params) > 3 else None

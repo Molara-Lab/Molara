@@ -41,23 +41,30 @@ class WorkaroundTestBuilderDialog:
     def _test_add_atom(self) -> None:
         """Test the addition of the first atom."""
         builder_dialog = self.builder_dialog
-        builder_dialog.add_atom(0, ("H", None), [])
+        builder_dialog.exec_add_atom(0, ("H", None), [])
         assert self.main_window.mols.get_current_mol().atomic_numbers == [1]
 
-        builder_dialog.add_atom(1, ("C", 1.2), [0])  # type: ignore[arg-type]
+        builder_dialog.exec_add_atom(1, ("C", 1.2), [0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6]
 
-        builder_dialog.add_atom(2, ("O", 1.2, 0), [1, 0])  # type: ignore[arg-type]
+        builder_dialog.exec_add_atom(2, ("O", 1.2, 0), [1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6]
         assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "Parameter values are not valid."
-        builder_dialog.add_atom(2, ("O", 1.2, 120.0), [1, 0])  # type: ignore[arg-type]
+        builder_dialog.exec_add_atom(2, ("O", 1.2, 120.0), [1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8]
 
-        builder_dialog.add_atom(3, ("Mg", 1.2, 0, 0), [2, 1, 0])  # type: ignore[arg-type]
+        builder_dialog.exec_add_atom(3, ("Mg", 1.2, 0, 0), [2, 1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8]
         assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "Parameter values are not valid."
-        builder_dialog.add_atom(2, ("Mg", 1.2, 120.0, 30.0), [2, 1, 0])  # type: ignore[arg-type]
+        builder_dialog.exec_add_atom(2, ("Mg", 1.2, 120.0, 30.0), [2, 1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8, 12]
+
+        structure = builder_dialog.structure_widget.structures[0]
+        assert structure is not None
+        assert structure.atoms[0].symbol == "H"
+        assert structure.atoms[1].symbol == "C"
+        assert structure.atoms[2].symbol == "O"
+        assert structure.atoms[3].symbol == "Mg"
 
     def _test_select_add(self) -> None:
         """Test the selection of the add button."""
