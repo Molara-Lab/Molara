@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
@@ -23,6 +24,8 @@ class Camera:
         self.fov = 45.0
         self.width = width
         self.height = height
+        self.near = 0.1
+        self.far = 100.0
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
@@ -67,16 +70,16 @@ class Camera:
                 w,
                 -h,
                 h,
-                0.1,
-                100,
+                self.near,
+                self.far,
                 dtype=np.float32,
             )
             return
         self.projection_matrix = pyrr.matrix44.create_perspective_projection_matrix(
             self.fov,
             width / height,
-            0.1,
-            100,
+            self.near,
+            self.far,
             dtype=np.float32,
         )
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
@@ -160,7 +163,7 @@ class Camera:
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
-    def set_rotation(self, axis: str) -> None:
+    def set_rotation(self, axis: Literal["x", "y", "z"]) -> None:
         """Align the camera rotation with one of the major axes ("x", "y", "z").
 
         :param axis: specifies along which axis camera view shall be aligned.

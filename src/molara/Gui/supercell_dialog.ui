@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Change Supercell Dimensions</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">

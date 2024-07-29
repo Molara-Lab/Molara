@@ -10,6 +10,7 @@ from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
+from molara.Rendering.atom_labels import calculate_atom_number_arrays
 from molara.Rendering.camera import Camera
 from molara.Rendering.rendering import Renderer
 from molara.Rendering.shaders import compile_shaders
@@ -69,7 +70,9 @@ class StructureWidget(QOpenGLWidget):
             np.array([0, 0, 1], dtype=np.float32),
             np.array([1, 1, 0], dtype=np.float32),
         ]
-        # self.toggle_unit_cell_boundaries()
+        self.show_atom_indices = False
+        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1))
+        self.number_scale = 1.0
 
     @property
     def bonds(self) -> bool:
@@ -101,6 +104,21 @@ class StructureWidget(QOpenGLWidget):
     def orthographic_projection(self) -> bool:
         """Specifies whether the projection is orthographic or not."""
         return self.camera.orthographic_projection
+
+    def update_atom_number_labels(self) -> None:
+        """Update the positions of the labels."""
+        assert self.structures
+
+        calculate_atom_number_arrays(
+            self.atom_indices_arrays[0],
+            self.atom_indices_arrays[1],
+            self.structures[0],
+            self.camera,
+        )
+        self.renderer.draw_numbers(
+            self.atom_indices_arrays[0],
+            self.atom_indices_arrays[1],
+        )
 
     def reset_view(self) -> None:
         """Reset the view of the structure to the initial view."""
@@ -188,7 +206,8 @@ class StructureWidget(QOpenGLWidget):
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
-        self.renderer.set_shader(compile_shaders())
+        self.renderer.set_shaders(compile_shaders())
+        self.renderer.aspect_ratio = self.width() / self.height()
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         """Resizes the widget.
@@ -199,11 +218,15 @@ class StructureWidget(QOpenGLWidget):
         glViewport(0, 0, width, height)  # one can also use self.width() and self.height()
         self.camera.width, self.camera.height = width, height
         self.camera.calculate_projection_matrix()
+        self.renderer.aspect_ratio = self.width() / self.height()
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         self.renderer.draw_scene(self.camera, self.bonds)
+        if self.show_atom_indices:
+            self.update_atom_number_labels()
+            self.renderer.display_numbers(self.camera, self.number_scale)
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""
@@ -640,3 +663,6 @@ class StructureWidget(QOpenGLWidget):
         self.camera.adopt_config(other_widget.camera)
         self.set_structure(other_widget.structures, reset_view=False)
         # self.update()
+
+        if other_widget.box[0] != -1:
+            self.toggle_unit_cell_boundaries()

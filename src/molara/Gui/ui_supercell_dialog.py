@@ -70,7 +70,7 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
+        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Change Supercell Dimensions", None))
         self.labelSupercell_a.setText(QCoreApplication.translate("Dialog", u"N<sub>a</sub>", None))
         self.labelSupercell_b.setText(QCoreApplication.translate("Dialog", u"N<sub>b</sub>", None))
         self.labelSupercell_c.setText(QCoreApplication.translate("Dialog", u"N<sub>c</sub>", None))

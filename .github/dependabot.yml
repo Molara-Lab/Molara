@@ -1,10 +1,11 @@
 version: 2
 updates:
-  - package-ecosystem: pip
+  - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-  - package-ecosystem: github-actions
+      interval: monthly
+
+  - package-ecosystem: pip
     directory: /
     schedule:
       interval: monthly

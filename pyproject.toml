@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=65.0.0", "cython", "numpy", "wheel"]
+requires = ["setuptools>=65", "cython", "oldest-supported-numpy", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -22,16 +22,14 @@ maintainers = [
     {name = "Michel Heinz, Gereon Feldmann, Adrian Usler, Alexander Bonkowski"},
 ]
 dependencies = [
-    "PyOpenGL",
-    "PySide6<=6.6.2",
-    "matplotlib",
-    "numpy",
-    "pyrr",
-    "scipy",
-    "cython",
-    "typing_extensions",
+    "PyOpenGL>=3.1.6",
+    "PySide6>=6.3.0", # tests fail below
+    "matplotlib>=3.6.2", # see https://github.com/matplotlib/matplotlib/pull/24158
+    "numpy~=1.22",
+    "pyrr>=0.10.3",
+    "scipy>=1.7.0",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 readme = "README.md"
 license = {file = "LICENSE"}
 keywords = ["analysis, science, structure, visualisation"]
@@ -57,25 +55,37 @@ Repo = "https://github.com/Molara-Lab/Molara"
 
 [project.optional-dependencies]
 doc = [
-    "sphinx",
-    "sphinx_rtd_theme",
+    "sphinx>=4",
+    "sphinx_rtd_theme>=1",
     "myst-parser"
 ]
+tests = [
+    "pytest>=7",
+    "pytest-qt>=4",
+    "pytest-xvfb>=3",
+    "pytest-cov>=5",
+    "pytest-split>=0.8.0",
+]
 dev = [
-    "mypy",
-    "pre-commit",
-    "pytest",
-    "pytest-qt",
-    "pytest-xvfb",
     "cython",
-    "pytest-cov",
-    "pytest-split",
-    "ruff",
+    "mypy>=1",
+    "pre-commit>=3",
+    "ruff>=0.5.0",
     "molara[doc]",
 ]
+strict = [
+    "PySide6==6.6.2",
+    "numpy==1.26.2",
+    "pyrr==0.10.3",
+    "scipy==1.11.4",
+    "cython==0.29.24",
+]
+compchem = [
+    "cclib>=1.7",
+]
 crystal = [
-    "pymatgen",
-    "ase",
+    "pymatgen>=2024",
+    "ase>=3.23",
 ]
 
 [project.scripts]
@@ -83,6 +93,9 @@ molara = "molara.__main__:main"
 
 [tool.setuptools.dynamic]
 version = {"attr" = "molara.__version__"}
+
+[tool.setuptools.package-data]
+"molara" = ["py.typed"]
 
 [tool.ruff]
 exclude = ["ui_*",]
@@ -108,8 +121,18 @@ exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
 
+[tool.pyright]
+typeCheckingMode = "off"
+reportPossiblyUnboundVariable = true
+reportUnboundVariable = true
+reportMissingImports = false
+reportMissingModuleSource = false
+reportInvalidTypeForm = false
+exclude = ["tests"]
+ignore = ["**/ui_*"]
+
 [tool.codespell]
-ignore-words-list = "nd,te"
+ignore-words-list = "nd,te,TITEL"
 check-filenames = true
 
 [tool.cythonize]
