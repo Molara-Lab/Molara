@@ -236,6 +236,39 @@ class Crystal(Structure):
                 raise ValueError(msg)
         return extra_atomic_nums, extra_fractional_coords
 
+    @property
+    def unitcell_boundaries_positions(self) -> np.ndarray:
+        """Return the positions of the unit cell box."""
+        basis_vectors_matrix = np.array(self.basis_vectors)
+        zero_vec = np.array([0, 0, 0])
+
+        return np.array(
+            [
+                [zero_vec, basis_vectors_matrix[0]],
+                [zero_vec, basis_vectors_matrix[1]],
+                [zero_vec, basis_vectors_matrix[2]],
+                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
+                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
+                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
+                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[2]],
+                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[1]],
+                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[0]],
+                [
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                ],
+                [
+                    basis_vectors_matrix[0] + basis_vectors_matrix[2],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                ],
+                [
+                    basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                ],
+            ],
+            dtype=np.float32,
+        ) - self.center
+
     @staticmethod
     def calc_volume_unitcell(basis_vectors: list[list[float]] | ArrayLike) -> float:
         """Calculate unit cell volume based on given lattice basis vectors.
