@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
@@ -135,22 +135,13 @@ class StructureWidget(QOpenGLWidget):
         self.camera.reset(self.width(), self.height(), dy, dz)
         self.update()
 
-    def set_view_to_x_axis(self) -> None:
-        """Set view angle parallel to x-axis."""
-        self.camera.center_coordinates()
-        self.camera.set_rotation("x")
-        self.update()
+    def set_view_to_axis(self, axis: Literal["x", "y", "z"]) -> None:
+        """Set view angle parallel to a specified axis.
 
-    def set_view_to_y_axis(self) -> None:
-        """Set view angle parallel to y-axis."""
+        :param axis: axis to which the view shall be set
+        """
         self.camera.center_coordinates()
-        self.camera.set_rotation("y")
-        self.update()
-
-    def set_view_to_z_axis(self) -> None:
-        """Set view angle parallel to z-axis."""
-        self.camera.center_coordinates()
-        self.camera.set_rotation("z")
+        self.camera.set_rotation(axis)
         self.update()
 
     def delete_structure(self) -> None:

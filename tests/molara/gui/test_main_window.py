@@ -222,11 +222,11 @@ class WorkaroundTestMainWindow:
         quaternion_z = [0.0, np.sqrt(2) / 2, 0.0, np.sqrt(2) / 2]
         # quaternion_y = [0.0, 0.0, 0.7071067690849304, 0.7071067690849304]
         # quaternion_z = [0.0, 0.7071067690849304, 0.0, 0.7071067690849304]
-        structure_widget.set_view_to_x_axis()
+        structure_widget.set_view_to_axis("x")
         assert_array_almost_equal(camera.rotation.tolist(), quaternion_x)
-        structure_widget.set_view_to_y_axis()
+        structure_widget.set_view_to_axis("y")
         assert_array_almost_equal(camera.rotation.tolist(), quaternion_y)
-        structure_widget.set_view_to_z_axis()
+        structure_widget.set_view_to_axis("z")
         assert_array_almost_equal(camera.rotation.tolist(), quaternion_z)
 
     def test_export_image_dialog(self) -> None:
