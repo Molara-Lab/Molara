@@ -7,7 +7,7 @@ import numpy as np
 __copyright__ = "Copyright 2024, Molara"
 
 
-def calculate_aos(  # noqa: PLR0915 C901
+def calculate_aos(
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,
     exponents: np.ndarray,
@@ -60,53 +60,59 @@ def calculate_aos(  # noqa: PLR0915 C901
     r2 = rr**2
     if orbital == s:
         uao = np.zeros(1)
-        directional_factors = np.array([1.])
+        directional_factors = np.array([1.0])
     elif orbital == p:
         uao = np.zeros(3)
         directional_factors = np.array([dx, dy, dz])
     elif orbital == d:
         uao = np.zeros(6)
-        directional_factors = np.array([
-            dx2,
-            dy2,
-            dz2,
-            sqr3*dx*dy,
-            sqr3*dx*dz,
-            sqr3*dy*dz,
-        ])
+        directional_factors = np.array(
+            [
+                dx2,
+                dy2,
+                dz2,
+                sqr3 * dx * dy,
+                sqr3 * dx * dz,
+                sqr3 * dy * dz,
+            ],
+        )
     elif orbital == f:
         uao = np.zeros(10)
-        directional_factors = np.array([
-            dx2*dx,# fxxx
-            dy2*dy,# fyyy
-            dz2*dz,# fzzz
-            sqr5*dx2*dy,# fxyy
-            sqr5*dx2*dz,# fxxy
-            sqr5*dy2*dx,# fxxz
-            sqr5*dy2*dz,# fxzz
-            sqr5*dz2*dx,# fyyz
-            sqr5*dz2*dy,# fyzz
-            sqr5*sqr3*dxyz,# fxyz
-        ])
+        directional_factors = np.array(
+            [
+                dx2 * dx,  # fxxx
+                dy2 * dy,  # fyyy
+                dz2 * dz,  # fzzz
+                sqr5 * dx2 * dy,  # fxyy
+                sqr5 * dx2 * dz,  # fxxy
+                sqr5 * dy2 * dx,  # fxxz
+                sqr5 * dy2 * dz,  # fxzz
+                sqr5 * dz2 * dx,  # fyyz
+                sqr5 * dz2 * dy,  # fyzz
+                sqr5 * sqr3 * dxyz,  # fxyz
+            ],
+        )
     elif orbital == g:
         uao = np.zeros(15)
-        directional_factors = np.array([
-            dx2 * dx2,
-            dy2 * dy2,
-            dz2 * dz2,
-            sqr7*dx2 * dx * dy,
-            sqr7*dx2 * dx * dz,
-            sqr7*dy2 * dy * dx,
-            sqr7*dy2 * dy * dz,
-            sqr7*dz2 * dz * dx,
-            sqr7*dz2 * dz * dy,
-            sqr7*sqr5/sqr3*dx2 * dy2,
-            sqr7*sqr5/sqr3*dx2 * dz2,
-            sqr7*sqr5/sqr3*dy2 * dz2,
-            sqr7*sqr5*dx * dxyz,
-            sqr7*sqr5*dy * dxyz,
-            sqr7*sqr5*dz * dxyz,
-        ])
+        directional_factors = np.array(
+            [
+                dx2 * dx2,
+                dy2 * dy2,
+                dz2 * dz2,
+                sqr7 * dx2 * dx * dy,
+                sqr7 * dx2 * dx * dz,
+                sqr7 * dy2 * dy * dx,
+                sqr7 * dy2 * dy * dz,
+                sqr7 * dz2 * dz * dx,
+                sqr7 * dz2 * dz * dy,
+                sqr7 * sqr5 / sqr3 * dx2 * dy2,
+                sqr7 * sqr5 / sqr3 * dx2 * dz2,
+                sqr7 * sqr5 / sqr3 * dy2 * dz2,
+                sqr7 * sqr5 * dx * dxyz,
+                sqr7 * sqr5 * dy * dxyz,
+                sqr7 * sqr5 * dz * dxyz,
+            ],
+        )
     else:
         msg = "(calculate_aos): wrong GTO"
         raise TypeError(msg)
