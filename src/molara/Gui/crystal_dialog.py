@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from contextlib import suppress
-
 import numpy as np
+from PySide6.QtCore import SIGNAL
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 
 from molara.Gui.ui_crystalstructure_dialog import Ui_CrystalDialog
@@ -179,7 +178,10 @@ class CrystalDialog(QDialog):
         self.ui.inputLatConst_a.setEnabled(aid in ids)
         self.ui.inputLatConst_b.setEnabled(bid in ids)
         self.ui.inputLatConst_c.setEnabled(cid in ids)
-        with suppress(Exception):
+        receivers_count = self.ui.inputLatConst_a.receivers(
+            SIGNAL("valueChanged(double)"),
+        )
+        if receivers_count > 0:
             self.ui.inputLatConst_a.valueChanged.disconnect()
         if cid in ids and bid not in ids:
             self.ui.inputLatConst_a.valueChanged.connect(self.b_equals_a)
