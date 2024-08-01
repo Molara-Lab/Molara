@@ -32,6 +32,7 @@ class WorkaroundTestBuilderDialog:
         self._test_add_atom()
         self._test_select_add()
         self._test_delete_atom()
+        self._test_check_selected_atoms()
 
     def _test_init(self) -> None:
         """Test the initialization of the BuilderDialog class."""
@@ -93,3 +94,20 @@ class WorkaroundTestBuilderDialog:
         builder_dialog = self.builder_dialog
         builder_dialog.delete_atom()
         assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "No Atom was chosen to be deleted."
+
+    def _test_check_selected_atoms(self) -> None:
+        """Test the check of selected atoms."""
+        builder_dialog = self.builder_dialog
+        builder_dialog.err = False
+        builder_dialog.ui.ErrorMessageBrowser.clear()
+
+        assert builder_dialog._check_selected_atoms(17, 100, 611)  # noqa: SLF001
+        assert not builder_dialog.err
+        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == ""
+
+        error_message = "Not enough atoms selected."
+        assert not builder_dialog._check_selected_atoms(-1, -1, 611)  # noqa: SLF001
+        assert builder_dialog.err
+        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == error_message
+        builder_dialog.err = False
+        builder_dialog.ui.ErrorMessageBrowser.clear()
