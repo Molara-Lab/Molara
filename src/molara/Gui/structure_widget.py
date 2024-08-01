@@ -454,8 +454,9 @@ class StructureWidget(QOpenGLWidget):
 
         positions = self.structures[0].unitcell_boundaries_positions
 
-        vectors_lengths = np.linalg.norm(self.structures[0].basis_vectors, axis=1)
-        radius = vectors_lengths.max() / 150  # just some arbitrary scaling that looks nice
+        diagonal_length = np.linalg.norm(self.structures[0].basis_vectors)
+        lowerlim_radius = 0.005
+        radius = max(lowerlim_radius, diagonal_length / 350)  # just some arbitrary scaling that looks nice
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
         self.box[0] = self.renderer.draw_cylinders_from_to(
