@@ -283,29 +283,25 @@ class StructureWidget(QOpenGLWidget):
 
         :param event: mouse event (such as left click, right click...)
         """
-        if (
-            event.button() == Qt.MouseButton.LeftButton
-            and event.x() in range(self.width())
-            and event.y() in range(self.height())
-        ):
+        if event.x() not in range(self.width()) or event.y() not in range(self.height()):
+            return
+
+        if event.button() == Qt.MouseButton.LeftButton:
+            # first test if Shift key is pressed (for selecting atoms)
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
                 if self.main_window.measurement_dialog.isVisible():
                     self.update_measurement_selected_atoms(event)
-
                 if self.main_window.builder_dialog.isVisible():
                     self.update_builder_selected_atoms(event)
+                return
 
-            else:
-                self.rotate = True
-                if self.translate is True:
-                    self.stop_translate(event)
-                self.set_normalized_position(event)
-                self.click_position = np.copy(self.position)
-        if (
-            event.button() == Qt.MouseButton.RightButton
-            and event.x() in range(self.width())
-            and event.y() in range(self.height())
-        ):
+            self.rotate = True
+            if self.translate is True:
+                self.stop_translate(event)
+            self.set_normalized_position(event)
+            self.click_position = np.copy(self.position)
+
+        if event.button() == Qt.MouseButton.RightButton:
             self.translate = True
             if self.rotate is True:
                 self.stop_rotation(event)
@@ -320,13 +316,11 @@ class StructureWidget(QOpenGLWidget):
         if self.rotate and self.click_position is not None:
             self.set_normalized_position(event)
             self.camera.set_rotation_quaternion(self.click_position, self.position)
-            self.camera.update()
-            self.update()
         if self.translate and self.click_position is not None:
             self.set_normalized_position(event)
             self.camera.set_translation_vector(self.click_position, self.position)
-            self.camera.update()
-            self.update()
+        self.camera.update()
+        self.update()
 
     def set_normalized_position(self, event: QMouseEvent) -> None:
         """Set the normalized position of the mouse cursor.
@@ -457,38 +451,11 @@ class StructureWidget(QOpenGLWidget):
         # 1.) a box was not drawn before and function is called as a "toggle", not an update
         # 2.) a box was drawn before, but shall be updated (crystal structure changed)
         assert isinstance(self.structures[0], Crystal)
-        basis_vectors_matrix = np.array(self.structures[0].basis_vectors)
-        zero_vec = np.array([0, 0, 0])
-        positions = np.array(
-            [
-                [zero_vec, basis_vectors_matrix[0]],
-                [zero_vec, basis_vectors_matrix[1]],
-                [zero_vec, basis_vectors_matrix[2]],
-                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
-                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
-                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
-                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[2]],
-                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[1]],
-                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[0]],
-                [
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1],
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                ],
-                [
-                    basis_vectors_matrix[0] + basis_vectors_matrix[2],
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                ],
-                [
-                    basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                ],
-            ],
-            dtype=np.float32,
-        )
 
-        vectors_lengths = np.linalg.norm(basis_vectors_matrix, axis=1)
+        positions = self.structures[0].unitcell_boundaries_positions
+
+        vectors_lengths = np.linalg.norm(self.structures[0].basis_vectors, axis=1)
         radius = vectors_lengths.max() / 150  # just some arbitrary scaling that looks nice
-        positions -= self.structures[0].center
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
         self.box[0] = self.renderer.draw_cylinders_from_to(

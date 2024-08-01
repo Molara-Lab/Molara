@@ -30,7 +30,7 @@ repos:
         additional_dependencies: ["types-requests"]
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.370
+    rev: v1.1.373
     hooks:
     - id: pyright
 
