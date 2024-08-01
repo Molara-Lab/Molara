@@ -9,7 +9,7 @@ from molara.Gui.builder import BuilderDialog
 from molara.Gui.crystal_dialog import CrystalDialog
 from molara.Gui.main_window import MainWindow
 from molara.Gui.measuring_tool_dialog import MeasurementDialog
-from molara.Gui.structure_widget import StructureWidget
+from molara.Gui.structure_widget import BUILDER, MEASUREMENT, StructureWidget
 from molara.Gui.trajectory_dialog import TrajectoryDialog
 from molara.Gui.ui_form import Ui_MainWindow
 from molara.Structure.crystal import Crystal
@@ -208,10 +208,10 @@ class WorkaroundTestMainWindow:
             Qt.LeftButton,  # Buttons (pressed buttons)
             Qt.NoModifier,  # Modifiers (keyboard modifiers)
         )
-        structure_widget.update_measurement_selected_atoms(event)
+        structure_widget.update_selected_atoms(MEASUREMENT, event)
 
         # Test builder select sphere
-        structure_widget.update_builder_selected_atoms(event)
+        structure_widget.update_selected_atoms(BUILDER, event)
 
     def test_set_view_to_axes(self) -> None:
         """Test setting the rotation of the camera. See also test_set_rotation in test_camera.py."""
