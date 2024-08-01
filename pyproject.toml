@@ -12,6 +12,9 @@ version = {"attr" = "molara.__version__"}
 [tool.cibuildwheel.linux]
 skip = ["*musllinux*"]
 
+[tool.setuptools.package-data]
+molara = ["py.typed"]
+
 [project]
 name = "Molara"
 description = "A visualisation tool for chemical structures."
@@ -93,12 +96,6 @@ crystal = [
 
 [project.scripts]
 molara = "molara.__main__:main"
-
-[tool.setuptools.dynamic]
-version = {"attr" = "molara.__version__"}
-
-[tool.setuptools.package-data]
-"molara" = ["py.typed"]
 
 [tool.ruff]
 exclude = ["ui_*",]
