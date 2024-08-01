@@ -5,6 +5,7 @@ from __future__ import annotations
 from importlib.util import find_spec
 from unittest import TestCase
 
+import numpy as np
 import pytest
 from molara.Structure.atom import elements
 from molara.Structure.crystal import Crystal
@@ -218,3 +219,40 @@ class TestCrystal(TestCase):
         importer = PoscarImporter("examples/POSCAR/O2_POSCAR")
         crystal = importer.load().get_current_mol()
         assert len(crystal.atoms) == 1 + 1
+
+    def test_unitcell_boundaries_positions(self) -> None:
+        """Test the unitcell_boundaries_positions method."""
+        self.crystal.center_coordinates()  # necessary so that crystal.center is set
+        positions = self.crystal.unitcell_boundaries_positions
+        basis_vectors_matrix = np.array(self.basis_vectors)
+        zero_vec = np.array([0, 0, 0])
+        positions_comparison = (
+            np.array(
+                [
+                    [zero_vec, basis_vectors_matrix[0]],
+                    [zero_vec, basis_vectors_matrix[1]],
+                    [zero_vec, basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
+                    [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
+                    [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[1]],
+                    [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[0]],
+                    [
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    ],
+                    [
+                        basis_vectors_matrix[0] + basis_vectors_matrix[2],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    ],
+                    [
+                        basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    ],
+                ],
+                dtype=np.float32,
+            )
+            - self.crystal.center
+        )
+        assert_array_equal(positions, positions_comparison)
