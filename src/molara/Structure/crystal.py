@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
-ONE, TWO, THREE = 1, 2, 3
+dimension = range(1, 4)
 
 
 class Crystal(Structure):
@@ -116,15 +116,16 @@ class Crystal(Structure):
         # create extra atoms at edges of supercell (quasi periodic boundaries)
         extra_atomic_nums, extra_fractional_coords = self.make_supercell_edge_atoms()
 
-        self.atomic_nums_supercell = np.append(
-            self.atomic_nums_supercell,
-            extra_atomic_nums,
-        )
-        self.fractional_coords_supercell = np.append(
-            self.fractional_coords_supercell,
-            extra_fractional_coords,
-            axis=0,
-        )
+        if extra_atomic_nums:
+            self.atomic_nums_supercell = np.append(
+                self.atomic_nums_supercell,
+                extra_atomic_nums,
+            )
+            self.fractional_coords_supercell = np.append(
+                self.fractional_coords_supercell,
+                extra_fractional_coords,
+                axis=0,
+            )
 
         # transform fractional to cartesian coordinates and instantiate atoms in super().__init__
         self.cartesian_coordinates_supercell = Crystal.fractional_to_cartesian_coords(
@@ -187,14 +188,14 @@ class Crystal(Structure):
             _ids_atom_coords = ids_edge_atom_coords[ids_edge_atoms == _id_atom_unique]
             _fractional_coords_atom = _fractional_coords_np[_id_atom_unique]
 
-            if len(_ids_atom_coords) == ONE:  # e.g., (.5, 0, .5)
+            if len(_ids_atom_coords) == dimension[0]:  # e.g., (.5, 0, .5)
                 extra_atomic_nums += [_atomic_num]
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 id1 = _ids_atom_coords[0]
                 dim1 = _supercell_dims_np[id1]
                 extra_fractional_coords[-1][id1] = dim1
 
-            elif len(_ids_atom_coords) == TWO:  # e.g., (.5, 0, 0)
+            elif len(_ids_atom_coords) == dimension[1]:  # e.g., (.5, 0, 0)
                 extra_atomic_nums += [_atomic_num] * 3
                 id1, id2 = _ids_atom_coords
                 dim1, dim2 = _supercell_dims_np[_ids_atom_coords]
@@ -207,7 +208,7 @@ class Crystal(Structure):
                 extra_fractional_coords += [_fractional_coords_atom.copy()]
                 extra_fractional_coords[-1][id2] = dim2  # (0,dim2)
 
-            elif len(_ids_atom_coords) == THREE:  # i.e., (0, 0, 0)
+            elif len(_ids_atom_coords) == dimension[2]:  # i.e., (0, 0, 0)
                 extra_atomic_nums += [_atomic_num] * 7
                 id1, id2, id3 = _ids_atom_coords
                 dim1, dim2, dim3 = _supercell_dims_np[_ids_atom_coords]
@@ -235,6 +236,42 @@ class Crystal(Structure):
                 raise ValueError(msg)
         return extra_atomic_nums, extra_fractional_coords
 
+    @property
+    def unitcell_boundaries_positions(self) -> np.ndarray:
+        """Return the positions of the unit cell box."""
+        basis_vectors_matrix = np.array(self.basis_vectors)
+        zero_vec = np.array([0, 0, 0])
+
+        return (
+            np.array(
+                [
+                    [zero_vec, basis_vectors_matrix[0]],
+                    [zero_vec, basis_vectors_matrix[1]],
+                    [zero_vec, basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
+                    [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
+                    [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[1]],
+                    [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[0]],
+                    [
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    ],
+                    [
+                        basis_vectors_matrix[0] + basis_vectors_matrix[2],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    ],
+                    [
+                        basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
+                    ],
+                ],
+                dtype=np.float32,
+            )
+            - self.center
+        )
+
     @staticmethod
     def calc_volume_unitcell(basis_vectors: list[list[float]] | ArrayLike) -> float:
         """Calculate unit cell volume based on given lattice basis vectors.
@@ -258,7 +295,7 @@ class Crystal(Structure):
 
         :param structure: pymatgen.Structure object
         """
-        return cls(structure.atomic_numbers, structure.frac_coords, structure.lattice.matrix, supercell_dims)
+        return cls(list(structure.atomic_numbers), structure.frac_coords, structure.lattice.matrix, supercell_dims)
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:

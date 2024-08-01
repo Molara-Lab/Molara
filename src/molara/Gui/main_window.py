@@ -37,7 +37,7 @@ ENABLED, DISABLED = True, False
 class MainWindow(QMainWindow):
     """Creates a MainWindow object."""
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow | None = None) -> None:
         """Create a MainWindow object.
 
         :param parent: parent widget
@@ -147,6 +147,7 @@ class MainWindow(QMainWindow):
         """Select a file in the file open dialog."""
         file_name = QFileDialog.getOpenFileName(
             self,
+            "Import structure from file",
             dir=".",
         )[0]
         if file_name == "":
