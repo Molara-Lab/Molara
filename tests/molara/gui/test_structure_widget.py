@@ -10,7 +10,7 @@ import numpy as np
 from molara.Gui.structure_widget import BUILDER, MEASUREMENT
 from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal, assert_array_equal
 from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QMouseEvent
 
@@ -36,10 +36,14 @@ class WorkaroundTestStructureWidget:
 
     def run_tests(self) -> None:
         """Run the tests."""
-        self.test_structure_widget()
+        self.test_load_molecule_toggle_bonds()
+        self.test_mouse_move()
+        self.test_toggle_axes()
+        self.test_toggle_unit_cell_boundaries()
+        self.test_select_atoms()
         self.test_set_view_to_axes()
 
-    def _test_toggle_unit_cell_boundaries(self) -> None:
+    def test_toggle_unit_cell_boundaries(self) -> None:
         """Test the toggle_unit_cell_boundaries method."""
         window = self.main_window
         structure_widget = window.structure_widget
@@ -59,13 +63,9 @@ class WorkaroundTestStructureWidget:
         text_unit_cell_boundaries = "Show Unit Cell Boundaries"
         assert window.ui.actionToggle_UnitCellBoundaries.text() == text_unit_cell_boundaries
 
-    def test_structure_widget(self) -> None:
-        """Write test code to verify the behavior of the structure_widget property."""
+    def test_load_molecule_toggle_bonds(self) -> None:
+        """Test the load_molecule and toggle_bonds methods."""
         structure_widget = self.main_window.structure_widget
-
-        # Test the toggle_unit_cell_boundaries method
-        self._test_toggle_unit_cell_boundaries()
-
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
             self.main_window.show_init_xyz()
@@ -74,8 +74,10 @@ class WorkaroundTestStructureWidget:
         self.main_window.structure_customizer_dialog.toggle_bonds()
         assert not structure_widget.bonds
         assert not structure_widget.draw_bonds
-        assert structure_widget is not None
 
+    def test_mouse_move(self) -> None:
+        """Test the mouse_move method."""
+        structure_widget = self.main_window.structure_widget
         # Test mouse moves and clicks
         self.qtbot.mousePress(structure_widget, Qt.LeftButton, pos=QPoint(50, 50))
 
@@ -95,12 +97,17 @@ class WorkaroundTestStructureWidget:
         # Simulate a left mouse button release event to end rotation
         self.qtbot.mouseRelease(structure_widget, Qt.RightButton, pos=QPoint(70, 70))
 
-        # Test toggle axes:
+    def test_toggle_axes(self) -> None:
+        """Test toggle axes."""
+        structure_widget = self.main_window.structure_widget
         structure_widget.toggle_axes()
         assert structure_widget.draw_axes
         structure_widget.toggle_axes()
         assert not structure_widget.draw_axes
 
+    def test_select_atoms(self) -> None:
+        """Test the select_atoms method."""
+        structure_widget = self.main_window.structure_widget
         # Test measurement select sphere
         event = QMouseEvent(
             QEvent.MouseButtonPress,  # Event type
@@ -140,6 +147,18 @@ class WorkaroundTestStructureWidget:
             structure_widget.structures[0].drawer.atom_colors[id4],
             structure_widget.new_sphere_colors[3],
         )
+
+        assert_array_equal(measurement_selected_spheres, [id1, id2, id3, id4])
+        structure_widget.exec_unselect_sphere(-1, measurement_selected_spheres)
+        assert_array_equal(measurement_selected_spheres, [id1, id2, id3, id4])
+        structure_widget.exec_unselect_sphere(id2, measurement_selected_spheres)
+        assert_array_equal(measurement_selected_spheres, [id1, -1, id3, id4])
+        structure_widget.exec_unselect_sphere(id1, measurement_selected_spheres)
+        assert_array_equal(measurement_selected_spheres, [-1, -1, id3, id4])
+        structure_widget.exec_unselect_sphere(id3, measurement_selected_spheres)
+        assert_array_equal(measurement_selected_spheres, [-1, -1, -1, id4])
+        structure_widget.exec_unselect_sphere(id4, measurement_selected_spheres)
+        assert_array_equal(measurement_selected_spheres, [-1, -1, -1, -1])
 
         # Test builder select sphere
         structure_widget.update_selected_atoms(BUILDER, event)
