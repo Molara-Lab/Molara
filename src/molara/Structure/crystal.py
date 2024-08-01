@@ -167,7 +167,7 @@ class Crystal(Structure):
         ids_edge_atoms_unique = np.unique(ids_edge_atoms)
         num_edge_atoms_unitcell = len(ids_edge_atoms_unique)
 
-        base_value = (num_atoms_unitcell - num_edge_atoms_unitcell) * np.prod(supercell_dims)
+        base_value = (num_atoms_unitcell - num_edge_atoms_unitcell) * np.prod(supercell_dims, dtype=int)
         for id_edge_atom in ids_edge_atoms_unique:
             factor = 1
             coords = np.array(self.coords_unitcell[id_edge_atom])
