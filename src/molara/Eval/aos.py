@@ -7,7 +7,7 @@ import numpy as np
 __copyright__ = "Copyright 2024, Molara"
 
 
-def calculate_aos(
+def calculate_aos(  # noqa: C901 PLR0915
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,
     exponents: np.ndarray,
@@ -35,88 +35,122 @@ def calculate_aos(
     f = 3
     g = 4
 
-    # # shortcuts for the array-entry indices of f atomic orbitals
-    # fxxx, fyyy, fzzz = 0, 1, 2
-    # fxyy, fxxy = 3, 4
-    # fxxz, fxzz = 5, 6
-    # fyzz, fyyz  = 7, 8
-    # fxyz = 9
+    fxxx = 0
+    fyyy = 1
+    fzzz = 2
+    fxyy = 3
+    fxxy = 4
+    fxxz = 5
+    fxzz = 6
+    fyzz = 7
+    fyyz = 8
+    fxyz = 9
 
-    # # shortcuts for the array-entry indices of f atomic orbitals
-    # gxxxx, gyyyy, gzzzz = 0, 1, 2
-    # gxxxy, gxxxz = 3, 4
-    # gyyyx, gyyyz = 5, 6
-    # gzzzx, gzzzy = 7, 8
-    # gxxyy, gxxzz = 9, 10
-    # gyyzz, gxxyz = 11, 12
-    # gyyxz, gzzxy = 13, 14
+    gxxxx = 0
+    gyyyy = 1
+    gzzzz = 2
+    gxxxy = 3
+    gxxxz = 4
+    gyyyx = 5
+    gyyyz = 6
+    gzzzx = 7
+    gzzzy = 8
+    gxxyy = 9
+    gxxzz = 10
+    gyyzz = 11
+    gxxyz = 12
+    gyyxz = 13
+    gzzxy = 14
 
     ngto = len(exponents)
     relative_coords = electron_coords - atom_coords
-    dx, dy, dz = relative_coords
-    dx2, dy2, dz2 = dx**2, dy**2, dz**2
-    dxyz = dx * dy * dz
     rr = np.linalg.norm(relative_coords)
-    r2 = rr**2
+    r2 = rr * rr
     if orbital == s:
         uao = np.zeros(1)
-        directional_factors = np.array([1.0])
+        for ic in range(ngto):
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            uao[0] = uao[0] + u
     elif orbital == p:
         uao = np.zeros(3)
-        directional_factors = np.array([dx, dy, dz])
+        for ic in range(ngto):
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            dx = relative_coords[0]
+            dy = relative_coords[1]
+            dz = relative_coords[2]
+            uao[0] = uao[0] + dx * u
+            uao[1] = uao[1] + dy * u
+            uao[2] = uao[2] + dz * u
     elif orbital == d:
         uao = np.zeros(6)
-        directional_factors = np.array(
-            [
-                dx2,
-                dy2,
-                dz2,
-                sqr3 * dx * dy,
-                sqr3 * dx * dz,
-                sqr3 * dy * dz,
-            ],
-        )
+        for ic in range(ngto):
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            dx = relative_coords[0]
+            dx2 = dx * dx
+            dy = relative_coords[1]
+            dy2 = dy * dy
+            dz = relative_coords[2]
+            dz2 = dz * dz
+            uao[0] = uao[0] + dx2 * u
+            uao[1] = uao[1] + dy2 * u
+            uao[2] = uao[2] + dz2 * u
+            u = sqr3 * u
+            uao[3] = uao[3] + dx * dy * u
+            uao[4] = uao[4] + dx * dz * u
+            uao[5] = uao[5] + dy * dz * u
     elif orbital == f:
         uao = np.zeros(10)
-        directional_factors = np.array(
-            [
-                dx2 * dx,  # fxxx
-                dy2 * dy,  # fyyy
-                dz2 * dz,  # fzzz
-                sqr5 * dx2 * dy,  # fxyy
-                sqr5 * dx2 * dz,  # fxxy
-                sqr5 * dy2 * dx,  # fxxz
-                sqr5 * dy2 * dz,  # fxzz
-                sqr5 * dz2 * dx,  # fyyz
-                sqr5 * dz2 * dy,  # fyzz
-                sqr5 * sqr3 * dxyz,  # fxyz
-            ],
-        )
+        for ic in range(ngto):
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            dx = relative_coords[0]
+            dx2 = dx * dx
+            dy = relative_coords[1]
+            dy2 = dy * dy
+            dz = relative_coords[2]
+            dz2 = dz * dz
+            dxyz = dx * dy * dz
+            uao[fxxx] = uao[fxxx] + dx2 * dx * u
+            uao[fyyy] = uao[fyyy] + dy2 * dy * u
+            uao[fzzz] = uao[fzzz] + dz2 * dz * u
+            u = sqr5 * u
+            uao[fxxy] = uao[fxxy] + dx2 * dy * u
+            uao[fxxz] = uao[fxxz] + dx2 * dz * u
+            uao[fxyy] = uao[fxyy] + dy2 * dx * u
+            uao[fyyz] = uao[fyyz] + dy2 * dz * u
+            uao[fxzz] = uao[fxzz] + dz2 * dx * u
+            uao[fyzz] = uao[fyzz] + dz2 * dy * u
+            u = sqr3 * u
+            uao[fxyz] = uao[fxyz] + dxyz * u
     elif orbital == g:
         uao = np.zeros(15)
-        directional_factors = np.array(
-            [
-                dx2 * dx2,
-                dy2 * dy2,
-                dz2 * dz2,
-                sqr7 * dx2 * dx * dy,
-                sqr7 * dx2 * dx * dz,
-                sqr7 * dy2 * dy * dx,
-                sqr7 * dy2 * dy * dz,
-                sqr7 * dz2 * dz * dx,
-                sqr7 * dz2 * dz * dy,
-                sqr7 * sqr5 / sqr3 * dx2 * dy2,
-                sqr7 * sqr5 / sqr3 * dx2 * dz2,
-                sqr7 * sqr5 / sqr3 * dy2 * dz2,
-                sqr7 * sqr5 * dx * dxyz,
-                sqr7 * sqr5 * dy * dxyz,
-                sqr7 * sqr5 * dz * dxyz,
-            ],
-        )
+        for ic in range(ngto):
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            dx = relative_coords[0]
+            dx2 = dx * dx
+            dy = relative_coords[1]
+            dy2 = dy * dy
+            dz = relative_coords[2]
+            dz2 = dz * dz
+            dxyz = dx * dy * dz
+            uao[gxxxx] = uao[gxxxx] + dx2 * dx2 * u
+            uao[gyyyy] = uao[gyyyy] + dy2 * dy2 * u
+            uao[gzzzz] = uao[gzzzz] + dz2 * dz2 * u
+            u = sqr7 * u
+            uao[gxxxy] = uao[gxxxy] + dx2 * dx * dy * u
+            uao[gxxxz] = uao[gxxxz] + dx2 * dx * dz * u
+            uao[gyyyx] = uao[gyyyx] + dy2 * dy * dx * u
+            uao[gyyyz] = uao[gyyyz] + dy2 * dy * dz * u
+            uao[gzzzx] = uao[gzzzx] + dz2 * dz * dx * u
+            uao[gzzzy] = uao[gzzzy] + dz2 * dz * dy * u
+            u = sqr5 / sqr3 * u
+            uao[gxxyy] = uao[gxxyy] + dx2 * dy2 * u
+            uao[gxxzz] = uao[gxxzz] + dx2 * dz2 * u
+            uao[gyyzz] = uao[gyyzz] + dy2 * dz2 * u
+            u = sqr3 * u
+            uao[gxxyz] = uao[gxxyz] + dx * dxyz * u
+            uao[gyyxz] = uao[gyyxz] + dy * dxyz * u
+            uao[gzzxy] = uao[gzzxy] + dz * dxyz * u
     else:
         msg = "(calculate_aos): wrong GTO"
         raise TypeError(msg)
-    for ic in range(ngto):
-        u = coefficients[ic] * np.exp(-exponents[ic] * r2)
-        uao += directional_factors * u
     return uao
