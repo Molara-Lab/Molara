@@ -79,9 +79,9 @@ class MainWindow(QMainWindow):
 
         # View
         self.ui.actionReset_View.triggered.connect(self.structure_widget.reset_view)
-        self.ui.actionto_x_axis.triggered.connect(self.structure_widget.set_view_to_x_axis)
-        self.ui.actionto_y_axis.triggered.connect(self.structure_widget.set_view_to_y_axis)
-        self.ui.actionto_z_axis.triggered.connect(self.structure_widget.set_view_to_z_axis)
+        self.ui.actionto_x_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("x"))
+        self.ui.actionto_y_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("y"))
+        self.ui.actionto_z_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("z"))
         self.ui.actionToggle_Axes.triggered.connect(self.structure_widget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
             self.structure_widget.center_structure,

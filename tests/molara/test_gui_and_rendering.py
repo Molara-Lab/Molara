@@ -10,6 +10,7 @@ from gui.test_builder import WorkaroundTestBuilderDialog
 from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
+from gui.test_structure_widget import WorkaroundTestStructureWidget
 from rendering.test_buffers import WorkaroundTestBuffers
 from rendering.test_rendering import WorkaroundTestRenderer
 
@@ -25,6 +26,9 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     """
     main_window_tests = WorkaroundTestMainWindow(qtbot)
     main_window_tests.run_tests()
+
+    workaround_test_structure_widget = WorkaroundTestStructureWidget(qtbot, main_window_tests.window)
+    workaround_test_structure_widget.run_tests()
 
     workaround_test_renderer = WorkaroundTestRenderer(qtbot, main_window_tests.window)
     workaround_test_renderer.run_tests()
