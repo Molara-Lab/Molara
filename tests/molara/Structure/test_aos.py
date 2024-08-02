@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
 from molara.Eval.aos import calculate_aos
 from molara.Structure.io.importer import GeneralImporter
 from numpy.testing import assert_array_almost_equal
+
+if TYPE_CHECKING:
+    from molara.Structure.basisset import Basisset
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -17,11 +21,17 @@ class TestAos(TestCase):
 
     def setUp(self) -> None:
         """Set up a basisset."""
-        importer = GeneralImporter("tests/input_files/molden/h2_cas.molden")
-        molecules = importer.load()
-        self.basisset = molecules.mols[0].atoms[0].basis_set
-        self.electron_position = np.array([0.1, -0.234, 0.5])
-        self.nuclear_position = np.array([0.0, 0.0, 0.0])
+        importer_h2 = GeneralImporter("tests/input_files/molden/h2_cas.molden")
+        molecules_h2 = importer_h2.load()
+        self.basisset_h2 = molecules_h2.mols[0].atoms[0].basis_set
+        self.electron_pos_h2 = np.array([0.1, -0.234, 0.5])
+        self.nuclear_pos_h2 = np.array([0.0, 0.0, 0.0])
+
+        importer_f2 = GeneralImporter("tests/input_files/molden/f2.molden")
+        molecules_f2 = importer_f2.load()
+        self.basisset_f2 = molecules_f2.mols[0].atoms[0].basis_set
+        self.electron_pos_f2 = np.array([0.15, -0.1, 0.3])
+        self.nuclear_pos_f2 = np.array([0.03, 0.01, -0.02])
 
     def test_aos(self) -> None:
         """Test if the aos are correct.
@@ -51,28 +61,28 @@ class TestAos(TestCase):
         # }
         # pi = 0
 
-        def _test_orbital(orb: str) -> None:
+        def _test_orbital(orb: str, basisset: Basisset, electron_pos: np.ndarray, nuclear_pos: np.ndarray) -> None:
             """Test the orbital."""
             orbital_type = orb[0]
             current_orbital = calculate_aos(
-                self.electron_position,
-                self.nuclear_position,
-                self.basisset.orbitals[orb].exponents,
-                self.basisset.orbitals[orb].coefficients,
+                electron_pos,
+                nuclear_pos,
+                basisset.orbitals[orb].exponents,
+                basisset.orbitals[orb].coefficients,
                 quantum_number_l[orbital_type],
             )
             compare_orbital = reference_calculate_aos(
-                self.electron_position,
-                self.nuclear_position,
-                self.basisset.orbitals[orb].exponents,
-                self.basisset.orbitals[orb].coefficients,
+                electron_pos,
+                nuclear_pos,
+                basisset.orbitals[orb].exponents,
+                basisset.orbitals[orb].coefficients,
                 quantum_number_l[orbital_type],
             )
             compare_orbital_old_implementation = reference2_calculate_aos(
-                self.electron_position,
-                self.nuclear_position,
-                self.basisset.orbitals[orb].exponents,
-                self.basisset.orbitals[orb].coefficients,
+                electron_pos,
+                nuclear_pos,
+                basisset.orbitals[orb].exponents,
+                basisset.orbitals[orb].coefficients,
                 quantum_number_l[orbital_type],
             )
             assert current_orbital.size == orbital_array_lengths[orbital_type]
@@ -80,8 +90,10 @@ class TestAos(TestCase):
             assert_array_almost_equal(current_orbital, compare_orbital_old_implementation)
             # orbital_lists[orbital_type].append(current_orbital)
 
-        for orb in self.basisset.orbitals:
-            _test_orbital(orb)
+        for orb in self.basisset_h2.orbitals:
+            _test_orbital(orb, self.basisset_h2, self.electron_pos_h2, self.nuclear_pos_h2)
+        for orb in self.basisset_f2.orbitals:
+            _test_orbital(orb, self.basisset_f2, self.electron_pos_f2, self.nuclear_pos_f2)
 
 
 def reference_calculate_aos(
