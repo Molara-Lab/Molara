@@ -160,6 +160,23 @@ class Crystal(Structure):
         edges = np.where(_fractional_coords_np == 0)
         return edges[0], edges[1]
 
+    def calc_number_of_supercell_atoms(self, supercell_dims: list[int]) -> int:
+        """Calculate the number of atoms in the supercell."""
+        num_atoms_unitcell = len(self.atomic_nums_unitcell)
+        ids_edge_atoms = np.where(np.array(self.coords_unitcell) == 0)[0]
+        ids_edge_atoms_unique = np.unique(ids_edge_atoms)
+        num_edge_atoms_unitcell = len(ids_edge_atoms_unique)
+
+        base_value = (num_atoms_unitcell - num_edge_atoms_unitcell) * np.prod(supercell_dims, dtype=int)
+        for id_edge_atom in ids_edge_atoms_unique:
+            factor = 1
+            coords = np.array(self.coords_unitcell[id_edge_atom])
+            factor *= supercell_dims[0] + 1 if coords[0] == 0.0 else supercell_dims[0]
+            factor *= supercell_dims[1] + 1 if coords[1] == 0.0 else supercell_dims[1]
+            factor *= supercell_dims[2] + 1 if coords[2] == 0.0 else supercell_dims[2]
+            base_value += factor
+        return base_value
+
     def make_supercell_edge_atoms(self) -> tuple[list[int], list[list[float]]]:
         """Extra atoms are created at supercell edges (periodic boundaries).
 

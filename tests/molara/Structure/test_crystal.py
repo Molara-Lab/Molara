@@ -28,14 +28,41 @@ class TestCrystal(TestCase):
 
     def test_setup(self) -> None:
         """Test the result of the setUp routine."""
-        supercell_dims = self.crystal.supercell_dims
+        crystal = self.crystal
+        supercell_dims = crystal.supercell_dims
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
-        assert_array_equal(self.crystal.basis_vectors, self.basis_vectors)
-        assert_array_equal(self.crystal.atomic_nums_unitcell, self.atomic_numbers)
-        assert_array_equal(self.crystal.coords_unitcell, self.coordinates)
+        assert len(crystal.atoms) == crystal.calc_number_of_supercell_atoms(self.supercell_dims)
+
+        assert_array_equal(crystal.basis_vectors, self.basis_vectors)
+        assert_array_equal(crystal.atomic_nums_unitcell, self.atomic_numbers)
+        assert_array_equal(crystal.coords_unitcell, self.coordinates)
+
+    def test_calc_number_of_supercell_atoms(self) -> None:
+        """Test the calculation of the number of supercell atoms."""
+        crystal = self.crystal
+        assert crystal.calc_number_of_supercell_atoms([1, 1, 1]) == 9  # noqa: PLR2004
+        assert crystal.calc_number_of_supercell_atoms([3, 4, 5]) == 180  # noqa: PLR2004
+
+        crystal_test = Crystal(
+            [2] * 6,
+            [
+                [0.0, 0.0, 0.25],
+                [0.0, 0.25, 0.0],
+                [0.0, 0.1, 0.0],
+                [0.25, 0.0, 0.0],
+                [0.1, 0.0, 0.0],
+                [0.3, 0.0, 0.0],
+            ],
+            self.basis_vectors,
+            [1, 1, 1],
+        )
+        num_ = crystal_test.calc_number_of_supercell_atoms([1, 1, 1])
+        assert num_ == ((1 + 1) * (1 + 1) * 1 + 2 * (1 + 1) * 1 * (1 + 1) + 3 * 1 * (1 + 1) * (1 + 1))
+        num_ = crystal_test.calc_number_of_supercell_atoms([10, 100, 1000])
+        assert num_ == ((10 + 1) * (100 + 1) * 1000 + 2 * (10 + 1) * 100 * (1000 + 1) + 3 * 10 * (100 + 1) * (1000 + 1))
 
     def test_from_poscar_pymatgen(self) -> None:
         """Test the creation of a crystal from a POSCAR file."""
