@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from unittest import TestCase
+import pytest
 
 import numpy as np
 from molara.Structure.atom import Atom
@@ -71,6 +72,9 @@ class TestMolecules(TestCase):
         self.molecules = Molecules()
         self.molecules.add_molecule(self.pentane)
         self.molecules.add_molecule(self.glucose)
+        # test if calling add_molecule with faulty object raises error
+        with pytest.raises(TypeError):
+            self.molecules.add_molecule("faulty object")
         self.num_molecules = 2
 
     def test_setup(self) -> None:
