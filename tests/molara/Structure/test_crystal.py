@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 from molara.Structure.atom import elements
 from molara.Structure.crystal import Crystal
+from molara.Structure.io.exceptions import FileFormatError
 from molara.Structure.io.importer import PoscarImporter
 from numpy.testing import assert_almost_equal, assert_array_equal
 
@@ -102,6 +103,33 @@ class TestCrystal(TestCase):
 
         TestCrystal.assert_crystals_equal(self.crystal_from_POSCAR_pymatgen, self.crystal)
         TestCrystal.assert_crystals_equal(self.crystal_from_POSCAR_parser, self.crystal)
+
+    def test_from_poscar_faulty(self) -> None:
+        """Test the handling of faulty POSCAR files."""
+        # file incomplete: length of lines < 8
+        importer = PoscarImporter("tests/input_files/poscar/faulty_SrTiO3_POSCAR")
+        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+            _ = importer.load(use_pymatgen=False)
+        # number formatting: scale factor is not a float
+        importer = PoscarImporter("tests/input_files/poscar/faulty_BN_POSCAR")
+        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+            _ = importer.load(use_pymatgen=False)
+        # number formatting: basis vector component is not a float
+        importer = PoscarImporter("tests/input_files/poscar/faulty_Ba2YCu3O7_POSCAR")
+        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+            _ = importer.load(use_pymatgen=False)
+        # number formatting: number of (Mg) atoms is not an integer
+        importer = PoscarImporter("tests/input_files/poscar/faulty_Mg3Sb2_POSCAR")
+        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+            _ = importer.load(use_pymatgen=False)
+        # number formatting: position component is not a float
+        importer = PoscarImporter("tests/input_files/poscar/faulty_O2_POSCAR")
+        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+            _ = importer.load(use_pymatgen=False)
+        # file incomplete: number of (O) atoms is missing
+        importer = PoscarImporter("tests/input_files/poscar/faulty_BN_cartesian_POSCAR")
+        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+            _ = importer.load(use_pymatgen=False)
 
     @pytest.mark.skipif(not find_spec("ase"), reason="ASE is not installed.")
     def test_from_ase(self) -> None:
