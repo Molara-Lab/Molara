@@ -10,14 +10,21 @@ from unittest import TestCase
 import numpy as np
 import pyrr
 from molara.Rendering.camera import Camera
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_allclose
 
 __copyright__ = "Copyright 2024, Molara"
 
 
-def assert_vec3_equal(vector1: pyrr.Vector3, vector2: pyrr.Vector3) -> None:
-    """Assert that two Vector3 objects are equal."""
-    assert_array_almost_equal(np.array(vector1), np.array(vector2))
+def assert_vectors_equal(
+    vector1: pyrr.Vector3 | pyrr.Quaternion | np.ndarray | pyrr.Matrix33 | pyrr.Matrix44,
+    vector2: pyrr.Vector3 | pyrr.Quaternion | np.ndarray | pyrr.Matrix33 | pyrr.Matrix44,
+) -> None:
+    """Assert that two lists are equal."""
+    assert_allclose(
+        np.array(vector1),
+        np.array(vector2),
+        atol=1e-7,
+    )
 
 
 class TestCamera(TestCase):
@@ -86,23 +93,23 @@ class TestCamera(TestCase):
         assert camera.height == other_camera.height
         assert camera.distance_from_target == other_camera.distance_from_target
         assert camera.zoom_sensitivity == other_camera.zoom_sensitivity
-        assert_vec3_equal(camera.position, other_camera.position)
-        assert_vec3_equal(camera.up_vector, other_camera.up_vector)
-        assert_vec3_equal(camera.right_vector, other_camera.right_vector)
-        assert_vec3_equal(camera.translation, other_camera.translation)
-        assert_vec3_equal(camera.target, other_camera.target)
-        assert_vec3_equal(camera.initial_position, other_camera.initial_position)
-        assert_vec3_equal(camera.initial_up_vector, other_camera.initial_up_vector)
-        assert_vec3_equal(camera.initial_right_vector, other_camera.initial_right_vector)
-        assert_vec3_equal(camera.last_translation, other_camera.last_translation)
-        assert_vec3_equal(camera.initial_target, other_camera.initial_target)
+        assert_vectors_equal(camera.position, other_camera.position)
+        assert_vectors_equal(camera.up_vector, other_camera.up_vector)
+        assert_vectors_equal(camera.right_vector, other_camera.right_vector)
+        assert_vectors_equal(camera.translation, other_camera.translation)
+        assert_vectors_equal(camera.target, other_camera.target)
+        assert_vectors_equal(camera.initial_position, other_camera.initial_position)
+        assert_vectors_equal(camera.initial_up_vector, other_camera.initial_up_vector)
+        assert_vectors_equal(camera.initial_right_vector, other_camera.initial_right_vector)
+        assert_vectors_equal(camera.last_translation, other_camera.last_translation)
+        assert_vectors_equal(camera.initial_target, other_camera.initial_target)
 
-        assert_array_almost_equal(np.array(camera.rotation), np.array(other_camera.rotation))
-        assert_array_almost_equal(np.array(camera.last_rotation), np.array(other_camera.last_rotation))
-        assert_array_almost_equal(np.array(camera.view_matrix), np.array(other_camera.view_matrix))
-        assert_array_almost_equal(np.array(camera.view_matrix_inv), np.array(other_camera.view_matrix_inv))
-        assert_array_almost_equal(np.array(camera.projection_matrix), np.array(other_camera.projection_matrix))
-        assert_array_almost_equal(np.array(camera.projection_matrix_inv), np.array(other_camera.projection_matrix_inv))
+        assert_vectors_equal(camera.rotation, other_camera.rotation)
+        assert_vectors_equal(camera.last_rotation, other_camera.last_rotation)
+        assert_vectors_equal(camera.view_matrix, other_camera.view_matrix)
+        assert_vectors_equal(camera.view_matrix_inv, other_camera.view_matrix_inv)
+        assert_vectors_equal(camera.projection_matrix, other_camera.projection_matrix)
+        assert_vectors_equal(camera.projection_matrix_inv, other_camera.projection_matrix_inv)
 
     def test_reset(self) -> None:
         """Test Camera reset."""
@@ -143,12 +150,12 @@ class TestCamera(TestCase):
         assert not camera.orthographic_projection
         camera.calculate_projection_matrix()
         assert isinstance(camera.projection_matrix, np.ndarray)
-        assert_array_almost_equal(camera.projection_matrix, projection_matrix_perspective)
+        assert_vectors_equal(camera.projection_matrix, projection_matrix_perspective)
 
         camera.toggle_projection()
         assert camera.orthographic_projection
         camera.calculate_projection_matrix()
-        assert_array_almost_equal(camera.projection_matrix, projection_matrix_orthographic)
+        assert_vectors_equal(camera.projection_matrix, projection_matrix_orthographic)
 
         camera.set_distance_from_target(40)
         old_distance_from_target = distance_from_target
@@ -168,7 +175,7 @@ class TestCamera(TestCase):
         # in orthographic projection, the projection matrix must be updated when camera.update() is called.
         # here, we test if this is actually the case.
         camera.update()
-        assert_array_almost_equal(camera.projection_matrix, projection_matrix_orthographic)
+        assert_vectors_equal(camera.projection_matrix, projection_matrix_orthographic)
 
     def test_center_coordinates(self) -> None:
         """Test coordinate recentering."""
@@ -219,12 +226,12 @@ class TestCamera(TestCase):
         self.assert_camera_settings_equal_data(data)
         # check if position, up_vector, right_vector, translation, target, and rotation are correct
         # (they are not checked in assert_camera_settings_equal_data)
-        assert_array_almost_equal(data["position"], camera.position.tolist())
-        assert_array_almost_equal(data["up_vector"], camera.up_vector.tolist())
-        assert_array_almost_equal(data["right_vector"], camera.right_vector.tolist())
-        assert_array_almost_equal(data["translation"], camera.translation.tolist())
-        assert_array_almost_equal(data["target"], camera.target.tolist())
-        assert_array_almost_equal(data["rotation"], camera.rotation.tolist())
+        assert_vectors_equal(data["position"], camera.position.tolist())
+        assert_vectors_equal(data["up_vector"], camera.up_vector.tolist())
+        assert_vectors_equal(data["right_vector"], camera.right_vector.tolist())
+        assert_vectors_equal(data["translation"], camera.translation.tolist())
+        assert_vectors_equal(data["target"], camera.target.tolist())
+        assert_vectors_equal(data["rotation"], camera.rotation.tolist())
 
         # reset camera settings
         self.set_camera_settings_to_zeros()
@@ -248,14 +255,14 @@ class TestCamera(TestCase):
         # position, up_vector, right_vector, and target are not checked,
         # because they are re-calculated in Camera.update(),
         # so they may differ from the values in the json file.
-        assert_array_almost_equal(camera.translation.tolist(), data["translation"])
-        assert_array_almost_equal(camera.rotation.tolist(), data["rotation"])
-        assert_array_almost_equal(camera.initial_position.tolist(), data["initial_position"])
-        assert_array_almost_equal(camera.initial_up_vector.tolist(), data["initial_up_vector"])
-        assert_array_almost_equal(camera.initial_right_vector.tolist(), data["initial_right_vector"])
-        assert_array_almost_equal(camera.last_translation.tolist(), data["last_translation"])
-        assert_array_almost_equal(camera.initial_target.tolist(), data["initial_target"])
-        assert_array_almost_equal(camera.last_rotation.tolist(), data["last_rotation"])
+        assert_vectors_equal(camera.translation, data["translation"])
+        assert_vectors_equal(camera.rotation, data["rotation"])
+        assert_vectors_equal(camera.initial_position, data["initial_position"])
+        assert_vectors_equal(camera.initial_up_vector, data["initial_up_vector"])
+        assert_vectors_equal(camera.initial_right_vector, data["initial_right_vector"])
+        assert_vectors_equal(camera.last_translation, data["last_translation"])
+        assert_vectors_equal(camera.initial_target, data["initial_target"])
+        assert_vectors_equal(camera.last_rotation, data["last_rotation"])
 
     def set_camera_settings_to_zeros(self) -> None:
         """Set all camera settings to zero."""
@@ -283,11 +290,11 @@ class TestCamera(TestCase):
         # quaternion_z = [0.0, 0.7071067690849304, 0.0, 0.7071067690849304]
 
         self.camera.set_rotation("x")
-        assert_array_almost_equal(self.camera.rotation.tolist(), quaternion_x)
+        assert_vectors_equal(self.camera.rotation.tolist(), quaternion_x)
         self.camera.set_rotation("y")
-        assert_array_almost_equal(self.camera.rotation.tolist(), quaternion_y)
+        assert_vectors_equal(self.camera.rotation.tolist(), quaternion_y)
         self.camera.set_rotation("z")
-        assert_array_almost_equal(self.camera.rotation.tolist(), quaternion_z)
+        assert_vectors_equal(self.camera.rotation.tolist(), quaternion_z)
 
     def test_set_translation_vector(self) -> None:
         """Test setting the translation of the camera."""
@@ -301,4 +308,4 @@ class TestCamera(TestCase):
 
         self.camera.set_translation_vector(old_mouse_position, mouse_position)
         new_translation = right_vector * x_translation + up_vector * y_translation + last_translation
-        assert_array_almost_equal(self.camera.translation.tolist(), new_translation.tolist())
+        assert_vectors_equal(self.camera.translation.tolist(), new_translation.tolist())
