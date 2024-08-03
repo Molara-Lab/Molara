@@ -125,10 +125,16 @@ class WorkaroundTestStructureWidget:
         event = QMouseEvent(
             QEvent.MouseButtonPress,  # Event type
             QPoint(50, 50),  # Position
+            QPoint(0, 0),  # Global (screen) position
             Qt.LeftButton,  # Button
             Qt.LeftButton,  # Buttons (pressed buttons)
             Qt.NoModifier,  # Modifiers (keyboard modifiers)
         )
+        # Comment on the constructor of QMouseEvent:
+        # The global position is necessary to avoid the use of a deprecated method.
+        # The global position is not used in the test, so it is set to (0, 0).
+        # Should this cause problems in the future, we need to
+        # figure out how to set the global position correctly.
         structure_widget.update_selected_atoms(MEASUREMENT, event)
 
         measurement_selected_spheres = structure_widget.measurement_selected_spheres
