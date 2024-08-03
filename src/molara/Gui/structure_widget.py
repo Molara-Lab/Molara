@@ -276,7 +276,7 @@ class StructureWidget(QOpenGLWidget):
 
         :param event: mouse event (such as left click, right click...)
         """
-        if event.x() not in range(self.width()) or event.y() not in range(self.height()):
+        if event.position().x() not in range(self.width()) or event.position().y() not in range(self.height()):
             return
 
         if event.button() == Qt.MouseButton.LeftButton:
@@ -321,11 +321,11 @@ class StructureWidget(QOpenGLWidget):
         :param event: mouse event (such as left click, right click...)
         """
         if self.width() >= self.height():
-            self.position[0] = (event.x() * 2 - self.width()) / self.width()
-            self.position[1] = -(event.y() * 2 - self.height()) / self.width()
+            self.position[0] = (event.position().x() * 2 - self.width()) / self.width()
+            self.position[1] = -(event.position().y() * 2 - self.height()) / self.width()
         else:
-            self.position[0] = (event.x() * 2 - self.width()) / self.height()
-            self.position[1] = -(event.y() * 2 - self.height()) / self.height()
+            self.position[0] = (event.position().x() * 2 - self.width()) / self.height()
+            self.position[1] = -(event.position().y() * 2 - self.height()) / self.height()
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
@@ -523,7 +523,7 @@ class StructureWidget(QOpenGLWidget):
         if len(self.structures) != 1:
             return
         self.makeCurrent()
-        selected_sphere_id = self.identify_selected_sphere(event.x(), event.y())
+        selected_sphere_id = self.identify_selected_sphere(event.position().x(), event.position().y())
 
         selected_spheres_list = (
             self.measurement_selected_spheres if purpose == MEASUREMENT else self.builder_selected_spheres
