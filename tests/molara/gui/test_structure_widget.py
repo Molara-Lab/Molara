@@ -10,7 +10,8 @@ import numpy as np
 from molara.Gui.structure_widget import BUILDER, MEASUREMENT
 from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
-from numpy.testing import assert_array_almost_equal, assert_array_equal
+from molara.util.testing import assert_vectors_equal
+from numpy.testing import assert_array_equal
 from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QMouseEvent
 
@@ -131,25 +132,25 @@ class WorkaroundTestStructureWidget:
         id1, id2, id3, id4 = 2, 1, 0, 3
         structure_widget.exec_select_sphere(id1, measurement_selected_spheres)
         assert measurement_selected_spheres[0] == id1
-        assert_array_almost_equal(
+        assert_vectors_equal(
             structure_widget.structures[0].drawer.atom_colors[id1],
             structure_widget.new_sphere_colors[0],
         )
         structure_widget.exec_select_sphere(id2, measurement_selected_spheres)
         assert measurement_selected_spheres[1] == id2
-        assert_array_almost_equal(
+        assert_vectors_equal(
             structure_widget.structures[0].drawer.atom_colors[id2],
             structure_widget.new_sphere_colors[1],
         )
         structure_widget.exec_select_sphere(id3, measurement_selected_spheres)
         assert measurement_selected_spheres[2] == id3
-        assert_array_almost_equal(
+        assert_vectors_equal(
             structure_widget.structures[0].drawer.atom_colors[id3],
             structure_widget.new_sphere_colors[2],
         )
         structure_widget.exec_select_sphere(id4, measurement_selected_spheres)
         assert measurement_selected_spheres[3] == id4
-        assert_array_almost_equal(
+        assert_vectors_equal(
             structure_widget.structures[0].drawer.atom_colors[id4],
             structure_widget.new_sphere_colors[3],
         )
@@ -179,8 +180,8 @@ class WorkaroundTestStructureWidget:
         # quaternion_y = [0.0, 0.0, 0.7071067690849304, 0.7071067690849304]
         # quaternion_z = [0.0, 0.7071067690849304, 0.0, 0.7071067690849304]
         structure_widget.set_view_to_axis("x")
-        assert_array_almost_equal(camera.rotation.tolist(), quaternion_x)
+        assert_vectors_equal(camera.rotation.tolist(), quaternion_x)
         structure_widget.set_view_to_axis("y")
-        assert_array_almost_equal(camera.rotation.tolist(), quaternion_y)
+        assert_vectors_equal(camera.rotation.tolist(), quaternion_y)
         structure_widget.set_view_to_axis("z")
-        assert_array_almost_equal(camera.rotation.tolist(), quaternion_z)
+        assert_vectors_equal(camera.rotation.tolist(), quaternion_z)
