@@ -10,26 +10,14 @@ import numpy as np
 from molara.Gui.structure_widget import BUILDER, MEASUREMENT
 from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
-from numpy.testing import assert_allclose, assert_array_equal
+from molara.util.testing import assert_vectors_equal
+from numpy.testing import assert_array_equal
 from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QMouseEvent
 
 if TYPE_CHECKING:
     from molara.Gui.main_window import MainWindow
-    from pyrr import Matrix33, Matrix44, Quaternion, Vector3
     from pytestqt.qtbot import QtBot
-
-
-def assert_vectors_equal(
-    vector1: Vector3 | Quaternion | np.ndarray | Matrix33 | Matrix44,
-    vector2: Vector3 | Quaternion | np.ndarray | Matrix33 | Matrix44,
-) -> None:
-    """Assert that two lists are equal."""
-    assert_allclose(
-        np.array(vector1),
-        np.array(vector2),
-        atol=1e-7,
-    )
 
 
 class WorkaroundTestStructureWidget:

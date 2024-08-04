@@ -10,21 +10,9 @@ from unittest import TestCase
 import numpy as np
 import pyrr
 from molara.Rendering.camera import Camera
-from numpy.testing import assert_allclose
+from molara.util.testing import assert_vectors_equal
 
 __copyright__ = "Copyright 2024, Molara"
-
-
-def assert_vectors_equal(
-    vector1: pyrr.Vector3 | pyrr.Quaternion | np.ndarray | pyrr.Matrix33 | pyrr.Matrix44,
-    vector2: pyrr.Vector3 | pyrr.Quaternion | np.ndarray | pyrr.Matrix33 | pyrr.Matrix44,
-) -> None:
-    """Assert that two lists are equal."""
-    assert_allclose(
-        np.array(vector1),
-        np.array(vector2),
-        atol=1e-7,
-    )
 
 
 class TestCamera(TestCase):
