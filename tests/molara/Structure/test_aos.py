@@ -8,17 +8,12 @@ from unittest import TestCase
 import numpy as np
 from molara.Eval.aos import calculate_aos
 from molara.Structure.io.importer import GeneralImporter
-from numpy.testing import assert_allclose
+from molara.util.testing import assert_vectors_equal
 
 if TYPE_CHECKING:
     from molara.Structure.basisset import Basisset
 
 __copyright__ = "Copyright 2024, Molara"
-
-
-def _assert_array_almost_equal(a: np.ndarray, b: np.ndarray) -> None:
-    """Assert that two arrays are almost equal."""
-    assert_allclose(a, b, atol=1e-7)
 
 
 class TestAos(TestCase):
@@ -91,8 +86,8 @@ class TestAos(TestCase):
                 quantum_number_l[orbital_type],
             )
             assert current_orbital.size == orbital_array_lengths[orbital_type]
-            _assert_array_almost_equal(current_orbital, compare_orbital)
-            _assert_array_almost_equal(current_orbital, compare_orbital_old_implementation)
+            assert_vectors_equal(current_orbital, compare_orbital)
+            assert_vectors_equal(current_orbital, compare_orbital_old_implementation)
             # orbital_lists[orbital_type].append(current_orbital)
 
         for orb in self.basisset_h2.orbitals:
