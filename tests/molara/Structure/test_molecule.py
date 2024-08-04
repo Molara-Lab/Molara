@@ -8,8 +8,8 @@ from unittest import TestCase
 import numpy as np
 from molara.Structure.atom import Atom
 from molara.Structure.molecule import Molecule
-from numpy.testing import assert_array_equal
 from molara.util.testing import assert_vectors_equal
+from numpy.testing import assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
