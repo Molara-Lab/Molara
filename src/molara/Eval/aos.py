@@ -7,7 +7,7 @@ import numpy as np
 __copyright__ = "Copyright 2024, Molara"
 
 
-def calculate_aos(  # noqa: PLR0915 C901
+def calculate_aos(  # noqa: C901 PLR0915
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,
     exponents: np.ndarray,

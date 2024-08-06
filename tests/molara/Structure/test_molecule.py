@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import copy
 from unittest import TestCase
 
 import numpy as np
 from molara.Structure.atom import Atom
 from molara.Structure.molecule import Molecule
-from numpy.testing import assert_array_almost_equal, assert_array_equal
+from molara.util.testing import assert_vectors_equal
+from numpy.testing import assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -100,16 +102,16 @@ class TestMolecule(TestCase):
 
     def test_copy(self) -> None:
         """Test the copy routine."""
-        copy = self.ccl4.copy()
-        assert_array_equal(copy.atomic_numbers, self.ccl4.atomic_numbers)
-        assert copy.molar_mass == self.ccl4.molar_mass
-        for atom_copy, atom_ccl4 in zip(copy.atoms, self.ccl4.atoms):
+        _copy = copy.copy(self.ccl4)
+        assert_array_equal(_copy.atomic_numbers, self.ccl4.atomic_numbers)
+        assert _copy.molar_mass == self.ccl4.molar_mass
+        for atom_copy, atom_ccl4 in zip(_copy.atoms, self.ccl4.atoms):
             assert_array_equal(atom_copy.position, atom_ccl4.position)
-        assert copy.draw_bonds == self.ccl4.draw_bonds
+        assert _copy.draw_bonds == self.ccl4.draw_bonds
 
         self.ccl4.toggle_bonds()
-        copy = self.ccl4.copy()
-        assert copy.draw_bonds == self.ccl4.draw_bonds
+        _copy = copy.copy(self.ccl4)
+        assert _copy.draw_bonds == self.ccl4.draw_bonds
 
     def test_compute_collision(self) -> None:
         """Test the compute_collision routine."""
@@ -144,22 +146,22 @@ class TestMolecule(TestCase):
         """Test the center_coordinates routine."""
         # test ccl4
         self.ccl4.center_coordinates()
-        assert_array_almost_equal(self.ccl4.center_of_mass, np.zeros(3))
+        assert_vectors_equal(self.ccl4.center_of_mass, np.zeros(3))
         offset = np.array([1.234, 2.345, 3.456])
         for atom_i in self.ccl4.atoms:
             atom_i.set_position(atom_i.position + offset)
         self.ccl4.center_coordinates()
-        assert_array_almost_equal(self.ccl4.center_of_mass, np.zeros(3))
-        assert_array_almost_equal(self.ccl4.center, offset)
+        assert_vectors_equal(self.ccl4.center_of_mass, np.zeros(3))
+        assert_vectors_equal(self.ccl4.center, offset)
 
         # test water
         self.water.center_coordinates()
-        assert_array_almost_equal(self.water.center_of_mass, np.zeros(3))
+        assert_vectors_equal(self.water.center_of_mass, np.zeros(3))
         offset = np.array([1.456, 2.567, 3.678])
         for atom_i in self.water.atoms:
             atom_i.set_position(atom_i.position + offset)
         self.water.center_coordinates()
-        assert_array_almost_equal(self.water.center_of_mass, np.zeros(3))
-        assert_array_almost_equal(self.water.center, offset)
+        assert_vectors_equal(self.water.center_of_mass, np.zeros(3))
+        assert_vectors_equal(self.water.center, offset)
 
         assert self.water.bond_distance_factor == 1.0 / 1.75

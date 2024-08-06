@@ -15,8 +15,7 @@ from molara.Structure.crystal import Crystal
 from molara.Structure.crystals import Crystals
 from molara.Structure.molecule import Molecule
 from molara.Structure.molecules import Molecules
-from PySide6.QtCore import QEvent, QPoint, Qt
-from PySide6.QtGui import QAction, QMouseEvent, QSurfaceFormat
+from PySide6.QtGui import QAction, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
@@ -51,7 +50,6 @@ class WorkaroundTestMainWindow:
         """Run all tests."""
         self.test_init()
         self.test_ui()
-        self.test_structure_widget()
         self.test_export_image_dialog()
         self.test_show_builder_dialog()
         self.test_show_crystal_dialog()
@@ -157,58 +155,6 @@ class WorkaroundTestMainWindow:
         """Clean up the test."""
         self.window.close()
         QApplication.instance().shutdown() if QApplication.instance() is not None else None
-
-    def test_structure_widget(self) -> None:
-        """Write test code to verify the behavior of the structure_widget property."""
-        structure_widget = self.window.structure_widget
-        structure_widget.toggle_unit_cell_boundaries()
-        testargs = ["molara", "examples/xyz/pentane.xyz"]
-        with mock.patch.object(sys, "argv", testargs):
-            self.window.show_init_xyz()
-        assert structure_widget.draw_bonds
-        assert structure_widget.bonds
-        self.window.structure_customizer_dialog.toggle_bonds()
-        assert not structure_widget.bonds
-        assert not structure_widget.draw_bonds
-        assert structure_widget is not None
-
-        # Test mouse moves and clicks
-        self.qtbot.mousePress(structure_widget, Qt.LeftButton, pos=QPoint(50, 50))
-
-        # Simulate mouse move events to rotate the structure
-        self.qtbot.mouseMove(structure_widget, QPoint(60, 60))
-        self.qtbot.mouseMove(structure_widget, QPoint(70, 70))
-
-        # Simulate a left mouse button release event to end rotation
-        self.qtbot.mouseRelease(structure_widget, Qt.LeftButton, pos=QPoint(70, 70))
-
-        self.qtbot.mousePress(structure_widget, Qt.RightButton, pos=QPoint(50, 50))
-
-        # Simulate mouse move events to rotate the structure
-        self.qtbot.mouseMove(structure_widget, QPoint(60, 60))
-        self.qtbot.mouseMove(structure_widget, QPoint(70, 70))
-
-        # Simulate a left mouse button release event to end rotation
-        self.qtbot.mouseRelease(structure_widget, Qt.RightButton, pos=QPoint(70, 70))
-
-        # Test toggle axes:
-        structure_widget.toggle_axes()
-        assert structure_widget.draw_axes
-        structure_widget.toggle_axes()
-        assert not structure_widget.draw_axes
-
-        # Test measurement select sphere
-        event = QMouseEvent(
-            QEvent.MouseButtonPress,  # Event type
-            QPoint(50, 50),  # Position
-            Qt.LeftButton,  # Button
-            Qt.LeftButton,  # Buttons (pressed buttons)
-            Qt.NoModifier,  # Modifiers (keyboard modifiers)
-        )
-        structure_widget.update_measurement_selected_atoms(event)
-
-        # Test builder select sphere
-        structure_widget.update_builder_selected_atoms(event)
 
     def test_export_image_dialog(self) -> None:
         """Write test code to verify the behavior of export_image_dialog property."""

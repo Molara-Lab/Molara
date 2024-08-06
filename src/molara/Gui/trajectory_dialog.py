@@ -31,7 +31,7 @@ class MplCanvas(FigureCanvasQTAgg):
     def __init__(
         self,
         # This argument is necessary to be surpassed.
-        parent: MainWindow = None,  # noqa: ARG002
+        parent: MainWindow | None = None,  # noqa: ARG002
         width: int = 5,
         height: int = 4,
         dpi: int = 100,
@@ -51,7 +51,7 @@ class MplCanvas(FigureCanvasQTAgg):
 class TrajectoryDialog(QDialog):
     """Dialog for manipulating appearance of trajectories."""
 
-    def __init__(self, parent: QMainWindow = None) -> None:
+    def __init__(self, parent: QMainWindow | None = None) -> None:
         """Initialize the trajectory dialog.
 
         :param parent: parent widget (main window)
@@ -186,8 +186,8 @@ class TrajectoryDialog(QDialog):
     def update_energy_plot(self) -> None:
         """Update the energy plot, where the current structure is shown in a different color."""
         energies, mol_index = self.parent().mols.energies, self.parent().mols.mol_index
-        self.current_energy_plot.set_xdata(mol_index)
-        self.current_energy_plot.set_ydata(energies[mol_index])
+        self.current_energy_plot.set_xdata([mol_index])
+        self.current_energy_plot.set_ydata([energies[mol_index]])
         self.sc.draw()
 
     def reset(self) -> None:

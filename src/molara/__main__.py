@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import signal
 import sys
+from pathlib import Path
 
-from PySide6.QtGui import QSurfaceFormat
+from PySide6.QtGui import QIcon, QSurfaceFormat
 from PySide6.QtWidgets import QApplication
 
 # Important:
@@ -17,8 +18,11 @@ from molara.Gui.main_window import MainWindow
 __copyright__ = "Copyright 2024, Molara"
 
 
-def main() -> None:
-    """Run the application."""
+def main(test: bool = False) -> None:
+    """Run the application.
+
+    :param test: True if the application is run in test mode, False otherwise
+    """
     _format = QSurfaceFormat()
     _format.setVersion(3, 3)
     _format.setSamples(4)
@@ -27,18 +31,20 @@ def main() -> None:
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(f"{Path(__file__).resolve().parent}/MolaraLogo.png"))
 
     widget = MainWindow()
 
     widget.setWindowTitle("Molara")
 
-    widget.show()
+    if not test:
+        widget.show()
 
-    if len(sys.argv) > 1:
-        widget.show_init_xyz()
+        if len(sys.argv) > 1:
+            widget.show_init_xyz()
 
-    sys.exit(app.exec())
+        sys.exit(app.exec())
 
 
 if __name__ == "__main__":
-    main()
+    main(test=False)

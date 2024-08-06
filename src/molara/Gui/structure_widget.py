@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
@@ -25,6 +25,8 @@ if TYPE_CHECKING:
     from molara.Structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
+
+MEASUREMENT, BUILDER = 0, 1
 
 
 class StructureWidget(QOpenGLWidget):
@@ -135,22 +137,13 @@ class StructureWidget(QOpenGLWidget):
         self.camera.reset(self.width(), self.height(), dy, dz)
         self.update()
 
-    def set_view_to_x_axis(self) -> None:
-        """Set view angle parallel to x-axis."""
-        self.camera.center_coordinates()
-        self.camera.set_rotation("x")
-        self.update()
+    def set_view_to_axis(self, axis: Literal["x", "y", "z"]) -> None:
+        """Set view angle parallel to a specified axis.
 
-    def set_view_to_y_axis(self) -> None:
-        """Set view angle parallel to y-axis."""
+        :param axis: axis to which the view shall be set
+        """
         self.camera.center_coordinates()
-        self.camera.set_rotation("y")
-        self.update()
-
-    def set_view_to_z_axis(self) -> None:
-        """Set view angle parallel to z-axis."""
-        self.camera.center_coordinates()
-        self.camera.set_rotation("z")
+        self.camera.set_rotation(axis)
         self.update()
 
     def delete_structure(self) -> None:
@@ -283,29 +276,25 @@ class StructureWidget(QOpenGLWidget):
 
         :param event: mouse event (such as left click, right click...)
         """
-        if (
-            event.button() == Qt.MouseButton.LeftButton
-            and event.x() in range(self.width())
-            and event.y() in range(self.height())
-        ):
+        if event.position().x() not in range(self.width()) or event.position().y() not in range(self.height()):
+            return
+
+        if event.button() == Qt.MouseButton.LeftButton:
+            # first test if Shift key is pressed (for selecting atoms)
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
                 if self.main_window.measurement_dialog.isVisible():
-                    self.update_measurement_selected_atoms(event)
-
+                    self.update_selected_atoms(MEASUREMENT, event)
                 if self.main_window.builder_dialog.isVisible():
-                    self.update_builder_selected_atoms(event)
+                    self.update_selected_atoms(BUILDER, event)
+                return
 
-            else:
-                self.rotate = True
-                if self.translate is True:
-                    self.stop_translate(event)
-                self.set_normalized_position(event)
-                self.click_position = np.copy(self.position)
-        if (
-            event.button() == Qt.MouseButton.RightButton
-            and event.x() in range(self.width())
-            and event.y() in range(self.height())
-        ):
+            self.rotate = True
+            if self.translate is True:
+                self.stop_translate(event)
+            self.set_normalized_position(event)
+            self.click_position = np.copy(self.position)
+
+        if event.button() == Qt.MouseButton.RightButton:
             self.translate = True
             if self.rotate is True:
                 self.stop_rotation(event)
@@ -320,13 +309,11 @@ class StructureWidget(QOpenGLWidget):
         if self.rotate and self.click_position is not None:
             self.set_normalized_position(event)
             self.camera.set_rotation_quaternion(self.click_position, self.position)
-            self.camera.update()
-            self.update()
         if self.translate and self.click_position is not None:
             self.set_normalized_position(event)
             self.camera.set_translation_vector(self.click_position, self.position)
-            self.camera.update()
-            self.update()
+        self.camera.update()
+        self.update()
 
     def set_normalized_position(self, event: QMouseEvent) -> None:
         """Set the normalized position of the mouse cursor.
@@ -334,11 +321,11 @@ class StructureWidget(QOpenGLWidget):
         :param event: mouse event (such as left click, right click...)
         """
         if self.width() >= self.height():
-            self.position[0] = (event.x() * 2 - self.width()) / self.width()
-            self.position[1] = -(event.y() * 2 - self.height()) / self.width()
+            self.position[0] = (event.position().x() * 2 - self.width()) / self.width()
+            self.position[1] = -(event.position().y() * 2 - self.height()) / self.width()
         else:
-            self.position[0] = (event.x() * 2 - self.width()) / self.height()
-            self.position[1] = -(event.y() * 2 - self.height()) / self.height()
+            self.position[0] = (event.position().x() * 2 - self.width()) / self.height()
+            self.position[1] = -(event.position().y() * 2 - self.height()) / self.height()
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
@@ -457,37 +444,12 @@ class StructureWidget(QOpenGLWidget):
         # 1.) a box was not drawn before and function is called as a "toggle", not an update
         # 2.) a box was drawn before, but shall be updated (crystal structure changed)
         assert isinstance(self.structures[0], Crystal)
-        basis_vectors_matrix = np.array(self.structures[0].basis_vectors)
-        zero_vec = np.array([0, 0, 0])
-        positions = np.array(
-            [
-                [zero_vec, basis_vectors_matrix[0]],
-                [zero_vec, basis_vectors_matrix[1]],
-                [zero_vec, basis_vectors_matrix[2]],
-                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
-                [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
-                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
-                [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[2]],
-                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[1]],
-                [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[0]],
-                [
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1],
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                ],
-                [
-                    basis_vectors_matrix[0] + basis_vectors_matrix[2],
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                ],
-                [
-                    basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                    basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                ],
-            ],
-            dtype=np.float32,
-        )
 
-        radius = 0.02
-        positions -= self.structures[0].center
+        positions = self.structures[0].unitcell_boundaries_positions
+
+        diagonal_length = np.linalg.norm(self.structures[0].basis_vectors)
+        lowerlim_radius = 0.005
+        radius = max(lowerlim_radius, diagonal_length / 350)  # just some arbitrary scaling that looks nice
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
         self.box[0] = self.renderer.draw_cylinders_from_to(
@@ -500,7 +462,7 @@ class StructureWidget(QOpenGLWidget):
 
         self.main_window.update_action_texts()
 
-    def select_sphere(self, xpos: int, ypos: int) -> int:
+    def identify_selected_sphere(self, xpos: int, ypos: int) -> int:
         """Return index of sphere that has been selected by clicking.
 
         :param xpos: x position of the mouse-click event
@@ -527,42 +489,57 @@ class StructureWidget(QOpenGLWidget):
             self.structures[0].drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
 
-    def update_measurement_selected_atoms(self, event: QMouseEvent) -> None:  # noqa: C901
-        """Update the selected atoms in the measurement dialog.
+    def exec_select_sphere(self, sphere_id: int, selected_spheres_list: list) -> None:
+        """Select a sphere, change its color, update the selected spheres list.
 
+        :param sphere_id: id of the sphere that shall be selected
+        :param selected_spheres_list: list of selected spheres
+        """
+        id_in_selection = selected_spheres_list.index(-1)
+        selected_spheres_list[id_in_selection] = sphere_id
+        self.old_sphere_colors[id_in_selection] = self.structures[0].drawer.atom_colors[sphere_id].copy()
+        self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+
+    def exec_unselect_sphere(self, sphere_id: int, selected_spheres_list: list) -> None:
+        """Unselect a sphere, change its color, update the selected spheres list.
+
+        :param sphere_id: id of the sphere that shall be unselected
+        :param selected_spheres_list: list of selected spheres
+        """
+        if sphere_id == -1:
+            return
+
+        id_in_selection = selected_spheres_list.index(sphere_id)
+        self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
+        self.measurement_selected_spheres[id_in_selection] = -1
+
+    def update_selected_atoms(self, purpose: int, event: QMouseEvent) -> None:
+        """Update the selected atoms in the measurement or builder dialog.
+
+        :param purpose: purpose of the selection (MEASUREMENT=0, BUILDER=1)
         :param event: mouse event (such as left click, right click...)
         :return:
         """
         if len(self.structures) != 1:
             return
-
         self.makeCurrent()
-        selected_sphere = self.select_sphere(event.x(), event.y())
+        selected_sphere_id = self.identify_selected_sphere(event.position().x(), event.position().y())
 
-        def measurement_select_sphere(sphere_id: int) -> None:
-            id_in_selection = self.measurement_selected_spheres.index(-1)
-            self.measurement_selected_spheres[id_in_selection] = sphere_id
-            self.old_sphere_colors[id_in_selection] = self.structures[0].drawer.atom_colors[sphere_id].copy()
-            self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+        selected_spheres_list = (
+            self.measurement_selected_spheres if purpose == MEASUREMENT else self.builder_selected_spheres
+        )
 
-        def measurement_unselect_sphere(sphere_id: int) -> None:
-            id_in_selection = self.measurement_selected_spheres.index(sphere_id)
-            self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
-            self.measurement_selected_spheres[id_in_selection] = -1
-
-        if selected_sphere != -1:
-            if -1 in self.measurement_selected_spheres:
-                if selected_sphere in self.measurement_selected_spheres:
-                    measurement_unselect_sphere(selected_sphere)
+        if selected_sphere_id != -1:
+            if -1 in selected_spheres_list:
+                if selected_sphere_id in selected_spheres_list:
+                    self.exec_unselect_sphere(selected_sphere_id, selected_spheres_list)
                 else:
-                    measurement_select_sphere(selected_sphere)
-            elif selected_sphere in self.measurement_selected_spheres:
-                measurement_unselect_sphere(selected_sphere)
+                    self.exec_select_sphere(selected_sphere_id, selected_spheres_list)
+            elif selected_sphere_id in self.measurement_selected_spheres:
+                self.exec_unselect_sphere(selected_sphere_id, selected_spheres_list)
         elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
             for selected_sphere_i in self.measurement_selected_spheres:
-                if selected_sphere_i == -1:
-                    continue
-                measurement_unselect_sphere(selected_sphere_i)
+                self.exec_unselect_sphere(selected_sphere_i, selected_spheres_list)
 
         self.renderer.update_atoms_vao(
             self.structures[0].drawer.sphere.vertices,
@@ -571,10 +548,11 @@ class StructureWidget(QOpenGLWidget):
             self.structures[0].drawer.atom_colors,
         )
         self.update()
+
         self.main_window.measurement_dialog.display_metrics(
             self.structures[0],
             self.measurement_selected_spheres,
-        )
+        ) if purpose == MEASUREMENT else None
 
     def reset_measurement(self) -> None:
         """Reset measurement arrays and measurement dialog."""
@@ -585,46 +563,6 @@ class StructureWidget(QOpenGLWidget):
             self.structures[0],
             self.measurement_selected_spheres,
         )
-
-    def update_builder_selected_atoms(self, event: QMouseEvent) -> None:
-        """Return the selected atoms.
-
-        :param event: The mouse event.
-        :return:
-        """
-        if len(self.structures) != 1:
-            return
-        self.makeCurrent()
-
-        selected_sphere = self.select_sphere(event.x(), event.y())
-
-        def builder_select_sphere(sphere_id: int) -> None:
-            id_in_selection = self.builder_selected_spheres.index(-1)
-            self.builder_selected_spheres[id_in_selection] = sphere_id
-            self.old_sphere_colors[id_in_selection] = self.structures[0].drawer.atom_colors[sphere_id].copy()
-            self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
-
-        def builder_unselect_sphere(sphere_id: int) -> None:
-            id_in_selection = self.builder_selected_spheres.index(sphere_id)
-            self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
-            self.builder_selected_spheres[id_in_selection] = -1
-
-        if selected_sphere != -1:
-            if -1 in self.builder_selected_spheres:
-                if selected_sphere in self.builder_selected_spheres:
-                    builder_unselect_sphere(selected_sphere)
-                else:
-                    builder_select_sphere(selected_sphere)
-            elif selected_sphere in self.builder_selected_spheres:
-                builder_unselect_sphere(selected_sphere)
-
-        self.renderer.update_atoms_vao(
-            self.structures[0].drawer.sphere.vertices,
-            self.structures[0].drawer.sphere.indices,
-            self.structures[0].drawer.sphere_model_matrices,
-            self.structures[0].drawer.atom_colors,
-        )
-        self.update()
 
     def unselect_all_atoms(self) -> None:
         """Unselect all selected atoms."""
@@ -663,3 +601,6 @@ class StructureWidget(QOpenGLWidget):
         self.camera.adopt_config(other_widget.camera)
         self.set_structure(other_widget.structures, reset_view=False)
         # self.update()
+
+        if other_widget.box[0] != -1:
+            self.toggle_unit_cell_boundaries()

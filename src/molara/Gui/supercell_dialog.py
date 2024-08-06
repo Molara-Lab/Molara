@@ -74,14 +74,13 @@ class SupercellDialog(QDialog):
         if not isinstance(crystal, Crystal):
             return
 
-        num_atoms_unitcell = len(crystal.atomic_nums_unitcell)
         dim_a, dim_b, dim_c = (
             self.ui.inputSupercell_a.value(),
             self.ui.inputSupercell_b.value(),
             self.ui.inputSupercell_c.value(),
         )
         self.ui.labelNumAtoms.setText(
-            f"Number of atoms:\n{num_atoms_unitcell * dim_a * dim_b * dim_c}",
+            f"Number of atoms:\n{crystal.calc_number_of_supercell_atoms([dim_a, dim_b, dim_c])}",
         )
 
     def accept(self) -> None:
