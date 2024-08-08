@@ -1,4 +1,4 @@
-"""Init file for rendering test module."""
+"""Initialize the eval module."""
 
 from __future__ import annotations
 
