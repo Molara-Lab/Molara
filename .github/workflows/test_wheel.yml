@@ -29,7 +29,7 @@ jobs:
           # cache-dependency-path: cython_build.py
       - name: Build wheel and install
         run: |
-          python -m pip install build
+          python -m pip install build pytest pytest-qt pytest-xvfb
           python -m build
           python -m pip install dist/*.whl "numpy<2"
       - name: Install Linux-specific libraries
