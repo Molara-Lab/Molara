@@ -32,7 +32,7 @@ jobs:
           python -m pip install build
           python -m build
           # For some reason, `pip install dist/*.whl` doesn't work
-          find ./dist/*.whl | xargs python -m pip install 
+          find ./dist/*.whl | xargs python -m pip install
           python -m pip install numpy<2
           sudo apt update && sudo apt install -y libegl1-mesa-dev
           sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
