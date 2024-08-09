@@ -1,4 +1,4 @@
-name: Test wheel and numpy<2
+name: Wheel installation and testing
 
 on:
   push:
@@ -31,10 +31,12 @@ jobs:
         run: |
           python -m pip install build
           python -m build
-          # For some reason, `pip install dist/*.whl` doesn't work
-          find ./dist/*.whl | xargs python -m pip install 
-          python -m pip install numpy<2
+          python -m pip install dist/*.whl "numpy<2"
+      - name: Install Linux-specific libraries
+        run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
           sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+      - name: Run tests
+        run: |
           pytest tests
