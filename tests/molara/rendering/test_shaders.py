@@ -7,7 +7,7 @@ import sys
 import unittest
 
 import pytest
-from molara.Rendering import shaders
+from molara.rendering import shaders
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QApplication, QMainWindow

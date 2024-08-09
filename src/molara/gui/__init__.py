@@ -1,4 +1,4 @@
-"""Init file for rendering test module."""
+"""Init file for gui package."""
 
 from __future__ import annotations
 

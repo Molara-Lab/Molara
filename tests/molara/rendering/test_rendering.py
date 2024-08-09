@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 from unittest import mock
 
 import numpy as np
-from molara.Rendering.rendering import Renderer
-from molara.Rendering.shaders import compile_shaders
+from molara.rendering.rendering import Renderer
+from molara.rendering.shaders import compile_shaders
 
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
+    from molara.gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
 

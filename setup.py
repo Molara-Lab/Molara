@@ -13,11 +13,11 @@ __copyright__ = "Copyright 2024, Molara"
 
 # Modules to be compiled and include_dirs when necessary
 extensions = [
-    "src/molara/Rendering/cylinder.pyx",
-    "src/molara/Rendering/sphere.pyx",
-    "src/molara/Rendering/matrices.pyx",
-    "src/molara/Tools/mathtools.pyx",
-    "src/molara/Tools/raycasting.pyx",
+    "src/molara/rendering/cylinder.pyx",
+    "src/molara/rendering/sphere.pyx",
+    "src/molara/rendering/matrices.pyx",
+    "src/molara/tools/mathtools.pyx",
+    "src/molara/tools/raycasting.pyx",
 ]
 
 

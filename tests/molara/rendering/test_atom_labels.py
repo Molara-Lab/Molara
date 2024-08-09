@@ -1,18 +1,18 @@
-"""Contains the unit tests for the atom labels calculation of the Rendering package."""
+"""Contains the unit tests for the atom labels calculation of the rendering package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
+    from molara.gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
 import sys
 from unittest import mock
 
 import numpy as np
-from molara.Rendering.atom_labels import calculate_atom_number_arrays, init_atom_number
+from molara.rendering.atom_labels import calculate_atom_number_arrays, init_atom_number
 
 
 class WorkaroundTestAtomLabels:

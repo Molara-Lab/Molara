@@ -12,9 +12,9 @@ import bs4
 import requests
 from ase.data.colors import cpk_colors, jmol_colors  # pylint: ignore[reportMissingImports]
 from bs4 import BeautifulSoup
-from molara.Structure.atom import atomic_number_to_symbol
+from molara.structure.atom import atomic_number_to_symbol
 
-file_path = "../../src/molara/Structure/"
+file_path = "../../src/molara/structure/"
 
 
 def fetch_color_table() -> bs4.element.Tag:

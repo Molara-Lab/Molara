@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from molara.Structure.structure import Structure
+from molara.structure.structure import Structure
 
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
+    from molara.gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
 
