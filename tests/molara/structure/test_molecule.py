@@ -1,4 +1,4 @@
-"""Test the molecule class."""
+"""Test the Molecule class."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ __copyright__ = "Copyright 2024, Molara"
 
 
 class TestMolecule(TestCase):
-    """Test the molecule class."""
+    """Test the Molecule class."""
 
     def setUp(self) -> None:
         """Set up some molecule objects."""
@@ -115,7 +115,7 @@ class TestMolecule(TestCase):
 
     def test_compute_collision(self) -> None:
         """Test the compute_collision routine."""
-        # def compute_collision(self: structure | Crystal | molecule, coordinate: np.ndarray) -> int | None:
+        # def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
         dist_threshold = 1e-10
         just_below = 0.99 * dist_threshold
         just_above = 1.01 * dist_threshold

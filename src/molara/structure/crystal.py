@@ -1,4 +1,4 @@
-"""Contains the Crystal class, which is a subclass of structure."""
+"""Contains the Crystal class, which is a subclass of Structure."""
 
 from __future__ import annotations
 
@@ -308,9 +308,9 @@ class Crystal(Structure):
         structure: Pmgstructure,
         supercell_dims: list[int],
     ) -> Crystal:
-        """Create a Crystal object from a pymatgen.structure object.
+        """Create a Crystal object from a pymatgen.Structure object.
 
-        :param structure: pymatgen.structure object
+        :param structure: pymatgen.Structure object
         """
         return cls(list(structure.atomic_numbers), structure.frac_coords, structure.lattice.matrix, supercell_dims)
 
@@ -322,7 +322,7 @@ class Crystal(Structure):
         """
         assert atoms.get_pbc().all(), (
             "You are attempting to create a crystal from a non-periodic ase.Atoms object. "
-            "For non-periodic systems, use molecule.from_ase(). "
+            "For non-periodic systems, use Molecule.from_ase(). "
             "Partially periodic systems are not supported yet."
         )
         return cls(

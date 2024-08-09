@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 def init_atom_number(structure: Structure) -> tuple[np.ndarray, np.ndarray]:
     """Initialize the labels for numbering atoms.
 
-    :param structure: structure object
+    :param structure: Structure object
     """
     number_of_atoms = len(structure.atoms)
 
@@ -35,7 +35,7 @@ def calculate_atom_number_arrays(
 
     :param digits: The digits to be displayed.
     :param positions_3d: The 3D positions of the atoms.
-    :param structure: structure object
+    :param structure: Structure object
     :param camera: Camera object
     """
     number_of_atoms = len(structure.atoms)

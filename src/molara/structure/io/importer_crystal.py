@@ -46,7 +46,7 @@ class Importer(ABC):
 class PymatgenImporter(Importer):
     """import crystal files.
 
-    This class is a wrapper around the pymatgen structure class. Supported file formats include cif, poscar, cssr,
+    This class is a wrapper around the pymatgen Structure class. Supported file formats include cif, poscar, cssr,
     pymatgen's json format, and pymatgen's yaml format.
     """
 

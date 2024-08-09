@@ -96,7 +96,7 @@ class Ui_structure_customizer(object):
     # setupUi
 
     def retranslateUi(self, structure_customizer):
-        structure_customizer.setWindowTitle(QCoreApplication.translate("structure_customizer", u"structure Customizer", None))
+        structure_customizer.setWindowTitle(QCoreApplication.translate("structure_customizer", u"Structure Customizer", None))
         self.viewModeButton.setText(QCoreApplication.translate("structure_customizer", u"Stick Mode", None))
         self.ballSizeLabel.setText(QCoreApplication.translate("structure_customizer", u"Atom Size:", None))
         self.stickSizeLabel.setText(QCoreApplication.translate("structure_customizer", u"Bond Size:", None))

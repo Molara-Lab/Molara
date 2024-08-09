@@ -154,7 +154,7 @@ class StructureWidget(QOpenGLWidget):
     def set_structure(self, structs: list[Structure | Crystal | Molecule], reset_view: bool = True) -> None:
         """Set the structures to be drawn.
 
-        :param structs: list of structure object that shall be drawn
+        :param structs: list of Structure object that shall be drawn
         :param reset_view: Specifies whether the view shall be reset to the initial view
         """
         self.structures = structs

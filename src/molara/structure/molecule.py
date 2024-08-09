@@ -1,4 +1,4 @@
-"""Contains the molecule class."""
+"""Contains the Molecule class."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class Molecule(Structure):
-    """Creates a new molecule object."""
+    """Creates a new Molecule object."""
 
     def __init__(
         self,
@@ -25,7 +25,7 @@ class Molecule(Structure):
         dummy: bool = False,
         draw_bonds: bool = True,
     ) -> None:
-        """Create a new molecule object.
+        """Create a new Molecule object.
 
         :param atomic_numbers:np.ndarray: atomic numbers of a atoms
         :param coordinates:np.ndarray: coordinates of the molecule

@@ -40,7 +40,7 @@ class StructureExporter(ABC):
     def write_structure(self, structure: Structure) -> None:
         """Write the structure in some given format into the output file.
 
-        :param structure: structure object to be exported to file
+        :param structure: Structure object to be exported to file
         """
 
 
@@ -50,7 +50,7 @@ class XyzExporter(StructureExporter):
     def write_structure(self, structure: Structure) -> None:
         """Write given structure into file with xyz format.
 
-        :param structure: structure object to be exported to xyz-file
+        :param structure: Structure object to be exported to xyz-file
         """
         lines = [
             atom.symbol + "  " + rf"{atom.position[0]}  {atom.position[1]}  {atom.position[2]}"
@@ -90,6 +90,6 @@ class GeneralExporter(StructureExporter):
     def write_structure(self, structure: Structure) -> None:
         """Write given structure into file with given format.
 
-        :param structure: structure object to be exported to file
+        :param Structure: structure object to be exported to file
         """
         return self._importer.write_structure(structure)

@@ -20,10 +20,10 @@ class Molecules(Structures):
         super().__init__()
         self.energies: list = []
 
-        # aliases for attributes and properties from structure
+        # aliases for attributes and properties from Structure
         self.mols: list[Molecule] = self._structures
 
-        # aliases for routines from structure
+        # aliases for routines from Structure
         self.get_current_mol = self._get_current_structure
         self.get_mol_by_id = self._get_structure_by_id
         self.set_next_mol = self._set_next_structure
@@ -48,7 +48,7 @@ class Molecules(Structures):
     def add_molecule(self, mol: Molecule) -> None:
         """Add a new molecules to list of molecules.
 
-        :param mol: molecule object to be added
+        :param mol: Molecule object to be added
         """
         self._add_structure(mol)
         self.energies.append(mol.energy)

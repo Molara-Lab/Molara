@@ -53,10 +53,10 @@ class Structures:
     def _add_structure(self, struct: Structure) -> None:
         """Add a structure to the list of structures.
 
-        :param struct: structure object to be added to the list
+        :param struct: Structure object to be added to the list
         """
         if not isinstance(struct, Structure):
-            msg = "The given structure is not a structure object."
+            msg = "The given structure is not a Structure object."
             raise TypeError(msg)
         self._structures.append(struct)
 

@@ -81,10 +81,10 @@ class XyzImporter(MoleculesImporter):
     """Import xyz files."""
 
     def _molecule_from_xyz(self, lines: list[str]) -> Molecule:
-        """Create a molecule object from the lines of an xyz file.
+        """Create a Molecule object from the lines of an xyz file.
 
         :param lines: The lines of the xyz file.
-        :return: The molecule object.
+        :return: The Molecule object.
         """
         num_atoms = int(lines[0])
         atomic_numbers = []

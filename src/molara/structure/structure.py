@@ -1,4 +1,4 @@
-"""A module for the structure class."""
+"""A module for the Structure class."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ NO_BONDS = np.array([[-1, -1]], dtype=np.int_)
 
 
 class Structure:
-    """Base class for a structure with a set of atoms. molecule and Crystal inherit from this."""
+    """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
 
     def __init__(
         self: Structure,
@@ -22,7 +22,7 @@ class Structure:
         coordinates: np.ndarray,
         draw_bonds: bool = True,
     ) -> None:
-        """Create a new structure object.
+        """Create a new Structure object.
 
         :param atomic_numbers: np.ndarray: atomic numbers of a atoms
         :param coordinates: np.ndarray: coordinates of the atoms

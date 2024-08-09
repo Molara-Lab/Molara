@@ -105,5 +105,5 @@ class Ui_Dialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("Dialog", u"Export Options", None))
         self.label_3.setText(QCoreApplication.translate("Dialog", u"Sphere Subdivisions", None))
         self.label_4.setText(QCoreApplication.translate("Dialog", u"Cylinder Subdivisions", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Dialog", u"rendering Options", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Dialog", u"Rendering Options", None))
     # retranslateUi
