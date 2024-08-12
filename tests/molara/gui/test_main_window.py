@@ -255,13 +255,13 @@ class WorkaroundTestMainWindow:
         window.structure_customizer_dialog.toggle_stick_mode()
         window.structure_customizer_dialog.toggle_numbers()
 
-        assert Path("~/.molara/Settings/Structure").expanduser().exists()
-        assert Path("~/.molara/Settings/Structure/Default.json").expanduser().exists()
-        with (
-            open(Path("~/.molara/Settings/Structure/Default.json").expanduser()) as file1,
-            open(Path(__file__).parent.parent.parent.parent.joinpath("Settings/Structure/Default.json")) as file2,
-        ):
-            assert file1.read() == file2.read()
+        assert Path("~/.molara/settings/structure").expanduser().exists()
+        assert Path("~/.molara/settings/structure/Default.json").expanduser().exists()
+        with open(Path("~/.molara/settings/structure/Default.json").expanduser()) as file:
+            assert file.read() == (
+                '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, '
+                '"atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'
+            )
 
     def test_show_trajectory_dialog(self) -> None:
         """Test the show_trajectory_dialog method."""
