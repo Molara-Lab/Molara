@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from os import listdir
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -39,6 +40,7 @@ class StructureCustomizerDialog(QDialog):
         self.ui.setupUi(self)
 
         self.src_path = Path(__file__).parent.parent.parent.parent
+        self.home_path = Path("~/.molara").expanduser()
         self.save_names: list = []
         self.update_settings_box()
 
@@ -74,10 +76,17 @@ class StructureCustomizerDialog(QDialog):
 
     def update_settings_box(self) -> None:
         """Update the settings box."""
+        if not self.home_path.joinpath("Settings/Structure").exists():
+            Path(f"{self.home_path}/Settings/Structure").mkdir(parents=True, exist_ok=True)
+        if not self.home_path.joinpath("Settings/Structure/default.json").exists():
+            shutil.copy(
+                f"{self.src_path}/Settings/Structure/Default.json",
+                f"{self.home_path}/Settings/Structure/Default.json",
+            )
         save_files = [
             f
-            for f in listdir(f"{self.src_path}/Settings/Structure")
-            if Path.is_file(self.src_path / "Settings" / "Structure" / f)
+            for f in listdir(f"{self.home_path}/Settings/Structure")
+            if Path.is_file(self.home_path / "Settings" / "Structure" / f)
         ]
         self.save_names = [f.split(".")[0] for f in save_files]
         self.save_names.sort()
@@ -89,7 +98,7 @@ class StructureCustomizerDialog(QDialog):
         save_name = self.ui.loadSelect.currentText()
         if save_name == "Default":
             return
-        settings_file = f"{self.src_path}/Settings/Structure/{save_name}.json"
+        settings_file = f"{self.home_path}/Settings/Structure/{save_name}.json"
         Path(settings_file).unlink()
         self.update_settings_box()
 
@@ -100,7 +109,7 @@ class StructureCustomizerDialog(QDialog):
         """
         if not save_name:
             save_name = self.ui.loadSelect.currentText()
-        settings_file = f"{self.src_path}/Settings/Structure/{save_name}.json"
+        settings_file = f"{self.home_path}/Settings/Structure/{save_name}.json"
         with open(settings_file) as f:
             settings = json.load(f)
         self.load_settings_dict(settings)
@@ -151,7 +160,7 @@ class StructureCustomizerDialog(QDialog):
             self.ui.saveName.setPlainText("Enter name")
         else:
             settings = self.create_settings_dict()
-            settings_file = f"{self.src_path}/Settings/Structure/{save_name}.json"
+            settings_file = f"{self.home_path}/Settings/Structure/{save_name}.json"
             with open(settings_file, "w") as f:
                 json.dump(settings, f)
         self.update_settings_box()
