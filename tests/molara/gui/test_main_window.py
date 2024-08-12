@@ -258,9 +258,9 @@ class WorkaroundTestMainWindow:
         assert Path("~/.molara/settings/structure").expanduser().exists()
         assert Path("~/.molara/settings/structure/Default.json").expanduser().exists()
         with open(Path("~/.molara/settings/structure/Default.json").expanduser()) as file:
-            assert (
-                file.read()
-                == '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, "atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'
+            assert file.read() == (
+                '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, '
+                '"atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'
             )
 
     def test_show_trajectory_dialog(self) -> None:
