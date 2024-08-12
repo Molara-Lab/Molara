@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from molara.gui.builder import BuilderDialog
@@ -157,7 +158,7 @@ class WorkaroundTestMainWindow:
         QApplication.instance().shutdown() if QApplication.instance() is not None else None
 
     def test_export_image_dialog(self) -> None:
-        """Write test code to verify the behavior of export_image_dialog property."""
+        """Test the export_image_dialog method."""
         assert not self.window.export_image_dialog.isVisible()
         self.window.ui.actionExport_Snapshot.triggered.emit()
         assert self.window.export_image_dialog.isVisible()
@@ -165,7 +166,7 @@ class WorkaroundTestMainWindow:
         assert not self.window.export_image_dialog.isVisible()
 
     def test_show_builder_dialog(self) -> None:
-        """Write test code to verify the behavior of show_measurement_dialog method."""
+        """Test the show_builder_dialog method."""
         assert not self.window.builder_dialog.isVisible()
         ui = self.window.ui
         ui.actionBuilder.triggered.emit()
@@ -174,7 +175,7 @@ class WorkaroundTestMainWindow:
         assert not self.window.builder_dialog.isVisible()
 
     def test_show_crystal_dialog(self) -> None:
-        """Write test code to verify the behavior of show_crystal_dialog method."""
+        """Test the show_crystal_dialog method."""
         assert not self.window.crystal_dialog.isVisible()
         ui = self.window.ui
         ui.actionCreate_Lattice.triggered.emit()
@@ -183,7 +184,7 @@ class WorkaroundTestMainWindow:
         assert not self.window.crystal_dialog.isVisible()
 
     def test_show_init_xyz(self) -> None:
-        """Write test code to verify the behavior of show_init_xyz method."""
+        """Test the show_init_xyz method."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
             self.window.show_init_xyz()
@@ -193,7 +194,7 @@ class WorkaroundTestMainWindow:
             assert self.window.structure_widget.structures[0] is self.window.mols.get_current_mol()
 
     def test_load_molecules(self) -> None:
-        """Write test code to verify the behavior of load_molecules method."""
+        """Test the load_molecules method."""
         window = self.window
         # test coord file
         window.load_molecules("examples/coord/coord1.coord")
@@ -215,7 +216,7 @@ class WorkaroundTestMainWindow:
         assert window.structure_widget.structures[0] is window.mols.get_current_mol()
 
     def test_show_measurement_dialog(self) -> None:
-        """Write test code to verify the behavior of show_measurement_dialog method.
+        """Test the show_measurement_dialog method.
 
         a test where a molecule has been loaded must be executed before this test! (see test_load_molecules)
         """
@@ -229,7 +230,7 @@ class WorkaroundTestMainWindow:
         assert not measurement_dialog.isVisible()
 
     def test_structure_customizer_dialog(self) -> None:
-        """Write test code to verify the behavior of show_measurement_dialog method.
+        """Test the structure_customizer_dialog method.
 
         a test where a molecule has been loaded must be executed before this test! (see test_load_molecules)
         """
@@ -254,8 +255,16 @@ class WorkaroundTestMainWindow:
         window.structure_customizer_dialog.toggle_stick_mode()
         window.structure_customizer_dialog.toggle_numbers()
 
+        assert Path("~/.molara/Settings/Structure").expanduser().exists()
+        assert Path("~/.molara/Settings/Structure/Default.json").expanduser().exists()
+        with (
+            open(Path("~/.molara/Settings/Structure/Default.json").expanduser()) as file1,
+            open(Path(__file__).parent.parent.parent.parent.joinpath("Settings/Structure/Default.json")) as file2,
+        ):
+            assert file1.read() == file2.read()
+
     def test_show_trajectory_dialog(self) -> None:
-        """Write test code to verify the behavior of show_trajectory_dialog method."""
+        """Test the show_trajectory_dialog method."""
         window = self.window
         window.load_molecules("examples/xyz/opt.xyz")
 
