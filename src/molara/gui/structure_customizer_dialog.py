@@ -39,7 +39,7 @@ class StructureCustomizerDialog(QDialog):
         self.ui = Ui_structure_customizer()
         self.ui.setupUi(self)
 
-        self.src_path = Path(__file__).parent.parent.parent.parent
+        self.src_path = Path(__file__).parent.parent
         self.home_path = Path("~/.molara").expanduser()
         self.save_names: list = []
         self.update_settings_box()
@@ -72,16 +72,16 @@ class StructureCustomizerDialog(QDialog):
 
     def load_default_settings(self) -> None:
         """Load the default settings."""
-        self.load_settings("default")
+        self.load_settings("Default")
 
     def update_settings_box(self) -> None:
         """Update the settings box."""
-        if not self.home_path.joinpath("Settings/Structure").exists():
-            Path(f"{self.home_path}/Settings/Structure").mkdir(parents=True, exist_ok=True)
-        if not self.home_path.joinpath("Settings/Structure/default.json").exists():
+        if not self.home_path.joinpath("settings/structure").exists():
+            Path(f"{self.home_path}/settings/structure").mkdir(parents=True, exist_ok=True)
+        if not self.home_path.joinpath("settings/structure/Default.json").exists():
             shutil.copy(
-                f"{self.src_path}/Settings/Structure/Default.json",
-                f"{self.home_path}/Settings/Structure/Default.json",
+                f"{self.src_path}/settings/structure/Default.json",
+                f"{self.home_path}/settings/structure/Default.json",
             )
         save_files = [
             f
@@ -96,7 +96,7 @@ class StructureCustomizerDialog(QDialog):
     def delete_settings(self) -> None:
         """Delete the selected settings."""
         save_name = self.ui.loadSelect.currentText()
-        if save_name == "default":
+        if save_name == "Default":
             return
         settings_file = f"{self.home_path}/settings/structure/{save_name}.json"
         Path(settings_file).unlink()
