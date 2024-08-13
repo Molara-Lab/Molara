@@ -5,17 +5,17 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from molara.Gui.builder import BuilderDialog
-from molara.Gui.crystal_dialog import CrystalDialog
-from molara.Gui.main_window import MainWindow
-from molara.Gui.measuring_tool_dialog import MeasurementDialog
-from molara.Gui.structure_widget import StructureWidget
-from molara.Gui.trajectory_dialog import TrajectoryDialog
-from molara.Gui.ui_form import Ui_MainWindow
-from molara.Structure.crystal import Crystal
-from molara.Structure.crystals import Crystals
-from molara.Structure.molecule import Molecule
-from molara.Structure.molecules import Molecules
+from molara.gui.builder import BuilderDialog
+from molara.gui.crystal_dialog import CrystalDialog
+from molara.gui.main_window import MainWindow
+from molara.gui.measuring_tool_dialog import MeasurementDialog
+from molara.gui.structure_widget import StructureWidget
+from molara.gui.trajectory_dialog import TrajectoryDialog
+from molara.gui.ui_form import Ui_MainWindow
+from molara.structure.crystal import Crystal
+from molara.structure.crystals import Crystals
+from molara.structure.molecule import Molecule
+from molara.structure.molecules import Molecules
 from PySide6.QtGui import QAction, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 

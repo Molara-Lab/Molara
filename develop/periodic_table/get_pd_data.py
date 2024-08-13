@@ -14,7 +14,7 @@ MODULE_DIR = Path(__file__).parent
 PKG_DIR = Path(MODULE_DIR).parent
 ROOT = (PKG_DIR).parent
 
-file_path = ROOT / "src/molara/Structure/"
+file_path = ROOT / "src/molara/structure/"
 
 
 def fetch_periodic_table() -> dict[str, dict[str, str]]:

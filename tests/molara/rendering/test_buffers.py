@@ -1,19 +1,19 @@
-"""Contains the unit tests for the buffers module of the Rendering package."""
+"""Contains the unit tests for the buffers module of the rendering package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
+    from molara.gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
 
 import sys
 from unittest import mock
 
 import numpy as np
-from molara.Rendering.buffers import setup_vao, setup_vao_numbers
-from molara.Rendering.sphere import Sphere, calculate_sphere_model_matrix
+from molara.rendering.buffers import setup_vao, setup_vao_numbers
+from molara.rendering.sphere import Sphere, calculate_sphere_model_matrix
 
 
 class WorkaroundTestBuffers:

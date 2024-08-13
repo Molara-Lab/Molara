@@ -10,7 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-Settings/Structure/
+settings/structure/
 dist/
 downloads/
 eggs/
