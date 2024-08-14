@@ -65,7 +65,7 @@ class XyzExporter(StructureExporter):
 class GeneralExporter(StructureExporter):
     """Tries to determine the file format and calls the correct exporter."""
 
-    _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
+    _EXPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzExporter,
     }
 
@@ -79,10 +79,10 @@ class GeneralExporter(StructureExporter):
         suffix = self.path.suffix
 
         try:
-            self._importer = self._IMPORTER_BY_SUFFIX[suffix](path)
+            self._exporter = self._EXPORTER_BY_SUFFIX[suffix](path)
         except KeyError:
             try:
-                self._importer = XyzExporter(path)
+                self._exporter = XyzExporter(path)
             except FileFormatError as err:
                 msg = "Could not open file."
                 raise FileFormatError(msg) from err
@@ -92,4 +92,4 @@ class GeneralExporter(StructureExporter):
 
         :param Structure: structure object to be exported to file
         """
-        return self._importer.write_structure(structure)
+        return self._exporter.write_structure(structure)
