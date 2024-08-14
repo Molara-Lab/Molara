@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
-from unittest import TestCase
+from unittest import TestCase, mock
 
 import pytest
 from molara.structure.crystals import Crystals
@@ -55,3 +55,8 @@ class TestVasprunImporter(TestCase):
             current_mol.coords_unitcell,
             [[0.0, 0.0, 0.0]],
         )
+
+        # test case that pymatgen is not installed
+        with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
+            with pytest.raises(FileFormatError):
+                VasprunImporter("tests/output_files/vasp/vasprun_Si.xml").load()
