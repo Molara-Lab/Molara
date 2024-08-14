@@ -7,6 +7,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import numpy as np
+import pytest
 from molara.structure.io.exporter import GeneralExporter, XyzExporter
 from molara.structure.structure import Structure
 from numpy.testing import assert_array_equal
@@ -103,3 +104,19 @@ class TestGeneralExporter(unittest.TestCase):
         assert data[:, 0].tolist() == ["F", "Ne", "Cl", "Zn", "P", "Li"]
         coordinates = data[:, 1:].astype(float)
         assert_array_equal(coordinates, self.coordinates)
+
+        # test invalid path
+        exporter = GeneralExporter("./path/that/does/not/exist/testfile.xyz")
+        error_msg = "File path for the export is invalid."
+        with pytest.raises(FileNotFoundError, match=error_msg):
+            exporter.write_structure(self.structure)
+
+    def test_unknown_suffix(self) -> None:
+        """Tests the __init__ method of the GeneralExporter class with an unknown suffix."""
+        # test init with unknown suffix
+        exporter = GeneralExporter("./testfile")
+        assert exporter.path == Path("./testfile")
+        assert isinstance(exporter.exporter, XyzExporter)
+        assert exporter.exporter.path == Path("./testfile")
+        # test write_structure with unknown suffix
+        exporter.write_structure(self.structure)
