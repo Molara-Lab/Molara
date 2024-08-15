@@ -23,12 +23,15 @@ New features will follow soon!
 ## Installation
 
 ### Simple User installation
+
 The easiest way to install Molara is from [PyPi](https://pypi.org/project/Molara/) using pip.
+
 ```bash
 pip install molara
 ```
 
 ### Developer installation
+
 If you want to contribute to Molara, you should install the package directly from source. To this end, you need to clone the repository:
 
 ```bash
