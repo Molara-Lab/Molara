@@ -348,7 +348,11 @@ class QmImporter(MoleculesImporter):
 
         :param path: input file path
         """
-        import cclib
+        try:
+            import cclib
+        except ImportError as err:
+            msg = "Could not import cclib."
+            raise FileFormatError(msg) from err
 
         super().__init__(path)
 
