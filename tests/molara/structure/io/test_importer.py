@@ -1,4 +1,10 @@
-"""Test the importer.py module."""
+"""Test the importer.py module.
+
+Note that some functionality of MoldenImporter is also tested in
+test_aos.py, test_basisset.py, and test_mos.py.
+Some functionality of XyzImporter is also tested in
+test_structure_widget.py and test_main_window.py.
+"""
 
 from __future__ import annotations
 
