@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from os import PathLike
     from typing import Any
 
-    from molara.molecule.crystal import Crystal
     from molara.molecule.crystals import Crystals
 
     try:
@@ -55,25 +54,6 @@ class MoleculesImporter(ABC):
 
     @abstractmethod
     def load(self) -> Molecules | Crystals:
-        """Read the file in self.path and creates a Molecules object."""
-
-
-# Note: distinction between MoleculesImporter and CrystalImporter will become
-# obsolete once both Molecules and Crystals have a common base class.
-class CrystalImporter(ABC):
-    """Base class for importers loading molecules from files."""
-
-    def __init__(self, path: PathLike | str) -> None:
-        """Instantiate CrystalImporter object.
-
-        :param path: input file path
-        """
-        super().__init__()
-
-        self.path = Path(path)
-
-    @abstractmethod
-    def load(self) -> Crystal:
         """Read the file in self.path and creates a Molecules object."""
 
 
