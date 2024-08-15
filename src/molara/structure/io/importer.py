@@ -239,11 +239,10 @@ class MoldenImporter(MoleculesImporter):
         :param lines: The lines of the basis set block.
         :return: The basis set.
         """
-        i = 0
-        if "STO" in lines[i]:
+        if "STO" in lines[0]:
             msg = "STO type not implemented."
             raise FileFormatError(msg)
-        i += 2
+        i = 2
         coefficients = []
         exponents = []
         shells = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
