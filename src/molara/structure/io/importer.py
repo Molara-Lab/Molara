@@ -232,15 +232,14 @@ class MoldenImporter(MoleculesImporter):
         atomic_numbers = []
         coordinates = []
 
-        i = 0
-        if "Angs" in lines[i]:
+        if "Angs" in lines[0]:
             angstrom = True
-        elif "AU" in lines[i]:
+        elif "AU" in lines[0]:
             angstrom = False
         else:
             msg = "No unit specified in molden Atoms input."
             raise FileFormatError(msg)
-        i += 1
+        i = 1
         while i < len(lines):
             atom_info = lines[i].split()
             atomic_numbers.append(int(atom_info[2]))
