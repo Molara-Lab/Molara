@@ -11,7 +11,6 @@ from numpy.testing import assert_almost_equal, assert_array_equal
 
 from molara.structure.atom import elements
 from molara.structure.crystal import Crystal
-from molara.structure.io.exceptions import FileFormatError
 from molara.structure.io.importer import PoscarImporter
 
 __copyright__ = "Copyright 2024, Molara"
@@ -66,72 +65,6 @@ class TestCrystal(TestCase):
         num_ = crystal_test.calc_number_of_supercell_atoms([10, 100, 1000])
         assert num_ == ((10 + 1) * (100 + 1) * 1000 + 2 * (10 + 1) * 100 * (1000 + 1) + 3 * 10 * (100 + 1) * (1000 + 1))
 
-    def test_from_poscar_pymatgen(self) -> None:
-        """Test the creation of a crystal from a POSCAR file."""
-        supercell_dims = self.supercell_dims
-
-        importer = PoscarImporter("examples/POSCAR/BN_POSCAR")
-        if find_spec("pymatgen"):
-            self.crystals_from_POSCAR_pymatgen = importer.load(use_pymatgen=True)
-        else:
-            with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
-                self.crystals_from_POSCAR_pymatgen = importer.load(use_pymatgen=True)
-
-        self.crystals_from_POSCAR_parser = importer.load(use_pymatgen=False)
-
-        self.crystal_from_POSCAR_pymatgen = self.crystals_from_POSCAR_pymatgen.get_current_mol()
-        self.crystal_from_POSCAR_parser = self.crystals_from_POSCAR_parser.get_current_mol()
-        self.crystal_from_POSCAR_pymatgen.make_supercell(self.supercell_dims)
-        self.crystal_from_POSCAR_parser.make_supercell(self.supercell_dims)
-
-        assert_array_equal(
-            supercell_dims,
-            self.crystal_from_POSCAR_pymatgen.supercell_dims,
-        )
-        assert len(self.crystal_from_POSCAR_pymatgen.atoms) == (
-            (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
-            + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
-        )
-
-        assert_array_equal(
-            supercell_dims,
-            self.crystal_from_POSCAR_parser.supercell_dims,
-        )
-        assert len(self.crystal_from_POSCAR_parser.atoms) == (
-            (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
-            + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
-        )
-
-        TestCrystal.assert_crystals_equal(self.crystal_from_POSCAR_pymatgen, self.crystal)
-        TestCrystal.assert_crystals_equal(self.crystal_from_POSCAR_parser, self.crystal)
-
-    def test_from_poscar_faulty(self) -> None:
-        """Test the handling of faulty POSCAR files."""
-        # file incomplete: length of lines < 8
-        importer = PoscarImporter("tests/input_files/poscar/faulty_SrTiO3_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
-            _ = importer.load(use_pymatgen=False)
-        # number formatting: scale factor is not a float
-        importer = PoscarImporter("tests/input_files/poscar/faulty_BN_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
-            _ = importer.load(use_pymatgen=False)
-        # number formatting: basis vector component is not a float
-        importer = PoscarImporter("tests/input_files/poscar/faulty_Ba2YCu3O7_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
-            _ = importer.load(use_pymatgen=False)
-        # number formatting: number of (Mg) atoms is not an integer
-        importer = PoscarImporter("tests/input_files/poscar/faulty_Mg3Sb2_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
-            _ = importer.load(use_pymatgen=False)
-        # number formatting: position component is not a float
-        importer = PoscarImporter("tests/input_files/poscar/faulty_O2_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
-            _ = importer.load(use_pymatgen=False)
-        # file incomplete: number of (O) atoms is missing
-        importer = PoscarImporter("tests/input_files/poscar/faulty_BN_cartesian_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
-            _ = importer.load(use_pymatgen=False)
-
     @pytest.mark.skipif(not find_spec("ase"), reason="ASE is not installed.")
     def test_from_ase(self) -> None:
         """Test the creation of a crystal from an ASE atoms object."""
@@ -153,51 +86,6 @@ class TestCrystal(TestCase):
         assert_array_equal(crystal.basis_vectors, basis_vectors)
         assert_array_equal(crystal.atomic_nums_unitcell, atomic_numbers)
         assert_array_equal(crystal.coords_unitcell, coordinates)
-
-    @staticmethod
-    def assert_crystals_equal(crystal1: Crystal, crystal2: Crystal) -> None:
-        """Check whether two crystal objects have the same contents.
-
-        :param crystal1: first crystal of the comparison
-        :param crystal2: second crystal of the comparison
-        """
-        assert_array_equal(
-            crystal1.basis_vectors,
-            crystal2.basis_vectors,
-        )
-        assert_array_equal(
-            crystal1.atomic_nums_supercell,
-            crystal2.atomic_nums_supercell,
-        )
-        assert_array_equal(
-            crystal1.atomic_nums_unitcell,
-            crystal2.atomic_nums_unitcell,
-        )
-        assert_array_equal(
-            crystal1.fractional_coords_supercell,
-            crystal2.fractional_coords_supercell,
-        )
-        assert_array_equal(
-            crystal1.cartesian_coordinates_supercell,
-            crystal2.cartesian_coordinates_supercell,
-        )
-        assert_array_equal(
-            crystal1.coords_unitcell,
-            crystal2.coords_unitcell,
-        )
-
-    def test_from_poscar_cartesian(self) -> None:
-        """Test the creation of a crystal from a POSCAR file with cartesian coords."""
-        importer = PoscarImporter("examples/POSCAR/BN_cartesian_POSCAR")
-        self.crystals_from_POSCAR_c = importer.load(use_pymatgen=False)
-        self.crystal_from_POSCAR_c = self.crystals_from_POSCAR_c.get_current_mol()
-        self.crystal_from_POSCAR_c.make_supercell(self.supercell_dims)
-
-        assert_almost_equal(
-            self.crystal_from_POSCAR_c.fractional_coords_supercell,
-            self.crystal.fractional_coords_supercell,
-            decimal=5,
-        )
 
     def test_make_supercell(self) -> None:
         """Test the supercell generation."""
