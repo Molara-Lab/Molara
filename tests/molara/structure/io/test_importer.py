@@ -12,7 +12,34 @@ from unittest import TestCase, mock
 
 import numpy as np
 import pytest
-from molara.structure.io.importer import FileFormatError, GeneralImporter, MoldenImporter, QmImporter
+from molara.structure.io.importer import (
+    FileFormatError,
+    GeneralImporter,
+    MoldenImporter,
+    QmImporter,
+    XyzImporter,
+)
+from molara.structure.molecule import Molecule
+from molara.structure.molecules import Molecules
+
+
+class TestXyzImporter(TestCase):
+    """Test the XyzImporter class."""
+
+    def setUp(self) -> None:
+        """Set up the XyzImporter object."""
+
+    def test_load(self) -> None:
+        """Test the load method of the XyzImporter class."""
+        # test case in which elements are specified as atomic numbers,
+        # rather than symbols (not in all lines, but in some)
+        self.directory_input_files = "tests/input_files/xyz"
+        self.importer = XyzImporter(f"{self.directory_input_files}/pentane_elements_numeric.xyz")
+        structures = self.importer.load()
+        assert isinstance(structures, Molecules)
+        structure = structures.get_current_mol()
+        assert isinstance(structure, Molecule)
+        assert (structure.atomic_numbers == np.array([6, 1, 1, 6, 1, 1, 6, 1, 1, 1, 6, 1, 1, 6, 1, 1, 1])).all()
 
 
 class TestMoldenImporter(TestCase):
