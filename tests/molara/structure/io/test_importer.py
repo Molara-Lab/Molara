@@ -8,11 +8,11 @@ test_structure_widget.py and test_main_window.py.
 
 from __future__ import annotations
 
-from unittest import TestCase
+from unittest import TestCase, mock
 
 import numpy as np
 import pytest
-from molara.structure.io.importer import FileFormatError, MoldenImporter
+from molara.structure.io.importer import FileFormatError, GeneralImporter, MoldenImporter, QmImporter
 
 
 class TestMoldenImporter(TestCase):
@@ -60,3 +60,33 @@ class TestMoldenImporter(TestCase):
         msg = "STO type not implemented."
         with pytest.raises(FileFormatError, match=msg):
             self.importer.get_basisset(lines)
+
+
+class TestQmImporter(TestCase):
+    """Test the QmImporter class."""
+
+    def setUp(self) -> None:
+        """Set up the QmImporter object."""
+
+    def test_init(self) -> None:
+        """Test the __init__ method."""
+        # test case that cclib is not installed
+        msg = "Could not import cclib."
+        with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
+            with pytest.raises(FileFormatError, match=msg):
+                QmImporter("tests/does/not/matter/if/path/exists/file.type").load()
+
+
+class TestGeneralImporter(TestCase):
+    """Test the GeneralImporter class."""
+
+    def setUp(self) -> None:
+        """Set up the GeneralImporter object."""
+
+    def test_init(self) -> None:
+        """Test the __init__ method."""
+        # test case that cclib is not installed
+        msg = "Could not open file."
+        with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
+            with pytest.raises(FileFormatError, match=msg):
+                GeneralImporter("tests/does/not/matter/if/path/exists/file.unknowntype").load()
