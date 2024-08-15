@@ -39,14 +39,14 @@ cd Molara
 >[!TIP]
 >It is advisable to install Molara in a virtual Python environment.
 >
-><b>Create & activate virtual environment on Linux / Mac:</b>
+>Create & activate virtual environment on Linux / Mac:
 >
 >```bash
 >python -m venv ./venv
 >source ./venv/bin/activate
 >```
 >
-><b>Create & activate virtual environment on Windows:</b>
+>Create & activate virtual environment on Windows:
 >
 >```bash
 >python -m venv .\venv
