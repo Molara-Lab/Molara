@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest import TestCase
 
 import numpy as np
+
 from molara.structure.io.importer import GeneralImporter
 
 __copyright__ = "Copyright 2024, Molara"

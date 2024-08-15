@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
-from molara.structure.io.importer import GeneralImporter
 from numpy.testing import assert_array_almost_equal_nulp
+
+from molara.structure.io.importer import GeneralImporter
 
 if TYPE_CHECKING:
     from molara.structure.basisset import Orbital

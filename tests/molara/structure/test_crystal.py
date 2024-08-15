@@ -7,11 +7,12 @@ from unittest import TestCase
 
 import numpy as np
 import pytest
+from numpy.testing import assert_almost_equal, assert_array_equal
+
 from molara.structure.atom import elements
 from molara.structure.crystal import Crystal
 from molara.structure.io.exceptions import FileFormatError
 from molara.structure.io.importer import PoscarImporter
-from numpy.testing import assert_almost_equal, assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
