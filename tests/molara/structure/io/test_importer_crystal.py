@@ -77,17 +77,15 @@ class TestPymatgenImporter(TestCase):
             [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]],
         )
         supercell_dims = self.supercell_dims
-        self.crystal.make_supercell(supercell_dims)
+        crystal.make_supercell(supercell_dims)
         assert_array_equal(
             supercell_dims,
-            self.crystal_from_POSCAR_pymatgen.supercell_dims,
+            crystal.supercell_dims,
         )
-        assert len(self.crystal_from_POSCAR_pymatgen.atoms) == (
+        assert len(crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
-        # TestCrystal.assert_crystals_equal(self.crystal_from_POSCAR_pymatgen, self.crystal)
-        # TestCrystal.assert_crystals_equal(self.crystal_from_POSCAR_parser, self.crystal)
 
 
 class TestPoscarImporter(TestCase):
