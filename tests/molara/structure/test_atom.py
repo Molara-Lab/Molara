@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
+from numpy.testing import assert_array_equal
+
 from molara.structure.atom import Atom, element_symbol_to_atomic_number, elements
 from molara.structure.basisset import Basisset
-from numpy.testing import assert_array_equal
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
