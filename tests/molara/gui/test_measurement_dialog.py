@@ -5,13 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-
 from molara.structure.structure import Structure
 
 if TYPE_CHECKING:
-    from pytestqt.qtbot import QtBot
-
     from molara.gui.main_window import MainWindow
+    from pytestqt.qtbot import QtBot
 
 
 class WorkaroundTestMeasurementDialog:

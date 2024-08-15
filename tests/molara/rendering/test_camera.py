@@ -9,7 +9,6 @@ from unittest import TestCase
 
 import numpy as np
 import pyrr
-
 from molara.rendering.camera import Camera
 from molara.util.testing import assert_vectors_equal
 

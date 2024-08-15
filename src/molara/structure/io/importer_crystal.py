@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals

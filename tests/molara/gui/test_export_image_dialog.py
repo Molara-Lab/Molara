@@ -6,9 +6,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pytestqt.qtbot import QtBot
-
     from molara.gui.main_window import MainWindow
+    from pytestqt.qtbot import QtBot
 
 import time
 

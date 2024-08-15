@@ -6,11 +6,10 @@ from unittest import TestCase
 
 import numpy as np
 import pytest
-from numpy.testing import assert_array_equal
-
 from molara.structure.atom import Atom
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
+from numpy.testing import assert_array_equal
 
 __copyright__ = "Copyright 2024, Molara"
 

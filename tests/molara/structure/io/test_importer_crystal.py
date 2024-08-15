@@ -6,11 +6,10 @@ from importlib.util import find_spec
 from unittest import TestCase
 
 import pytest
-from numpy.testing import assert_array_equal
-
 from molara.structure.crystals import Crystals
 from molara.structure.io.exceptions import FileFormatError
 from molara.structure.io.importer import PymatgenImporter, VasprunImporter
+from numpy.testing import assert_array_equal
 
 
 @pytest.mark.skipif(not find_spec("pymatgen"), reason="pymatgen not installed")

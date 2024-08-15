@@ -5,9 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PySide6.QtGui import QAction, QSurfaceFormat
-from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
-
 from molara.gui.builder import BuilderDialog
 from molara.gui.crystal_dialog import CrystalDialog
 from molara.gui.main_window import MainWindow
@@ -19,6 +16,8 @@ from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
+from PySide6.QtGui import QAction, QSurfaceFormat
+from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
