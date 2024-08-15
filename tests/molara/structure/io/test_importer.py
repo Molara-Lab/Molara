@@ -45,3 +45,12 @@ class TestMoldenImporter(TestCase):
             coordinates,
             np.array([[2.0, 1.4, 10.1], [3.0, -0.2, 4.4]]) * bohr_to_angstrom,
         ).all()
+
+    def test_get_basisset(self) -> None:
+        """Test the get_basisset method."""
+        lines = [
+            "[STO]",
+        ]
+        msg = "STO type not implemented."
+        with pytest.raises(FileFormatError, match=msg):
+            self.importer.get_basisset(lines)
