@@ -12,6 +12,7 @@ import bs4
 import requests
 from ase.data.colors import cpk_colors, jmol_colors  # pylint: ignore[reportMissingImports]
 from bs4 import BeautifulSoup
+
 from molara.structure.atom import atomic_number_to_symbol
 
 file_path = "../../src/molara/structure/"

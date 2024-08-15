@@ -5,13 +5,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from molara.gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
+
+    from molara.gui.main_window import MainWindow
 
 import sys
 from unittest import mock
 
 import numpy as np
+
 from molara.rendering.atom_labels import calculate_atom_number_arrays, init_atom_number
 
 

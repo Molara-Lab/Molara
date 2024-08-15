@@ -7,12 +7,14 @@ from typing import TYPE_CHECKING
 from unittest import mock
 
 import numpy as np
+
 from molara.rendering.rendering import Renderer
 from molara.rendering.shaders import compile_shaders
 
 if TYPE_CHECKING:
-    from molara.gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
+
+    from molara.gui.main_window import MainWindow
 
 
 class WorkaroundTestRenderer:

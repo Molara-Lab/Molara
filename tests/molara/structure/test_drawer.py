@@ -5,11 +5,12 @@ from __future__ import annotations
 from unittest import TestCase
 
 import numpy as np
+from numpy.testing import assert_array_equal
+
 from molara.rendering.cylinder import Cylinder
 from molara.rendering.sphere import Sphere
 from molara.structure.atom import Atom
 from molara.structure.drawer import Drawer
-from numpy.testing import assert_array_equal
 
 
 class TestDrawer(TestCase):
