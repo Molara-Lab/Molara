@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
+
 from molara.eval.aos import calculate_aos
 from molara.structure.io.importer import GeneralImporter
 from molara.util.testing import assert_vectors_equal

@@ -12,6 +12,7 @@ from unittest import TestCase, mock
 
 import numpy as np
 import pytest
+
 from molara.structure.io.importer import (
     FileFormatError,
     GeneralImporter,
