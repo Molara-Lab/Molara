@@ -110,6 +110,23 @@ class TestPoscarImporter(TestCase):
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
 
+        # test negative scale factor
+        importer = PoscarImporter("tests/input_files/poscar/BN_POSCAR_negative_scale")
+        crystal = importer.load(use_pymatgen=False).get_current_mol()
+        assert_array_equal(
+            crystal.atomic_nums_unitcell,
+            [5, 7],
+        )
+        assert_array_equal(
+            crystal.coords_unitcell,
+            [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]],
+        )
+        assert_almost_equal(
+            crystal.volume_unitcell,
+            11.37,
+            decimal=5,
+        )
+
         # test if pymatgen import works
         if not find_spec("pymatgen"):
             return
