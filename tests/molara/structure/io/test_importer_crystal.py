@@ -61,7 +61,7 @@ class TestPymatgenImporter(TestCase):
         # test case that pymatgen is not installed
         with mock.patch("builtins.__import__", side_effect=ImportError):
             msg = "pymatgen is not installed and internal importer not successful, cannot read files"
-            with pytest.warns(ImportError, match=msg):
+            with pytest.raises(ImportError, match=msg):
                 self.importer.load(use_pymatgen=True)
 
         crystals = self.importer.load(use_pymatgen=True)
