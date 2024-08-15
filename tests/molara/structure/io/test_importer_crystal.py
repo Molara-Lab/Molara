@@ -111,10 +111,18 @@ class TestPoscarImporter(TestCase):
         )
 
         # test if pymatgen import works
-        if find_spec("pymatgen"):
-            crystal_pymatgen = self.importer.load(use_pymatgen=True).get_current_mol()
-            crystal_pymatgen.make_supercell(supercell_dims)
-            assert_crystals_equal(crystal_pymatgen, self.crystal)
+        if not find_spec("pymatgen"):
+            return
+        crystal_pymatgen = self.importer.load(use_pymatgen=True).get_current_mol()
+        crystal_pymatgen.make_supercell(supercell_dims)
+        assert_crystals_equal(crystal_pymatgen, self.crystal)
+
+        # test what happens if pymatgen import fails
+        with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
+            with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
+                crystal = PoscarImporter("examples/POSCAR/BN_POSCAR").load(use_pymatgen=True).get_current_mol()
+                crystal.make_supercell(supercell_dims)
+                assert_crystals_equal(crystal, self.crystal)
 
     def test_from_poscar_cartesian(self) -> None:
         """Test the creation of a crystal from a POSCAR file with cartesian coords."""
