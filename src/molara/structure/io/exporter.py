@@ -56,16 +56,20 @@ class XyzExporter(StructureExporter):
             atom.symbol + "  " + rf"{atom.position[0]}  {atom.position[1]}  {atom.position[2]}"
             for atom in structure.atoms
         ]
-        with open(self.path, "w") as file:
-            file.write(rf"{len(structure.atoms)}" + "\n")
-            file.write("This xyz file was generated automatically by Molara!\n")
-            file.write("\n".join(lines))
+        try:
+            with open(self.path, "w") as file:
+                file.write(rf"{len(structure.atoms)}" + "\n")
+                file.write("This xyz file was generated automatically by Molara!\n")
+                file.write("\n".join(lines))
+        except FileNotFoundError as err:
+            msg = "File path for the export is invalid."
+            raise FileNotFoundError(msg) from err
 
 
 class GeneralExporter(StructureExporter):
     """Tries to determine the file format and calls the correct exporter."""
 
-    _IMPORTER_BY_SUFFIX: Mapping[str, Any] = {
+    _EXPORTER_BY_SUFFIX: Mapping[str, Any] = {
         ".xyz": XyzExporter,
     }
 
@@ -79,17 +83,18 @@ class GeneralExporter(StructureExporter):
         suffix = self.path.suffix
 
         try:
-            self._importer = self._IMPORTER_BY_SUFFIX[suffix](path)
+            self._exporter = self._EXPORTER_BY_SUFFIX[suffix](path)
         except KeyError:
-            try:
-                self._importer = XyzExporter(path)
-            except FileFormatError as err:
-                msg = "Could not open file."
-                raise FileFormatError(msg) from err
+            self._exporter = XyzExporter(path)
 
     def write_structure(self, structure: Structure) -> None:
         """Write given structure into file with given format.
 
         :param Structure: structure object to be exported to file
         """
-        return self._importer.write_structure(structure)
+        return self._exporter.write_structure(structure)
+
+    @property
+    def exporter(self) -> StructureExporter:
+        """Return the exporter object."""
+        return self._exporter

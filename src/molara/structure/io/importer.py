@@ -213,15 +213,14 @@ class MoldenImporter(MoleculesImporter):
         atomic_numbers = []
         coordinates = []
 
-        i = 0
-        if "Angs" in lines[i]:
+        if "Angs" in lines[0]:
             angstrom = True
-        elif "AU" in lines[i]:
+        elif "AU" in lines[0]:
             angstrom = False
         else:
             msg = "No unit specified in molden Atoms input."
             raise FileFormatError(msg)
-        i += 1
+        i = 1
         while i < len(lines):
             atom_info = lines[i].split()
             atomic_numbers.append(int(atom_info[2]))
@@ -241,11 +240,10 @@ class MoldenImporter(MoleculesImporter):
         :param lines: The lines of the basis set block.
         :return: The basis set.
         """
-        i = 0
-        if "STO" in lines[i]:
+        if "STO" in lines[0]:
             msg = "STO type not implemented."
             raise FileFormatError(msg)
-        i += 2
+        i = 2
         coefficients = []
         exponents = []
         shells = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
@@ -351,7 +349,11 @@ class QmImporter(MoleculesImporter):
 
         :param path: input file path
         """
-        import cclib
+        try:
+            import cclib
+        except ImportError as err:
+            msg = "Could not import cclib."
+            raise ImportError(msg) from err
 
         super().__init__(path)
 
@@ -454,6 +456,9 @@ class GeneralImporter(MoleculesImporter):
             except FileFormatError as err:
                 msg = "Could not open file."
                 raise FileFormatError(msg) from err
+            except ImportError as err:
+                msg = "Missing modules. Could not open file."
+                raise ImportError(msg) from err
 
     def load(self) -> Molecules | Crystals:
         """Read the file in self.path and creates a Molecules object."""
