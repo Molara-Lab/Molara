@@ -8,6 +8,8 @@ test_structure_widget.py and test_main_window.py.
 
 from __future__ import annotations
 
+from importlib.util import find_spec
+from tempfile import NamedTemporaryFile
 from unittest import TestCase, mock
 
 import numpy as np
@@ -102,7 +104,15 @@ class TestQmImporter(TestCase):
         msg = "Could not import cclib."
         with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
             with pytest.raises(ImportError, match=msg):
-                QmImporter("tests/does/not/matter/if/path/exists/file.type")  # .load()
+                QmImporter("tests/does/not/matter/if/path/exists/file.type")
+
+        if not find_spec("cclib"):
+            return
+        with NamedTemporaryFile(suffix=".txt") as file:
+            filename = file.name
+        msg = "Not a QM output file."
+        with pytest.raises(FileFormatError, match=msg):
+            QmImporter(filename)
 
 
 class TestGeneralImporter(TestCase):
