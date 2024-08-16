@@ -61,12 +61,14 @@ class PymatgenImporter(Importer):
     def load(self) -> Crystals:
         """Import a file and returns the Crystal."""
         try:
-            # from monty.io import zopen
-            # with zopen(self.path, "rt", errors="replace") as f:
-            #     contents = f.read()
-            from pymatgen.core import Structure
+            from monty.io import zopen
 
-            structure = Structure.from_file(self.path)
+            with zopen(self.path, "rt", errors="replace") as f:
+                contents = f.read()
+            from pymatgen.core import Structure as PymatgenStructure
+
+            # structure = Structure.from_file(self.path)
+            structure = PymatgenStructure.from_str(contents, fmt="poscar")
             crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
         except ImportError as err:
             msg = "pymatgen is not installed and internal importer not successful, cannot read files"
