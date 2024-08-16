@@ -30,6 +30,8 @@ The easiest way to install Molara is from [PyPi](https://pypi.org/project/Molara
 pip install molara
 ```
 
+After the installation, Molara can be started by calling `molara` from the command line.
+
 ### Developer installation
 
 If you want to contribute to Molara, you should install the package directly from source. To this end, you need to clone the repository:
@@ -64,8 +66,6 @@ pip install -e .
 
 > [!IMPORTANT]
 > For the Cython build, a C compiler must be installed on the system (a more detailed description can be found [here](https://cython.readthedocs.io/en/latest/src/quickstart/install.html)).
-
-After the installation, Molara can then be started (if applicable, within the virtual environment) by calling `molara` from the command line.
 
 ## Known issues
 
