@@ -353,7 +353,7 @@ class QmImporter(MoleculesImporter):
             import cclib
         except ImportError as err:
             msg = "Could not import cclib."
-            raise FileFormatError(msg) from err
+            raise ImportError(msg) from err
 
         super().__init__(path)
 
@@ -456,6 +456,9 @@ class GeneralImporter(MoleculesImporter):
             except FileFormatError as err:
                 msg = "Could not open file."
                 raise FileFormatError(msg) from err
+            except ImportError as err:
+                msg = "Missing modules. Could not open file."
+                raise ImportError(msg) from err
 
     def load(self) -> Molecules | Crystals:
         """Read the file in self.path and creates a Molecules object."""

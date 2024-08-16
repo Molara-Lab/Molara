@@ -101,8 +101,8 @@ class TestQmImporter(TestCase):
         # test case that cclib is not installed
         msg = "Could not import cclib."
         with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
-            with pytest.raises(FileFormatError, match=msg):
-                QmImporter("tests/does/not/matter/if/path/exists/file.type").load()
+            with pytest.raises(ImportError, match=msg):
+                QmImporter("tests/does/not/matter/if/path/exists/file.type")  # .load()
 
 
 class TestGeneralImporter(TestCase):
@@ -114,7 +114,7 @@ class TestGeneralImporter(TestCase):
     def test_init(self) -> None:
         """Test the __init__ method."""
         # test case that cclib is not installed
-        msg = "Could not open file."
+        msg = "Missing modules. Could not open file."
         with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
-            with pytest.raises(FileFormatError, match=msg):
-                GeneralImporter("tests/does/not/matter/if/path/exists/file.unknowntype").load()
+            with pytest.raises(ImportError, match=msg):
+                GeneralImporter("tests/does/not/matter/if/path/exists/file.unknowntype")  # .load()

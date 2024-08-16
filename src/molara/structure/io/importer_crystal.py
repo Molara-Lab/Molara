@@ -186,7 +186,7 @@ class VasprunImporter(Importer):
             crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
         except ImportError as err:
             msg = "pymatgen is not installed, cannot read vasprun.xml files"
-            raise FileFormatError(
+            raise ImportError(
                 msg,
             ) from err
         crystals = Crystals()

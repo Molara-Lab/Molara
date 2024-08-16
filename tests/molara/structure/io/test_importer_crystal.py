@@ -193,7 +193,7 @@ class TestVasprunImporter(TestCase):
             with pytest.warns(UserWarning, match="No POTCAR file with matching TITEL fields was found in"):
                 self.structure = self.importer.load()
         else:
-            with pytest.raises(FileFormatError):
+            with pytest.raises(ImportError):
                 self.importer = VasprunImporter("tests/output_files/vasp/vasprun_Si.xml")
 
     @pytest.mark.skipif(not find_spec("pymatgen"), reason="pymatgen not installed")
