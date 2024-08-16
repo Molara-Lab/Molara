@@ -208,6 +208,7 @@ class TestVasprunImporter(TestCase):
         )
 
         # test case that pymatgen is not installed
+        msg = "pymatgen is not installed, cannot read vasprun.xml files"
         with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
-            with pytest.raises(FileFormatError):
+            with pytest.raises(ImportError, match=msg):
                 VasprunImporter("tests/output_files/vasp/vasprun_Si.xml").load()
