@@ -113,7 +113,6 @@ lint.ignore = [
   "PTH123", # `open()` should be replaced by `Path.open()`
   "S101",   # Use of assert detected
   ]
-lint.isort.required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
 exclude = ["ui_*"]
