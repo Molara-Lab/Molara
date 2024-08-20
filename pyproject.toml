@@ -98,7 +98,7 @@ molara = "molara.__main__:main"
 
 [tool.ruff]
 exclude = ["ui_*",]
-target-version = "py39"
+target-version = "py310"
 line-length = 120
 lint.select = ["ALL"]
 lint.ignore = [
