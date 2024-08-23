@@ -97,6 +97,9 @@ crystal = [
 [project.scripts]
 molara = "molara.__main__:main"
 
+[tool.coverage.run]
+source = ["src/*"]
+
 [tool.ruff]
 exclude = ["ui_*",]
 target-version = "py39"
