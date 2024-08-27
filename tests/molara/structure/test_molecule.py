@@ -53,7 +53,7 @@ class TestMolecule(TestCase):
         atomic_nums_ccl4, coords_ccl4 = self.atomic_nums_ccl4, self.coords_ccl4
         assert ccl4.draw_bonds
         assert len(ccl4.atoms) == num_atoms_ccl4
-        for atom_i, atomic_num_i, coords_i in zip(ccl4.atoms, atomic_nums_ccl4, coords_ccl4, strict=False):
+        for atom_i, atomic_num_i, coords_i in zip(ccl4.atoms, atomic_nums_ccl4, coords_ccl4, strict=True):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)
@@ -71,7 +71,7 @@ class TestMolecule(TestCase):
         atomic_nums_water, coords_water = self.atomic_nums_water, self.coords_water
         assert water.draw_bonds
         assert len(water.atoms) == num_atoms_water
-        for atom_i, atomic_num_i, coords_i in zip(water.atoms, atomic_nums_water, coords_water, strict=False):
+        for atom_i, atomic_num_i, coords_i in zip(water.atoms, atomic_nums_water, coords_water, strict=True):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)
@@ -106,7 +106,7 @@ class TestMolecule(TestCase):
         _copy = copy.copy(self.ccl4)
         assert_array_equal(_copy.atomic_numbers, self.ccl4.atomic_numbers)
         assert _copy.molar_mass == self.ccl4.molar_mass
-        for atom_copy, atom_ccl4 in zip(_copy.atoms, self.ccl4.atoms, strict=False):
+        for atom_copy, atom_ccl4 in zip(_copy.atoms, self.ccl4.atoms, strict=True):
             assert_array_equal(atom_copy.position, atom_ccl4.position)
         assert _copy.draw_bonds == self.ccl4.draw_bonds
 

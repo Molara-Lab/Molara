@@ -150,7 +150,7 @@ class PoscarImporter(Importer):
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
 
         atomic_numbers_extended = []
-        for num, an in zip(numbers, atomic_numbers, strict=False):
+        for num, an in zip(numbers, atomic_numbers, strict=True):
             atomic_numbers_extended.extend(num * [an])
 
         scale_unitcell_to_volume = scale < 0
