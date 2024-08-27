@@ -13,7 +13,7 @@ import numpy as np
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
-from molara.structure.io.exceptions import FileFormatError
+from molara.util.exceptions import FileFormatError
 
 if TYPE_CHECKING:
     from os import PathLike
