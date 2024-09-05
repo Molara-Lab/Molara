@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING
+from unittest import mock
 
 import numpy as np
-from molara.Rendering.rendering import Renderer
+
+from molara.rendering.rendering import Renderer
+from molara.rendering.shaders import compile_shaders
 
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
+
+    from molara.gui.main_window import MainWindow
 
 
 class WorkaroundTestRenderer:
@@ -26,23 +31,36 @@ class WorkaroundTestRenderer:
         self.renderer = Renderer()
         self.openGLWidget.show()
 
-    def test_init(self) -> None:
-        """Tests the __init__ method of the Renderer class."""
+    def run_tests(self) -> None:
+        """Run all tests."""
+        self._test_init()
+        self._test_set_shaders()
+        self._test_draw_cylinders()
+        self._test_remove_cylinder()
+        self._test_draw_cylinders_from_to()
+        self._test_draw_spheres()
+        self._test_remove_sphere()
+        self._test_numbers()
+
+        self.openGLWidget.doneCurrent()
+
+    def _test_init(self) -> None:
+        """Test the __init__ method of the Renderer class."""
         assert isinstance(self.renderer, Renderer)
         assert isinstance(self.renderer.atoms_vao, dict)
         assert isinstance(self.renderer.bonds_vao, dict)
         assert isinstance(self.renderer.spheres, list)
         assert isinstance(self.renderer.cylinders, list)
-        assert self.renderer.shader == 0
+        assert self.renderer.shaders == [0]
 
-    def test_set_shader(self) -> None:
-        """Tests the set_shader method of the Renderer class."""
-        shader_int = 192837465
-        self.renderer.set_shader(shader_int)
-        assert self.renderer.shader == shader_int
+    def _test_set_shaders(self) -> None:
+        """Test the set_shader method of the Renderer class."""
+        shader_int = [192837465, 42]
+        self.renderer.set_shaders(shader_int)
+        assert self.renderer.shaders == shader_int
 
-    def test_draw_cylinders(self) -> None:
-        """Tests the draw_cylinders method of the Renderer class."""
+    def _test_draw_cylinders(self) -> None:
+        """Test the draw_cylinders method of the Renderer class."""
         self.openGLWidget.makeCurrent()
         positions = np.array([[0, 0, 0], [1, 1, 1], [4, 5, 6]], dtype=np.float32)
         directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
@@ -86,8 +104,8 @@ class WorkaroundTestRenderer:
         mostrecent_cylinder_id = 0
         cylinder_total_counter += 1
 
-    def test_remove_cylinder(self) -> None:
-        """Tests the remove_cylinder method of the Renderer class."""
+    def _test_remove_cylinder(self) -> None:
+        """Test the remove_cylinder method of the Renderer class."""
         self.openGLWidget.makeCurrent()
 
         def _remove_tests(cylinder_id: int) -> None:
@@ -106,8 +124,8 @@ class WorkaroundTestRenderer:
         # also test removing a cylinder that does not exist. Nothing should happen.
         _remove_tests(543210)
 
-    def test_draw_cylinders_from_to(self) -> None:
-        """Tests the draw_cylinders_from_to method of the Renderer class."""
+    def _test_draw_cylinders_from_to(self) -> None:
+        """Test the draw_cylinders_from_to method of the Renderer class."""
         self.openGLWidget.makeCurrent()
         positions_from_to = np.array(
             [
@@ -135,8 +153,8 @@ class WorkaroundTestRenderer:
         assert id_cylinder_from_to == 0
         assert id_cylinder_normal == 1
 
-    def test_draw_spheres(self) -> None:
-        """Tests the draw_spheres method of the Renderer class."""
+    def _test_draw_spheres(self) -> None:
+        """Test the draw_spheres method of the Renderer class."""
         self.openGLWidget.makeCurrent()
         positions = np.array([[0, 0, 0], [1, 1, 1]], dtype=np.float32)
         radii = np.array([0.5, 0.3], dtype=np.float32)
@@ -173,8 +191,8 @@ class WorkaroundTestRenderer:
         sphere_total_counter += 1
         _test_ids_and_counters(result)
 
-    def test_remove_sphere(self) -> None:
-        """Tests the remove_sphere method of the Renderer class."""
+    def _test_remove_sphere(self) -> None:
+        """Test the remove_sphere method of the Renderer class."""
         self.openGLWidget.makeCurrent()
 
         def _remove_tests(sphere_id: int) -> None:
@@ -193,37 +211,18 @@ class WorkaroundTestRenderer:
         # also test removing a sphere that does not exist. Nothing should happen.
         _remove_tests(543210)
 
-    # def test_update_atoms_vao(self):
-    #     vertices = np.array([[0, 0, 0], [1, 1, 1]])
-    #     indices = np.array([0, 1])
-    #     model_matrices = np.array([np.eye(4), np.eye(4)])
-    #     colors = np.array([[1, 0, 0], [0, 1, 0]])
+    def _test_numbers(self) -> None:
+        """Test the draw_numbers method of the Renderer class."""
+        self.renderer.set_shaders(compile_shaders())
+        testargs = ["molara", "examples/xyz/pentane.xyz"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.main_window.show_init_xyz()
+        digits = np.array([1, 2, 3, 4, 5], dtype=np.int32)
+        positions_3d = np.array([[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]], dtype=np.float32)
+        self.renderer.draw_numbers(digits, positions_3d)
 
-    #     self.renderer.update_atoms_vao(vertices, indices, model_matrices, colors)
+        # Test if the vaos are deleted correctly.
+        self.renderer.draw_numbers(digits, positions_3d)
 
-    #     # Assert that the atoms VAO has been updated successfully
-    #     # You can add additional assertions here if needed
-
-    # def test_update_bonds_vao(self):
-    #     vertices = np.array([[0, 0, 0], [1, 1, 1]])
-    #     indices = np.array([0, 1])
-    #     model_matrices = np.array([np.eye(4), np.eye(4)])
-    #     colors = np.array([[1, 0, 0], [0, 1, 0]])
-
-    #     self.renderer.update_bonds_vao(vertices, indices, model_matrices, colors)
-
-    #     # Assert that the bonds VAO has been updated successfully
-    #     # You can add additional assertions here if needed
-
-    # def test_draw_scene(self):
-    #     # Create a mock camera object and set the bonds flag to True
-    #     class MockCamera:
-    #         pass
-
-    #     camera = MockCamera()
-    #     camera.bonds = True
-
-    #     self.renderer.draw_scene(camera)
-
-    #     # Assert that the scene has been drawn successfully
-    #     # You can add additional assertions here if needed
+        camera = self.main_window.structure_widget.camera
+        self.renderer.display_numbers(camera, 0.25)

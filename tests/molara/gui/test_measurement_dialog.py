@@ -5,11 +5,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from molara.Structure.structure import Structure
+
+from molara.structure.structure import Structure
 
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
+
+    from molara.gui.main_window import MainWindow
 
 
 class WorkaroundTestMeasurementDialog:
@@ -26,6 +28,11 @@ class WorkaroundTestMeasurementDialog:
         self.qtbot = qtbot
         self.main_window = main_window
         self.measurement_dialog = main_window.measurement_dialog
+
+    def run_tests(self) -> None:
+        """Run the tests."""
+        self.test_init()
+        self.test_display_distances_angles()
 
     def test_init(self) -> None:
         """Write test code to verify the behavior of the __init__ method."""
@@ -134,7 +141,7 @@ class WorkaroundTestMeasurementDialog:
         assert len(structure.atoms) >= 4  # noqa: PLR2004
 
         def _tests(selected_atoms: list[int]) -> None:
-            measurement_dialog.display_distances(structure, selected_atoms)
+            measurement_dialog.display_positions_distances(structure, selected_atoms)
             self._test_distance_texts(selected_atoms)
             self._test_position_texts(selected_atoms)
 

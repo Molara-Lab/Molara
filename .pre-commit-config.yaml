@@ -2,12 +2,13 @@ exclude: ^(examples)
 
 ci:
   autoupdate_schedule: weekly
+  skip: [pyright]
   autofix_commit_msg: pre-commit auto-fixes
   autoupdate_commit_msg: pre-commit autoupdate
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.1
+    rev: v0.6.3
     hooks:
       - id: ruff
         args: [--fix]
@@ -18,17 +19,26 @@ repos:
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
+        exclude_types:
+          - "json"
       - id: trailing-whitespace
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.9.0
+    rev: v1.11.2
     hooks:
       - id: mypy
+        additional_dependencies: ["types-requests"]
+
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.378
+    hooks:
+    - id: pyright
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
+        exclude: ".svg"
         stages: [commit, commit-msg]
         additional_dependencies: [tomli] # read pyproject.toml below py3.11
 
@@ -38,3 +48,12 @@ repos:
       - id: cython-lint
         args: [--no-pycodestyle]
       - id: double-quote-cython-strings
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.41.0
+    hooks:
+      - id: markdownlint
+        # MD013: line too long
+        # MD033: no inline HTML
+        # MD041: first line in a file should be a top-level heading
+        args: [--disable, MD013, MD033, MD041, "--"]

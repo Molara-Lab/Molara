@@ -1,0 +1,19 @@
+language: "en-GB"
+early_access: false
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: true
+  review_status: true
+  collapse_walkthrough: false
+  path_filters:
+    - "!**/ui_*"
+  auto_review:
+    enabled: false
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+    drafts: false
+chat:
+  auto_reply: true

@@ -2,21 +2,23 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
-from molara.Gui.builder import BuilderDialog
-from molara.Gui.crystal_dialog import CrystalDialog
-from molara.Gui.main_window import MainWindow
-from molara.Gui.measuring_tool_dialog import MeasurementDialog
-from molara.Gui.structure_widget import StructureWidget
-from molara.Gui.trajectory_dialog import TrajectoryDialog
-from molara.Gui.ui_form import Ui_MainWindow
-from molara.Structure.crystal import Crystal
-from molara.Structure.crystals import Crystals
-from molara.Structure.molecule import Molecule
-from molara.Structure.molecules import Molecules
 from PySide6.QtGui import QAction, QSurfaceFormat
 from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
+
+from molara.gui.builder import BuilderDialog
+from molara.gui.crystal_dialog import CrystalDialog
+from molara.gui.main_window import MainWindow
+from molara.gui.measuring_tool_dialog import MeasurementDialog
+from molara.gui.structure_widget import StructureWidget
+from molara.gui.trajectory_dialog import TrajectoryDialog
+from molara.gui.ui_form import Ui_MainWindow
+from molara.structure.crystal import Crystal
+from molara.structure.crystals import Crystals
+from molara.structure.molecule import Molecule
+from molara.structure.molecules import Molecules
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
@@ -45,6 +47,19 @@ class WorkaroundTestMainWindow:
         self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
         self.window = MainWindow()
         self.window.show()
+
+    def run_tests(self) -> None:
+        """Run all tests."""
+        self.test_init()
+        self.test_ui()
+        self.test_export_image_dialog()
+        self.test_show_builder_dialog()
+        self.test_show_crystal_dialog()
+        self.test_show_init_xyz()
+        self.test_load_molecules()
+        self.test_show_measurement_dialog()
+        self.test_structure_customizer_dialog()
+        self.test_show_trajectory_dialog()
 
     def test_init(self) -> None:
         """Write test code to verify the behavior of the __init__ method."""
@@ -108,9 +123,13 @@ class WorkaroundTestMainWindow:
         ui = self.window.ui
         assert isinstance(ui.menuFile.actions(), list)
         assert ui.quit in ui.menuFile.actions()
-        assert ui.actionImport in ui.menuFile.actions()
-        assert ui.actionExport in ui.menuFile.actions()
-        assert ui.actionExport_Snapshot in ui.menuFile.actions()
+        assert ui.menuImport.menuAction() in ui.menuFile.actions()
+        assert ui.menuExport.menuAction() in ui.menuFile.actions()
+        assert ui.actionImport in ui.menuImport.actions()
+        assert ui.actionImport_CameraSettings in ui.menuImport.actions()
+        assert ui.actionExport in ui.menuExport.actions()
+        assert ui.actionExport_Snapshot in ui.menuExport.actions()
+        assert ui.actionExport_CameraSettings in ui.menuExport.actions()
 
     def test_ui_edit_menu(self) -> None:
         """Tests the edit menu of the ui."""
@@ -118,9 +137,8 @@ class WorkaroundTestMainWindow:
         assert isinstance(ui.menuEdit.actions(), list)
         assert ui.actionReset_View in ui.menuEdit.actions()
         assert ui.actionCenter_Molecule in ui.menuEdit.actions()
-        assert ui.actionOpen_Trajectory_Dialog in ui.menuEdit.actions()
         assert ui.menuRotate.menuAction() in ui.menuEdit.actions()
-        assert ui.actionDraw_Axes in ui.menuEdit.actions()
+        assert ui.actionOpen_Structure_Customizer in ui.menuEdit.actions()
         # menu "view"->rotate
         assert isinstance(ui.menuRotate.actions(), list)
         assert ui.actionto_x_axis in ui.menuRotate.actions()
@@ -131,7 +149,6 @@ class WorkaroundTestMainWindow:
         """Tests the crystal menu of the ui."""
         ui = self.window.ui
         assert isinstance(ui.menuCrystal.actions(), list)
-        assert ui.actionRead_POSCAR in ui.menuCrystal.actions()
         assert ui.actionCreate_Lattice in ui.menuCrystal.actions()
         assert ui.actionSupercell in ui.menuCrystal.actions()
         assert ui.actionToggle_UnitCellBoundaries in ui.menuCrystal.actions()
@@ -141,22 +158,16 @@ class WorkaroundTestMainWindow:
         self.window.close()
         QApplication.instance().shutdown() if QApplication.instance() is not None else None
 
-    def test_structure_widget(self) -> None:
-        """Write test code to verify the behavior of the structure_widget property."""
-        structure_widget = self.window.structure_widget
-        structure_widget.toggle_unit_cell_boundaries()
-        testargs = ["molara", "examples/xyz/pentane.xyz"]
-        with mock.patch.object(sys, "argv", testargs):
-            self.window.show_init_xyz()
-        assert structure_widget.draw_bonds
-        assert structure_widget.bonds
-        self.window.structure_customizer_dialog.toggle_bonds()
-        assert not structure_widget.bonds
-        assert not structure_widget.draw_bonds
-        assert structure_widget is not None
+    def test_export_image_dialog(self) -> None:
+        """Test the export_image_dialog method."""
+        assert not self.window.export_image_dialog.isVisible()
+        self.window.ui.actionExport_Snapshot.triggered.emit()
+        assert self.window.export_image_dialog.isVisible()
+        self.window.export_image_dialog.reject()
+        assert not self.window.export_image_dialog.isVisible()
 
     def test_show_builder_dialog(self) -> None:
-        """Write test code to verify the behavior of show_measurement_dialog method."""
+        """Test the show_builder_dialog method."""
         assert not self.window.builder_dialog.isVisible()
         ui = self.window.ui
         ui.actionBuilder.triggered.emit()
@@ -165,7 +176,7 @@ class WorkaroundTestMainWindow:
         assert not self.window.builder_dialog.isVisible()
 
     def test_show_crystal_dialog(self) -> None:
-        """Write test code to verify the behavior of show_crystal_dialog method."""
+        """Test the show_crystal_dialog method."""
         assert not self.window.crystal_dialog.isVisible()
         ui = self.window.ui
         ui.actionCreate_Lattice.triggered.emit()
@@ -174,7 +185,7 @@ class WorkaroundTestMainWindow:
         assert not self.window.crystal_dialog.isVisible()
 
     def test_show_init_xyz(self) -> None:
-        """Write test code to verify the behavior of show_init_xyz method."""
+        """Test the show_init_xyz method."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
         with mock.patch.object(sys, "argv", testargs):
             self.window.show_init_xyz()
@@ -184,7 +195,7 @@ class WorkaroundTestMainWindow:
             assert self.window.structure_widget.structures[0] is self.window.mols.get_current_mol()
 
     def test_load_molecules(self) -> None:
-        """Write test code to verify the behavior of load_molecules method."""
+        """Test the load_molecules method."""
         window = self.window
         # test coord file
         window.load_molecules("examples/coord/coord1.coord")
@@ -206,7 +217,7 @@ class WorkaroundTestMainWindow:
         assert window.structure_widget.structures[0] is window.mols.get_current_mol()
 
     def test_show_measurement_dialog(self) -> None:
-        """Write test code to verify the behavior of show_measurement_dialog method.
+        """Test the show_measurement_dialog method.
 
         a test where a molecule has been loaded must be executed before this test! (see test_load_molecules)
         """
@@ -220,12 +231,15 @@ class WorkaroundTestMainWindow:
         assert not measurement_dialog.isVisible()
 
     def test_structure_customizer_dialog(self) -> None:
-        """Write test code to verify the behavior of show_measurement_dialog method.
+        """Test the structure_customizer_dialog method.
 
         a test where a molecule has been loaded must be executed before this test! (see test_load_molecules)
         """
         window = self.window
         ui = window.ui
+        testargs = ["molara", "examples/xyz/pentane.xyz"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.window.show_init_xyz()
         structure_customizer_dialog = window.structure_customizer_dialog
         assert not structure_customizer_dialog.isVisible()
         ui.actionOpen_Structure_Customizer.triggered.emit()
@@ -233,13 +247,25 @@ class WorkaroundTestMainWindow:
         structure_customizer_dialog.reject()
         assert not structure_customizer_dialog.isVisible()
         window.show_structure_customizer_dialog()
+        assert structure_customizer_dialog.isVisible()
+
         window.structure_customizer_dialog.save_settings()
         window.structure_customizer_dialog.load_settings()
         window.structure_customizer_dialog.delete_settings()
-        assert structure_customizer_dialog.isVisible()
+
+        window.structure_customizer_dialog.toggle_stick_mode()
+        window.structure_customizer_dialog.toggle_numbers()
+
+        assert Path("~/.molara/settings/structure").expanduser().exists()
+        assert Path("~/.molara/settings/structure/Default.json").expanduser().exists()
+        with open(Path("~/.molara/settings/structure/Default.json").expanduser()) as file:
+            assert file.read() == (
+                '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, '
+                '"atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'
+            )
 
     def test_show_trajectory_dialog(self) -> None:
-        """Write test code to verify the behavior of show_trajectory_dialog method."""
+        """Test the show_trajectory_dialog method."""
         window = self.window
         window.load_molecules("examples/xyz/opt.xyz")
 
