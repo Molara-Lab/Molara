@@ -11,13 +11,12 @@ from PySide6.QtWidgets import (
     QMainWindow,
 )
 
-from molara.Gui.ui_mos_dialog import Ui_MOs_dialog
-from molara.Eval.marchingcubes import marching_cubes
-from molara.Eval.mos import calculate_mo_cartesian
-from molara.Eval.generate_voxel_grid import generate_voxel_grid
+from molara.gui.ui_mos_dialog import Ui_MOs_dialog
+from molara.eval.marchingcubes import marching_cubes
+from molara.eval.generate_voxel_grid import generate_voxel_grid
 
 if TYPE_CHECKING:
-    from molara.Structure.molecule import Molecule
+    from molara.structure.molecule import Molecule
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -58,8 +57,8 @@ class MOsDialog(QDialog):
         self.mcubes()
 
     def mcubes(self):
-        iso = 0.08
-        orbital = 16
+        iso = 0.1
+        orbital = 2
 
         max_length = 0
         for ao in self.aos:
@@ -81,8 +80,8 @@ class MOsDialog(QDialog):
         direction = np.array([[1, 0, 0],
                                  [0, 1, 0],
                                 [0, 0, 1],], dtype=np.float64)
-        size = np.array([5, 2, 5])
-        voxel_number = np.array([30, 12, 30], dtype=np.int32)
+        size = np.array([2, 2, 3])
+        voxel_number = np.array([30, 30, 40], dtype=np.int32)
         # origin = np.array([-1.2, -1.2, -2.4])
         # direction = np.array(
         #     [
@@ -112,8 +111,6 @@ class MOsDialog(QDialog):
         )
         mo_coefficients = self.mos.coefficients[orbital]
         self.parent().structure_widget.update()
-
-        print(voxel_size_)
 
         t1 = time.time()
         temp = generate_voxel_grid(

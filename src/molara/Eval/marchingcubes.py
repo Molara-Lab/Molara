@@ -1,7 +1,7 @@
 """Calculates the isosurface for a given voxel grid."""
 
 import numpy as np
-from molara.Eval.trianglelookuptable import triangle_table, edge_vertex_indices
+from molara.eval.trianglelookuptable import triangle_table, edge_vertex_indices
 
 
 def marching_cubes(

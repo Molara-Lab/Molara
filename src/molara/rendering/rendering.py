@@ -451,8 +451,6 @@ class Renderer:
         :type bonds: bool
         :return:
         """
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glUseProgram(self.shaders[0])
         light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
         proj_loc = glGetUniformLocation(self.shaders[0], "projection")
@@ -504,6 +502,7 @@ class Renderer:
                 )
 
         # Draw polygons
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         for polygon in self.polygons:
             if polygon["vao"] != 0:
                 glBindVertexArray(polygon["vao"])
@@ -513,6 +512,8 @@ class Renderer:
                     polygon["n_vertices"],
                     polygon["n_instances"],
                 )
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
 
         # Draw cylinders
         for cylinder in self.cylinders:

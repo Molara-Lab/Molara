@@ -187,11 +187,9 @@ class MoldenImporter(MoleculesImporter):
         molecules.add_molecule(
             Molecule(np.array(atomic_numbers), np.array(coordinates)),  # type: ignore[reportPossiblyUnboundVariable]
         )
-        molecules.mols[0].mos = Mos(labels, energies, spins, occupations)  # type: ignore[reportPossiblyUnboundVariable]
-        molecules.mols[0].mos.coefficients = np.array(mo_coefficients)  # type: ignore[reportPossiblyUnboundVariable]
-
-        # WATCH OUT ONLY FOR GTOs!!!!!!!!
-        for i, atom in enumerate(basisset):  # type: ignore[reportPossiblyUnboundVariable]
+        molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
+        molecules.mols[0].mos.coefficients = np.array(mo_coefficients)
+        for i in range(len(shells)):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_orbitals(
                 shells[i],

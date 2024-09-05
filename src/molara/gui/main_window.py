@@ -22,7 +22,7 @@ from molara.structure.crystals import Crystals
 from molara.structure.io.exporter import GeneralExporter
 from molara.structure.io.importer import GeneralImporter, PoscarImporter
 from molara.structure.molecules import Molecules
-from molara.Gui.mos_dialog import MOsDialog
+from molara.gui.mos_dialog import MOsDialog
 
 if TYPE_CHECKING:
     from os import PathLike
