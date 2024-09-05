@@ -80,9 +80,9 @@ dev = [
 ]
 strict = [
     "PySide6==6.7.2",
-    "numpy==2.0.1",
+    "numpy==2.1.0",
     "pyrr==0.10.3",
-    "scipy==1.14.0",
+    "scipy==1.14.1",
     "cython==3.0.11",
 ]
 compchem = [
