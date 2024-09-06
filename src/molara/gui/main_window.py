@@ -108,7 +108,6 @@ class MainWindow(QMainWindow):
             self.show_mo_dialog,
         )
 
-
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
@@ -116,9 +115,11 @@ class MainWindow(QMainWindow):
         self.update_action_texts()
 
     def show_mo_dialog(self):
-        """Checks if molecular orbitals have been loaded"""
+        """Checks if molecular orbitals have been loaded and perform actions accordingly."""
         if self.mo_dialog.check_if_mos():
             self.mo_dialog.show()
+            self.mo_dialog.setup_orbital_selector()
+            self.mo_dialog.fill_orbital_selector()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""
