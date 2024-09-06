@@ -7,6 +7,7 @@ on:
   pull_request:
     branches: [main]
     paths-ignore: ["**/*.md", docs/**]
+  workflow_dispatch:
   workflow_call:
 
 permissions:
@@ -38,18 +39,20 @@ jobs:
           python-version: ${{ matrix.version.python }}
           cache: pip
           # cache-dependency-path: cython_build.py
-      - name: Install uv
-        run: |
-          pip install uv
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          enable-cache: true
       - name: Install dependencies
         run: |
           uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} --system
-      - if: runner.os == 'Linux'
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
           sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
-      - name: pytest
+      - name: Run tests
         run: |
           pytest --cov=src --cov-report=xml tests
       - name: Upload coverage reports to Codecov
