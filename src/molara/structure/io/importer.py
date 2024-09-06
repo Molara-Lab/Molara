@@ -233,7 +233,9 @@ class MoldenImporter(MoleculesImporter):
 
         return atomic_numbers, coordinates
 
-    def get_basisset(self, lines: list[str]) -> list:  # noqa: C901
+    def get_basisset(self, lines: list[str]) -> tuple[list[list[str]],
+                                                list[list[list[float]]],
+                                                list[list[list[float]]], list[int]]:  # noqa: C901
         """Read the basis set from the lines of the basisset block.
 
         :param lines: The lines of the basis set block.
@@ -268,10 +270,10 @@ class MoldenImporter(MoleculesImporter):
                 exponents_shell = []
                 coefficients_all.append(coefficients_shell)
                 coefficients_shell = []
+                atom_list.append(atom_idx)
                 first = True
                 continue
             if words[0] in shells_check:
-                atom_list.append(atom_idx)
                 shells.append(words[0])
                 if not first:
                     exponents_shell.append(exponents)
