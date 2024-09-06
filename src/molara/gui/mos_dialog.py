@@ -38,7 +38,7 @@ class MOsDialog(QDialog):
         self.atoms = None
         self.ui = Ui_MOs_dialog()
         self.ui.setupUi(self)
-        self.ui.pushButton.clicked.connect(self.test)
+        self.ui.displayMos.clicked.connect(self.test)
         self.check_if_mos()
 
     def check_if_mos(self):

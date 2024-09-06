@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
             self.show_measurement_dialog,
         )
         self.ui.actionDisplay_MOs.triggered.connect(
-            self.mo_dialog.show,
+            self.show_mo_dialog,
         )
 
 
@@ -114,6 +114,11 @@ class MainWindow(QMainWindow):
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
         self.update_action_texts()
+
+    def show_mo_dialog(self):
+        """Checks if molecular orbitals have been loaded"""
+        if self.mo_dialog.check_if_mos():
+            self.mo_dialog.show()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""
