@@ -163,7 +163,7 @@ class MoldenImporter(MoleculesImporter):
                 i += 1
                 while "[" not in lines[i]:
                     i += 1
-                shells, exponents, coefficients = self.get_basisset(lines[i_start:i])
+                shells, exponents, coefficients, atoms_list = self.get_basisset(lines[i_start:i])
             for sph_key in spherical_harmonics:
                 if sph_key in lines[i]:
                     msg = "Spherical Harmonics not implemented."
@@ -196,6 +196,7 @@ class MoldenImporter(MoleculesImporter):
                 exponents[i],
                 coefficients[i],
                 molecules.mols[0].atoms[i].position,
+                atoms_list[i],
             )
             molecules.mols[0].aos.extend(
                 molecules.mols[0].atoms[i].basis_set.orbitals_list,
@@ -251,7 +252,8 @@ class MoldenImporter(MoleculesImporter):
         coefficients_shell = []
         exponents_all = []
         exponents_shell = []
-        atom_idx = 2
+        atom_idx = 0
+        atom_list = []
         first = True
         for line in lines[2:-1]:
             words = line.split()
@@ -269,6 +271,7 @@ class MoldenImporter(MoleculesImporter):
                 first = True
                 continue
             if words[0] in shells_check:
+                atom_list.append(atom_idx)
                 shells.append(words[0])
                 if not first:
                     exponents_shell.append(exponents)
@@ -277,7 +280,7 @@ class MoldenImporter(MoleculesImporter):
                     coefficients = []
                 first = False
                 continue
-            if words[0] == f'{atom_idx}':
+            if words[0] == f'{atom_idx + 2}':
                 atom_idx += 1
                 continue
             if "D" in words[0]:
@@ -286,7 +289,7 @@ class MoldenImporter(MoleculesImporter):
                 words[1] = words[1].replace("D", "E")
             exponents.append(float(words[0]))
             coefficients.append(float(words[1]))
-        return shells_all, exponents_all, coefficients_all
+        return shells_all, exponents_all, coefficients_all, atom_list
 
     def get_mo_coefficients(
         self,

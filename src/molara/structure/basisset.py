@@ -52,6 +52,7 @@ class Basisset:
         exponents: list,
         coefficients: list,
         position: np.ndarray,
+        atom_idx: int,
     ) -> None:
         """Generate the orbitals for the basisset and normalizes the primitive functions.
 
@@ -59,6 +60,7 @@ class Basisset:
         :param exponents: list of exponents
         :param coefficients: list of coefficients
         :param position: list of positions
+        :param atom_idx: index of the atom
         :return:
         """
         i = 0
@@ -125,6 +127,7 @@ class Basisset:
                     exponents[i],
                     coefficients[i],
                     position,
+                    atom_idx,
                 )
                 si += 1
                 i += 1
@@ -135,6 +138,7 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
+                        atom_idx,
                     )
                 pi += 1
                 i += 1
@@ -145,6 +149,7 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
+                        atom_idx,
                     )
                 di += 1
                 i += 1
@@ -155,6 +160,7 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
+                        atom_idx,
                     )
                 fi += 1
                 i += 1
@@ -165,6 +171,7 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
+                        atom_idx,
                     )
                 gi += 1
                 i += 1
@@ -183,6 +190,7 @@ class Orbital:
         exponents: np.ndarray,
         coefficients: np.ndarray,
         position: np.ndarray,
+        atom_idx: int,
     ) -> None:
         """Initialize the orbital class.
 
@@ -190,6 +198,7 @@ class Orbital:
         :param exponents: list of exponents
         :param coefficients: list of coefficients
         :param position: position of the orbital
+        :param atom_idx: index of the atom
         :return:
         """
         self.ijk = ijk
@@ -202,6 +211,7 @@ class Orbital:
             self.norms,
         )
         self.position = position
+        self.atom_idx = atom_idx
 
 
 def calculate_normalization_primitive_gtos(

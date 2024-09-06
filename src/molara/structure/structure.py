@@ -52,6 +52,7 @@ class Structure:
 
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
+        self.center = self.center_of_mass
 
     def __copy__(self: Structure) -> Structure:
         """Create a copy of the structure."""
@@ -86,7 +87,6 @@ class Structure:
 
     def center_coordinates(self: Structure) -> None:
         """Centers the structure around the center of mass."""
-        self.center = self.center_of_mass
         for _i, atom in enumerate(self.atoms):
             position = atom.position - self.center
             atom.set_position(position)

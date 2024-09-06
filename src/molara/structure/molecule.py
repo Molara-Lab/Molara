@@ -45,6 +45,21 @@ class Molecule(Structure):
         self.aos: list = []
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
+    def center_coordinates(self: Molecule) -> None:
+        """Centers the structure around the center of mass."""
+        self.center = self.center_of_mass
+        bohr_to_angstrom = 5.29177210903e-1
+        for _i, atom in enumerate(self.atoms):
+            position = atom.position - self.center
+            atom.set_position(position)
+        for i in range(len(self.aos)):
+            atom_idx = self.aos[i].atom_idx
+            self.aos[i].position = self.atoms[atom_idx].position# * bohr_to_angstrom
+
+        self.drawer.update_atoms(self.atoms)
+        if self.draw_bonds:
+            self.drawer.update_bonds()
+
     def gen_energy_information(self, string: str | None) -> None:
         """Read the energy from the second line.
 

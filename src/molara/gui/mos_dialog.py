@@ -57,8 +57,8 @@ class MOsDialog(QDialog):
         self.mcubes()
 
     def mcubes(self):
-        iso = 0.1
-        orbital = 2
+        iso = 0.05
+        orbital = 5
 
         max_length = 0
         for ao in self.aos:
