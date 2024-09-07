@@ -48,6 +48,7 @@ class Molecule(Structure):
     def center_coordinates(self: Molecule) -> None:
         """Centers the structure around the center of mass."""
         self.center_of_mass = self.calculate_center_of_mass()
+        self.geometric_center = np.mean(self.coords, axis=0)
         for _i, atom in enumerate(self.atoms):
             position = atom.position - self.center_of_mass
             atom.set_position(position)
@@ -60,6 +61,7 @@ class Molecule(Structure):
             self.drawer.update_bonds()
 
         self.center_of_mass = self.calculate_center_of_mass()
+        self.geometric_center = np.mean(self.coords, axis=0)
 
     def gen_energy_information(self, string: str | None) -> None:
         """Read the energy from the second line.
