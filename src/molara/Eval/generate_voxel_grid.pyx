@@ -5,7 +5,7 @@ from cython import boundscheck, exceptval
 from cython import nogil
 cimport numpy as npc
 import numpy as np
-from cython.cimports.molara.Eval.mos import calculate_mo_cartesian
+from cython.cimports.molara.eval.mos import calculate_mo_cartesian
 
 __copyright__ = "Copyright 2024, Molara"
 

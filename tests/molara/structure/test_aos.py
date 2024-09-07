@@ -10,6 +10,8 @@ import numpy as np
 from molara.eval.aos import calculate_aos
 from molara.structure.io.importer import GeneralImporter
 from molara.util.testing import assert_vectors_equal
+from numpy.testing import assert_almost_equal
+
 
 if TYPE_CHECKING:
     from molara.structure.basisset import Basisset
@@ -65,12 +67,15 @@ class TestAos(TestCase):
         def _test_orbital(orb: str, basisset: Basisset, electron_pos: np.ndarray, nuclear_pos: np.ndarray) -> None:
             """Test the orbital."""
             orbital_type = orb[0]
-            current_orbital = calculate_aos(
-                electron_pos,
-                nuclear_pos,
+            res = np.zeros(orbital_array_lengths[orb[0]])
+            calculate_aos(
+                np.array(electron_pos),
+                np.array(nuclear_pos),
                 basisset.orbitals[orb].exponents,
                 basisset.orbitals[orb].coefficients,
+                basisset.orbitals[orb].norms,
                 quantum_number_l[orbital_type],
+                res
             )
             compare_orbital = reference_calculate_aos(
                 electron_pos,
@@ -78,6 +83,7 @@ class TestAos(TestCase):
                 basisset.orbitals[orb].exponents,
                 basisset.orbitals[orb].coefficients,
                 quantum_number_l[orbital_type],
+                basisset.orbitals[orb].norms,
             )
             compare_orbital_old_implementation = reference2_calculate_aos(
                 electron_pos,
@@ -85,11 +91,11 @@ class TestAos(TestCase):
                 basisset.orbitals[orb].exponents,
                 basisset.orbitals[orb].coefficients,
                 quantum_number_l[orbital_type],
+                basisset.orbitals[orb].norms,
             )
-            assert current_orbital.size == orbital_array_lengths[orbital_type]
-            assert_vectors_equal(current_orbital, compare_orbital)
-            assert_vectors_equal(current_orbital, compare_orbital_old_implementation)
-            # orbital_lists[orbital_type].append(current_orbital)
+            assert res.size == orbital_array_lengths[orbital_type]
+            assert_almost_equal(res, compare_orbital)
+            assert_almost_equal(res, compare_orbital_old_implementation)
 
         for orb in self.basisset_h2.orbitals:
             _test_orbital(orb, self.basisset_h2, self.electron_pos_h2, self.nuclear_pos_h2)
@@ -103,6 +109,7 @@ def reference_calculate_aos(
     exponents: np.ndarray,
     coefficients: np.ndarray,
     orbital: int,
+    norms: np.ndarray,
 ) -> np.ndarray:
     """Calculate the atomic orbitals for a given atom (cartesian).
 
@@ -113,6 +120,7 @@ def reference_calculate_aos(
     :param exponents: list of exponents
     :param coefficients: list of coefficients
     :param orbital: Name of the orbital (ie, s, p, d, etc.)
+    :param norms: Norms of the orbitals
     :return: Value of the atomic orbital(s) for a given atom position and electron position
     """
     sqr3 = 1.73205080756887729
@@ -187,7 +195,7 @@ def reference_calculate_aos(
         raise TypeError(msg)
     for ic in range(ngto):
         u = coefficients[ic] * np.exp(-exponents[ic] * r2)
-        uao += directional_factors * u
+        uao += directional_factors * u * norms[ic]
     return uao
 
 
@@ -200,6 +208,7 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915
     exponents: np.ndarray,
     coefficients: np.ndarray,
     orbital: int,
+    norms: np.ndarray,
 ) -> np.ndarray:
     """Calculate the atomic orbitals for a given atom (cartesian).
 
@@ -210,6 +219,7 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915
     :param exponents: list of exponents
     :param coefficients: list of coefficients
     :param orbital: Name of the orbital (ie, s, p, d, etc.)
+    :param norms: Norms of the orbitals
     :return: Value of the atomic orbital(s) for a given atom position and electron position
     """
     sqr3 = 1.73205080756887729
@@ -256,12 +266,12 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915
     if orbital == s:
         uao = np.zeros(1)
         for ic in range(ngto):
-            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2) * norms[ic]
             uao[0] = uao[0] + u
     elif orbital == p:
         uao = np.zeros(3)
         for ic in range(ngto):
-            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2) * norms[ic]
             dx = relative_coords[0]
             dy = relative_coords[1]
             dz = relative_coords[2]
@@ -271,7 +281,7 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915
     elif orbital == d:
         uao = np.zeros(6)
         for ic in range(ngto):
-            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2) * norms[ic]
             dx = relative_coords[0]
             dx2 = dx * dx
             dy = relative_coords[1]
@@ -288,7 +298,7 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915
     elif orbital == f:
         uao = np.zeros(10)
         for ic in range(ngto):
-            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2) * norms[ic]
             dx = relative_coords[0]
             dx2 = dx * dx
             dy = relative_coords[1]
@@ -311,7 +321,7 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915
     elif orbital == g:
         uao = np.zeros(15)
         for ic in range(ngto):
-            u = coefficients[ic] * np.exp(-exponents[ic] * r2)
+            u = coefficients[ic] * np.exp(-exponents[ic] * r2) * norms[ic]
             dx = relative_coords[0]
             dx2 = dx * dx
             dy = relative_coords[1]

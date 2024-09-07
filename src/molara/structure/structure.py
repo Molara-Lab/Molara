@@ -52,7 +52,7 @@ class Structure:
 
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
-        self.center = self.center_of_mass
+        self.center_of_mass = self.calculate_center_of_mass()
 
     def __copy__(self: Structure) -> Structure:
         """Create a copy of the structure."""
@@ -76,8 +76,7 @@ class Structure:
                 return i
         return None
 
-    @property
-    def center_of_mass(self: Structure) -> np.ndarray:
+    def calculate_center_of_mass(self: Structure) -> np.ndarray:
         """Returns the center of mass of the structure."""
         return np.average(
             [atom.position for atom in self.atoms],
@@ -87,13 +86,17 @@ class Structure:
 
     def center_coordinates(self: Structure) -> None:
         """Centers the structure around the center of mass."""
+        self.center_of_mass = self.calculate_center_of_mass()
         for _i, atom in enumerate(self.atoms):
-            position = atom.position - self.center
+            position = atom.position - self.center_of_mass
             atom.set_position(position)
 
         self.drawer.update_atoms(self.atoms)
         if self.draw_bonds:
             self.drawer.update_bonds()
+
+        self.center_of_mass = self.calculate_center_of_mass()
+
 
     def calculate_bonds(self: Structure) -> np.ndarray:
         """Calculate the bonded pairs of atoms."""
