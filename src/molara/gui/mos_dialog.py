@@ -8,7 +8,8 @@ import numpy as np
 import time
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
+from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidgetItem
+from PySide6.QtGui import QCloseEvent
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
 from molara.eval.marchingcubes import marching_cubes
 from molara.eval.generate_voxel_grid import generate_voxel_grid
@@ -34,18 +35,36 @@ class MOsDialog(QDialog):
         self.mos = None
         self.aos = None
         self.atoms = None
+        self.size = np.zeros(3, dtype=np.float64)
+        self.direction = np.zeros((3, 3), dtype=np.float64)
+        self.origin = np.zeros(3, dtype=np.float64)
+        self.box_center = np.zeros(3, dtype=np.float64)
+        self.minimum_box_size = np.zeros(3, dtype=np.float64)
+        self.check_if_mos()
+        self.drawn_orbitals = [-1, -1]
+        self.display_box = False
+        self.box_spheres = -1
+        self.box_cylinders = -1
+
         self.ui = Ui_MOs_dialog()
         self.ui.setupUi(self)
         self.ui.displayMos.clicked.connect(self.test)
         self.ui.orbitalSelector.cellClicked.connect(self.select_row)
-        self.check_if_mos()
-        self.drawn_orbitals = [-1, -1]
-        self.origin = np.array([-1, -1, -1.5])
-        self.direction = np.array([[1, 0, 0],
-                                 [0, 1, 0],
-                                [0, 0, 1],], dtype=np.float64)
-        self.size = np.array([2, 2, 3])
-        self.draw_cube()
+        self.ui.toggleDisplayBoxButton.clicked.connect(self.toggle_box)
+        self.ui.cubeBoxSizeSpinBox.valueChanged.connect(self.draw_box)
+        self.ui.voxelSizeSpinBox.valueChanged.connect(self.test)
+        self.ui.isoValueSpinBox.valueChanged.connect(self.test)
+
+        self.initial_box_scale = 2
+        scale = self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
+        self.box_scale = np.array([scale, scale, scale], dtype=np.float64)
+        self.voxel_size = np.array([
+            [self.ui.voxelSizeSpinBox.value(), 0, 0],
+            [0, self.ui.voxelSizeSpinBox.value(), 0],
+            [0, 0, self.ui.voxelSizeSpinBox.value()],
+        ], dtype=np.float64)
+
+
     def select_row(self):
         """When a cell is selected, select the whole row"""
         self.ui.orbitalSelector.selectRow(self.ui.orbitalSelector.currentRow())
@@ -85,6 +104,39 @@ class MOsDialog(QDialog):
         self.ui.orbitalSelector.selectRow(0)
 
 
+    def calculate_minimum_box_size(self):
+        """Calculate the minimum box size to fit the molecular orbitals."""
+        max_x = min_x = max_y = min_y = max_z = min_z = 0
+        for atom in self.parent().structure_widget.structures[0].atoms:
+            if atom.position[0] > max_x:
+                max_x = atom.position[0]
+            if atom.position[0] < min_x:
+                min_x = atom.position[0]
+            if atom.position[1] > max_y:
+                max_y = atom.position[1]
+            if atom.position[1] < min_y:
+                min_y = atom.position[1]
+            if atom.position[2] > max_z:
+                max_z = atom.position[2]
+            if atom.position[2] < min_z:
+                min_z = atom.position[2]
+        self.box_center = np.array([(max_x + min_x) / 2, (max_y + min_y) / 2, (max_z + min_z) / 2])
+        self.minimum_box_size = np.array([max_x - min_x, max_y - min_y, max_z - min_z])
+        self.direction = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64)
+        self.scale_box()
+        
+    def scale_box(self):
+        """Scale the box to fit the molecular orbitals."""
+        self.size = self.minimum_box_size + self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
+        self.origin = self.box_center - self.size / 2
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Close the dialog."""
+        self.remove_orbitals()
+        self.remove_box()
+        self.parent().structure_widget.update()
+        event.accept()
+
     def check_if_mos(self):
         """Check if MOs are available."""
         if not self.parent().structure_widget.structures:
@@ -111,7 +163,30 @@ class MOsDialog(QDialog):
             ) * size[1] + direction[2] * (i // 4) * size[2]
         return corners
 
-    def draw_cube(self):
+    def toggle_box(self):
+        """Toggle the cube."""
+        self.display_box = not self.display_box
+        if not self.display_box:
+            self.remove_box()
+            return
+        self.draw_box()
+
+    def remove_box(self):
+        """Remove the box."""
+        if self.box_spheres != -1:
+            self.parent().structure_widget.renderer.remove_sphere(self.box_spheres)
+            self.box_spheres = -1
+        if self.box_cylinders != -1:
+            self.parent().structure_widget.renderer.remove_cylinder(self.box_cylinders)
+            self.box_cylinders = -1
+        self.parent().structure_widget.update()
+
+    def draw_box(self):
+        """Draw the box."""
+        if not self.display_box:
+            return
+        self.remove_box()
+        self.scale_box()
         corners = self.calculate_corners_of_cube()
         positions = np.array([[corners[0], corners[1]],
                     [corners[0], corners[2]],
@@ -128,13 +203,13 @@ class MOsDialog(QDialog):
         radius = 0.01
         colors = np.array([0, 0, 0] * 12, dtype=np.float32)
         radii = np.array([radius] * 12, dtype=np.float32)
-        self.parent().structure_widget.renderer.draw_cylinders_from_to(
+        self.box_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
             positions,
             radii,
             colors,
             10,
         )
-        self.parent().structure_widget.renderer.draw_spheres(
+        self.box_spheres = self.parent().structure_widget.renderer.draw_spheres(
             np.array(corners, dtype=np.float32),
             radii,
             colors,
@@ -143,7 +218,12 @@ class MOsDialog(QDialog):
         self.parent().structure_widget.update()
 
     def mcubes(self):
-        iso = 0.09
+        self.voxel_size = np.array([
+            [self.ui.voxelSizeSpinBox.value(), 0, 0],
+            [0, self.ui.voxelSizeSpinBox.value(), 0],
+            [0, 0, self.ui.voxelSizeSpinBox.value()],
+        ], dtype=np.float64)
+        iso = self.ui.isoValueSpinBox.value()
         orbital = self.ui.orbitalSelector.currentRow()
 
         max_length = 0
@@ -165,22 +245,11 @@ class MOsDialog(QDialog):
         origin = self.origin
         direction = self.direction
         size = self.size
-        voxel_number = np.array([30, 30, 40], dtype=np.int32)
-        voxel_size = np.array(
-            [
-                [size[0] / (voxel_number[0] - 1), 0, 0],
-                [0, size[1] / (voxel_number[1] - 1), 0],
-                [0, 0, size[2] / (voxel_number[2] - 1)],
-            ]
-        )
-        voxel_size_ = np.array(
-            [
-                size[0] / (voxel_number[0] - 1),
-                size[1] / (voxel_number[1] - 1),
-                size[2] / (voxel_number[2] - 1),
-            ],
-            dtype=np.float64,
-        )
+        voxel_number = np.array([
+            int(size[0] / self.voxel_size[0, 0]) + 1,
+            int(size[1] / self.voxel_size[1, 1]) + 1,
+            int(size[2] / self.voxel_size[2, 2]) + 1,
+        ], dtype=np.int32)
         mo_coefficients = self.mos.coefficients[orbital]
         self.parent().structure_widget.update()
 
@@ -188,22 +257,20 @@ class MOsDialog(QDialog):
         temp = generate_voxel_grid(
             np.array(origin, dtype=np.float64),
             direction,
-            voxel_size_,
+            np.array([self.voxel_size[0,0], self.voxel_size[1,1], self.voxel_size[2,2]], dtype=np.float64),
             voxel_number,
             self.aos,
             mo_coefficients,
         )
         t2 = time.time()
         vertices1, vertices2 = marching_cubes(
-            temp, iso, origin, voxel_size, voxel_number
+            temp, iso, origin, self.voxel_size, voxel_number
         )
         t3 = time.time()
         print("new_voxel: ", t2 - t1)
         print("marching: ", t3 - t2)
 
-        for orb in self.drawn_orbitals:
-            if orb != -1:
-                self.parent().structure_widget.renderer.remove_polygon(orb)
+        self.remove_orbitals()
 
         orb1 = self.parent().structure_widget.renderer.draw_polygon(
             vertices1, np.array([[1, 0, 0]], dtype=np.float32)
@@ -212,6 +279,13 @@ class MOsDialog(QDialog):
             vertices2, np.array([[0, 0, 1]], dtype=np.float32)
         )
         self.drawn_orbitals = [orb1, orb2]
+
+    def remove_orbitals(self):
+        """Remove the drawn orbitals."""
+        for orb in self.drawn_orbitals:
+            if orb != -1:
+                self.parent().structure_widget.renderer.remove_polygon(orb)
+                self.drawn_orbitals = [-1, -1]
 
     def temp_MO(self) -> None:
         steps = 100

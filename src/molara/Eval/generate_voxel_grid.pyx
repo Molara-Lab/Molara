@@ -1,8 +1,5 @@
 """Generates a 3D array of values of the mos of  molecule"""
 
-from cython.parallel import prange
-from cython import boundscheck, exceptval
-from cython import nogil
 cimport numpy as npc
 import numpy as np
 from cython.cimports.molara.eval.mos import calculate_mo_cartesian

@@ -120,6 +120,7 @@ class MainWindow(QMainWindow):
             self.mo_dialog.show()
             self.mo_dialog.setup_orbital_selector()
             self.mo_dialog.fill_orbital_selector()
+            self.mo_dialog.calculate_minimum_box_size()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""

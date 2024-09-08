@@ -104,6 +104,7 @@ class Renderer:
                 if check_polygon["vao"] == 0:
                     i_polygon = i
                     self.polygons[i_polygon] = polygon
+                    break
             if i_polygon == -1:
                 i_polygon = len(self.polygons)
                 self.polygons.append(polygon)
@@ -294,6 +295,7 @@ class Renderer:
                 if check_sphere["vao"] == 0:
                     i_sphere = i
                     self.spheres[i_sphere] = sphere
+                    break
             if i_sphere == -1:
                 i_sphere = len(self.spheres)
                 self.spheres.append(sphere)
