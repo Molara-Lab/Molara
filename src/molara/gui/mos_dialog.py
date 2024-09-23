@@ -54,6 +54,7 @@ class MOsDialog(QDialog):
         self.ui.cubeBoxSizeSpinBox.valueChanged.connect(self.draw_box)
         self.ui.voxelSizeSpinBox.valueChanged.connect(self.test)
         self.ui.isoValueSpinBox.valueChanged.connect(self.test)
+        self.ui.checkBoxWireMesh.clicked.connect(self.display_wire_mesh)
 
         self.initial_box_scale = 2
         scale = self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
@@ -85,6 +86,11 @@ class MOsDialog(QDialog):
         header_positions = self.ui.orbitalSelector.horizontalHeader()
         set_resize_modes(header_positions, [stretch, stretch])
 
+    def display_wire_mesh(self):
+
+        self.parent().structure_widget.renderer.wire_mesh_orbitals = not (
+            self.parent().structure_widget.renderer.wire_mesh_orbitals)
+        self.parent().structure_widget.update()
     def fill_orbital_selector(self):
         """Fill the orbital selector."""
         self.ui.orbitalSelector.setRowCount(len(self.mos.energies))
@@ -266,6 +272,7 @@ class MOsDialog(QDialog):
         vertices1, vertices2 = marching_cubes(
             temp, iso, origin, self.voxel_size, voxel_number
         )
+        print(vertices1, vertices2)
         t3 = time.time()
         print("new_voxel: ", t2 - t1)
         print("marching: ", t3 - t2)

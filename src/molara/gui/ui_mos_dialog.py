@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QDoubleSpinBox, QHeaderView,
-    QLabel, QPushButton, QSizePolicy, QTableWidget,
-    QTableWidgetItem, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QDoubleSpinBox,
+    QHeaderView, QLabel, QPushButton, QSizePolicy,
+    QTableWidget, QTableWidgetItem, QWidget)
 
 class Ui_MOs_dialog(object):
     def setupUi(self, MOs_dialog):
@@ -57,7 +57,7 @@ class Ui_MOs_dialog(object):
         self.voxelSizeSpinBox.setObjectName(u"voxelSizeSpinBox")
         self.voxelSizeSpinBox.setGeometry(QRect(310, 57, 62, 22))
         self.voxelSizeSpinBox.setDecimals(2)
-        self.voxelSizeSpinBox.setMinimum(0.100000000000000)
+        self.voxelSizeSpinBox.setMinimum(0.050000000000000)
         self.voxelSizeSpinBox.setMaximum(1.000000000000000)
         self.voxelSizeSpinBox.setSingleStep(0.050000000000000)
         self.voxelSizeSpinBox.setValue(0.200000000000000)
@@ -75,6 +75,9 @@ class Ui_MOs_dialog(object):
         self.isoValueSpinBox.setMaximum(1.000000000000000)
         self.isoValueSpinBox.setSingleStep(0.010000000000000)
         self.isoValueSpinBox.setValue(0.200000000000000)
+        self.checkBoxWireMesh = QCheckBox(MOs_dialog)
+        self.checkBoxWireMesh.setObjectName(u"checkBoxWireMesh")
+        self.checkBoxWireMesh.setGeometry(QRect(210, 100, 85, 20))
 
         self.retranslateUi(MOs_dialog)
 
@@ -91,5 +94,6 @@ class Ui_MOs_dialog(object):
         self.toggleDisplayBoxButton.setText(QCoreApplication.translate("MOs_dialog", u"Display Box", None))
         self.label_5.setText(QCoreApplication.translate("MOs_dialog", u"Voxel Size", None))
         self.label_6.setText(QCoreApplication.translate("MOs_dialog", u"Isovalue", None))
+        self.checkBoxWireMesh.setText(QCoreApplication.translate("MOs_dialog", u"Wire Mesh", None))
     # retranslateUi
 

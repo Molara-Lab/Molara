@@ -63,6 +63,7 @@ class Renderer:
         self.number_vao: list[dict] = []
         self.shaders: list[GLuint] = [0]
         self.polygons: list[dict] = []
+        self.wire_mesh_orbitals = False
 
     def set_shaders(self, shaders: list[GLuint]) -> None:
         """Set the shader program for the opengl widget.
@@ -455,6 +456,7 @@ class Renderer:
         :type bonds: bool
         :return:
         """
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glUseProgram(self.shaders[0])
         light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
         proj_loc = glGetUniformLocation(self.shaders[0], "projection")
@@ -506,7 +508,9 @@ class Renderer:
                 )
 
         # Draw polygons
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        if self.wire_mesh_orbitals:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
         for polygon in self.polygons:
             if polygon["vao"] != 0:
                 glBindVertexArray(polygon["vao"])

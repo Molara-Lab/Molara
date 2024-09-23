@@ -59,8 +59,7 @@ edge_vertex_indices = np.array(
 )
 
 # For each MC case, a list of triangles, specified as triples of edge indices, terminated by -1
-triangle_table = np.array(
-    [
+triangle_table = [
         [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
         [0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
         [0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -318,4 +317,3 @@ triangle_table = np.array(
         [0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
         [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     ]
-)
