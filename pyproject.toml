@@ -81,7 +81,7 @@ dev = [
 ]
 strict = [
     "PySide6==6.7.2",
-    "numpy==2.1.0",
+    "numpy==2.1.1",
     "pyrr==0.10.3",
     "scipy==1.14.1",
     "cython==3.0.11",
