@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Orbitals</string>
   </property>
   <widget class="QPushButton" name="displayMos">
    <property name="geometry">
@@ -39,7 +39,7 @@
     <string>Orbital type:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="orbTypeLabel">
    <property name="geometry">
     <rect>
      <x>90</x>
@@ -70,8 +70,8 @@
     <rect>
      <x>10</x>
      <y>50</y>
-     <width>171</width>
-     <height>171</height>
+     <width>191</width>
+     <height>231</height>
     </rect>
    </property>
   </widget>

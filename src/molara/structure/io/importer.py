@@ -226,6 +226,9 @@ class MoldenImporter(MoleculesImporter):
         molecules.mols[0].mos.set_mo_coefficients(
             np.array(mo_coefficients), spherical_order=spherical_order
         )
+        if spherical_order == "orca":
+            molecules.mols[0].mos.type = "spherical"
+
         return molecules
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:

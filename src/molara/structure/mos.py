@@ -24,6 +24,7 @@ class Mos:
         spins: list | None = None,
         occupations: list | None = None,
         basisfunctions: list | None = None,
+        type: str = "cartesian",
     ) -> None:
         """Initialize the Mos class.
 
@@ -32,6 +33,7 @@ class Mos:
         :param spins: list of spins for the mos
         :param occupations: list of occupations for the mos
         :param basisfunctions: list of basisfunctions for the mos
+        :param type: str: type of the mos, either cartesian or spherical
         :return:
         """
         if labels is not None:
@@ -54,6 +56,7 @@ class Mos:
             self.basisfunctions = basisfunctions
         else:
             self.basisfunctions = []
+        self.type = type
 
         self.coefficients: np.ndarray = np.array([])
         self.coefficients_display: np.ndarray = np.array([])
