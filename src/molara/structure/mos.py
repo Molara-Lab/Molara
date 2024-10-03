@@ -23,6 +23,7 @@ class Mos:
         energies: list | None = None,
         spins: list | None = None,
         occupations: list | None = None,
+        basisfunctions: list | None = None,
     ) -> None:
         """Initialize the Mos class.
 
@@ -30,6 +31,7 @@ class Mos:
         :param energies: list of energies for the mos
         :param spins: list of spins for the mos
         :param occupations: list of occupations for the mos
+        :param basisfunctions: list of basisfunctions for the mos
         :return:
         """
         if labels is not None:
@@ -48,7 +50,34 @@ class Mos:
             self.occupations = occupations
         else:
             self.occupations = []
+        if basisfunctions is not None:
+            self.basisfunctions = basisfunctions
+        else:
+            self.basisfunctions = []
+
         self.coefficients: np.ndarray = np.array([])
+        self.coefficients_display: np.ndarray = np.array([])
+
+    def set_mo_coefficients(
+        self, mo_coefficients: np.ndarray, spherical_order: str = "none"
+    ) -> None:
+        """Set the coefficients for the mos and transform to cartesian ones.
+
+        :param mo_coefficients: np.ndarray: coefficients for the mos
+        :param spherical_order: string: spherical order of the coefficients, only orca supported if none is given the
+        coefficients are assumed to be in cartesian order
+        """
+
+        self.coefficients_display = mo_coefficients
+        if spherical_order == "none":
+            self.coefficients = mo_coefficients
+        elif spherical_order == "orca":
+            self.coefficients = spherical_to_cartesian_transformation(
+                mo_coefficients, self.basisfunctions, spherical_order
+            )
+        else:
+            msg = f"The spherical_order {spherical_order} is not supported."
+            raise TypeError(msg)
 
     def get_mo_value(  # noqa: C901
         self,
@@ -107,3 +136,221 @@ class Mos:
                 raise TypeError(msg)
             print(mo, i)
         return mo
+
+
+def spherical_to_cartesian_transformation(
+    mo_coefficients: np.ndarray, basisfunctions: list, spherical_order: str
+) -> np.ndarray:
+    """Transform spherical coefficients to cartesian coefficients.
+
+    :param mo_coefficients: np.ndarray: coefficients for the mos
+    :param spherical_order: string: spherical order of the coefficients, only orca supported.
+    :return: np.ndarray: cartesian coefficients
+    """
+
+    orca_transformation_d = np.array(
+        [
+            [-1 / 2, -1 / 2, 1, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1],
+            [np.sqrt(3) / 2, -np.sqrt(3) / 2, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0],
+        ],
+        dtype=np.float64,
+    )
+
+    orca_transformation_f = np.array(
+        [
+            [0, 0, 1, 0, -3 * np.sqrt(5) / 10, 0, -3 * np.sqrt(5) / 10, 0, 0, 0],
+            [-np.sqrt(6) / 4, 0, 0, 0, 0, -np.sqrt(30) / 20, 0, np.sqrt(30) / 5, 0, 0],
+            [0, -np.sqrt(6) / 4, 0, -np.sqrt(30) / 20, 0, 0, 0, 0, np.sqrt(30) / 5, 0],
+            [0, 0, 0, 0, np.sqrt(3) / 2, 0, -np.sqrt(3) / 2, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [-np.sqrt(10) / 4, 0, 0, 0, 0, 3 * np.sqrt(2) / 4, 0, 0, 0, 0],
+            [0, np.sqrt(10) / 4, 0, -3 * np.sqrt(2) / 4, 0, 0, 0, 0, 0, 0],
+        ],
+        dtype=np.float64,
+    )
+
+    orca_transformation_g = np.array(
+        [
+            [
+                3 / 8,
+                3 / 8,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3 * np.sqrt(105) / 140,
+                -3 * np.sqrt(105) / 35,
+                -3 * np.sqrt(105) / 35,
+                0,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                0,
+                0,
+                -3 * np.sqrt(70) / 28,
+                0,
+                0,
+                np.sqrt(70) / 7,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -3 * np.sqrt(14) / 28,
+                0,
+            ],
+            [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -3 * np.sqrt(70) / 28,
+                0,
+                np.sqrt(70) / 7,
+                0,
+                0,
+                0,
+                -3 * np.sqrt(14) / 28,
+                0,
+                0,
+            ],
+            [
+                -np.sqrt(5) / 4,
+                np.sqrt(5) / 4,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3 * np.sqrt(21) / 14,
+                -3 * np.sqrt(21) / 14,
+                0,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                0,
+                -np.sqrt(35) / 14,
+                0,
+                -np.sqrt(35) / 14,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3 * np.sqrt(7) / 7,
+            ],
+            [
+                0,
+                0,
+                0,
+                0,
+                -np.sqrt(10) / 4,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3 * np.sqrt(2) / 4,
+                0,
+            ],
+            [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                np.sqrt(10) / 4,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -3 * np.sqrt(2) / 4,
+                0,
+                0,
+            ],
+            [
+                -np.sqrt(35) / 8,
+                -np.sqrt(35) / 8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3 * np.sqrt(3) / 4,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
+            [0, 0, 0, -np.sqrt(5) / 2, 0, np.sqrt(5) / 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        dtype=np.float64,
+    )
+
+    new_coefficients = []
+    skip_counter = 0
+    for mo in mo_coefficients:
+        new_coefficients_temp = []
+        index = 0
+        for atom_basis in basisfunctions:
+            for bf in atom_basis:
+                if skip_counter > 0:
+                    skip_counter -= 1
+                    continue
+                if "dxx" in bf:
+                    d_coefficients_spherical = mo[index : index + 5]
+                    d_coefficients_cart = np.dot(
+                        d_coefficients_spherical, orca_transformation_d
+                    )
+                    new_coefficients_temp.extend(d_coefficients_cart)
+                    skip_counter = 5
+                    index += 5
+                elif "fxxx" in bf:
+                    f_coefficients_spherical = mo[index : index + 7]
+                    f_coefficients_cart = np.dot(
+                        f_coefficients_spherical, orca_transformation_f
+                    )
+                    new_coefficients_temp.extend(f_coefficients_cart)
+                    skip_counter = 9
+                    index += 7
+                elif "gxxxx" in bf:
+                    g_coefficients_spherical = mo[index : index + 9]
+                    g_coefficients_cart = np.dot(
+                        g_coefficients_spherical, orca_transformation_g
+                    )
+                    new_coefficients_temp.extend(g_coefficients_cart)
+                    skip_counter = 14
+                    index += 9
+                else:
+                    new_coefficients_temp.append(mo[index])
+                    index += 1
+        new_coefficients.append(new_coefficients_temp)
+    return np.array(new_coefficients)

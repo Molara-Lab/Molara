@@ -27,15 +27,17 @@ cpdef int calculate_aos(
     cdef int f = 3
     cdef int g = 4
 
+# GMS order
+
     cdef int fxxx = 0
     cdef int fyyy = 1
     cdef int fzzz = 2
-    cdef int fxyy = 3
-    cdef int fxxy = 4
-    cdef int fxxz = 5
-    cdef int fxzz = 6
-    cdef int fyzz = 7
-    cdef int fyyz = 8
+    cdef int fxxy = 3
+    cdef int fxxz = 4
+    cdef int fxyy = 5
+    cdef int fyyz = 6
+    cdef int fxzz = 7
+    cdef int fyzz = 8
     cdef int fxyz = 9
 
     cdef int gxxxx = 0
@@ -82,13 +84,13 @@ cpdef int calculate_aos(
         dy2 = dy * dy
         dz = relative_coords[2]
         dz2 = dz * dz
-        uao[0] = uao[0] + dx2 * u
-        uao[1] = uao[1] + dy2 * u
-        uao[2] = uao[2] + dz2 * u
+        uao[0] = dx2 * u
+        uao[1] = dy2 * u
+        uao[2] = dz2 * u
         u = sqr3 * u
-        uao[3] = uao[3] + dx * dy * u
-        uao[4] = uao[4] + dx * dz * u
-        uao[5] = uao[5] + dy * dz * u
+        uao[3] = dx * dy * u
+        uao[4] = dx * dz * u
+        uao[5] = dy * dz * u
     elif orbital == f:
         dx = relative_coords[0]
         dx2 = dx * dx
@@ -97,18 +99,18 @@ cpdef int calculate_aos(
         dz = relative_coords[2]
         dz2 = dz * dz
         dxyz = dx * dy * dz
-        uao[fxxx] = uao[fxxx] + dx2 * dx * u
-        uao[fyyy] = uao[fyyy] + dy2 * dy * u
-        uao[fzzz] = uao[fzzz] + dz2 * dz * u
+        uao[fxxx] = dx2 * dx * u
+        uao[fyyy] = dy2 * dy * u
+        uao[fzzz] = dz2 * dz * u
         u = sqr5 * u
-        uao[fxxy] = uao[fxxy] + dx2 * dy * u
-        uao[fxxz] = uao[fxxz] + dx2 * dz * u
-        uao[fxyy] = uao[fxyy] + dy2 * dx * u
-        uao[fyyz] = uao[fyyz] + dy2 * dz * u
-        uao[fxzz] = uao[fxzz] + dz2 * dx * u
-        uao[fyzz] = uao[fyzz] + dz2 * dy * u
+        uao[fxxy] = dx2 * dy * u
+        uao[fxxz] = dx2 * dz * u
+        uao[fxyy] = dy2 * dx * u
+        uao[fyyz] = dy2 * dz * u
+        uao[fxzz] = dz2 * dx * u
+        uao[fyzz] = dz2 * dy * u
         u = sqr3 * u
-        uao[fxyz] = uao[fxyz] + dxyz * u
+        uao[fxyz] = dxyz * u
     elif orbital == g:
         dx = relative_coords[0]
         dx2 = dx * dx
@@ -117,22 +119,22 @@ cpdef int calculate_aos(
         dz = relative_coords[2]
         dz2 = dz * dz
         dxyz = dx * dy * dz
-        uao[gxxxx] = uao[gxxxx] + dx2 * dx2 * u
-        uao[gyyyy] = uao[gyyyy] + dy2 * dy2 * u
-        uao[gzzzz] = uao[gzzzz] + dz2 * dz2 * u
+        uao[gxxxx] = dx2 * dx2 * u
+        uao[gyyyy] = dy2 * dy2 * u
+        uao[gzzzz] = dz2 * dz2 * u
         u = sqr7 * u
-        uao[gxxxy] = uao[gxxxy] + dx2 * dx * dy * u
-        uao[gxxxz] = uao[gxxxz] + dx2 * dx * dz * u
-        uao[gyyyx] = uao[gyyyx] + dy2 * dy * dx * u
-        uao[gyyyz] = uao[gyyyz] + dy2 * dy * dz * u
-        uao[gzzzx] = uao[gzzzx] + dz2 * dz * dx * u
-        uao[gzzzy] = uao[gzzzy] + dz2 * dz * dy * u
+        uao[gxxxy] = dx2 * dx * dy * u
+        uao[gxxxz] = dx2 * dx * dz * u
+        uao[gyyyx] = dy2 * dy * dx * u
+        uao[gyyyz] = dy2 * dy * dz * u
+        uao[gzzzx] = dz2 * dz * dx * u
+        uao[gzzzy] = dz2 * dz * dy * u
         u = sqr5 / sqr3 * u
-        uao[gxxyy] = uao[gxxyy] + dx2 * dy2 * u
-        uao[gxxzz] = uao[gxxzz] + dx2 * dz2 * u
-        uao[gyyzz] = uao[gyyzz] + dy2 * dz2 * u
+        uao[gxxyy] = dx2 * dy2 * u
+        uao[gxxzz] = dx2 * dz2 * u
+        uao[gyyzz] = dy2 * dz2 * u
         u = sqr3 * u
-        uao[gxxyz] = uao[gxxyz] + dx * dxyz * u
-        uao[gyyxz] = uao[gyyxz] + dy * dxyz * u
-        uao[gzzxy] = uao[gzzxy] + dz * dxyz * u
+        uao[gxxyz] = dx * dxyz * u
+        uao[gyyxz] = dy * dxyz * u
+        uao[gzzxy] = dz * dxyz * u
     return 0

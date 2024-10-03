@@ -59,12 +59,14 @@ class MOsDialog(QDialog):
         self.initial_box_scale = 2
         scale = self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
         self.box_scale = np.array([scale, scale, scale], dtype=np.float64)
-        self.voxel_size = np.array([
-            [self.ui.voxelSizeSpinBox.value(), 0, 0],
-            [0, self.ui.voxelSizeSpinBox.value(), 0],
-            [0, 0, self.ui.voxelSizeSpinBox.value()],
-        ], dtype=np.float64)
-
+        self.voxel_size = np.array(
+            [
+                [self.ui.voxelSizeSpinBox.value(), 0, 0],
+                [0, self.ui.voxelSizeSpinBox.value(), 0],
+                [0, 0, self.ui.voxelSizeSpinBox.value()],
+            ],
+            dtype=np.float64,
+        )
 
     def select_row(self):
         """When a cell is selected, select the whole row"""
@@ -72,10 +74,16 @@ class MOsDialog(QDialog):
 
     def setup_orbital_selector(self):
         """Set up the orbital selector."""
+
         def set_resize_modes(obj: QHeaderView, modes: list) -> None:
             for i, mode in enumerate(modes):
                 obj.setSectionResizeMode(i, mode)
-        fixed, resize, stretch = QHeaderView.Fixed, QHeaderView.ResizeToContents, QHeaderView.Stretch
+
+        fixed, resize, stretch = (
+            QHeaderView.Fixed,
+            QHeaderView.ResizeToContents,
+            QHeaderView.Stretch,
+        )
 
         # font = QFont()  # or "Monospace", "Consolas", etc.
         # font.setStyleHint(QFont.TypeWriter)
@@ -89,8 +97,10 @@ class MOsDialog(QDialog):
     def display_wire_mesh(self):
 
         self.parent().structure_widget.renderer.wire_mesh_orbitals = not (
-            self.parent().structure_widget.renderer.wire_mesh_orbitals)
+            self.parent().structure_widget.renderer.wire_mesh_orbitals
+        )
         self.parent().structure_widget.update()
+
     def fill_orbital_selector(self):
         """Fill the orbital selector."""
         self.ui.orbitalSelector.setRowCount(len(self.mos.energies))
@@ -109,7 +119,6 @@ class MOsDialog(QDialog):
 
         self.ui.orbitalSelector.selectRow(0)
 
-
     def calculate_minimum_box_size(self):
         """Calculate the minimum box size to fit the molecular orbitals."""
         max_x = min_x = max_y = min_y = max_z = min_z = 0
@@ -126,14 +135,20 @@ class MOsDialog(QDialog):
                 max_z = atom.position[2]
             if atom.position[2] < min_z:
                 min_z = atom.position[2]
-        self.box_center = np.array([(max_x + min_x) / 2, (max_y + min_y) / 2, (max_z + min_z) / 2])
+        self.box_center = np.array(
+            [(max_x + min_x) / 2, (max_y + min_y) / 2, (max_z + min_z) / 2]
+        )
         self.minimum_box_size = np.array([max_x - min_x, max_y - min_y, max_z - min_z])
         self.direction = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64)
         self.scale_box()
-        
+
     def scale_box(self):
         """Scale the box to fit the molecular orbitals."""
-        self.size = self.minimum_box_size + self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
+        self.size = (
+            self.minimum_box_size
+            + self.ui.cubeBoxSizeSpinBox.value()
+            + self.initial_box_scale
+        )
         self.origin = self.box_center - self.size / 2
 
     def closeEvent(self, event: QCloseEvent) -> None:
@@ -164,9 +179,12 @@ class MOsDialog(QDialog):
         size = self.size
         corners = np.zeros((8, 3), dtype=np.float64)
         for i in range(8):
-            corners[i, :] = origin + direction[0] * (i % 2) * size[0] + direction[1] * (
-                (i // 2) % 2
-            ) * size[1] + direction[2] * (i // 4) * size[2]
+            corners[i, :] = (
+                origin
+                + direction[0] * (i % 2) * size[0]
+                + direction[1] * ((i // 2) % 2) * size[1]
+                + direction[2] * (i // 4) * size[2]
+            )
         return corners
 
     def toggle_box(self):
@@ -194,26 +212,33 @@ class MOsDialog(QDialog):
         self.remove_box()
         self.scale_box()
         corners = self.calculate_corners_of_cube()
-        positions = np.array([[corners[0], corners[1]],
-                    [corners[0], corners[2]],
-                    [corners[3], corners[1]],
-                    [corners[3], corners[2]],
-                    [corners[4], corners[5]],
-                    [corners[4], corners[6]],
-                    [corners[7], corners[5]],
-                    [corners[7], corners[6]],
-                    [corners[0], corners[4]],
-                    [corners[1], corners[5]],
-                    [corners[2], corners[6]],
-                    [corners[3], corners[7]]], dtype=np.float32)
+        positions = np.array(
+            [
+                [corners[0], corners[1]],
+                [corners[0], corners[2]],
+                [corners[3], corners[1]],
+                [corners[3], corners[2]],
+                [corners[4], corners[5]],
+                [corners[4], corners[6]],
+                [corners[7], corners[5]],
+                [corners[7], corners[6]],
+                [corners[0], corners[4]],
+                [corners[1], corners[5]],
+                [corners[2], corners[6]],
+                [corners[3], corners[7]],
+            ],
+            dtype=np.float32,
+        )
         radius = 0.01
         colors = np.array([0, 0, 0] * 12, dtype=np.float32)
         radii = np.array([radius] * 12, dtype=np.float32)
-        self.box_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
-            positions,
-            radii,
-            colors,
-            10,
+        self.box_cylinders = (
+            self.parent().structure_widget.renderer.draw_cylinders_from_to(
+                positions,
+                radii,
+                colors,
+                10,
+            )
         )
         self.box_spheres = self.parent().structure_widget.renderer.draw_spheres(
             np.array(corners, dtype=np.float32),
@@ -224,11 +249,14 @@ class MOsDialog(QDialog):
         self.parent().structure_widget.update()
 
     def mcubes(self):
-        self.voxel_size = np.array([
-            [self.ui.voxelSizeSpinBox.value(), 0, 0],
-            [0, self.ui.voxelSizeSpinBox.value(), 0],
-            [0, 0, self.ui.voxelSizeSpinBox.value()],
-        ], dtype=np.float64)
+        self.voxel_size = np.array(
+            [
+                [self.ui.voxelSizeSpinBox.value(), 0, 0],
+                [0, self.ui.voxelSizeSpinBox.value(), 0],
+                [0, 0, self.ui.voxelSizeSpinBox.value()],
+            ],
+            dtype=np.float64,
+        )
         iso = self.ui.isoValueSpinBox.value()
         orbital = self.ui.orbitalSelector.currentRow()
 
@@ -251,11 +279,14 @@ class MOsDialog(QDialog):
         origin = self.origin
         direction = self.direction
         size = self.size
-        voxel_number = np.array([
-            int(size[0] / self.voxel_size[0, 0]) + 1,
-            int(size[1] / self.voxel_size[1, 1]) + 1,
-            int(size[2] / self.voxel_size[2, 2]) + 1,
-        ], dtype=np.int32)
+        voxel_number = np.array(
+            [
+                int(size[0] / self.voxel_size[0, 0]) + 1,
+                int(size[1] / self.voxel_size[1, 1]) + 1,
+                int(size[2] / self.voxel_size[2, 2]) + 1,
+            ],
+            dtype=np.int32,
+        )
         mo_coefficients = self.mos.coefficients[orbital]
         self.parent().structure_widget.update()
 
@@ -263,7 +294,10 @@ class MOsDialog(QDialog):
         temp = generate_voxel_grid(
             np.array(origin, dtype=np.float64),
             direction,
-            np.array([self.voxel_size[0,0], self.voxel_size[1,1], self.voxel_size[2,2]], dtype=np.float64),
+            np.array(
+                [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
+                dtype=np.float64,
+            ),
             voxel_number,
             self.aos,
             mo_coefficients,

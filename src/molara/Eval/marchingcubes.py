@@ -25,7 +25,7 @@ def marching_cubes(
     y_voxels = voxel_number[1]
     z_voxels = voxel_number[2]
 
-    verts = [[],[]]
+    verts = [[], []]
     for i in range(x_voxels - 1):
         for j in range(y_voxels - 1):
             for k in range(z_voxels - 1):
@@ -81,17 +81,51 @@ def marching_cubes(
                             v31 = voxel_values[c31]
                             v32 = voxel_values[c32]
 
-                            t1 = calculate_interpolation_value(isovalue * prefactor, v11, v12)
-                            t2 = calculate_interpolation_value(isovalue * prefactor, v21, v22)
-                            t3 = calculate_interpolation_value(isovalue * prefactor, v31, v32)
+                            t1 = calculate_interpolation_value(
+                                isovalue * prefactor, v11, v12
+                            )
+                            t2 = calculate_interpolation_value(
+                                isovalue * prefactor, v21, v22
+                            )
+                            t3 = calculate_interpolation_value(
+                                isovalue * prefactor, v31, v32
+                            )
 
                             vertex1 = list(p11 + t1 * (p12 - p11))
                             vertex2 = list(p21 + t2 * (p22 - p21))
                             vertex3 = list(p31 + t3 * (p32 - p31))
-                            if i < x_voxels - 2 and j < y_voxels - 2 and k < z_voxels - 2:
-                                n1 = list(- prefactor * calculate_normal_vertex(grid, voxel_indices[c11, :], voxel_indices[c12, :], t1))
-                                n2 = list(- prefactor * calculate_normal_vertex(grid, voxel_indices[c21, :], voxel_indices[c22, :], t2))
-                                n3 = list(- prefactor * calculate_normal_vertex(grid, voxel_indices[c31, :], voxel_indices[c32, :], t3))
+                            if (
+                                i < x_voxels - 2
+                                and j < y_voxels - 2
+                                and k < z_voxels - 2
+                            ):
+                                n1 = list(
+                                    -prefactor
+                                    * calculate_normal_vertex(
+                                        grid,
+                                        voxel_indices[c11, :],
+                                        voxel_indices[c12, :],
+                                        t1,
+                                    )
+                                )
+                                n2 = list(
+                                    -prefactor
+                                    * calculate_normal_vertex(
+                                        grid,
+                                        voxel_indices[c21, :],
+                                        voxel_indices[c22, :],
+                                        t2,
+                                    )
+                                )
+                                n3 = list(
+                                    -prefactor
+                                    * calculate_normal_vertex(
+                                        grid,
+                                        voxel_indices[c31, :],
+                                        voxel_indices[c32, :],
+                                        t3,
+                                    )
+                                )
                             else:
                                 n = np.cross(
                                     np.array(vertex2) - np.array(vertex1),
@@ -116,9 +150,10 @@ def calculate_interpolation_value(
     """
     return (iso - v1) / (v2 - v1)
 
+
 def calculate_normal_corner(
-        grid: np.ndarray,
-        corner_index: np.ndarray,
+    grid: np.ndarray,
+    corner_index: np.ndarray,
 ) -> np.ndarray:
     """Calculates the normal of a corner of a voxel.
 
@@ -132,14 +167,14 @@ def calculate_normal_corner(
     dx = grid[x + 1, y, z] - grid[x - 1, y, z]
     dy = grid[x, y + 1, z] - grid[x, y - 1, z]
     dz = grid[x, y, z + 1] - grid[x, y, z - 1]
-    return np.array([dx, dy, dz])*np.linalg.norm(np.array([dx, dy, dz]))
+    return np.array([dx, dy, dz]) * np.linalg.norm(np.array([dx, dy, dz]))
 
 
 def calculate_normal_vertex(
-        grid: np.ndarray,
-        corner_index_a: np.ndarray,
-        corner_index_b: np.ndarray,
-        t1: float,
+    grid: np.ndarray,
+    corner_index_a: np.ndarray,
+    corner_index_b: np.ndarray,
+    t1: float,
 ) -> np.ndarray:
     """Calculates the normal of a vertex. And means it to smooth shade.
 
@@ -201,4 +236,7 @@ def get_edges(
         triangle_table_index_2 += 64
     if voxel_values[7] < -isovalue:
         triangle_table_index_2 += 128
-    return triangle_table[triangle_table_index_1], triangle_table[triangle_table_index_2]
+    return (
+        triangle_table[triangle_table_index_1],
+        triangle_table[triangle_table_index_2],
+    )

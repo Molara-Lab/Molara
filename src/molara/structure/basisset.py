@@ -236,7 +236,8 @@ def calculate_normalization_primitive_gtos(
     return np.array(
         [
             np.sqrt(
-                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5)) / (fi * fj * fk * np.pi**1.5),
+                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5))
+                / (fi * fj * fk * np.pi**1.5),
             )
             for exponent in exponents
         ],
@@ -271,9 +272,9 @@ def calculate_normalization_contracted_gtos(
 
     for ia in range(len(exponents)):
         for ib in range(len(exponents)):
-            n += (coefficients[ia] * coefficients[ib] * norms[ia] * norms[ib]) / (exponents[ia] + exponents[ib]) ** (
-                m + 1.5
-            )
+            n += (coefficients[ia] * coefficients[ib] * norms[ia] * norms[ib]) / (
+                exponents[ia] + exponents[ib]
+            ) ** (m + 1.5)
     n = n * prefactor
 
     return n ** (-0.5)

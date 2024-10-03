@@ -11,7 +11,11 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from molara.structure.atom import element_symbol_to_atomic_number
-from molara.structure.io.importer_crystal import PoscarImporter, PymatgenImporter, VasprunImporter
+from molara.structure.io.importer_crystal import (
+    PoscarImporter,
+    PymatgenImporter,
+    VasprunImporter,
+)
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
 from molara.structure.mos import Mos
@@ -99,7 +103,8 @@ class XyzImporter(MoleculesImporter):
                 self._molecule_from_xyz(lines[start_line:end_line]),
             )
             finished = (
-                start_line + 2 + num_atoms >= len(lines) or not lines[start_line + 2 + num_atoms].strip().isdigit()
+                start_line + 2 + num_atoms >= len(lines)
+                or not lines[start_line + 2 + num_atoms].strip().isdigit()
             )
             start_line = end_line
         return molecules
@@ -112,7 +117,9 @@ class CoordImporter(MoleculesImporter):
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
+        with open(
+            self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
+        ) as file:
             lines = file.readlines()  # To skip first row
 
         atomic_numbers = []
@@ -145,13 +152,22 @@ class MoldenImporter(MoleculesImporter):
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(self.path, encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
+        with open(
+            self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
+        ) as file:
             lines = file.readlines()
 
         i = 0
         spherical_harmonics = ["[5D]", "[7F]", "[9G]"]
+        spherical_order = "none"
 
         while i < len(lines):
+            if "[Title]" in lines[i]:
+                i += 1
+                while "[" not in lines[i]:
+                    if "orca_2mkl" in lines[i]:
+                        spherical_order = "orca"
+                    i += 1
             if "[Atoms]" in lines[i]:
                 i_start = i
                 i += 1
@@ -163,9 +179,11 @@ class MoldenImporter(MoleculesImporter):
                 i += 1
                 while "[" not in lines[i]:
                     i += 1
-                shells, exponents, coefficients, atoms_list = self.get_basisset(lines[i_start:i])
+                shells, exponents, coefficients, atoms_list = self.get_basisset(
+                    lines[i_start:i]
+                )
             for sph_key in spherical_harmonics:
-                if sph_key in lines[i]:
+                if sph_key in lines[i] and spherical_order == "none":
                     msg = "Spherical Harmonics not implemented."
                     raise FileFormatError(msg)
             if "[MO]" in lines[i]:
@@ -188,7 +206,7 @@ class MoldenImporter(MoleculesImporter):
             Molecule(np.array(atomic_numbers), np.array(coordinates)),  # type: ignore[reportPossiblyUnboundVariable]
         )
         molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
-        molecules.mols[0].mos.coefficients = np.array(mo_coefficients)
+        orbital_labels = []
         for i in range(len(shells)):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_orbitals(
@@ -201,6 +219,13 @@ class MoldenImporter(MoleculesImporter):
             molecules.mols[0].aos.extend(
                 molecules.mols[0].atoms[i].basis_set.orbitals_list,
             )
+            orbital_labels.append(
+                list(molecules.mols[0].atoms[i].basis_set.orbitals.keys())
+            )
+        molecules.mols[0].mos.basisfunctions = orbital_labels
+        molecules.mols[0].mos.set_mo_coefficients(
+            np.array(mo_coefficients), spherical_order=spherical_order
+        )
         return molecules
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
@@ -233,9 +258,11 @@ class MoldenImporter(MoleculesImporter):
 
         return atomic_numbers, coordinates
 
-    def get_basisset(self, lines: list[str]) -> tuple[list[list[str]],
-                                                list[list[list[float]]],
-                                                list[list[list[float]]], list[int]]:  # noqa: C901
+    def get_basisset(
+        self, lines: list[str]
+    ) -> tuple[
+        list[list[str]], list[list[list[float]]], list[list[list[float]]], list[int]
+    ]:  # noqa: C901
         """Read the basis set from the lines of the basisset block.
 
         :param lines: The lines of the basis set block.
@@ -244,7 +271,6 @@ class MoldenImporter(MoleculesImporter):
         if "STO" in lines[0]:
             msg = "STO type not implemented."
             raise FileFormatError(msg)
-        i = 2
         coefficients = []
         exponents = []
         shells = []
@@ -257,22 +283,27 @@ class MoldenImporter(MoleculesImporter):
         atom_idx = 0
         atom_list = []
         first = True
-        for line in lines[2:-1]:
+        last_empty_line = 0
+        for i, line in enumerate(lines[2:]):
             words = line.split()
             if not words:
-                exponents_shell.append(exponents)
-                coefficients_shell.append(coefficients)
-                exponents = []
-                coefficients = []
-                shells_all.append(shells)
-                shells = []
-                exponents_all.append(exponents_shell)
-                exponents_shell = []
-                coefficients_all.append(coefficients_shell)
-                coefficients_shell = []
-                atom_list.append(atom_idx)
-                first = True
-                continue
+                if i != last_empty_line + 1:
+                    last_empty_line = i
+                    exponents_shell.append(exponents)
+                    coefficients_shell.append(coefficients)
+                    exponents = []
+                    coefficients = []
+                    shells_all.append(shells)
+                    shells = []
+                    exponents_all.append(exponents_shell)
+                    exponents_shell = []
+                    coefficients_all.append(coefficients_shell)
+                    coefficients_shell = []
+                    atom_list.append(atom_idx)
+                    first = True
+                    continue
+                else:
+                    continue
             if words[0] in shells_check:
                 shells.append(words[0])
                 if not first:
@@ -282,7 +313,7 @@ class MoldenImporter(MoleculesImporter):
                     coefficients = []
                 first = False
                 continue
-            if words[0] == f'{atom_idx + 2}':
+            if words[0] == f"{atom_idx + 2}":
                 atom_idx += 1
                 continue
             if "D" in words[0]:
@@ -425,6 +456,7 @@ class GeneralImporter(MoleculesImporter):
         ".cif": PymatgenImporter,
         ".xml": VasprunImporter,
         ".molden": MoldenImporter,
+        ".input": MoldenImporter,
     }
 
     def __init__(
