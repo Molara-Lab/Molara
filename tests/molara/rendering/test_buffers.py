@@ -66,7 +66,10 @@ class WorkaroundTestBuffers:
         with mock.patch.object(sys, "argv", testargs):
             self.main_window.show_init_xyz()
         digits = np.array([1, 2, 3, 4, 5], dtype=np.int32)
-        positions_3d = np.array([[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]], dtype=np.float32)
+        positions_3d = np.array(
+            [[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]],
+            dtype=np.float32,
+        )
         self.openGLWidget.makeCurrent()
         (vao, buffers) = setup_vao_numbers(digits, positions_3d)
         assert isinstance(vao, (np.integer, int))

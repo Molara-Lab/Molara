@@ -8,108 +8,146 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
-    QCursor, QFont, QFontDatabase, QGradient,
-    QIcon, QImage, QKeySequence, QLinearGradient,
-    QPainter, QPalette, QPixmap, QRadialGradient,
-    QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QMainWindow, QMenu,
-    QMenuBar, QSizePolicy, QStatusBar, QWidget)
+from PySide6.QtCore import (
+    QCoreApplication,
+    QDate,
+    QDateTime,
+    QLocale,
+    QMetaObject,
+    QObject,
+    QPoint,
+    QRect,
+    QSize,
+    QTime,
+    QUrl,
+    Qt,
+)
+from PySide6.QtGui import (
+    QAction,
+    QBrush,
+    QColor,
+    QConicalGradient,
+    QCursor,
+    QFont,
+    QFontDatabase,
+    QGradient,
+    QIcon,
+    QImage,
+    QKeySequence,
+    QLinearGradient,
+    QPainter,
+    QPalette,
+    QPixmap,
+    QRadialGradient,
+    QTransform,
+)
+from PySide6.QtWidgets import (
+    QApplication,
+    QGridLayout,
+    QMainWindow,
+    QMenu,
+    QMenuBar,
+    QSizePolicy,
+    QStatusBar,
+    QWidget,
+)
 
 from molara.gui.structure_widget import StructureWidget
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
+            MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
         self.quit = QAction(MainWindow)
-        self.quit.setObjectName(u"quit")
+        self.quit.setObjectName("quit")
         self.action_xyz = QAction(MainWindow)
-        self.action_xyz.setObjectName(u"action_xyz")
+        self.action_xyz.setObjectName("action_xyz")
         self.actionCenter_Molecule = QAction(MainWindow)
-        self.actionCenter_Molecule.setObjectName(u"actionCenter_Molecule")
+        self.actionCenter_Molecule.setObjectName("actionCenter_Molecule")
         self.actionReset_View = QAction(MainWindow)
-        self.actionReset_View.setObjectName(u"actionReset_View")
+        self.actionReset_View.setObjectName("actionReset_View")
         self.actionto_x_axis = QAction(MainWindow)
-        self.actionto_x_axis.setObjectName(u"actionto_x_axis")
+        self.actionto_x_axis.setObjectName("actionto_x_axis")
         self.actionto_y_axis = QAction(MainWindow)
-        self.actionto_y_axis.setObjectName(u"actionto_y_axis")
+        self.actionto_y_axis.setObjectName("actionto_y_axis")
         self.actionto_z_axis = QAction(MainWindow)
-        self.actionto_z_axis.setObjectName(u"actionto_z_axis")
+        self.actionto_z_axis.setObjectName("actionto_z_axis")
         self.actionDraw_Axes = QAction(MainWindow)
-        self.actionDraw_Axes.setObjectName(u"actionDraw_Axes")
+        self.actionDraw_Axes.setObjectName("actionDraw_Axes")
         self.actionCreate_Lattice = QAction(MainWindow)
-        self.actionCreate_Lattice.setObjectName(u"actionCreate_Lattice")
+        self.actionCreate_Lattice.setObjectName("actionCreate_Lattice")
         self.actionRead_POSCAR = QAction(MainWindow)
-        self.actionRead_POSCAR.setObjectName(u"actionRead_POSCAR")
+        self.actionRead_POSCAR.setObjectName("actionRead_POSCAR")
         self.action_coord = QAction(MainWindow)
-        self.action_coord.setObjectName(u"action_coord")
+        self.action_coord.setObjectName("action_coord")
         self.actionOpen_Trajectory_Dialog = QAction(MainWindow)
-        self.actionOpen_Trajectory_Dialog.setObjectName(u"actionOpen_Trajectory_Dialog")
+        self.actionOpen_Trajectory_Dialog.setObjectName("actionOpen_Trajectory_Dialog")
         self.actionImport = QAction(MainWindow)
-        self.actionImport.setObjectName(u"actionImport")
+        self.actionImport.setObjectName("actionImport")
         self.actionToggle_Bonds = QAction(MainWindow)
-        self.actionToggle_Bonds.setObjectName(u"actionToggle_Bonds")
+        self.actionToggle_Bonds.setObjectName("actionToggle_Bonds")
         self.actionMeasure = QAction(MainWindow)
-        self.actionMeasure.setObjectName(u"actionMeasure")
+        self.actionMeasure.setObjectName("actionMeasure")
         self.actionSupercell = QAction(MainWindow)
-        self.actionSupercell.setObjectName(u"actionSupercell")
+        self.actionSupercell.setObjectName("actionSupercell")
         self.actionBuilder = QAction(MainWindow)
-        self.actionBuilder.setObjectName(u"actionBuilder")
+        self.actionBuilder.setObjectName("actionBuilder")
         self.actionExport = QAction(MainWindow)
-        self.actionExport.setObjectName(u"actionExport")
+        self.actionExport.setObjectName("actionExport")
         self.actionExport_Snapshot = QAction(MainWindow)
-        self.actionExport_Snapshot.setObjectName(u"actionExport_Snapshot")
+        self.actionExport_Snapshot.setObjectName("actionExport_Snapshot")
         self.actionToggle_UnitCellBoundaries = QAction(MainWindow)
-        self.actionToggle_UnitCellBoundaries.setObjectName(u"actionToggle_UnitCellBoundaries")
+        self.actionToggle_UnitCellBoundaries.setObjectName(
+            "actionToggle_UnitCellBoundaries"
+        )
         self.actionToggle_Projection = QAction(MainWindow)
-        self.actionToggle_Projection.setObjectName(u"actionToggle_Projection")
+        self.actionToggle_Projection.setObjectName("actionToggle_Projection")
         self.actionExport_CameraSettings = QAction(MainWindow)
-        self.actionExport_CameraSettings.setObjectName(u"actionExport_CameraSettings")
+        self.actionExport_CameraSettings.setObjectName("actionExport_CameraSettings")
         self.actionImport_CameraSettings = QAction(MainWindow)
-        self.actionImport_CameraSettings.setObjectName(u"actionImport_CameraSettings")
+        self.actionImport_CameraSettings.setObjectName("actionImport_CameraSettings")
         self.actionOpen_Structure_Customizer = QAction(MainWindow)
-        self.actionOpen_Structure_Customizer.setObjectName(u"actionOpen_Structure_Customizer")
+        self.actionOpen_Structure_Customizer.setObjectName(
+            "actionOpen_Structure_Customizer"
+        )
         self.actionNumber_Atoms = QAction(MainWindow)
-        self.actionNumber_Atoms.setObjectName(u"actionNumber_Atoms")
+        self.actionNumber_Atoms.setObjectName("actionNumber_Atoms")
         self.actionToggle_Axes = QAction(MainWindow)
-        self.actionToggle_Axes.setObjectName(u"actionToggle_Axes")
+        self.actionToggle_Axes.setObjectName("actionToggle_Axes")
         self.actionDisplay_MOs = QAction(MainWindow)
-        self.actionDisplay_MOs.setObjectName(u"actionDisplay_MOs")
+        self.actionDisplay_MOs.setObjectName("actionDisplay_MOs")
         self.centralwidget = QWidget(MainWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
+        self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
-        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setObjectName("gridLayout")
         self.openGLWidget = StructureWidget(self.centralwidget)
-        self.openGLWidget.setObjectName(u"openGLWidget")
+        self.openGLWidget.setObjectName("openGLWidget")
 
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
-        self.menubar.setObjectName(u"menubar")
+        self.menubar.setObjectName("menubar")
         self.menubar.setGeometry(QRect(0, 0, 800, 37))
         self.menuFile = QMenu(self.menubar)
-        self.menuFile.setObjectName(u"menuFile")
+        self.menuFile.setObjectName("menuFile")
         self.menuImport = QMenu(self.menuFile)
-        self.menuImport.setObjectName(u"menuImport")
+        self.menuImport.setObjectName("menuImport")
         self.menuExport = QMenu(self.menuFile)
-        self.menuExport.setObjectName(u"menuExport")
+        self.menuExport.setObjectName("menuExport")
         self.menuEdit = QMenu(self.menubar)
-        self.menuEdit.setObjectName(u"menuEdit")
+        self.menuEdit.setObjectName("menuEdit")
         self.menuRotate = QMenu(self.menuEdit)
-        self.menuRotate.setObjectName(u"menuRotate")
+        self.menuRotate.setObjectName("menuRotate")
         self.menuCrystal = QMenu(self.menubar)
-        self.menuCrystal.setObjectName(u"menuCrystal")
+        self.menuCrystal.setObjectName("menuCrystal")
         self.menuTools = QMenu(self.menubar)
-        self.menuTools.setObjectName(u"menuTools")
+        self.menuTools.setObjectName("menuTools")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
-        self.statusbar.setObjectName(u"statusbar")
+        self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menuFile.menuAction())
@@ -145,43 +183,108 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
+
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
-        self.action_xyz.setText(QCoreApplication.translate("MainWindow", u".xyz", None))
-        self.actionCenter_Molecule.setText(QCoreApplication.translate("MainWindow", u"Center Molecule", None))
-        self.actionReset_View.setText(QCoreApplication.translate("MainWindow", u"Reset View", None))
-        self.actionto_x_axis.setText(QCoreApplication.translate("MainWindow", u"to x axis", None))
-        self.actionto_y_axis.setText(QCoreApplication.translate("MainWindow", u"to y axis", None))
-        self.actionto_z_axis.setText(QCoreApplication.translate("MainWindow", u"to z axis", None))
-        self.actionDraw_Axes.setText(QCoreApplication.translate("MainWindow", u"Toggle Axes", None))
-        self.actionCreate_Lattice.setText(QCoreApplication.translate("MainWindow", u"Create Lattice", None))
-        self.actionRead_POSCAR.setText(QCoreApplication.translate("MainWindow", u"Import POSCAR", None))
-        self.action_coord.setText(QCoreApplication.translate("MainWindow", u"coord", None))
-        self.actionOpen_Trajectory_Dialog.setText(QCoreApplication.translate("MainWindow", u"Open Trajectory Dialog", None))
-        self.actionImport.setText(QCoreApplication.translate("MainWindow", u"Import Structure File", None))
-        self.actionToggle_Bonds.setText(QCoreApplication.translate("MainWindow", u"Toggle Bonds", None))
-        self.actionMeasure.setText(QCoreApplication.translate("MainWindow", u"Measure", None))
-        self.actionSupercell.setText(QCoreApplication.translate("MainWindow", u"Supercell Dimensions", None))
-        self.actionBuilder.setText(QCoreApplication.translate("MainWindow", u"Z-Matrix Builder", None))
-        self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export Structure File", None))
-        self.actionExport_Snapshot.setText(QCoreApplication.translate("MainWindow", u"Export Snapshot", None))
-        self.actionToggle_UnitCellBoundaries.setText(QCoreApplication.translate("MainWindow", u"Toggle Unit Cell Boundaries", None))
-        self.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", u"Toggle Projection (Perspective/Ortho)", None))
-        self.actionExport_CameraSettings.setText(QCoreApplication.translate("MainWindow", u"Export Camera Settings", None))
-        self.actionImport_CameraSettings.setText(QCoreApplication.translate("MainWindow", u"Import Camera Settings", None))
-        self.actionOpen_Structure_Customizer.setText(QCoreApplication.translate("MainWindow", u"Structure Customizer", None))
-        self.actionNumber_Atoms.setText(QCoreApplication.translate("MainWindow", u"Number Atoms", None))
-        self.actionToggle_Axes.setText(QCoreApplication.translate("MainWindow", u"Show Axes", None))
-        self.actionDisplay_MOs.setText(QCoreApplication.translate("MainWindow", u"Display MOs", None))
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
-        self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
-        self.menuExport.setTitle(QCoreApplication.translate("MainWindow", u"Export", None))
-        self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
-        self.menuRotate.setTitle(QCoreApplication.translate("MainWindow", u"Set View", None))
-        self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
-        self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
-    # retranslateUi
+        MainWindow.setWindowTitle(
+            QCoreApplication.translate("MainWindow", "MainWindow", None)
+        )
+        self.quit.setText(QCoreApplication.translate("MainWindow", "Quit", None))
+        self.action_xyz.setText(QCoreApplication.translate("MainWindow", ".xyz", None))
+        self.actionCenter_Molecule.setText(
+            QCoreApplication.translate("MainWindow", "Center Molecule", None)
+        )
+        self.actionReset_View.setText(
+            QCoreApplication.translate("MainWindow", "Reset View", None)
+        )
+        self.actionto_x_axis.setText(
+            QCoreApplication.translate("MainWindow", "to x axis", None)
+        )
+        self.actionto_y_axis.setText(
+            QCoreApplication.translate("MainWindow", "to y axis", None)
+        )
+        self.actionto_z_axis.setText(
+            QCoreApplication.translate("MainWindow", "to z axis", None)
+        )
+        self.actionDraw_Axes.setText(
+            QCoreApplication.translate("MainWindow", "Toggle Axes", None)
+        )
+        self.actionCreate_Lattice.setText(
+            QCoreApplication.translate("MainWindow", "Create Lattice", None)
+        )
+        self.actionRead_POSCAR.setText(
+            QCoreApplication.translate("MainWindow", "Import POSCAR", None)
+        )
+        self.action_coord.setText(
+            QCoreApplication.translate("MainWindow", "coord", None)
+        )
+        self.actionOpen_Trajectory_Dialog.setText(
+            QCoreApplication.translate("MainWindow", "Open Trajectory Dialog", None)
+        )
+        self.actionImport.setText(
+            QCoreApplication.translate("MainWindow", "Import Structure File", None)
+        )
+        self.actionToggle_Bonds.setText(
+            QCoreApplication.translate("MainWindow", "Toggle Bonds", None)
+        )
+        self.actionMeasure.setText(
+            QCoreApplication.translate("MainWindow", "Measure", None)
+        )
+        self.actionSupercell.setText(
+            QCoreApplication.translate("MainWindow", "Supercell Dimensions", None)
+        )
+        self.actionBuilder.setText(
+            QCoreApplication.translate("MainWindow", "Z-Matrix Builder", None)
+        )
+        self.actionExport.setText(
+            QCoreApplication.translate("MainWindow", "Export Structure File", None)
+        )
+        self.actionExport_Snapshot.setText(
+            QCoreApplication.translate("MainWindow", "Export Snapshot", None)
+        )
+        self.actionToggle_UnitCellBoundaries.setText(
+            QCoreApplication.translate(
+                "MainWindow", "Toggle Unit Cell Boundaries", None
+            )
+        )
+        self.actionToggle_Projection.setText(
+            QCoreApplication.translate(
+                "MainWindow", "Toggle Projection (Perspective/Ortho)", None
+            )
+        )
+        self.actionExport_CameraSettings.setText(
+            QCoreApplication.translate("MainWindow", "Export Camera Settings", None)
+        )
+        self.actionImport_CameraSettings.setText(
+            QCoreApplication.translate("MainWindow", "Import Camera Settings", None)
+        )
+        self.actionOpen_Structure_Customizer.setText(
+            QCoreApplication.translate("MainWindow", "Structure Customizer", None)
+        )
+        self.actionNumber_Atoms.setText(
+            QCoreApplication.translate("MainWindow", "Number Atoms", None)
+        )
+        self.actionToggle_Axes.setText(
+            QCoreApplication.translate("MainWindow", "Show Axes", None)
+        )
+        self.actionDisplay_MOs.setText(
+            QCoreApplication.translate("MainWindow", "Display MOs", None)
+        )
+        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
+        self.menuImport.setTitle(
+            QCoreApplication.translate("MainWindow", "Import", None)
+        )
+        self.menuExport.setTitle(
+            QCoreApplication.translate("MainWindow", "Export", None)
+        )
+        self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "View", None))
+        self.menuRotate.setTitle(
+            QCoreApplication.translate("MainWindow", "Set View", None)
+        )
+        self.menuCrystal.setTitle(
+            QCoreApplication.translate("MainWindow", "Crystal", None)
+        )
+        self.menuTools.setTitle(QCoreApplication.translate("MainWindow", "Tools", None))
 
+    # retranslateUi

@@ -73,7 +73,10 @@ class StructureWidget(QOpenGLWidget):
             np.array([1, 1, 0], dtype=np.float32),
         ]
         self.show_atom_indices = False
-        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1))
+        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (
+            np.zeros(1),
+            np.zeros(1),
+        )
         self.number_scale = 1.0
 
     @property
@@ -151,7 +154,9 @@ class StructureWidget(QOpenGLWidget):
         self.vertex_attribute_objects = [-1]
         self.update()
 
-    def set_structure(self, structs: list[Structure | Crystal | Molecule], reset_view: bool = True) -> None:
+    def set_structure(
+        self, structs: list[Structure | Crystal | Molecule], reset_view: bool = True
+    ) -> None:
         """Set the structures to be drawn.
 
         :param structs: list of Structure object that shall be drawn
@@ -208,7 +213,9 @@ class StructureWidget(QOpenGLWidget):
         :param width: widget width (in pixels)
         :param height: widget height (in pixels)
         """
-        glViewport(0, 0, width, height)  # one can also use self.width() and self.height()
+        glViewport(
+            0, 0, width, height
+        )  # one can also use self.width() and self.height()
         self.camera.width, self.camera.height = width, height
         self.camera.calculate_projection_matrix()
         self.renderer.aspect_ratio = self.width() / self.height()
@@ -234,7 +241,10 @@ class StructureWidget(QOpenGLWidget):
         cylinder_colors = self.structures[0].drawer.cylinder_colors
         for i in range(1, len(self.structures)):
             sphere_model_matrices = np.concatenate(
-                (sphere_model_matrices, self.structures[i].drawer.sphere_model_matrices),
+                (
+                    sphere_model_matrices,
+                    self.structures[i].drawer.sphere_model_matrices,
+                ),
                 axis=0,
             )
             atom_colors = np.concatenate(
@@ -242,7 +252,10 @@ class StructureWidget(QOpenGLWidget):
                 axis=0,
             )
             cylinder_model_matrices = np.concatenate(
-                (cylinder_model_matrices, self.structures[i].drawer.cylinder_model_matrices),
+                (
+                    cylinder_model_matrices,
+                    self.structures[i].drawer.cylinder_model_matrices,
+                ),
                 axis=0,
             )
             cylinder_colors = np.concatenate(
@@ -256,12 +269,16 @@ class StructureWidget(QOpenGLWidget):
             sphere_model_matrices,
             atom_colors,
         )
-        self.renderer.update_bonds_vao(
-            cylinder_vertices,
-            cylinder_indices,
-            cylinder_model_matrices,
-            cylinder_colors,
-        ) if update_bonds else None
+        (
+            self.renderer.update_bonds_vao(
+                cylinder_vertices,
+                cylinder_indices,
+                cylinder_model_matrices,
+                cylinder_colors,
+            )
+            if update_bonds
+            else None
+        )
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""
@@ -276,7 +293,9 @@ class StructureWidget(QOpenGLWidget):
 
         :param event: mouse event (such as left click, right click...)
         """
-        if event.position().x() not in range(self.width()) or event.position().y() not in range(self.height()):
+        if event.position().x() not in range(
+            self.width()
+        ) or event.position().y() not in range(self.height()):
             return
 
         if event.button() == Qt.MouseButton.LeftButton:
@@ -322,10 +341,14 @@ class StructureWidget(QOpenGLWidget):
         """
         if self.width() >= self.height():
             self.position[0] = (event.position().x() * 2 - self.width()) / self.width()
-            self.position[1] = -(event.position().y() * 2 - self.height()) / self.width()
+            self.position[1] = (
+                -(event.position().y() * 2 - self.height()) / self.width()
+            )
         else:
             self.position[0] = (event.position().x() * 2 - self.width()) / self.height()
-            self.position[1] = -(event.position().y() * 2 - self.height()) / self.height()
+            self.position[1] = (
+                -(event.position().y() * 2 - self.height()) / self.height()
+            )
         self.position = np.array(self.position, dtype=np.float32)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
@@ -449,7 +472,9 @@ class StructureWidget(QOpenGLWidget):
 
         diagonal_length = np.linalg.norm(self.structures[0].basis_vectors)
         lowerlim_radius = 0.005
-        radius = max(lowerlim_radius, diagonal_length / 350)  # just some arbitrary scaling that looks nice
+        radius = max(
+            lowerlim_radius, diagonal_length / 350
+        )  # just some arbitrary scaling that looks nice
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
         self.box[0] = self.renderer.draw_cylinders_from_to(
@@ -497,8 +522,12 @@ class StructureWidget(QOpenGLWidget):
         """
         id_in_selection = selected_spheres_list.index(-1)
         selected_spheres_list[id_in_selection] = sphere_id
-        self.old_sphere_colors[id_in_selection] = self.structures[0].drawer.atom_colors[sphere_id].copy()
-        self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+        self.old_sphere_colors[id_in_selection] = (
+            self.structures[0].drawer.atom_colors[sphere_id].copy()
+        )
+        self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[
+            id_in_selection
+        ].copy()
 
     def exec_unselect_sphere(self, sphere_id: int, selected_spheres_list: list) -> None:
         """Unselect a sphere, change its color, update the selected spheres list.
@@ -510,7 +539,9 @@ class StructureWidget(QOpenGLWidget):
             return
 
         id_in_selection = selected_spheres_list.index(sphere_id)
-        self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
+        self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[
+            id_in_selection
+        ].copy()
         self.measurement_selected_spheres[id_in_selection] = -1
 
     def update_selected_atoms(self, purpose: int, event: QMouseEvent) -> None:
@@ -523,10 +554,14 @@ class StructureWidget(QOpenGLWidget):
         if len(self.structures) != 1:
             return
         self.makeCurrent()
-        selected_sphere_id = self.identify_selected_sphere(event.position().x(), event.position().y())
+        selected_sphere_id = self.identify_selected_sphere(
+            event.position().x(), event.position().y()
+        )
 
         selected_spheres_list = (
-            self.measurement_selected_spheres if purpose == MEASUREMENT else self.builder_selected_spheres
+            self.measurement_selected_spheres
+            if purpose == MEASUREMENT
+            else self.builder_selected_spheres
         )
 
         if selected_sphere_id != -1:
@@ -549,10 +584,14 @@ class StructureWidget(QOpenGLWidget):
         )
         self.update()
 
-        self.main_window.measurement_dialog.display_metrics(
-            self.structures[0],
-            self.measurement_selected_spheres,
-        ) if purpose == MEASUREMENT else None
+        (
+            self.main_window.measurement_dialog.display_metrics(
+                self.structures[0],
+                self.measurement_selected_spheres,
+            )
+            if purpose == MEASUREMENT
+            else None
+        )
 
     def reset_measurement(self) -> None:
         """Reset measurement arrays and measurement dialog."""
@@ -571,7 +610,9 @@ class StructureWidget(QOpenGLWidget):
         for selected_sphere_i in self.measurement_selected_spheres:
             if selected_sphere_i == -1:
                 continue
-            color = self.old_sphere_colors[self.measurement_selected_spheres.index(selected_sphere_i)].copy()
+            color = self.old_sphere_colors[
+                self.measurement_selected_spheres.index(selected_sphere_i)
+            ].copy()
             self.structures[0].drawer.atom_colors[selected_sphere_i] = color
         for i in range(4):
             self.measurement_selected_spheres[i] = -1
@@ -582,7 +623,11 @@ class StructureWidget(QOpenGLWidget):
         """Reset the selected spheres builder spheres."""
         self.builder_selected_spheres = [-1] * 3
 
-    def adopt_config(self, other_widget: StructureWidget, custom_geometry: tuple[int, int] | None = None) -> None:
+    def adopt_config(
+        self,
+        other_widget: StructureWidget,
+        custom_geometry: tuple[int, int] | None = None,
+    ) -> None:
         """Adopt the configuration of another StructureWidget object.
 
         :param other_widget: the other StructureWidget object

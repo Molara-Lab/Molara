@@ -44,7 +44,11 @@ class WorkaroundTestMainWindow:
         _format.setSamples(4)
         _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
         QSurfaceFormat.setDefaultFormat(_format)
-        self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
+        self.app = (
+            QApplication([])
+            if QApplication.instance() is None
+            else QApplication.instance()
+        )
         self.window = MainWindow()
         self.window.show()
 
@@ -156,7 +160,11 @@ class WorkaroundTestMainWindow:
     def tearDown(self) -> None:
         """Clean up the test."""
         self.window.close()
-        QApplication.instance().shutdown() if QApplication.instance() is not None else None
+        (
+            QApplication.instance().shutdown()
+            if QApplication.instance() is not None
+            else None
+        )
 
     def test_export_image_dialog(self) -> None:
         """Test the export_image_dialog method."""
@@ -192,7 +200,10 @@ class WorkaroundTestMainWindow:
             assert isinstance(self.window.mols, Molecules)
             assert isinstance(self.window.structure_widget.structures[0], Molecule)
             assert self.window.structure_widget.structures
-            assert self.window.structure_widget.structures[0] is self.window.mols.get_current_mol()
+            assert (
+                self.window.structure_widget.structures[0]
+                is self.window.mols.get_current_mol()
+            )
 
     def test_load_molecules(self) -> None:
         """Test the load_molecules method."""
@@ -258,7 +269,9 @@ class WorkaroundTestMainWindow:
 
         assert Path("~/.molara/settings/structure").expanduser().exists()
         assert Path("~/.molara/settings/structure/Default.json").expanduser().exists()
-        with open(Path("~/.molara/settings/structure/Default.json").expanduser()) as file:
+        with open(
+            Path("~/.molara/settings/structure/Default.json").expanduser()
+        ) as file:
             assert file.read() == (
                 '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, '
                 '"atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'

@@ -45,7 +45,16 @@ class TestAtom(TestCase):
         #     atomic numbers
         z_h, z_c, z_sr, z_n, z_nd, z_li, z_o, z_ar = 1, 6, 38, 7, 60, 3, 8, 18
         #     atomic masses
-        (molmass_h, molmass_c, molmass_sr, molmass_n, molmass_nd, molmass_li, molmass_o, molmass_ar) = (
+        (
+            molmass_h,
+            molmass_c,
+            molmass_sr,
+            molmass_n,
+            molmass_nd,
+            molmass_li,
+            molmass_o,
+            molmass_ar,
+        ) = (
             1.00794,  # h
             12.0107,  # c
             87.62,  # sr
@@ -66,7 +75,16 @@ class TestAtom(TestCase):
             3.44,  # o
             None,  # ar
         )
-        (vdwrad_h, vdwrad_c, vdwrad_sr, vdwrad_n, vdwrad_nd, vdwrad_li, vdwrad_o, vdwrad_ar) = (
+        (
+            vdwrad_h,
+            vdwrad_c,
+            vdwrad_sr,
+            vdwrad_n,
+            vdwrad_nd,
+            vdwrad_li,
+            vdwrad_o,
+            vdwrad_ar,
+        ) = (
             1.1,  # h
             1.70,  # c
             2.49,  # sr
@@ -100,21 +118,37 @@ class TestAtom(TestCase):
             assert_array_equal(my_atom.position, position)
 
         general_attribute_tests(self.hydrogen, "H", z_h)
-        special_attribute_tests(self.hydrogen, self.position_hydrogen, molmass_h, elneg_h, vdwrad_h)
+        special_attribute_tests(
+            self.hydrogen, self.position_hydrogen, molmass_h, elneg_h, vdwrad_h
+        )
         general_attribute_tests(self.carbon, "C", z_c)
-        special_attribute_tests(self.carbon, self.position_carbon, molmass_c, elneg_c, vdwrad_c)
+        special_attribute_tests(
+            self.carbon, self.position_carbon, molmass_c, elneg_c, vdwrad_c
+        )
         general_attribute_tests(self.strontium, "Sr", z_sr)
-        special_attribute_tests(self.strontium, self.position_strontium, molmass_sr, elneg_sr, vdwrad_sr)
+        special_attribute_tests(
+            self.strontium, self.position_strontium, molmass_sr, elneg_sr, vdwrad_sr
+        )
         general_attribute_tests(self.nitrogen, "N", z_n)
-        special_attribute_tests(self.nitrogen, self.position_nitrogen, molmass_n, elneg_n, vdwrad_n)
+        special_attribute_tests(
+            self.nitrogen, self.position_nitrogen, molmass_n, elneg_n, vdwrad_n
+        )
         general_attribute_tests(self.neodymium, "Nd", z_nd)
-        special_attribute_tests(self.neodymium, self.position_neodymium, molmass_nd, elneg_nd, vdwrad_nd)
+        special_attribute_tests(
+            self.neodymium, self.position_neodymium, molmass_nd, elneg_nd, vdwrad_nd
+        )
         general_attribute_tests(self.lithium, "Li", z_li)
-        special_attribute_tests(self.lithium, self.position_lithium, molmass_li, elneg_li, vdwrad_li)
+        special_attribute_tests(
+            self.lithium, self.position_lithium, molmass_li, elneg_li, vdwrad_li
+        )
         general_attribute_tests(self.oxygen, "O", z_o)
-        special_attribute_tests(self.oxygen, self.position_oxygen, molmass_o, elneg_o, vdwrad_o)
+        special_attribute_tests(
+            self.oxygen, self.position_oxygen, molmass_o, elneg_o, vdwrad_o
+        )
         general_attribute_tests(self.argon, "Ar", z_ar)
-        special_attribute_tests(self.argon, self.position_argon, molmass_ar, elneg_ar, vdwrad_ar)
+        special_attribute_tests(
+            self.argon, self.position_argon, molmass_ar, elneg_ar, vdwrad_ar
+        )
 
     def test_set_position(self) -> None:
         """Test the routine for changing an atom's coordinates."""
@@ -138,7 +172,18 @@ class TestAtom(TestCase):
     def test_element_symbol_to_atomic_number(self) -> None:
         """Test the routine that converts element symbols to atomic numbers (i.e., nuclear charge numbers)."""
         # test some elements directly
-        z_h, z_d, z_c, z_n, z_o, z_f, z_s, z_tc, z_rn, z_sb = 1, 1, 6, 7, 8, 9, 16, 43, 86, 51
+        z_h, z_d, z_c, z_n, z_o, z_f, z_s, z_tc, z_rn, z_sb = (
+            1,
+            1,
+            6,
+            7,
+            8,
+            9,
+            16,
+            43,
+            86,
+            51,
+        )
         assert element_symbol_to_atomic_number("H") == z_h
         assert element_symbol_to_atomic_number("D", h_isotopes=True) == z_d
         assert element_symbol_to_atomic_number("C") == z_c
@@ -154,4 +199,7 @@ class TestAtom(TestCase):
             element_i = elements[i]
             atomic_number = element_i["Atomic no"]
             symbol = i
-            assert element_symbol_to_atomic_number(symbol, h_isotopes=True) == atomic_number
+            assert (
+                element_symbol_to_atomic_number(symbol, h_isotopes=True)
+                == atomic_number
+            )

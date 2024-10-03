@@ -81,9 +81,15 @@ class MainWindow(QMainWindow):
 
         # View
         self.ui.actionReset_View.triggered.connect(self.structure_widget.reset_view)
-        self.ui.actionto_x_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("x"))
-        self.ui.actionto_y_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("y"))
-        self.ui.actionto_z_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("z"))
+        self.ui.actionto_x_axis.triggered.connect(
+            lambda: self.structure_widget.set_view_to_axis("x")
+        )
+        self.ui.actionto_y_axis.triggered.connect(
+            lambda: self.structure_widget.set_view_to_axis("y")
+        )
+        self.ui.actionto_z_axis.triggered.connect(
+            lambda: self.structure_widget.set_view_to_axis("z")
+        )
         self.ui.actionToggle_Axes.triggered.connect(self.structure_widget.toggle_axes)
         self.ui.actionCenter_Molecule.triggered.connect(
             self.structure_widget.center_structure,
@@ -91,9 +97,15 @@ class MainWindow(QMainWindow):
         self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
             self.trajectory_dialog.show,
         )
-        self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
-        self.ui.actionExport_CameraSettings.triggered.connect(self.export_camera_settings)
-        self.ui.actionImport_CameraSettings.triggered.connect(self.import_camera_settings)
+        self.ui.actionToggle_Projection.triggered.connect(
+            self.structure_widget.toggle_projection
+        )
+        self.ui.actionExport_CameraSettings.triggered.connect(
+            self.export_camera_settings
+        )
+        self.ui.actionImport_CameraSettings.triggered.connect(
+            self.import_camera_settings
+        )
         self.ui.actionOpen_Structure_Customizer.triggered.connect(
             self.show_structure_customizer_dialog,
         )
@@ -111,7 +123,9 @@ class MainWindow(QMainWindow):
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
-        self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
+        self.ui.actionToggle_UnitCellBoundaries.triggered.connect(
+            self.structure_widget.toggle_unit_cell_boundaries
+        )
         self.update_action_texts()
 
     def show_mo_dialog(self):
@@ -137,15 +151,21 @@ class MainWindow(QMainWindow):
         """Update the texts of the menu actions."""
         text_axes = "Hide Axes" if self.structure_widget.draw_axes else "Show Axes"
         text_projection = (
-            "Perspective Projection" if self.structure_widget.orthographic_projection else "Orthographic Projection"
+            "Perspective Projection"
+            if self.structure_widget.orthographic_projection
+            else "Orthographic Projection"
         )
         text_unit_cell_boundaries = (
             "Hide Unit Cell Boundaries"
             if self.structure_widget.draw_unit_cell_boundaries
             else "Show Unit Cell Boundaries"
         )
-        self.ui.actionToggle_Axes.setText(QCoreApplication.translate("MainWindow", text_axes, None))
-        self.ui.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", text_projection, None))
+        self.ui.actionToggle_Axes.setText(
+            QCoreApplication.translate("MainWindow", text_axes, None)
+        )
+        self.ui.actionToggle_Projection.setText(
+            QCoreApplication.translate("MainWindow", text_projection, None)
+        )
         self.ui.actionToggle_UnitCellBoundaries.setText(
             QCoreApplication.translate("MainWindow", text_unit_cell_boundaries, None),
         )

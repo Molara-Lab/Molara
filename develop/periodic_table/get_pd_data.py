@@ -40,5 +40,7 @@ if __name__ == "__main__":
 
     license_text = fetch_license()
     with open(file_path / "periodic_table_copyright", mode="w") as file:
-        file.write("Periodic Table data from pymatgen.\nThe data is licensed under the following terms:\n\n")
+        file.write(
+            "Periodic Table data from pymatgen.\nThe data is licensed under the following terms:\n\n"
+        )
         file.write(license_text)

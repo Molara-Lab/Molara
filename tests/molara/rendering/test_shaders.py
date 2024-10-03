@@ -14,7 +14,9 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 from molara.rendering import shaders
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="Test is not compatible with Windows"
+)
 class TestShaders(unittest.TestCase):
     """Contains the tests for the shaders module."""
 
@@ -42,7 +44,15 @@ class TestShaders(unittest.TestCase):
         """
         assert isinstance(shaders.vertex_src_main, str)
         vertex_src_hash = hashlib.sha256(shaders.vertex_src_main.encode()).hexdigest()
-        assert vertex_src_hash == "650efcd6e07d8d24f014d9be78edb39016949260ce5776f3f98e50893d1d30e9"
-        fragment_src_hash = hashlib.sha256(shaders.fragment_src_main.encode()).hexdigest()
+        assert (
+            vertex_src_hash
+            == "650efcd6e07d8d24f014d9be78edb39016949260ce5776f3f98e50893d1d30e9"
+        )
+        fragment_src_hash = hashlib.sha256(
+            shaders.fragment_src_main.encode()
+        ).hexdigest()
 
-        assert fragment_src_hash == "ab6ad33c9678f8ca7b8a0be445cae2ad2f5c10ff7e08efc14aaa688e922b335e"
+        assert (
+            fragment_src_hash
+            == "ab6ad33c9678f8ca7b8a0be445cae2ad2f5c10ff7e08efc14aaa688e922b335e"
+        )

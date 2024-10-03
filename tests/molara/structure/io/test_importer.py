@@ -37,12 +37,17 @@ class TestXyzImporter(TestCase):
         # test case in which elements are specified as atomic numbers,
         # rather than symbols (not in all lines, but in some)
         self.directory_input_files = "tests/input_files/xyz"
-        self.importer = XyzImporter(f"{self.directory_input_files}/pentane_elements_numeric.xyz")
+        self.importer = XyzImporter(
+            f"{self.directory_input_files}/pentane_elements_numeric.xyz"
+        )
         structures = self.importer.load()
         assert isinstance(structures, Molecules)
         structure = structures.get_current_mol()
         assert isinstance(structure, Molecule)
-        assert (structure.atomic_numbers == np.array([6, 1, 1, 6, 1, 1, 6, 1, 1, 1, 6, 1, 1, 6, 1, 1, 1])).all()
+        assert (
+            structure.atomic_numbers
+            == np.array([6, 1, 1, 6, 1, 1, 6, 1, 1, 1, 6, 1, 1, 6, 1, 1, 1])
+        ).all()
 
 
 class TestMoldenImporter(TestCase):
@@ -129,4 +134,6 @@ class TestGeneralImporter(TestCase):
         msg = "Missing modules. Could not open file."
         with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
             with pytest.raises(ImportError, match=msg):
-                GeneralImporter("tests/does/not/matter/if/path/exists/file.unknowntype")  # .load()
+                GeneralImporter(
+                    "tests/does/not/matter/if/path/exists/file.unknowntype"
+                )  # .load()

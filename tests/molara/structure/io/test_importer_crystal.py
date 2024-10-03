@@ -11,7 +11,11 @@ from numpy.testing import assert_almost_equal, assert_array_equal
 
 from molara.structure.crystals import Crystals
 from molara.structure.io.exceptions import FileFormatError
-from molara.structure.io.importer import PoscarImporter, PymatgenImporter, VasprunImporter
+from molara.structure.io.importer import (
+    PoscarImporter,
+    PymatgenImporter,
+    VasprunImporter,
+)
 
 if TYPE_CHECKING:
     from molara.structure.crystal import Crystal
@@ -136,8 +140,12 @@ class TestPoscarImporter(TestCase):
 
         # test what happens if pymatgen import fails
         with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
-            with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
-                crystals = PoscarImporter("examples/POSCAR/BN_POSCAR").load(use_pymatgen=True)
+            with pytest.warns(
+                UserWarning, match="pymatgen is not installed, using internal parser"
+            ):
+                crystals = PoscarImporter("examples/POSCAR/BN_POSCAR").load(
+                    use_pymatgen=True
+                )
         crystal = crystals.get_current_mol()
         crystal.make_supercell(supercell_dims)
         assert_crystals_equal(crystal, self.crystal)
@@ -159,27 +167,39 @@ class TestPoscarImporter(TestCase):
         """Test the handling of faulty POSCAR files."""
         # file incomplete: length of lines < 8
         importer = PoscarImporter("tests/input_files/poscar/faulty_SrTiO3_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+        with pytest.raises(
+            FileFormatError, match=r"Error: faulty formatting of the POSCAR file."
+        ):
             _ = importer.load(use_pymatgen=False)
         # number formatting: scale factor is not a float
         importer = PoscarImporter("tests/input_files/poscar/faulty_BN_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+        with pytest.raises(
+            FileFormatError, match=r"Error: faulty formatting of the POSCAR file."
+        ):
             _ = importer.load(use_pymatgen=False)
         # number formatting: basis vector component is not a float
         importer = PoscarImporter("tests/input_files/poscar/faulty_Ba2YCu3O7_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+        with pytest.raises(
+            FileFormatError, match=r"Error: faulty formatting of the POSCAR file."
+        ):
             _ = importer.load(use_pymatgen=False)
         # number formatting: number of (Mg) atoms is not an integer
         importer = PoscarImporter("tests/input_files/poscar/faulty_Mg3Sb2_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+        with pytest.raises(
+            FileFormatError, match=r"Error: faulty formatting of the POSCAR file."
+        ):
             _ = importer.load(use_pymatgen=False)
         # number formatting: position component is not a float
         importer = PoscarImporter("tests/input_files/poscar/faulty_O2_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+        with pytest.raises(
+            FileFormatError, match=r"Error: faulty formatting of the POSCAR file."
+        ):
             _ = importer.load(use_pymatgen=False)
         # file incomplete: number of (O) atoms is missing
         importer = PoscarImporter("tests/input_files/poscar/faulty_BN_cartesian_POSCAR")
-        with pytest.raises(FileFormatError, match=r"Error: faulty formatting of the POSCAR file."):
+        with pytest.raises(
+            FileFormatError, match=r"Error: faulty formatting of the POSCAR file."
+        ):
             _ = importer.load(use_pymatgen=False)
 
 
@@ -190,11 +210,16 @@ class TestVasprunImporter(TestCase):
         """Set up the VasprunImporter object."""
         if find_spec("pymatgen"):
             self.importer = VasprunImporter("tests/output_files/vasp/vasprun_Si.xml")
-            with pytest.warns(UserWarning, match="No POTCAR file with matching TITEL fields was found in"):
+            with pytest.warns(
+                UserWarning,
+                match="No POTCAR file with matching TITEL fields was found in",
+            ):
                 self.structure = self.importer.load()
         else:
             with pytest.raises(ImportError):
-                self.importer = VasprunImporter("tests/output_files/vasp/vasprun_Si.xml")
+                self.importer = VasprunImporter(
+                    "tests/output_files/vasp/vasprun_Si.xml"
+                )
 
     @pytest.mark.skipif(not find_spec("pymatgen"), reason="pymatgen not installed")
     def test_load(self) -> None:

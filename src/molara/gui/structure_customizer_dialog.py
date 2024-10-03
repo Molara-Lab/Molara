@@ -48,7 +48,11 @@ class StructureCustomizerDialog(QDialog):
         self.bonds = True
         self.numbers = False
         self.max_atoms_for_numbers = 999
-        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1), np.zeros(1))
+        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (
+            np.zeros(1),
+            np.zeros(1),
+            np.zeros(1),
+        )
 
         self.ui.ballSizeSpinBox.setValue(1.0)
         self.ui.stickSizeSpinBox.setValue(1.0)
@@ -77,7 +81,9 @@ class StructureCustomizerDialog(QDialog):
     def update_settings_box(self) -> None:
         """Update the settings box."""
         if not self.home_path.joinpath("settings/structure").exists():
-            Path(f"{self.home_path}/settings/structure").mkdir(parents=True, exist_ok=True)
+            Path(f"{self.home_path}/settings/structure").mkdir(
+                parents=True, exist_ok=True
+            )
         if not self.home_path.joinpath("settings/structure/Default.json").exists():
             shutil.copy(
                 f"{self.src_path}/settings/structure/Default.json",
@@ -221,8 +227,12 @@ class StructureCustomizerDialog(QDialog):
 
         if structures:
             if self.numbers:
-                self.parent().structure_widget.atom_indices_arrays = init_atom_number(structures[0])
-                self.parent().structure_widget.number_scale = self.ui.indexSizeSpinBox.value()
+                self.parent().structure_widget.atom_indices_arrays = init_atom_number(
+                    structures[0]
+                )
+                self.parent().structure_widget.number_scale = (
+                    self.ui.indexSizeSpinBox.value()
+                )
             self.parent().structure_widget.show_atom_indices = self.numbers
 
             self.parent().structure_widget.set_vertex_attribute_objects()
@@ -276,7 +286,10 @@ class StructureCustomizerDialog(QDialog):
 
     def set_bonds(self, bonds: bool) -> None:
         """Set bonds to True or False."""
-        if self.parent().structure_widget.structures and self.parent().structure_widget.structures[0].has_bonds:
+        if (
+            self.parent().structure_widget.structures
+            and self.parent().structure_widget.structures[0].has_bonds
+        ):
             self.bonds = bonds
             if self.bonds:
                 self.ui.toggleBondsButton.setText("Hide Bonds")

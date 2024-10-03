@@ -137,7 +137,6 @@ class Renderer:
             "buffers": [],
         }
 
-
     def draw_cylinders(  # noqa: PLR0913
         self,
         positions: np.ndarray,
@@ -180,7 +179,11 @@ class Renderer:
                 float(lengths[i]),
                 np.array(directions[i], dtype=np.float32),
             )
-            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+            model_matrices = (
+                model_matrix
+                if i == 0
+                else np.concatenate((model_matrices, model_matrix))
+            )
 
         cylinder = {
             "vao": 0,
@@ -241,7 +244,9 @@ class Renderer:
         positions_middle = np.array(_positions_middle)
         lengths = np.array(_lengths)
         directions = np.array(_directions) / lengths[:, None]
-        return self.draw_cylinders(positions_middle, -directions, radii, lengths, colors, subdivisions)
+        return self.draw_cylinders(
+            positions_middle, -directions, radii, lengths, colors, subdivisions
+        )
 
     def draw_spheres(
         self,
@@ -407,7 +412,9 @@ class Renderer:
         self.number_vao = []
 
         vao, buffers = setup_vao_numbers(digits, positions_3d)
-        self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
+        self.number_vao.append(
+            {"vao": vao, "n_instances": len(digits), "buffers": buffers}
+        )
 
     def update_bonds_vao(
         self,
@@ -521,7 +528,6 @@ class Renderer:
                     polygon["n_instances"],
                 )
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-
 
         # Draw cylinders
         for cylinder in self.cylinders:

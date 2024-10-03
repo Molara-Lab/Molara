@@ -7,7 +7,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
+from PySide6.QtWidgets import (
+    QDialog,
+    QHeaderView,
+    QMainWindow,
+    QTableWidget,
+    QTableWidgetItem,
+)
 
 from molara.gui.ui_measuring_tool import Ui_measuring_tool
 
@@ -33,8 +39,12 @@ class MeasurementDialog(QDialog):
         self.ui = Ui_measuring_tool()
         self.ui.setupUi(self)
 
-        self.ui.info_text.setText("Select / unselect atoms: SHIFT + Left Click on atoms.")
-        self.ui.info_text_2.setText("Unselect all atoms: SHIFT + CTRL + Left Click on empty area.")
+        self.ui.info_text.setText(
+            "Select / unselect atoms: SHIFT + Left Click on atoms."
+        )
+        self.ui.info_text_2.setText(
+            "Unselect all atoms: SHIFT + CTRL + Left Click on empty area."
+        )
 
         # basic setup of the tables
         self.ui.tableDistances.setColumnCount(3)
@@ -53,7 +63,11 @@ class MeasurementDialog(QDialog):
             for i, mode in enumerate(modes):
                 obj.setSectionResizeMode(i, mode)
 
-        fixed, resize, stretch = QHeaderView.Fixed, QHeaderView.ResizeToContents, QHeaderView.Stretch
+        fixed, resize, stretch = (
+            QHeaderView.Fixed,
+            QHeaderView.ResizeToContents,
+            QHeaderView.Stretch,
+        )
 
         header_positions = self.ui.tablePositions.horizontalHeader()
         set_resize_modes(header_positions, [resize, stretch, resize, resize, resize])
@@ -76,7 +90,9 @@ class MeasurementDialog(QDialog):
             colors: list[None] | list[str] | None,
             align_right: bool = True,
         ) -> None:
-            _set_item = obj.setHorizontalHeaderItem if horizontal else obj.setVerticalHeaderItem
+            _set_item = (
+                obj.setHorizontalHeaderItem if horizontal else obj.setVerticalHeaderItem
+            )
             if colors is None:
                 colors = [None] * len(labels)
             for i, (label_i, color_i) in enumerate(zip(labels, colors)):
@@ -88,11 +104,15 @@ class MeasurementDialog(QDialog):
                     item.setForeground(brush)
                 _set_item(i, item)
 
-        def set_horizontal_table_labels(obj: QTableWidget, labels: list[str], colors: list[str] | None = None) -> None:
+        def set_horizontal_table_labels(
+            obj: QTableWidget, labels: list[str], colors: list[str] | None = None
+        ) -> None:
             horizontal = True
             _set_table_labels(horizontal, obj, labels, colors)
 
-        def set_vertical_table_labels(obj: QTableWidget, labels: list[str], colors: list[str] | None = None) -> None:
+        def set_vertical_table_labels(
+            obj: QTableWidget, labels: list[str], colors: list[str] | None = None
+        ) -> None:
             vertical = False
             _set_table_labels(vertical, obj, labels, colors)
 
@@ -107,7 +127,9 @@ class MeasurementDialog(QDialog):
         set_horizontal_table_labels(self.ui.tableDistances, atom_labels[1:], colors[1:])
         set_vertical_table_labels(self.ui.tableDistances, atom_labels[:-1], colors[:-1])
         set_horizontal_table_labels(self.ui.tableAngles, ["Angle"])
-        set_vertical_table_labels(self.ui.tableAngles, ["\u2222 123", "\u2222 234", "\u2222 1234"])
+        set_vertical_table_labels(
+            self.ui.tableAngles, ["\u2222 123", "\u2222 234", "\u2222 1234"]
+        )
 
     def display_metrics(self, structure: Structure, selected_atoms: list) -> None:
         """Display the metrics in the table.
@@ -120,7 +142,9 @@ class MeasurementDialog(QDialog):
         self.display_angles(structure, selected_atoms)
         self.display_dihedral(structure, selected_atoms)
 
-    def display_positions_distances(self, structure: Structure, selected_atoms: list) -> None:
+    def display_positions_distances(
+        self, structure: Structure, selected_atoms: list
+    ) -> None:
         """Display the distances and positions in the table.
 
         :param structure: The structure to measure.
@@ -132,7 +156,9 @@ class MeasurementDialog(QDialog):
                 pos = structure.atoms[selected_atoms[i]].position
 
                 items = []
-                items.append(QTableWidgetItem(structure.atoms[selected_atoms[i]].symbol))
+                items.append(
+                    QTableWidgetItem(structure.atoms[selected_atoms[i]].symbol)
+                )
                 items.append(QTableWidgetItem(structure.atoms[selected_atoms[i]].name))
                 items.append(QTableWidgetItem(f"{pos[0]:.3f}"))
                 items.append(QTableWidgetItem(f"{pos[1]:.3f}"))
@@ -153,7 +179,8 @@ class MeasurementDialog(QDialog):
                     self.ui.tableDistances.setItem(i, k - 1, QTableWidgetItem(""))
                     continue
                 d = np.linalg.norm(
-                    structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[k]].position,
+                    structure.atoms[selected_atoms[i]].position
+                    - structure.atoms[selected_atoms[k]].position,
                 )
                 item = QTableWidgetItem(f"{d:.3f}" + " \u00c5")
                 item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
@@ -167,9 +194,19 @@ class MeasurementDialog(QDialog):
         :return:
         """
         for i in range(2):
-            if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1 and selected_atoms[i + 2] != -1:
-                v1 = structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position
-                v2 = structure.atoms[selected_atoms[i + 2]].position - structure.atoms[selected_atoms[i + 1]].position
+            if (
+                selected_atoms[i] != -1
+                and selected_atoms[i + 1] != -1
+                and selected_atoms[i + 2] != -1
+            ):
+                v1 = (
+                    structure.atoms[selected_atoms[i]].position
+                    - structure.atoms[selected_atoms[i + 1]].position
+                )
+                v2 = (
+                    structure.atoms[selected_atoms[i + 2]].position
+                    - structure.atoms[selected_atoms[i + 1]].position
+                )
                 a = np.arccos(
                     np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
                 )
@@ -212,5 +249,8 @@ class MeasurementDialog(QDialog):
         """Close the dialog window."""
         structure_widget = self.main_window.structure_widget
         self.main_window.structure_widget.unselect_all_atoms()
-        self.display_metrics(structure_widget.structures[0], structure_widget.measurement_selected_spheres)
+        self.display_metrics(
+            structure_widget.structures[0],
+            structure_widget.measurement_selected_spheres,
+        )
         self.setVisible(False)

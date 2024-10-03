@@ -53,7 +53,9 @@ class XyzExporter(StructureExporter):
         :param structure: Structure object to be exported to xyz-file
         """
         lines = [
-            atom.symbol + "  " + rf"{atom.position[0]}  {atom.position[1]}  {atom.position[2]}"
+            atom.symbol
+            + "  "
+            + rf"{atom.position[0]}  {atom.position[1]}  {atom.position[2]}"
             for atom in structure.atoms
         ]
         try:

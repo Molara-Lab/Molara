@@ -64,7 +64,12 @@ class TestAos(TestCase):
         # }
         # pi = 0
 
-        def _test_orbital(orb: str, basisset: Basisset, electron_pos: np.ndarray, nuclear_pos: np.ndarray) -> None:
+        def _test_orbital(
+            orb: str,
+            basisset: Basisset,
+            electron_pos: np.ndarray,
+            nuclear_pos: np.ndarray,
+        ) -> None:
             """Test the orbital."""
             orbital_type = orb[0]
             res = np.zeros(orbital_array_lengths[orb[0]])
@@ -75,7 +80,7 @@ class TestAos(TestCase):
                 basisset.orbitals[orb].coefficients,
                 basisset.orbitals[orb].norms,
                 quantum_number_l[orbital_type],
-                res
+                res,
             )
             compare_orbital = reference_calculate_aos(
                 electron_pos,
@@ -98,9 +103,13 @@ class TestAos(TestCase):
             assert_almost_equal(res, compare_orbital_old_implementation)
 
         for orb in self.basisset_h2.orbitals:
-            _test_orbital(orb, self.basisset_h2, self.electron_pos_h2, self.nuclear_pos_h2)
+            _test_orbital(
+                orb, self.basisset_h2, self.electron_pos_h2, self.nuclear_pos_h2
+            )
         for orb in self.basisset_f2.orbitals:
-            _test_orbital(orb, self.basisset_f2, self.electron_pos_f2, self.nuclear_pos_f2)
+            _test_orbital(
+                orb, self.basisset_f2, self.electron_pos_f2, self.nuclear_pos_f2
+            )
 
 
 def reference_calculate_aos(

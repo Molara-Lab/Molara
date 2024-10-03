@@ -42,7 +42,9 @@ class Structure:
 
         self.molar_mass: float = np.sum([atom.atomic_mass for atom in self.atoms])
 
-        self.bond_distance_factor = 1.0 / 1.75  # (sum of vdw radii) / 1.75 is the maximum distance for a bond
+        self.bond_distance_factor = (
+            1.0 / 1.75
+        )  # (sum of vdw radii) / 1.75 is the maximum distance for a bond
         self.draw_bonds = draw_bonds
         self.bonded_pairs = NO_BONDS
         self.bonds_calculated = False
@@ -99,7 +101,6 @@ class Structure:
 
         self.center_of_mass = self.calculate_center_of_mass()
         self.geometric_center = np.mean(self.coords, axis=0)
-
 
     def calculate_bonds(self: Structure) -> np.ndarray:
         """Calculate the bonded pairs of atoms."""
@@ -172,7 +173,9 @@ class Structure:
 
         if self.n_at != 0:
             self.bonded_pairs = self.calculate_bonds()
-            self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
+            self.drawer = Drawer(
+                self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds
+            )
 
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
         self.coords = np.delete(self.coords, index)
