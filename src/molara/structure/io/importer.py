@@ -224,7 +224,7 @@ class MoldenImporter(MoleculesImporter):
             orbital_labels.append(
                 list(molecules.mols[0].atoms[i].basis_set.basis_functions.keys())
             )
-        molecules.mols[0].mos.basis_functions = orbital_labels
+        molecules.mols[0].mos.basisfunctions = orbital_labels
         molecules.mols[0].mos.set_mo_coefficients(
             np.array(mo_coefficients), spherical_order=spherical_order
         )
