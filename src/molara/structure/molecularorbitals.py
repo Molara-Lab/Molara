@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from molara.eval.aos import calculate_aos
+from molara.data.constants import ANGSTROM_TO_BOHR
 
 if TYPE_CHECKING:
     from molara.structure.basisset import BasisFunction
@@ -57,6 +58,7 @@ class MolecularOrbitals:
         else:
             self.basisfunctions = []
         self.type = type
+        
         # TODO implement openshell case!
         self.unrestricted = False
 
@@ -109,8 +111,8 @@ class MolecularOrbitals:
         while i < len(mo_coefficients):
             shell = sum(aos[i].ijk)
             calculate_aos(
-                np.array(electron_position, dtype=np.float64) * 1.889726124565062,
-                np.array(aos[i].position, dtype=np.float64) * 1.889726124565062,
+                np.array(electron_position, dtype=np.float64) * ANGSTROM_TO_BOHR,
+                np.array(aos[i].position, dtype=np.float64) * ANGSTROM_TO_BOHR,
                 np.array(aos[i].exponents, dtype=np.float64),
                 np.array(aos[i].coefficients, dtype=np.float64),
                 np.array(aos[i].norms, dtype=np.float64),
