@@ -27,17 +27,15 @@ cpdef int calculate_aos(
     cdef int f = 3
     cdef int g = 4
 
-# GMS order
-
     cdef int fxxx = 0
     cdef int fyyy = 1
     cdef int fzzz = 2
-    cdef int fxxy = 3
-    cdef int fxxz = 4
-    cdef int fxyy = 5
-    cdef int fyyz = 6
-    cdef int fxzz = 7
-    cdef int fyzz = 8
+    cdef int fxyy = 3
+    cdef int fxxy = 4
+    cdef int fxxz = 5
+    cdef int fxzz = 6
+    cdef int fyzz = 7
+    cdef int fyyz = 8
     cdef int fxyz = 9
 
     cdef int gxxxx = 0

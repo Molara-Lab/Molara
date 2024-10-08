@@ -20,7 +20,7 @@ from molara.structure.io.importer_crystal import (
 from molara.eval.populationanalysis import PopulationAnalysis
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
-from molara.structure.mos import Mos
+from molara.structure.molecularorbitals import MolecularOrbitals
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -168,7 +168,7 @@ class MoldenImporter(MoleculesImporter):
                 i += 1
                 while "[" not in lines[i]:
                     if "orca_2mkl" in lines[i] or "TeraChem" in lines[i]:
-                        spherical_order = "orca"
+                        spherical_order = "molden"
                     i += 1
             if "[Atoms]" in lines[i]:
                 i_start = i
@@ -207,7 +207,7 @@ class MoldenImporter(MoleculesImporter):
         molecules.add_molecule(
             Molecule(np.array(atomic_numbers), np.array(coordinates)),  # type: ignore[reportPossiblyUnboundVariable]
         )
-        molecules.mols[0].mos = Mos(labels, energies, spins, occupations)
+        molecules.mols[0].mos = MolecularOrbitals(labels, energies, spins, occupations)
         orbital_labels = []
         for i in range(len(shells)):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
@@ -227,7 +227,7 @@ class MoldenImporter(MoleculesImporter):
         molecules.mols[0].mos.set_mo_coefficients(
             np.array(mo_coefficients), spherical_order=spherical_order
         )
-        if spherical_order == "orca":
+        if spherical_order == "molden":
             molecules.mols[0].mos.type = "spherical"
 
         return molecules

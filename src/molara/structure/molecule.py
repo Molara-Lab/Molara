@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.structure.mos import Mos
+from molara.structure.molecularorbitals import MolecularOrbitals
 from molara.structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
@@ -38,7 +38,7 @@ class Molecule(Structure):
 
         self.atomic_numbers = np.array(atomic_numbers)
         self.atoms: list[Atom] = []
-        self.mos = Mos()
+        self.mos = MolecularOrbitals()
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.gen_energy_information(header)

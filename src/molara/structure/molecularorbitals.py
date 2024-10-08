@@ -1,4 +1,4 @@
-"""Module for the Basisset class."""
+"""Module for the MolecularOrbital class."""
 
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
-class Mos:
-    """Class to store either an STO or GTO basisset for each atom in the same order as in molecule."""
+class MolecularOrbitals:
+    """Class to store molecular orbitals and their information"""
 
     def __init__(
         self,
@@ -26,7 +26,7 @@ class Mos:
         basisfunctions: list | None = None,
         type: str = "cartesian",
     ) -> None:
-        """Initialize the Mos class.
+        """Initialize the MolecularOrbitals class with all their information.
 
         :param labels: list of labels for the mos
         :param energies: list of energies for the mos
@@ -57,6 +57,8 @@ class Mos:
         else:
             self.basisfunctions = []
         self.type = type
+        # TODO implement openshell case!
+        self.unrestricted = False
 
         self.coefficients: np.ndarray = np.array([])
         self.coefficients_display: np.ndarray = np.array([])
@@ -64,17 +66,17 @@ class Mos:
     def set_mo_coefficients(
         self, mo_coefficients: np.ndarray, spherical_order: str = "none"
     ) -> None:
-        """Set the coefficients for the mos and transform to cartesian ones.
+        """Set the coefficients for the molecular orbitals and transform to cartesian ones.
 
         :param mo_coefficients: np.ndarray: coefficients for the mos
-        :param spherical_order: string: spherical order of the coefficients, only orca supported if none is given the
+        :param spherical_order: string: spherical order of the coefficients, only molden supported. if none is given the
         coefficients are assumed to be in cartesian order
         """
 
         self.coefficients_display = mo_coefficients
         if spherical_order == "none":
             self.coefficients = mo_coefficients
-        elif spherical_order == "orca":
+        elif spherical_order == "molden":
             self.coefficients = spherical_to_cartesian_transformation(
                 mo_coefficients, self.basisfunctions, spherical_order
             )
@@ -150,173 +152,143 @@ def spherical_to_cartesian_transformation(
     :param spherical_order: string: spherical order of the coefficients, only orca supported.
     :return: np.ndarray: cartesian coefficients
     """
+    dxx = 0
+    dyy = 1
+    dzz = 2
+    dxy = 3
+    dxz = 4
+    dyz = 5
 
-    orca_transformation_d = np.array(
-        [
-            [-1 / 2, -1 / 2, 1, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 1],
-            [np.sqrt(3) / 2, -np.sqrt(3) / 2, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0],
-        ],
-        dtype=np.float64,
-    )
+    d0 = 0
+    d1c = 1
+    d1s = 2
+    d2c = 3
+    d2s = 4
 
-    orca_transformation_f = np.array(
-        [
-            [0, 0, 1, 0, -3 * np.sqrt(5) / 10, 0, -3 * np.sqrt(5) / 10, 0, 0, 0],
-            [-np.sqrt(6) / 4, 0, 0, 0, 0, -np.sqrt(30) / 20, 0, np.sqrt(30) / 5, 0, 0],
-            [0, -np.sqrt(6) / 4, 0, -np.sqrt(30) / 20, 0, 0, 0, 0, np.sqrt(30) / 5, 0],
-            [0, 0, 0, 0, np.sqrt(3) / 2, 0, -np.sqrt(3) / 2, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [-np.sqrt(10) / 4, 0, 0, 0, 0, 3 * np.sqrt(2) / 4, 0, 0, 0, 0],
-            [0, np.sqrt(10) / 4, 0, -3 * np.sqrt(2) / 4, 0, 0, 0, 0, 0, 0],
-        ],
-        dtype=np.float64,
-    )
+    fxxx = 0
+    fyyy = 1
+    fzzz = 2
+    fxyy = 3
+    fxxy = 4
+    fxxz = 5
+    fxzz = 6
+    fyzz = 7
+    fyyz = 8
+    fxyz = 9
 
-    orca_transformation_g = np.array(
-        [
-            [
-                3 / 8,
-                3 / 8,
-                1,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                3 * np.sqrt(105) / 140,
-                -3 * np.sqrt(105) / 35,
-                -3 * np.sqrt(105) / 35,
-                0,
-                0,
-                0,
-            ],
-            [
-                0,
-                0,
-                0,
-                0,
-                -3 * np.sqrt(70) / 28,
-                0,
-                0,
-                np.sqrt(70) / 7,
-                0,
-                0,
-                0,
-                0,
-                0,
-                -3 * np.sqrt(14) / 28,
-                0,
-            ],
-            [
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                -3 * np.sqrt(70) / 28,
-                0,
-                np.sqrt(70) / 7,
-                0,
-                0,
-                0,
-                -3 * np.sqrt(14) / 28,
-                0,
-                0,
-            ],
-            [
-                -np.sqrt(5) / 4,
-                np.sqrt(5) / 4,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                3 * np.sqrt(21) / 14,
-                -3 * np.sqrt(21) / 14,
-                0,
-                0,
-                0,
-            ],
-            [
-                0,
-                0,
-                0,
-                -np.sqrt(35) / 14,
-                0,
-                -np.sqrt(35) / 14,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                3 * np.sqrt(7) / 7,
-            ],
-            [
-                0,
-                0,
-                0,
-                0,
-                -np.sqrt(10) / 4,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                3 * np.sqrt(2) / 4,
-                0,
-            ],
-            [
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                np.sqrt(10) / 4,
-                0,
-                0,
-                0,
-                0,
-                0,
-                -3 * np.sqrt(2) / 4,
-                0,
-                0,
-            ],
-            [
-                -np.sqrt(35) / 8,
-                -np.sqrt(35) / 8,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                3 * np.sqrt(3) / 4,
-                0,
-                0,
-                0,
-                0,
-                0,
-            ],
-            [0, 0, 0, -np.sqrt(5) / 2, 0, np.sqrt(5) / 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ],
-        dtype=np.float64,
-    )
+    f0 = 0
+    f1c = 1
+    f1s = 2
+    f2c = 3
+    f2s = 4
+    f3c = 5
+    f3s = 6
+
+    gxxxx = 0
+    gyyyy = 1
+    gzzzz = 2
+    gxxxy = 3
+    gxxxz = 4
+    gyyyx = 5
+    gyyyz = 6
+    gzzzx = 7
+    gzzzy = 8
+    gxxyy = 9
+    gxxzz = 10
+    gyyzz = 11
+    gxxyz = 12
+    gyyxz = 13
+    gzzxy = 14
+
+    g0 = 0
+    g1c = 1
+    g1s = 2
+    g2c = 3
+    g2s = 4
+    g3c = 5
+    g3s = 6
+    g4c = 7
+    g4s = 8
+
+# The normalization takes place here according to Helgaker as well as in the aos.pyx file.
+# d orbitals
+    transformation_d = np.zeros((5, 6), dtype=np.float64)
+    transformation_d[d0, dxx] = -1/2
+    transformation_d[d0, dyy] = -1/2
+    transformation_d[d0, dzz] = 1
+
+    transformation_d[d1c, dxz] = 1
+
+    transformation_d[d1s, dyz] = 1
+
+    transformation_d[d2c, dxx] = np.sqrt(3)/2
+    transformation_d[d2c, dyy] = -np.sqrt(3)/2
+
+    transformation_d[d2s, dxy] = 1
+
+# f orbitals
+    transformation_f = np.zeros((7, 10), dtype=np.float64)
+    transformation_f[f0, fzzz] = 1
+    transformation_f[f0, fxxz] = -3 * np.sqrt(5) / 10
+    transformation_f[f0, fyyz] = -3 * np.sqrt(5) / 10
+
+    transformation_f[f1c, fxxx] = -np.sqrt(6) / 4
+    transformation_f[f1c, fxyy] = -np.sqrt(30) / 20
+    transformation_f[f1c, fxzz] = np.sqrt(30) / 5
+
+    transformation_f[f1s, fyyy] = -np.sqrt(6) / 4
+    transformation_f[f1s, fxxy] = -np.sqrt(30) / 20
+    transformation_f[f1s, fyzz] = np.sqrt(30) / 5
+
+    transformation_f[f2c, fxxz] = np.sqrt(3) / 2
+    transformation_f[f2c, fyyz] = -np.sqrt(3) / 2
+
+    transformation_f[f2s, fxyz] = 1
+
+    transformation_f[f3c, fxxx] = -np.sqrt(10) / 4
+    transformation_f[f3c, fxyy] = 3 * np.sqrt(2) / 4
+
+    transformation_f[f3s, fyyy] = np.sqrt(10) / 4
+    transformation_f[f3s, fxxy] = -3 * np.sqrt(2) / 4
+
+# g orbitals
+    transformation_g = np.zeros((9, 15), dtype=np.float64)
+    transformation_g[g0, gzzzz] = 1
+    transformation_g[g0, gxxxx] = 3 / 8
+    transformation_g[g0, gyyyy] = 3 / 8
+    transformation_g[g0, gxxyy] = 3 * np.sqrt(105) / 140
+    transformation_g[g0, gxxzz] = -3 * np.sqrt(105) / 35
+    transformation_g[g0, gyyzz] = -3 * np.sqrt(105) / 35
+
+    transformation_g[g1c, gxxxz] = -3 * np.sqrt(70) / 28
+    transformation_g[g1c, gzzzx] = np.sqrt(70) / 7
+    transformation_g[g1c, gyyxz] = -3 * np.sqrt(14) / 28
+
+    transformation_g[g1s, gyyyz] = -3 * np.sqrt(70) / 28
+    transformation_g[g1s, gzzzy] = np.sqrt(70) / 7
+    transformation_g[g1s, gxxyz] = -3 * np.sqrt(14) / 28
+
+    transformation_g[g2c, gxxxx] = -np.sqrt(5) / 4
+    transformation_g[g2c, gyyyy] = np.sqrt(5) / 4
+    transformation_g[g2c, gxxzz] = 3 * np.sqrt(21) / 14
+    transformation_g[g2c, gyyzz] = -3 * np.sqrt(21) / 14
+
+    transformation_g[g2s, gxxxy] = -np.sqrt(35) / 14
+    transformation_g[g2s, gyyyx] = -np.sqrt(35) / 14
+    transformation_g[g2s, gzzxy] = 3 * np.sqrt(7) / 7
+
+    transformation_g[g3c, gxxxz] = -np.sqrt(10) / 4
+    transformation_g[g3c, gyyxz] = 3 * np.sqrt(2) / 4
+
+    transformation_g[g3s, gyyyz] = np.sqrt(10) / 4
+    transformation_g[g3s, gxxyz] = -3 * np.sqrt(2) / 4
+
+    transformation_g[g4c, gxxxx] = -np.sqrt(35) / 8
+    transformation_g[g4c, gyyyy] = -np.sqrt(35) / 8
+    transformation_g[g4c, gxxyy] = 3 * np.sqrt(3) / 4
+
+    transformation_g[g4s, gxxxy] = -np.sqrt(5) / 2
+    transformation_g[g4s, gyyyx] = np.sqrt(5) / 2
 
     new_coefficients = []
     skip_counter = 0
@@ -331,7 +303,7 @@ def spherical_to_cartesian_transformation(
                 if "dxx" in bf:
                     d_coefficients_spherical = mo[index : index + 5]
                     d_coefficients_cart = np.dot(
-                        d_coefficients_spherical, orca_transformation_d
+                        d_coefficients_spherical, transformation_d
                     )
                     new_coefficients_temp.extend(d_coefficients_cart)
                     skip_counter = 5
@@ -339,7 +311,7 @@ def spherical_to_cartesian_transformation(
                 elif "fxxx" in bf:
                     f_coefficients_spherical = mo[index : index + 7]
                     f_coefficients_cart = np.dot(
-                        f_coefficients_spherical, orca_transformation_f
+                        f_coefficients_spherical, transformation_f
                     )
                     new_coefficients_temp.extend(f_coefficients_cart)
                     skip_counter = 9
@@ -347,7 +319,7 @@ def spherical_to_cartesian_transformation(
                 elif "gxxxx" in bf:
                     g_coefficients_spherical = mo[index : index + 9]
                     g_coefficients_cart = np.dot(
-                        g_coefficients_spherical, orca_transformation_g
+                        g_coefficients_spherical, transformation_g
                     )
                     new_coefficients_temp.extend(g_coefficients_cart)
                     skip_counter = 14
