@@ -10,7 +10,7 @@ def marching_cubes(
     origin: np.ndarray,
     voxel_size: np.ndarray,
     voxel_number: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Calculates the isosurface for a given voxel grid.
 
     :param grid: 3D numpy array containing the values of the voxels

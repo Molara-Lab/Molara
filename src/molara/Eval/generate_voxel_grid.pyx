@@ -45,7 +45,7 @@ cpdef generate_voxel_grid(
         if len_ao > max_length:
             max_length = len_ao
 
-    cdef double[:,:] orbital_exponents = npc.ndarray(shape=(number_of_aos, max_length), dtype=np.float64)
+    cdef double[:, :] orbital_exponents = npc.ndarray(shape=(number_of_aos, max_length), dtype=np.float64)
     cdef double[:, :] orbital_coefficients = npc.ndarray(shape=(number_of_aos, max_length), dtype=np.float64)
     cdef double[:, :] orbital_norms = npc.ndarray(shape=(number_of_aos, max_length), dtype=np.float64)
     orbital_exponents[:,:] = 0

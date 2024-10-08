@@ -12,7 +12,10 @@ from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidgetIte
 from PySide6.QtGui import QCloseEvent
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
 from molara.eval.marchingcubes import marching_cubes
+from molara.eval.octree import octree
 from molara.eval.generate_voxel_grid import generate_voxel_grid
+from molara.eval.mos import calculate_mo_cartesian
+
 
 if TYPE_CHECKING:
     from molara.structure.molecule import Molecule
@@ -52,8 +55,8 @@ class MOsDialog(QDialog):
         self.ui.orbitalSelector.cellClicked.connect(self.select_row)
         self.ui.toggleDisplayBoxButton.clicked.connect(self.toggle_box)
         self.ui.cubeBoxSizeSpinBox.valueChanged.connect(self.draw_box)
-        self.ui.voxelSizeSpinBox.valueChanged.connect(self.test)
-        self.ui.isoValueSpinBox.valueChanged.connect(self.test)
+        # self.ui.voxelSizeSpinBox.valueChanged.connect(self.test)
+        # self.ui.isoValueSpinBox.valueChanged.connect(self.test)
         self.ui.checkBoxWireMesh.clicked.connect(self.display_wire_mesh)
 
         self.initial_box_scale = 2
@@ -306,7 +309,6 @@ class MOsDialog(QDialog):
         vertices1, vertices2 = marching_cubes(
             temp, iso, origin, self.voxel_size, voxel_number
         )
-        print(vertices1, vertices2)
         t3 = time.time()
         print("new_voxel: ", t2 - t1)
         print("marching: ", t3 - t2)
@@ -320,6 +322,114 @@ class MOsDialog(QDialog):
             vertices2, np.array([[0, 0, 1]], dtype=np.float32)
         )
         self.drawn_orbitals = [orb1, orb2]
+
+
+    def test_function(self):
+        """Test function."""
+
+        self.mcubes()
+        iso = self.ui.isoValueSpinBox.value()
+        orbital = self.ui.orbitalSelector.currentRow()
+        mo_coefficients = self.mos.coefficients[orbital]
+        voxel_size = np.array([0.4, 0.4, 0.4], dtype=np.float64)
+        octree(self.origin,
+               voxel_size,
+               self.direction,
+               self.size,
+               iso,
+               self.aos,
+               mo_coefficients,
+               self.parent().structure_widget)
+        self.parent().structure_widget.update()
+
+    def new_cube(self, depth, c1, iso, size,
+                                orbital_positions,
+                                orbital_coefficients,
+                                orbital_exponents,
+                                orbital_norms,
+                                orbital_ijks,
+                                mo_coefficients,
+                                aos_values):
+        """draws 8 new cubes inside old cube defined by c1 and c2"""
+
+        direction = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64)
+        size = size / 2
+        corners = np.zeros((8, 3), dtype=np.float64)
+        for i in range(2):
+            for j in range(2):
+                for k in range(2):
+                    new_origin = c1 + direction[0] * i * size[0] + direction[1] * j * size[1] + direction[2] * k * size[2]
+                    check_inside = False
+                    check_indide_num = 0
+                    for l in range(8):
+                        corners[l, :] = (
+                                new_origin
+                                + direction[0] * (l % 2) * size[0]
+                                + direction[1] * ((l // 2) % 2) * size[1]
+                                + direction[2] * (l // 4) * size[2]
+                        )
+                        if not check_inside:
+                            mo_val = calculate_mo_cartesian(
+                                corners[l, :] * 1.889726124565062,
+                                orbital_positions * 1.889726124565062,
+                                orbital_coefficients,
+                                orbital_exponents,
+                                orbital_norms,
+                                orbital_ijks,
+                                mo_coefficients,
+                                aos_values
+                            )
+                        if mo_val > iso:
+                            check_indide_num += 1
+                        if check_indide_num < 8 and check_indide_num > 0:
+                            check_inside = True
+                    if check_inside:
+                        if depth > 0:
+                            self.new_cube(depth-1, corners[0], iso, size,
+                                          orbital_positions,
+                                          orbital_coefficients,
+                                          orbital_exponents,
+                                          orbital_norms,
+                                          orbital_ijks,
+                                          mo_coefficients,
+                                          aos_values)
+                        else:
+                            positions = np.array(
+                                [
+                                    [corners[0], corners[1]],
+                                    [corners[0], corners[2]],
+                                    [corners[3], corners[1]],
+                                    [corners[3], corners[2]],
+                                    [corners[4], corners[5]],
+                                    [corners[4], corners[6]],
+                                    [corners[7], corners[5]],
+                                    [corners[7], corners[6]],
+                                    [corners[0], corners[4]],
+                                    [corners[1], corners[5]],
+                                    [corners[2], corners[6]],
+                                    [corners[3], corners[7]],
+                                ],
+                                dtype=np.float32,
+                            )
+                            radius = 0.005
+                            colors = np.array([0, 0, 0] * 12, dtype=np.float32)
+                            radii = np.array([radius] * 12, dtype=np.float32)
+                            if check_inside:
+                                self.box_cylinders = (
+                                    self.parent().structure_widget.renderer.draw_cylinders_from_to(
+                                        positions,
+                                        radii,
+                                        colors,
+                                        10,
+                                    )
+                                )
+                                self.box_spheres = self.parent().structure_widget.renderer.draw_spheres(
+                                    np.array([new_origin], dtype=np.float32),
+                                    radii,
+                                    colors,
+                                    10,
+                                )
+        self.parent().structure_widget.update()
 
     def remove_orbitals(self):
         """Remove the drawn orbitals."""
