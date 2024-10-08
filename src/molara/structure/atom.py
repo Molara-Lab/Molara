@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.structure.basisset import Basisset
+from molara.structure.basisset import BasisSet
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
@@ -59,17 +59,19 @@ class Atom:
             "Jmol": jmol_color,
         }
         self.vdw_radius = _pt_data[self.symbol]["Van der waals radius"]
-        self.basis_set = Basisset()
+        self.basis_set = BasisSet()
         self.position = np.array([])
         self.set_position(position)
 
     def set_position(self, position: ArrayLike) -> None:
-        """Set the position of the atom.
+        """Set the position of the atom and update the basis set positions.
 
         :param position: new position of the atom
         :return: None
         """
         self.position = np.array(position, dtype=np.float64)
+        for basis_function in self.basis_set.basis_functions.values():
+            basis_function.position = self.position
 
 
 def element_symbol_to_atomic_number(symbol: str, h_isotopes: bool = False) -> int:

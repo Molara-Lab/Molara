@@ -14,7 +14,7 @@ from numpy.testing import assert_almost_equal
 
 
 if TYPE_CHECKING:
-    from molara.structure.basisset import Basisset
+    from molara.structure.basisset import BasisSet
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -66,7 +66,7 @@ class TestAos(TestCase):
 
         def _test_orbital(
             orb: str,
-            basisset: Basisset,
+            basisset: BasisSet,
             electron_pos: np.ndarray,
             nuclear_pos: np.ndarray,
         ) -> None:

@@ -181,7 +181,7 @@ class MoldenImporter(MoleculesImporter):
                 i += 1
                 while "[" not in lines[i]:
                     i += 1
-                shells, exponents, coefficients, atoms_list = self.get_basisset(
+                shells, exponents, coefficients = self.get_basisset(
                     lines[i_start:i]
                 )
             for sph_key in spherical_harmonics:
@@ -216,10 +216,9 @@ class MoldenImporter(MoleculesImporter):
                 exponents[i],
                 coefficients[i],
                 molecules.mols[0].atoms[i].position,
-                atoms_list[i],
             )
-            molecules.mols[0].aos.extend(
-                molecules.mols[0].atoms[i].basis_set.basis_functions_list,
+            molecules.mols[0].basis_set.extend(
+                molecules.mols[0].atoms[i].basis_set.basis_functions.values(),
             )
             orbital_labels.append(
                 list(molecules.mols[0].atoms[i].basis_set.basis_functions.keys())
@@ -266,7 +265,7 @@ class MoldenImporter(MoleculesImporter):
     def get_basisset(
         self, lines: list[str]
     ) -> tuple[
-        list[list[str]], list[list[list[float]]], list[list[list[float]]], list[int]
+        list[list[str]], list[list[list[float]]], list[list[list[float]]]
     ]:  # noqa: C901
         """Read the basis set from the lines of the basisset block.
 
@@ -286,7 +285,6 @@ class MoldenImporter(MoleculesImporter):
         exponents_all = []
         exponents_shell = []
         atom_idx = 0
-        atom_list = []
         first = True
         last_empty_line = 0
         for i, line in enumerate(lines[2:]):
@@ -304,7 +302,6 @@ class MoldenImporter(MoleculesImporter):
                     exponents_shell = []
                     coefficients_all.append(coefficients_shell)
                     coefficients_shell = []
-                    atom_list.append(atom_idx)
                     first = True
                     continue
                 else:
@@ -327,7 +324,7 @@ class MoldenImporter(MoleculesImporter):
                 words[1] = words[1].replace("D", "E")
             exponents.append(float(words[0]))
             coefficients.append(float(words[1]))
-        return shells_all, exponents_all, coefficients_all, atom_list
+        return shells_all, exponents_all, coefficients_all
 
     def get_mo_coefficients(
         self,

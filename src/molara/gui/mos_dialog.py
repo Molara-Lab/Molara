@@ -168,7 +168,7 @@ class MOsDialog(QDialog):
         if self.parent().structure_widget.structures[0].mos.coefficients.size == 0:
             return False
         self.mos = self.parent().structure_widget.structures[0].mos
-        self.aos = self.parent().structure_widget.structures[0].aos
+        self.aos = self.parent().structure_widget.structures[0].basis_set
         self.atoms = self.parent().structure_widget.structures[0].atoms
         return True
 

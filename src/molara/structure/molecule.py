@@ -42,9 +42,15 @@ class Molecule(Structure):
         self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.gen_energy_information(header)
-        self.aos: list = []
+        self.basis_set: list = []
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
+    def update_basis_set(self) -> None:
+        """Update the basis set positions after the atoms have been updated."""
+        self.basis_set = []
+        for atom in self.atoms:
+            for basis_function in atom.basis_set.basis_functions.values():
+                self.basis_set.append(basis_function)
     def center_coordinates(self: Molecule) -> None:
         """Centers the structure around the center of mass."""
         self.center_of_mass = self.calculate_center_of_mass()
@@ -52,9 +58,6 @@ class Molecule(Structure):
         for _i, atom in enumerate(self.atoms):
             position = atom.position - self.center_of_mass
             atom.set_position(position)
-        for i in range(len(self.aos)):
-            atom_idx = self.aos[i].atom_idx
-            self.aos[i].position = self.atoms[atom_idx].position
 
         self.drawer.update_atoms(self.atoms)
         if self.draw_bonds:
@@ -62,6 +65,7 @@ class Molecule(Structure):
 
         self.center_of_mass = self.calculate_center_of_mass()
         self.geometric_center = np.mean(self.coords, axis=0)
+        self.update_basis_set()
 
     def gen_energy_information(self, string: str | None) -> None:
         """Read the energy from the second line.

@@ -28,7 +28,7 @@ fact2 = [
 ]
 
 
-class Basisset:
+class BasisSet:
     """Class for either a STO or GTO basisset for each atom in the same order as in molecule.
 
     GTOs are gaussian type orbitals, STOs are slater type orbitals.
@@ -37,14 +37,11 @@ class Basisset:
     def __init__(self, basis_type: str = "None") -> None:
         """Initialize the Basisset class.
 
-        :param basis_type: str.
+        :param basis_type: Can be either GTO or STO. This will be worked on in the future, currently only GTOs.
         :return:
         """
         self.basis_type: str = basis_type
         self.basis_functions: dict = {}
-        self.basis_functions_list: list = []
-
-        # self.generate_ijk()
 
     def generate_basis_functions(  # noqa: C901
         self,
@@ -52,15 +49,13 @@ class Basisset:
         exponents: list,
         coefficients: list,
         position: np.ndarray,
-        atom_idx: int,
     ) -> None:
-        """Generate the orbitals for the basisset and normalizes the primitive functions.
+        """Generate the basis functions for the basis set and normalizes the primitive functions if needed.
 
-        :param shells: list of shells
-        :param exponents: list of exponents
-        :param coefficients: list of coefficients
-        :param position: list of positions
-        :param atom_idx: index of the atom
+        :param shells: list of shells (can be s, p, d, f, or g)
+        :param exponents: list of exponents of the primitive Gauss functions
+        :param coefficients: list of the contraction coefficients of the primitive Gauss functions
+        :param position: list of the centers of the primitive Gauss functions
         :return:
         """
         i = 0
@@ -127,7 +122,6 @@ class Basisset:
                     exponents[i],
                     coefficients[i],
                     position,
-                    atom_idx,
                 )
                 si += 1
                 i += 1
@@ -138,7 +132,6 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
-                        atom_idx,
                     )
                 pi += 1
                 i += 1
@@ -149,7 +142,6 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
-                        atom_idx,
                     )
                 di += 1
                 i += 1
@@ -160,7 +152,6 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
-                        atom_idx,
                     )
                 fi += 1
                 i += 1
@@ -171,14 +162,12 @@ class Basisset:
                         exponents[i],
                         coefficients[i],
                         position,
-                        atom_idx,
                     )
                 gi += 1
                 i += 1
             else:
                 msg = f"The shell {shell} type is not supported."
                 raise TypeError(msg)
-            self.basis_functions_list = list(self.basis_functions.values())
 
 
 class BasisFunction:
@@ -190,7 +179,6 @@ class BasisFunction:
         exponents: np.ndarray,
         coefficients: np.ndarray,
         position: np.ndarray,
-        atom_idx: int,
     ) -> None:
         """Initialize the BasisFunction class.
 
@@ -198,11 +186,9 @@ class BasisFunction:
         :param exponents: list of exponents
         :param coefficients: list of coefficients
         :param position: position of the orbital
-        :param atom_idx: index of the atom
         :return:
         """
         self.position = position
-        self.atom_idx = atom_idx
         self.ijk = ijk
         self.exponents = exponents
         self.coefficients = coefficients.copy()
