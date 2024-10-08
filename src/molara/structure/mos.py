@@ -9,7 +9,7 @@ import numpy as np
 from molara.eval.aos import calculate_aos
 
 if TYPE_CHECKING:
-    from molara.structure.basisset import Orbital
+    from molara.structure.basisset import BasisFunction
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -85,7 +85,7 @@ class Mos:
     def get_mo_value(  # noqa: C901
         self,
         index: int,
-        aos: list[Orbital],
+        aos: list[BasisFunction],
         electron_position: np.ndarray,
     ) -> float:
         """Calculate the value of one mo for a given electron position. Cartesian only!.

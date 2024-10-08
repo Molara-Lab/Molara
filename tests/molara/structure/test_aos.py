@@ -76,37 +76,37 @@ class TestAos(TestCase):
             calculate_aos(
                 np.array(electron_pos),
                 np.array(nuclear_pos),
-                basisset.orbitals[orb].exponents,
-                basisset.orbitals[orb].coefficients,
-                basisset.orbitals[orb].norms,
+                basisset.basis_functions[orb].exponents,
+                basisset.basis_functions[orb].coefficients,
+                basisset.basis_functions[orb].norms,
                 quantum_number_l[orbital_type],
                 res,
             )
             compare_orbital = reference_calculate_aos(
                 electron_pos,
                 nuclear_pos,
-                basisset.orbitals[orb].exponents,
-                basisset.orbitals[orb].coefficients,
+                basisset.basis_functions[orb].exponents,
+                basisset.basis_functions[orb].coefficients,
                 quantum_number_l[orbital_type],
-                basisset.orbitals[orb].norms,
+                basisset.basis_functions[orb].norms,
             )
             compare_orbital_old_implementation = reference2_calculate_aos(
                 electron_pos,
                 nuclear_pos,
-                basisset.orbitals[orb].exponents,
-                basisset.orbitals[orb].coefficients,
+                basisset.basis_functions[orb].exponents,
+                basisset.basis_functions[orb].coefficients,
                 quantum_number_l[orbital_type],
-                basisset.orbitals[orb].norms,
+                basisset.basis_functions[orb].norms,
             )
             assert res.size == orbital_array_lengths[orbital_type]
             assert_almost_equal(res, compare_orbital)
             assert_almost_equal(res, compare_orbital_old_implementation)
 
-        for orb in self.basisset_h2.orbitals:
+        for orb in self.basisset_h2.basis_functions:
             _test_orbital(
                 orb, self.basisset_h2, self.electron_pos_h2, self.nuclear_pos_h2
             )
-        for orb in self.basisset_f2.orbitals:
+        for orb in self.basisset_f2.basis_functions:
             _test_orbital(
                 orb, self.basisset_f2, self.electron_pos_f2, self.nuclear_pos_f2
             )

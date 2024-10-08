@@ -16,6 +16,8 @@ from molara.structure.io.importer_crystal import (
     PymatgenImporter,
     VasprunImporter,
 )
+
+from molara.eval.populationanalysis import PopulationAnalysis
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
 from molara.structure.mos import Mos
@@ -165,7 +167,7 @@ class MoldenImporter(MoleculesImporter):
             if "[Title]" in lines[i]:
                 i += 1
                 while "[" not in lines[i]:
-                    if "orca_2mkl" in lines[i]:
+                    if "orca_2mkl" in lines[i] or "TeraChem" in lines[i]:
                         spherical_order = "orca"
                     i += 1
             if "[Atoms]" in lines[i]:
@@ -209,7 +211,7 @@ class MoldenImporter(MoleculesImporter):
         orbital_labels = []
         for i in range(len(shells)):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
-            molecules.mols[0].atoms[i].basis_set.generate_orbitals(
+            molecules.mols[0].atoms[i].basis_set.generate_basis_functions(
                 shells[i],
                 exponents[i],
                 coefficients[i],
@@ -217,12 +219,12 @@ class MoldenImporter(MoleculesImporter):
                 atoms_list[i],
             )
             molecules.mols[0].aos.extend(
-                molecules.mols[0].atoms[i].basis_set.orbitals_list,
+                molecules.mols[0].atoms[i].basis_set.basis_functions_list,
             )
             orbital_labels.append(
-                list(molecules.mols[0].atoms[i].basis_set.orbitals.keys())
+                list(molecules.mols[0].atoms[i].basis_set.basis_functions.keys())
             )
-        molecules.mols[0].mos.basisfunctions = orbital_labels
+        molecules.mols[0].mos.basis_functions = orbital_labels
         molecules.mols[0].mos.set_mo_coefficients(
             np.array(mo_coefficients), spherical_order=spherical_order
         )
@@ -364,7 +366,7 @@ class MoldenImporter(MoleculesImporter):
                 i += 1
                 words = lines[i].split()
             mo_coefficients.append([])
-            while words[0] != "Sym=":
+            while words[0] != "Sym=" and words[0] != "Ene=":
                 mo_coefficients[-1].append(float(words[1]))
                 i += 1
                 if i == len(lines):
