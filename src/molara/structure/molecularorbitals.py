@@ -58,7 +58,7 @@ class MolecularOrbitals:
         else:
             self.basisfunctions = []
         self.type = type
-        
+
         # TODO implement openshell case!
         self.unrestricted = False
 
@@ -219,78 +219,112 @@ def spherical_to_cartesian_transformation(
     transformation_d[d0, dyy] = -1/2
     transformation_d[d0, dzz] = 1
 
+# sqrt(3) is taken into account when calculating the aos values
     transformation_d[d1c, dxz] = 1
 
+# sqrt(3) is taken into account when calculating the aos values
     transformation_d[d1s, dyz] = 1
 
     transformation_d[d2c, dxx] = np.sqrt(3)/2
     transformation_d[d2c, dyy] = -np.sqrt(3)/2
 
+# sqrt(3) is taken into account when calculating the aos values
     transformation_d[d2s, dxy] = 1
 
 # f orbitals
     transformation_f = np.zeros((7, 10), dtype=np.float64)
     transformation_f[f0, fzzz] = 1
+# sqrt(5) is taken into account when calculating the aos values to yield -3/2
     transformation_f[f0, fxxz] = -3 * np.sqrt(5) / 10
     transformation_f[f0, fyyz] = -3 * np.sqrt(5) / 10
 
     transformation_f[f1c, fxxx] = -np.sqrt(6) / 4
+# sqrt(5) is taken into account when calculating the aos values
     transformation_f[f1c, fxyy] = -np.sqrt(30) / 20
     transformation_f[f1c, fxzz] = np.sqrt(30) / 5
 
     transformation_f[f1s, fyyy] = -np.sqrt(6) / 4
+# sqrt(5) is taken into account when calculating the aos values
     transformation_f[f1s, fxxy] = -np.sqrt(30) / 20
     transformation_f[f1s, fyzz] = np.sqrt(30) / 5
 
+# sqrt(5) is taken into account when calculating the aos values
     transformation_f[f2c, fxxz] = np.sqrt(3) / 2
     transformation_f[f2c, fyyz] = -np.sqrt(3) / 2
 
+# sqrt(15) is taken into account when calculating the aos values
     transformation_f[f2s, fxyz] = 1
 
-    transformation_f[f3c, fxxx] = -np.sqrt(10) / 4
-    transformation_f[f3c, fxyy] = 3 * np.sqrt(2) / 4
+# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+    transformation_f[f3c, fxxx] = np.sqrt(10) / 4
+# sqrt(5) is taken into account when calculating the aos values
+    transformation_f[f3c, fxyy] = -3 * np.sqrt(2) / 4
 
-    transformation_f[f3s, fyyy] = np.sqrt(10) / 4
-    transformation_f[f3s, fxxy] = -3 * np.sqrt(2) / 4
+# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+    transformation_f[f3s, fyyy] = -np.sqrt(10) / 4
+# sqrt(5) is taken into account when calculating the aos values
+    transformation_f[f3s, fxxy] = 3 * np.sqrt(2) / 4
 
 # g orbitals
     transformation_g = np.zeros((9, 15), dtype=np.float64)
     transformation_g[g0, gzzzz] = 1
     transformation_g[g0, gxxxx] = 3 / 8
     transformation_g[g0, gyyyy] = 3 / 8
+# sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
     transformation_g[g0, gxxyy] = 3 * np.sqrt(105) / 140
     transformation_g[g0, gxxzz] = -3 * np.sqrt(105) / 35
     transformation_g[g0, gyyzz] = -3 * np.sqrt(105) / 35
 
+# sqrt(7) is taken into account when calculating the aos values
     transformation_g[g1c, gxxxz] = -3 * np.sqrt(70) / 28
+# sqrt(7) is taken into account when calculating the aos values
     transformation_g[g1c, gzzzx] = np.sqrt(70) / 7
+# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
     transformation_g[g1c, gyyxz] = -3 * np.sqrt(14) / 28
 
+# sqrt(7) is taken into account when calculating the aos values
     transformation_g[g1s, gyyyz] = -3 * np.sqrt(70) / 28
+# sqrt(7) is taken into account when calculating the aos values
     transformation_g[g1s, gzzzy] = np.sqrt(70) / 7
+# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
     transformation_g[g1s, gxxyz] = -3 * np.sqrt(14) / 28
+
 
     transformation_g[g2c, gxxxx] = -np.sqrt(5) / 4
     transformation_g[g2c, gyyyy] = np.sqrt(5) / 4
+# sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
     transformation_g[g2c, gxxzz] = 3 * np.sqrt(21) / 14
     transformation_g[g2c, gyyzz] = -3 * np.sqrt(21) / 14
 
+# sqrt(7) is taken into account when calculating the aos values
     transformation_g[g2s, gxxxy] = -np.sqrt(35) / 14
     transformation_g[g2s, gyyyx] = -np.sqrt(35) / 14
+# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
     transformation_g[g2s, gzzxy] = 3 * np.sqrt(7) / 7
 
-    transformation_g[g3c, gxxxz] = -np.sqrt(10) / 4
-    transformation_g[g3c, gyyxz] = 3 * np.sqrt(2) / 4
+# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+# sqrt(7) is taken into account when calculating the aos values
+    transformation_g[g3c, gxxxz] = np.sqrt(10) / 4
+# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
+    transformation_g[g3c, gyyxz] = -3 * np.sqrt(2) / 4
 
-    transformation_g[g3s, gyyyz] = np.sqrt(10) / 4
-    transformation_g[g3s, gxxyz] = -3 * np.sqrt(2) / 4
+# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+# sqrt(7) is taken into account when calculating the aos values
+    transformation_g[g3s, gyyyz] = -np.sqrt(10) / 4
+# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
+    transformation_g[g3s, gxxyz] = 3 * np.sqrt(2) / 4
 
-    transformation_g[g4c, gxxxx] = -np.sqrt(35) / 8
-    transformation_g[g4c, gyyyy] = -np.sqrt(35) / 8
-    transformation_g[g4c, gxxyy] = 3 * np.sqrt(3) / 4
+# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+    transformation_g[g4c, gxxxx] = np.sqrt(35) / 8
+    transformation_g[g4c, gyyyy] = np.sqrt(35) / 8
+# sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
+    transformation_g[g4c, gxxyy] = -3 * np.sqrt(3) / 4
 
-    transformation_g[g4s, gxxxy] = -np.sqrt(5) / 2
-    transformation_g[g4s, gyyyx] = np.sqrt(5) / 2
+# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+# sqrt(7) is taken into account when calculating the aos values
+    transformation_g[g4s, gxxxy] = np.sqrt(5) / 2
+# sqrt(7) is taken into account when calculating the aos values
+    transformation_g[g4s, gyyyx] = -np.sqrt(5) / 2
 
     new_coefficients = []
     skip_counter = 0
