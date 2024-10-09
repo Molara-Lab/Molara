@@ -10,8 +10,8 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_array_equal
 
 from molara.structure.crystals import Crystals
-from molara.structure.io.exceptions import FileFormatError
 from molara.structure.io.importer import PoscarImporter, PymatgenImporter, VasprunImporter
+from molara.util.exceptions import FileFormatError
 
 if TYPE_CHECKING:
     from molara.structure.crystal import Crystal
