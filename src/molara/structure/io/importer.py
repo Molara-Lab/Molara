@@ -154,21 +154,29 @@ class MoldenImporter(MoleculesImporter):
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
+        i = 0
+        spherical_harmonics = ["[5D]", "[7F]", "[9G]"]
+        spherical_order = "none"
+        normalization_mode = "none"
+
         with open(
             self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
         ) as file:
             lines = file.readlines()
 
-        i = 0
-        spherical_harmonics = ["[5D]", "[7F]", "[9G]"]
-        spherical_order = "none"
-
         while i < len(lines):
+            if "Molpro" in lines[i]:
+                normalization_mode = "molpro"
+
             if "[Title]" in lines[i]:
                 i += 1
                 while "[" not in lines[i]:
-                    if "orca_2mkl" in lines[i] or "TeraChem" in lines[i]:
+                    if "orca_2mkl" in lines[i]:
                         spherical_order = "molden"
+                        normalization_mode = "orca"
+                    if "TeraChem" in lines[i]:
+                        spherical_order = "none"
+                        normalization_mode = "molpro"
                     i += 1
             if "[Atoms]" in lines[i]:
                 i_start = i
@@ -216,6 +224,7 @@ class MoldenImporter(MoleculesImporter):
                 exponents[i],
                 coefficients[i],
                 molecules.mols[0].atoms[i].position,
+                normalization_mode
             )
             molecules.mols[0].basis_set.extend(
                 molecules.mols[0].atoms[i].basis_set.basis_functions.values(),
@@ -223,12 +232,14 @@ class MoldenImporter(MoleculesImporter):
             orbital_labels.append(
                 list(molecules.mols[0].atoms[i].basis_set.basis_functions.keys())
             )
-        molecules.mols[0].mos.basisfunctions = orbital_labels
+        molecules.mols[0].mos.basis_functions = orbital_labels
         molecules.mols[0].mos.set_mo_coefficients(
-            np.array(mo_coefficients), spherical_order=spherical_order
+            np.array(mo_coefficients).T, spherical_order=spherical_order
         )
         if spherical_order == "molden":
             molecules.mols[0].mos.type = "spherical"
+        molecules.mols[0].mos.calculate_transformation_matrix()
+        PopulationAnalysis(molecules.mols[0])
 
         return molecules
 

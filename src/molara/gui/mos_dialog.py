@@ -290,7 +290,7 @@ class MOsDialog(QDialog):
             ],
             dtype=np.int32,
         )
-        mo_coefficients = self.mos.coefficients[orbital]
+        mo_coefficients = self.mos.coefficients[:,orbital]
         self.parent().structure_widget.update()
 
         t1 = time.time()

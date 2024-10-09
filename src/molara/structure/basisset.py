@@ -49,6 +49,7 @@ class BasisSet:
         exponents: list,
         coefficients: list,
         position: np.ndarray,
+        normalization_mode: str = "None",
     ) -> None:
         """Generate the basis functions for the basis set and normalizes the primitive functions if needed.
 
@@ -56,6 +57,7 @@ class BasisSet:
         :param exponents: list of exponents of the primitive Gauss functions
         :param coefficients: list of the contraction coefficients of the primitive Gauss functions
         :param position: list of the centers of the primitive Gauss functions
+        :param normalization_mode: mode for normalization of the basis functions some programs prenormalize
         :return:
         """
         i = 0
@@ -122,6 +124,7 @@ class BasisSet:
                     exponents[i],
                     coefficients[i],
                     position,
+                    normalization_mode,
                 )
                 si += 1
                 i += 1
@@ -132,6 +135,7 @@ class BasisSet:
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 pi += 1
                 i += 1
@@ -142,6 +146,7 @@ class BasisSet:
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 di += 1
                 i += 1
@@ -152,6 +157,7 @@ class BasisSet:
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 fi += 1
                 i += 1
@@ -162,6 +168,7 @@ class BasisSet:
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 gi += 1
                 i += 1
@@ -179,6 +186,7 @@ class BasisFunction:
         exponents: np.ndarray,
         coefficients: np.ndarray,
         position: np.ndarray,
+        normalization_mode: str,
     ) -> None:
         """Initialize the BasisFunction class.
 
@@ -186,6 +194,7 @@ class BasisFunction:
         :param exponents: list of exponents
         :param coefficients: list of coefficients
         :param position: position of the orbital
+        :param normalization_mode: mode for normalization of the basis functions some programs prenormalize
         :return:
         """
         self.position = position
@@ -193,7 +202,14 @@ class BasisFunction:
         self.exponents = exponents
         self.coefficients = coefficients.copy()
         self.norms = np.zeros(len(coefficients))
-        self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
+
+        if normalization_mode == "orca":
+            self.norms[:] = 1.0
+        elif normalization_mode == "molpro":
+            self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
+        elif normalization_mode == "none":
+            print('Warning: no garantee that the orbitals are correct!')
+            self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
 
         self.coefficients = coefficients * calculate_normalization_contracted_gtos(
             ijk,

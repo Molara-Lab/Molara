@@ -63,12 +63,14 @@ class MolecularOrbitals:
         self.unrestricted = False
 
         self.coefficients: np.ndarray = np.array([])
+        self.coefficients_spherical: np.ndarray = np.array([])
         self.coefficients_display: np.ndarray = np.array([])
 
-# Construct transformation matrices for spherical to cartesian transformation
+        # Construct transformation matrices for spherical to cartesian transformation
         self.t_sc_d = np.zeros((5, 6), dtype=np.float64)
         self.t_sc_f = np.zeros((7, 10), dtype=np.float64)
         self.t_sc_g = np.zeros((9, 15), dtype=np.float64)
+        self.transformation_matrix_spherical_cartesian: np.ndarray = np.array([])
         self.construct_transformation_matrices()
 
     def set_mo_coefficients(
@@ -76,15 +78,16 @@ class MolecularOrbitals:
     ) -> None:
         """Set the coefficients for the molecular orbitals and transform to cartesian ones.
 
-        :param mo_coefficients: np.ndarray: coefficients for the mos
+        :param mo_coefficients: np.ndarray: coefficients for the mos (MOs should be represented as the columns)
         :param spherical_order: string: spherical order of the coefficients, only molden supported. if none is given the
         coefficients are assumed to be in cartesian order
         """
-
         self.coefficients_display = mo_coefficients
         if spherical_order == "none":
             self.coefficients = mo_coefficients
         elif spherical_order == "molden":
+            self.calculate_transformation_matrix()
+            self.coefficients_spherical = mo_coefficients
             self.coefficients = self.spherical_to_cartesian_transformation(mo_coefficients)
         else:
             msg = f"The spherical_order {spherical_order} is not supported."
@@ -327,6 +330,80 @@ class MolecularOrbitals:
         transformation_g[g4s, gyyyx] = np.sqrt(5) / 2
         self.t_sc_g = transformation_g
 
+    def calculate_transformation_matrix(self) -> None:
+        """Calculate the transformation matrix for the spherical to cartesian transformation.
+
+        Uses the matrices generated before to build the transformation matrix as a block diagonal matrix. This matrix
+        enable the transformation from spherical harmonics to cartesian. It is not a square matrix if l>1!
+        :return: np.ndarray: transformation matrix
+        """
+
+        # Get the number of basis functions
+        d_count = 0
+        f_count = 0
+        g_count = 0
+        number_of_cartersian_basis_functions = 0
+        orbital_keys_dfg = ['dxx', 'fxxx', 'gxxxx']
+        orbital_keys_sp = ['s', 'px']
+        basis_functions_block_list = []
+        for atom_basis in self.basis_functions:
+            for basis_function in atom_basis:
+                number_of_cartersian_basis_functions += 1
+                for key_dfg in orbital_keys_dfg:
+                    if key_dfg in basis_function:
+                        if key_dfg == 'dxx':
+                            basis_functions_block_list.append('d')
+                            d_count += 1
+                        elif key_dfg == 'fxxx':
+                            basis_functions_block_list.append('f')
+                            f_count += 1
+                        elif key_dfg == 'gxxxx':
+                            basis_functions_block_list.append('g')
+                            g_count += 1
+                for key_sp in orbital_keys_sp:
+                    if key_sp in basis_function:
+                        if key_sp == 's':
+                            basis_functions_block_list.append('s')
+                        elif key_sp == 'px':
+                            basis_functions_block_list.append('p')
+
+        number_of_spherical_basis_functions = (number_of_cartersian_basis_functions -
+                                               (d_count * 1 + f_count * 3 + g_count * 6))
+
+        # Allocate the transformation matrix
+        transformation_matrix = np.zeros((number_of_spherical_basis_functions,
+                                          number_of_cartersian_basis_functions))
+
+        # Fill the transformation matrix as a block diagonal matrix
+        i_index = 0
+        j_index = 0
+        for block in basis_functions_block_list:
+            if block == 's':
+                transformation_matrix[i_index, j_index] = 1
+                i_index += 1
+                j_index += 1
+            elif block == 'p':
+                transformation_matrix[i_index:i_index + 3, j_index:j_index + 3] = np.array([[1, 0, 0],
+                                                                                                 [0, 1, 0],
+                                                                                                 [0, 0, 1]])
+                i_index += 3
+                j_index += 3
+            elif block == 'd':
+                transformation_matrix[i_index:i_index + 5, j_index:j_index + 6] = self.t_sc_d
+                i_index += 5
+                j_index += 6
+            elif block == 'f':
+                transformation_matrix[i_index:i_index + 7, j_index:j_index + 10] = self.t_sc_f
+                i_index += 7
+                j_index += 10
+            elif block == 'g':
+                transformation_matrix[i_index:i_index + 9, j_index:j_index + 15] = self.t_sc_g
+                i_index += 9
+                j_index += 15
+
+        self.transformation_matrix_spherical_cartesian = transformation_matrix
+
+
     def spherical_to_cartesian_transformation(self,
         mo_coefficients: np.ndarray) -> np.ndarray:
         """Transform spherical coefficients to cartesian coefficients.
@@ -334,43 +411,12 @@ class MolecularOrbitals:
         :param mo_coefficients: np.ndarray: coefficients for the mos
         :return: np.ndarray: cartesian coefficients
         """
+        number_of_spherical_basis_functions_mos, number_of_mos = mo_coefficients.shape
+        number_of_spherical_basis_functions_transformation = self.transformation_matrix_spherical_cartesian.shape[0]
+        number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
+        assert(number_of_spherical_basis_functions_transformation == number_of_spherical_basis_functions_mos)
 
-        new_coefficients = []
-        skip_counter = 0
-        for mo in mo_coefficients:
-            new_coefficients_temp = []
-            index = 0
-            for atom_basis in self.basis_functions:
-                for bf in atom_basis:
-                    if skip_counter > 0:
-                        skip_counter -= 1
-                        continue
-                    if "dxx" in bf:
-                        d_coefficients_spherical = mo[index : index + 5]
-                        d_coefficients_cart = np.dot(
-                            d_coefficients_spherical, self.t_sc_d
-                        )
-                        new_coefficients_temp.extend(d_coefficients_cart)
-                        skip_counter = 5
-                        index += 5
-                    elif "fxxx" in bf:
-                        f_coefficients_spherical = mo[index : index + 7]
-                        f_coefficients_cart = np.dot(
-                            f_coefficients_spherical, self.t_sc_f
-                        )
-                        new_coefficients_temp.extend(f_coefficients_cart)
-                        skip_counter = 9
-                        index += 7
-                    elif "gxxxx" in bf:
-                        g_coefficients_spherical = mo[index : index + 9]
-                        g_coefficients_cart = np.dot(
-                            g_coefficients_spherical, self.t_sc_g
-                        )
-                        new_coefficients_temp.extend(g_coefficients_cart)
-                        skip_counter = 14
-                        index += 9
-                    else:
-                        new_coefficients_temp.append(mo[index])
-                        index += 1
-            new_coefficients.append(new_coefficients_temp)
+        new_coefficients = np.zeros((number_of_cartesian_basis_functions, number_of_mos))
+        for i in range(number_of_mos):
+            new_coefficients[:, i] = np.dot(mo_coefficients[:, i], self.transformation_matrix_spherical_cartesian)
         return np.array(new_coefficients, dtype=np.float64)
