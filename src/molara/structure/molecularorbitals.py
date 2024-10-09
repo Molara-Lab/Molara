@@ -24,7 +24,7 @@ class MolecularOrbitals:
         energies: list | None = None,
         spins: list | None = None,
         occupations: list | None = None,
-        basisfunctions: list | None = None,
+        basis_functions: list | None = None,
         type: str = "cartesian",
     ) -> None:
         """Initialize the MolecularOrbitals class with all their information.
@@ -33,7 +33,7 @@ class MolecularOrbitals:
         :param energies: list of energies for the mos
         :param spins: list of spins for the mos
         :param occupations: list of occupations for the mos
-        :param basisfunctions: list of basisfunctions for the mos
+        :param basis_functions: list of basis functions for the mos
         :param type: str: type of the mos, either cartesian or spherical
         :return:
         """
@@ -53,10 +53,10 @@ class MolecularOrbitals:
             self.occupations = occupations
         else:
             self.occupations = []
-        if basisfunctions is not None:
-            self.basisfunctions = basisfunctions
+        if basis_functions is not None:
+            self.basis_functions = basis_functions
         else:
-            self.basisfunctions = []
+            self.basis_functions = []
         self.type = type
 
         # TODO implement openshell case!
@@ -340,7 +340,7 @@ class MolecularOrbitals:
         for mo in mo_coefficients:
             new_coefficients_temp = []
             index = 0
-            for atom_basis in self.basisfunctions:
+            for atom_basis in self.basis_functions:
                 for bf in atom_basis:
                     if skip_counter > 0:
                         skip_counter -= 1
