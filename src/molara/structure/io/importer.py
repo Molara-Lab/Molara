@@ -189,9 +189,7 @@ class MoldenImporter(MoleculesImporter):
                 i += 1
                 while "[" not in lines[i]:
                     i += 1
-                shells, exponents, coefficients = self.get_basisset(
-                    lines[i_start:i]
-                )
+                shells, exponents, coefficients = self.get_basisset(lines[i_start:i])
             for sph_key in spherical_harmonics:
                 if sph_key in lines[i] and spherical_order == "none":
                     msg = "Spherical Harmonics not implemented."
@@ -224,7 +222,7 @@ class MoldenImporter(MoleculesImporter):
                 exponents[i],
                 coefficients[i],
                 molecules.mols[0].atoms[i].position,
-                normalization_mode
+                normalization_mode,
             )
             molecules.mols[0].basis_set.extend(
                 molecules.mols[0].atoms[i].basis_set.basis_functions.values(),

@@ -88,7 +88,9 @@ class MolecularOrbitals:
         elif spherical_order == "molden":
             self.calculate_transformation_matrix()
             self.coefficients_spherical = mo_coefficients
-            self.coefficients = self.spherical_to_cartesian_transformation(mo_coefficients)
+            self.coefficients = self.spherical_to_cartesian_transformation(
+                mo_coefficients
+            )
         else:
             msg = f"The spherical_order {spherical_order} is not supported."
             raise TypeError(msg)
@@ -212,121 +214,120 @@ class MolecularOrbitals:
         g4c = 7
         g4s = 8
 
-# The normalization takes place here according to Helgaker as well as in the aos.pyx file.
-# d orbitals
+        # The normalization takes place here according to Helgaker as well as in the aos.pyx file.
+        # d orbitals
         transformation_d = np.zeros((5, 6), dtype=np.float64)
-        transformation_d[d0, dxx] = -1/2
-        transformation_d[d0, dyy] = -1/2
+        transformation_d[d0, dxx] = -1 / 2
+        transformation_d[d0, dyy] = -1 / 2
         transformation_d[d0, dzz] = 1
 
-# sqrt(3) is taken into account when calculating the aos values
+        # sqrt(3) is taken into account when calculating the aos values
         transformation_d[d1c, dxz] = 1
 
-# sqrt(3) is taken into account when calculating the aos values
+        # sqrt(3) is taken into account when calculating the aos values
         transformation_d[d1s, dyz] = 1
 
-        transformation_d[d2c, dxx] = np.sqrt(3)/2
-        transformation_d[d2c, dyy] = -np.sqrt(3)/2
+        transformation_d[d2c, dxx] = np.sqrt(3) / 2
+        transformation_d[d2c, dyy] = -np.sqrt(3) / 2
 
-# sqrt(3) is taken into account when calculating the aos values
+        # sqrt(3) is taken into account when calculating the aos values
         transformation_d[d2s, dxy] = 1
 
         self.t_sc_d = transformation_d
 
-# f orbitals
+        # f orbitals
         transformation_f = np.zeros((7, 10), dtype=np.float64)
         transformation_f[f0, fzzz] = 1
-# sqrt(5) is taken into account when calculating the aos values to yield -3/2
+        # sqrt(5) is taken into account when calculating the aos values to yield -3/2
         transformation_f[f0, fxxz] = -3 * np.sqrt(5) / 10
         transformation_f[f0, fyyz] = -3 * np.sqrt(5) / 10
 
         transformation_f[f1c, fxxx] = -np.sqrt(6) / 4
-# sqrt(5) is taken into account when calculating the aos values
+        # sqrt(5) is taken into account when calculating the aos values
         transformation_f[f1c, fxyy] = -np.sqrt(30) / 20
         transformation_f[f1c, fxzz] = np.sqrt(30) / 5
 
         transformation_f[f1s, fyyy] = -np.sqrt(6) / 4
-# sqrt(5) is taken into account when calculating the aos values
+        # sqrt(5) is taken into account when calculating the aos values
         transformation_f[f1s, fxxy] = -np.sqrt(30) / 20
         transformation_f[f1s, fyzz] = np.sqrt(30) / 5
 
-# sqrt(5) is taken into account when calculating the aos values
+        # sqrt(5) is taken into account when calculating the aos values
         transformation_f[f2c, fxxz] = np.sqrt(3) / 2
         transformation_f[f2c, fyyz] = -np.sqrt(3) / 2
 
-# sqrt(15) is taken into account when calculating the aos values
+        # sqrt(15) is taken into account when calculating the aos values
         transformation_f[f2s, fxyz] = 1
 
-# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         transformation_f[f3c, fxxx] = -np.sqrt(10) / 4
-# sqrt(5) is taken into account when calculating the aos values
+        # sqrt(5) is taken into account when calculating the aos values
         transformation_f[f3c, fxyy] = 3 * np.sqrt(2) / 4
 
-# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         transformation_f[f3s, fyyy] = np.sqrt(10) / 4
-# sqrt(5) is taken into account when calculating the aos values
+        # sqrt(5) is taken into account when calculating the aos values
         transformation_f[f3s, fxxy] = -3 * np.sqrt(2) / 4
         self.t_sc_f = transformation_f
 
-# g orbitals
+        # g orbitals
         transformation_g = np.zeros((9, 15), dtype=np.float64)
         transformation_g[g0, gzzzz] = 1
         transformation_g[g0, gxxxx] = 3 / 8
         transformation_g[g0, gyyyy] = 3 / 8
-# sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
         transformation_g[g0, gxxyy] = 3 * np.sqrt(105) / 140
         transformation_g[g0, gxxzz] = -3 * np.sqrt(105) / 35
         transformation_g[g0, gyyzz] = -3 * np.sqrt(105) / 35
 
-# sqrt(7) is taken into account when calculating the aos values
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g1c, gxxxz] = -3 * np.sqrt(70) / 28
-# sqrt(7) is taken into account when calculating the aos values
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g1c, gzzzx] = np.sqrt(70) / 7
-# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g1c, gyyxz] = -3 * np.sqrt(14) / 28
 
-# sqrt(7) is taken into account when calculating the aos values
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g1s, gyyyz] = -3 * np.sqrt(70) / 28
-# sqrt(7) is taken into account when calculating the aos values
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g1s, gzzzy] = np.sqrt(70) / 7
-# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g1s, gxxyz] = -3 * np.sqrt(14) / 28
-
 
         transformation_g[g2c, gxxxx] = -np.sqrt(5) / 4
         transformation_g[g2c, gyyyy] = np.sqrt(5) / 4
-# sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
         transformation_g[g2c, gxxzz] = 3 * np.sqrt(21) / 14
         transformation_g[g2c, gyyzz] = -3 * np.sqrt(21) / 14
 
-# sqrt(7) is taken into account when calculating the aos values
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g2s, gxxxy] = -np.sqrt(35) / 14
         transformation_g[g2s, gyyyx] = -np.sqrt(35) / 14
-# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g2s, gzzxy] = 3 * np.sqrt(7) / 7
 
-# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
-# sqrt(7) is taken into account when calculating the aos values
+        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g3c, gxxxz] = -np.sqrt(10) / 4
-# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g3c, gyyxz] = 3 * np.sqrt(2) / 4
 
-# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
-# sqrt(7) is taken into account when calculating the aos values
+        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g3s, gyyyz] = np.sqrt(10) / 4
-# sqrt(7) * sqrt(5) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g3s, gxxyz] = -3 * np.sqrt(2) / 4
 
-# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         transformation_g[g4c, gxxxx] = -np.sqrt(35) / 8
         transformation_g[g4c, gyyyy] = -np.sqrt(35) / 8
-# sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
+        # sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
         transformation_g[g4c, gxxyy] = 3 * np.sqrt(3) / 4
 
-# TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
-# sqrt(7) is taken into account when calculating the aos values
+        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g4s, gxxxy] = -np.sqrt(5) / 2
-# sqrt(7) is taken into account when calculating the aos values
+        # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g4s, gyyyx] = np.sqrt(5) / 2
         self.t_sc_g = transformation_g
 
@@ -343,80 +344,99 @@ class MolecularOrbitals:
         f_count = 0
         g_count = 0
         number_of_cartersian_basis_functions = 0
-        orbital_keys_dfg = ['dxx', 'fxxx', 'gxxxx']
-        orbital_keys_sp = ['s', 'px']
+        orbital_keys_dfg = ["dxx", "fxxx", "gxxxx"]
+        orbital_keys_sp = ["s", "px"]
         basis_functions_block_list = []
         for atom_basis in self.basis_functions:
             for basis_function in atom_basis:
                 number_of_cartersian_basis_functions += 1
                 for key_dfg in orbital_keys_dfg:
                     if key_dfg in basis_function:
-                        if key_dfg == 'dxx':
-                            basis_functions_block_list.append('d')
+                        if key_dfg == "dxx":
+                            basis_functions_block_list.append("d")
                             d_count += 1
-                        elif key_dfg == 'fxxx':
-                            basis_functions_block_list.append('f')
+                        elif key_dfg == "fxxx":
+                            basis_functions_block_list.append("f")
                             f_count += 1
-                        elif key_dfg == 'gxxxx':
-                            basis_functions_block_list.append('g')
+                        elif key_dfg == "gxxxx":
+                            basis_functions_block_list.append("g")
                             g_count += 1
                 for key_sp in orbital_keys_sp:
                     if key_sp in basis_function:
-                        if key_sp == 's':
-                            basis_functions_block_list.append('s')
-                        elif key_sp == 'px':
-                            basis_functions_block_list.append('p')
+                        if key_sp == "s":
+                            basis_functions_block_list.append("s")
+                        elif key_sp == "px":
+                            basis_functions_block_list.append("p")
 
-        number_of_spherical_basis_functions = (number_of_cartersian_basis_functions -
-                                               (d_count * 1 + f_count * 3 + g_count * 6))
+        number_of_spherical_basis_functions = number_of_cartersian_basis_functions - (
+            d_count * 1 + f_count * 3 + g_count * 6
+        )
 
         # Allocate the transformation matrix
-        transformation_matrix = np.zeros((number_of_spherical_basis_functions,
-                                          number_of_cartersian_basis_functions))
+        transformation_matrix = np.zeros(
+            (number_of_spherical_basis_functions, number_of_cartersian_basis_functions)
+        )
 
         # Fill the transformation matrix as a block diagonal matrix
         i_index = 0
         j_index = 0
         for block in basis_functions_block_list:
-            if block == 's':
+            if block == "s":
                 transformation_matrix[i_index, j_index] = 1
                 i_index += 1
                 j_index += 1
-            elif block == 'p':
-                transformation_matrix[i_index:i_index + 3, j_index:j_index + 3] = np.array([[1, 0, 0],
-                                                                                                 [0, 1, 0],
-                                                                                                 [0, 0, 1]])
+            elif block == "p":
+                transformation_matrix[i_index : i_index + 3, j_index : j_index + 3] = (
+                    np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+                )
                 i_index += 3
                 j_index += 3
-            elif block == 'd':
-                transformation_matrix[i_index:i_index + 5, j_index:j_index + 6] = self.t_sc_d
+            elif block == "d":
+                transformation_matrix[i_index : i_index + 5, j_index : j_index + 6] = (
+                    self.t_sc_d
+                )
                 i_index += 5
                 j_index += 6
-            elif block == 'f':
-                transformation_matrix[i_index:i_index + 7, j_index:j_index + 10] = self.t_sc_f
+            elif block == "f":
+                transformation_matrix[i_index : i_index + 7, j_index : j_index + 10] = (
+                    self.t_sc_f
+                )
                 i_index += 7
                 j_index += 10
-            elif block == 'g':
-                transformation_matrix[i_index:i_index + 9, j_index:j_index + 15] = self.t_sc_g
+            elif block == "g":
+                transformation_matrix[i_index : i_index + 9, j_index : j_index + 15] = (
+                    self.t_sc_g
+                )
                 i_index += 9
                 j_index += 15
 
         self.transformation_matrix_spherical_cartesian = transformation_matrix
 
-
-    def spherical_to_cartesian_transformation(self,
-        mo_coefficients: np.ndarray) -> np.ndarray:
+    def spherical_to_cartesian_transformation(
+        self, mo_coefficients: np.ndarray
+    ) -> np.ndarray:
         """Transform spherical coefficients to cartesian coefficients.
 
         :param mo_coefficients: np.ndarray: coefficients for the mos
         :return: np.ndarray: cartesian coefficients
         """
         number_of_spherical_basis_functions_mos, number_of_mos = mo_coefficients.shape
-        number_of_spherical_basis_functions_transformation = self.transformation_matrix_spherical_cartesian.shape[0]
-        number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
-        assert(number_of_spherical_basis_functions_transformation == number_of_spherical_basis_functions_mos)
+        number_of_spherical_basis_functions_transformation = (
+            self.transformation_matrix_spherical_cartesian.shape[0]
+        )
+        number_of_cartesian_basis_functions = (
+            self.transformation_matrix_spherical_cartesian.shape[1]
+        )
+        assert (
+            number_of_spherical_basis_functions_transformation
+            == number_of_spherical_basis_functions_mos
+        )
 
-        new_coefficients = np.zeros((number_of_cartesian_basis_functions, number_of_mos))
+        new_coefficients = np.zeros(
+            (number_of_cartesian_basis_functions, number_of_mos)
+        )
         for i in range(number_of_mos):
-            new_coefficients[:, i] = np.dot(mo_coefficients[:, i], self.transformation_matrix_spherical_cartesian)
+            new_coefficients[:, i] = np.dot(
+                mo_coefficients[:, i], self.transformation_matrix_spherical_cartesian
+            )
         return np.array(new_coefficients, dtype=np.float64)

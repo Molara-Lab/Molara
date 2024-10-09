@@ -208,7 +208,7 @@ class BasisFunction:
         elif normalization_mode == "molpro":
             self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
         elif normalization_mode == "none":
-            print('Warning: no garantee that the orbitals are correct!')
+            print("Warning: no garantee that the orbitals are correct!")
             self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
 
         self.coefficients = coefficients * calculate_normalization_contracted_gtos(
@@ -217,6 +217,7 @@ class BasisFunction:
             coefficients,
             self.norms,
         )
+
 
 def hermite_coefs(
     i: int, j: int, t: int, qx: float, a: float, b: float

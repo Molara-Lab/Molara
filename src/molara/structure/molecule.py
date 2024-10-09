@@ -51,6 +51,7 @@ class Molecule(Structure):
         for atom in self.atoms:
             for basis_function in atom.basis_set.basis_functions.values():
                 self.basis_set.append(basis_function)
+
     def center_coordinates(self: Molecule) -> None:
         """Centers the structure around the center of mass."""
         self.center_of_mass = self.calculate_center_of_mass()

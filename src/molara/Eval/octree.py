@@ -5,15 +5,16 @@ from molara.eval.generate_voxel_grid import generate_voxel_grid
 aos_values = np.zeros((15), dtype=np.float64)
 
 
-def octree(origin,
-           voxel_size,
-                  direction,
-                  size,
-                  iso,
-                  aos,
-                  mo_coefficients,
-                  widget,
-                  ):
+def octree(
+    origin,
+    voxel_size,
+    direction,
+    size,
+    iso,
+    aos,
+    mo_coefficients,
+    widget,
+):
     max_length = 0
     for ao in aos:
         if len(ao.exponents) > max_length:
@@ -73,21 +74,24 @@ def octree(origin,
                         voxel_indices[corner_index, 1],
                         voxel_indices[corner_index, 2],
                     ]
-                    positions[corner_index] = origin + voxel_size * voxel_indices[corner_index, :]
+                    positions[corner_index] = (
+                        origin + voxel_size * voxel_indices[corner_index, :]
+                    )
                 depth = 3
-                new_cube(depth,
-                         0,
-                         iso,
-                         positions,
-                         voxel_values,
-                         widget,
-                         orbital_positions,
-                         orbital_coefficients,
-                         orbital_exponents,
-                         orbital_norms,
-                         orbital_ijks,
-                         mo_coefficients)
-
+                new_cube(
+                    depth,
+                    0,
+                    iso,
+                    positions,
+                    voxel_values,
+                    widget,
+                    orbital_positions,
+                    orbital_coefficients,
+                    orbital_exponents,
+                    orbital_norms,
+                    orbital_ijks,
+                    mo_coefficients,
+                )
 
     # positions = np.zeros((8,3), dtype=np.float64)
     # values = np.zeros(8, dtype=np.float64)
@@ -126,22 +130,23 @@ def octree(origin,
     #          mo_coefficients)
 
 
+def new_cube(
+    depth,
+    depth_counter,
+    iso,
+    positions,
+    values,
+    widget,
+    orbital_positions_au,
+    orbital_coefficients,
+    orbital_exponents,
+    orbital_norms,
+    orbital_ijks,
+    mo_coefficients,
+):
 
-def new_cube(depth,
-             depth_counter,
-             iso,
-             positions,
-             values,
-             widget,
-             orbital_positions_au,
-             orbital_coefficients,
-             orbital_exponents,
-             orbital_norms,
-             orbital_ijks,
-             mo_coefficients):
-
-    new_grid = np.zeros((3,3,3), dtype=np.float64)
-    new_pos_grid = np.zeros((3,3,3,3), dtype=np.float64)
+    new_grid = np.zeros((3, 3, 3), dtype=np.float64)
+    new_pos_grid = np.zeros((3, 3, 3, 3), dtype=np.float64)
     if depth <= 0:
         edges = np.array(
             [
@@ -213,7 +218,7 @@ def new_cube(depth,
             dtype=np.float32,
         )
         colors = np.array([depth_counter / 5, 0, 0] * 12, dtype=np.float32)
-        radii = np.array([0.001 * 1/depth] * 12, dtype=np.float32)
+        radii = np.array([0.001 * 1 / depth] * 12, dtype=np.float32)
         widget.renderer.draw_cylinders_from_to(
             edges,
             radii,
@@ -230,7 +235,7 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values
+        aos_values,
     )
     # calculate 8 new cube (octree) without calculating the same vertex twice
     #
@@ -255,7 +260,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[0, 2, 0] = positions[2]
     new_grid[0, 2, 0] = values[2]
     new_pos_grid[0, 0, 1] = (positions[0] + positions[3]) * 0.5
@@ -267,7 +273,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[0, 1, 1] = (positions[0] + positions[4]) * 0.5
     new_grid[0, 1, 1] = calculate_mo_cartesian(
         new_pos_grid[0, 1, 1] * 1.889726124565062,
@@ -277,7 +284,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[0, 2, 1] = (positions[2] + positions[4]) * 0.5
     new_grid[0, 2, 1] = calculate_mo_cartesian(
         new_pos_grid[0, 2, 1] * 1.889726124565062,
@@ -287,7 +295,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[0, 0, 2] = positions[3]
     new_grid[0, 0, 2] = values[3]
     new_pos_grid[0, 1, 2] = (positions[3] + positions[4]) * 0.5
@@ -299,7 +308,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[0, 2, 2] = positions[4]
     new_grid[0, 2, 2] = values[4]
     new_pos_grid[1, 0, 0] = (positions[1] + positions[0]) * 0.5
@@ -311,7 +321,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[1, 1, 0] = (positions[1] + positions[2]) * 0.5
     new_grid[1, 1, 0] = calculate_mo_cartesian(
         new_pos_grid[1, 1, 0] * 1.889726124565062,
@@ -321,7 +332,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[1, 2, 0] = (positions[2] + positions[5]) * 0.5
     new_grid[1, 2, 0] = calculate_mo_cartesian(
         new_pos_grid[1, 2, 0] * 1.889726124565062,
@@ -331,7 +343,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[1, 0, 1] = (positions[1] + positions[3]) * 0.5
     new_grid[1, 0, 1] = calculate_mo_cartesian(
         new_pos_grid[1, 0, 1] * 1.889726124565062,
@@ -341,7 +354,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[1, 1, 1] = center_position
     new_grid[1, 1, 1] = center_value
     new_pos_grid[1, 2, 1] = (positions[2] + positions[7]) * 0.5
@@ -353,7 +367,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[1, 0, 2] = (positions[3] + positions[6]) * 0.5
     new_grid[1, 0, 2] = calculate_mo_cartesian(
         new_pos_grid[1, 0, 2] * 1.889726124565062,
@@ -363,7 +378,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[1, 1, 2] = (positions[7] + positions[3]) * 0.5
     new_grid[1, 1, 2] = calculate_mo_cartesian(
         new_pos_grid[1, 1, 2] * 1.889726124565062,
@@ -373,7 +389,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[1, 2, 2] = (positions[4] + positions[7]) * 0.5
     new_grid[1, 2, 2] = calculate_mo_cartesian(
         new_pos_grid[1, 2, 2] * 1.889726124565062,
@@ -383,7 +400,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[2, 0, 0] = positions[1]
     new_grid[2, 0, 0] = values[1]
     new_pos_grid[2, 1, 0] = (positions[1] + positions[5]) * 0.5
@@ -395,7 +413,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[2, 2, 0] = positions[5]
     new_grid[2, 2, 0] = values[5]
     new_pos_grid[2, 0, 1] = (positions[1] + positions[6]) * 0.5
@@ -407,7 +426,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[2, 1, 1] = (positions[1] + positions[7]) * 0.5
     new_grid[2, 1, 1] = calculate_mo_cartesian(
         new_pos_grid[2, 1, 1] * 1.889726124565062,
@@ -417,7 +437,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[2, 2, 1] = (positions[5] + positions[7]) * 0.5
     new_grid[2, 2, 1] = calculate_mo_cartesian(
         new_pos_grid[2, 2, 1] * 1.889726124565062,
@@ -427,7 +448,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[2, 0, 2] = positions[6]
     new_grid[2, 0, 2] = values[6]
     new_pos_grid[2, 1, 2] = (positions[6] + positions[7]) * 0.5
@@ -439,7 +461,8 @@ def new_cube(depth,
         orbital_norms,
         orbital_ijks,
         mo_coefficients,
-        aos_values)
+        aos_values,
+    )
     new_pos_grid[2, 2, 2] = positions[7]
     new_grid[2, 2, 2] = values[7]
 
@@ -464,18 +487,20 @@ def new_cube(depth,
     new_values[6] = new_grid[1, 0, 1]
     new_positions[7] = new_pos_grid[1, 1, 1]
     new_values[7] = new_grid[1, 1, 1]
-    new_cube(new_depth,
-             new_depth_counter,
-             iso,
-             new_positions,
-             new_values,
-             widget,
-             orbital_positions_au,
-             orbital_coefficients,
-             orbital_exponents,
-             orbital_norms,
-             orbital_ijks,
-             mo_coefficients)
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
 
     new_positions[0] = new_pos_grid[1, 0, 0]
     new_values[0] = new_grid[1, 0, 0]
@@ -493,18 +518,20 @@ def new_cube(depth,
     new_values[6] = new_grid[2, 0, 1]
     new_positions[7] = new_pos_grid[2, 1, 1]
     new_values[7] = new_grid[2, 1, 1]
-    new_cube(new_depth,
-             new_depth_counter,
-                iso,
-                new_positions,
-                new_values,
-             widget,
-                orbital_positions_au,
-                orbital_coefficients,
-                orbital_exponents,
-                orbital_norms,
-                orbital_ijks,
-                mo_coefficients)
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
 
     new_positions[0] = new_pos_grid[0, 1, 0]
     new_values[0] = new_grid[0, 1, 0]
@@ -522,18 +549,20 @@ def new_cube(depth,
     new_values[6] = new_grid[1, 1, 1]
     new_positions[7] = new_pos_grid[1, 2, 1]
     new_values[7] = new_grid[1, 2, 1]
-    new_cube(new_depth,
-             new_depth_counter,
-                iso,
-                new_positions,
-                new_values,
-             widget,
-                orbital_positions_au,
-                orbital_coefficients,
-                orbital_exponents,
-                orbital_norms,
-                orbital_ijks,
-                mo_coefficients)
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
 
     new_positions[0] = new_pos_grid[0, 0, 1]
     new_values[0] = new_grid[0, 0, 1]
@@ -551,18 +580,20 @@ def new_cube(depth,
     new_values[6] = new_grid[1, 0, 2]
     new_positions[7] = new_pos_grid[1, 1, 2]
     new_values[7] = new_grid[1, 1, 2]
-    new_cube(new_depth,
-             new_depth_counter,
-                iso,
-                new_positions,
-                new_values,
-             widget,
-                orbital_positions_au,
-                orbital_coefficients,
-                orbital_exponents,
-                orbital_norms,
-                orbital_ijks,
-                mo_coefficients)
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
 
     new_positions[0] = new_pos_grid[1, 1, 0]
     new_values[0] = new_grid[1, 1, 0]
@@ -580,18 +611,20 @@ def new_cube(depth,
     new_values[6] = new_grid[2, 1, 1]
     new_positions[7] = new_pos_grid[2, 2, 1]
     new_values[7] = new_grid[2, 2, 1]
-    new_cube(new_depth,
-             new_depth_counter,
-                iso,
-                new_positions,
-                new_values,
-             widget,
-                orbital_positions_au,
-                orbital_coefficients,
-                orbital_exponents,
-                orbital_norms,
-                orbital_ijks,
-                mo_coefficients)
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
 
     new_positions[0] = new_pos_grid[0, 1, 1]
     new_values[0] = new_grid[0, 1, 1]
@@ -609,18 +642,20 @@ def new_cube(depth,
     new_values[6] = new_grid[1, 1, 2]
     new_positions[7] = new_pos_grid[1, 2, 2]
     new_values[7] = new_grid[1, 2, 2]
-    new_cube(new_depth,
-             new_depth_counter,
-                iso,
-                new_positions,
-                new_values,
-             widget,
-                orbital_positions_au,
-                orbital_coefficients,
-                orbital_exponents,
-                orbital_norms,
-                orbital_ijks,
-                mo_coefficients)
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
 
     new_positions[0] = new_pos_grid[1, 0, 1]
     new_values[0] = new_grid[1, 0, 1]
@@ -638,18 +673,20 @@ def new_cube(depth,
     new_values[6] = new_grid[2, 0, 2]
     new_positions[7] = new_pos_grid[2, 1, 2]
     new_values[7] = new_grid[2, 1, 2]
-    new_cube(new_depth,
-             new_depth_counter,
-                iso,
-                new_positions,
-                new_values,
-             widget,
-                orbital_positions_au,
-                orbital_coefficients,
-                orbital_exponents,
-                orbital_norms,
-                orbital_ijks,
-                mo_coefficients)
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
 
     new_positions[0] = new_pos_grid[1, 1, 1]
     new_values[0] = new_grid[1, 1, 1]
@@ -667,34 +704,17 @@ def new_cube(depth,
     new_values[6] = new_grid[2, 1, 2]
     new_positions[7] = new_pos_grid[2, 2, 2]
     new_values[7] = new_grid[2, 2, 2]
-    new_cube(new_depth,
-             new_depth_counter,
-                iso,
-                new_positions,
-                new_values,
-             widget,
-                orbital_positions_au,
-                orbital_coefficients,
-                orbital_exponents,
-                orbital_norms,
-                orbital_ijks,
-                mo_coefficients)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    new_cube(
+        new_depth,
+        new_depth_counter,
+        iso,
+        new_positions,
+        new_values,
+        widget,
+        orbital_positions_au,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        orbital_ijks,
+        mo_coefficients,
+    )
