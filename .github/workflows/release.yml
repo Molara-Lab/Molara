@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.20.0
+        uses: pypa/cibuildwheel@v2
         env:
           CIBW_BUILD: cp${{ matrix.python-version }}-*
 
