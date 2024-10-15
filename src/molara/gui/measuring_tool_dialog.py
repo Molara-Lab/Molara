@@ -79,7 +79,7 @@ class MeasurementDialog(QDialog):
             _set_item = obj.setHorizontalHeaderItem if horizontal else obj.setVerticalHeaderItem
             if colors is None:
                 colors = [None] * len(labels)
-            for i, (label_i, color_i) in enumerate(zip(labels, colors)):
+            for i, (label_i, color_i) in enumerate(zip(labels, colors, strict=True)):
                 item = QTableWidgetItem(label_i)
                 if align_right:
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)

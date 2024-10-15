@@ -53,12 +53,12 @@ class WorkaroundTestBuffers:
             sphere_colors,
         )
 
-        assert isinstance(vao, (np.integer, int))
+        assert isinstance(vao, np.integer | int)
         assert isinstance(buffers, list)
         # len(buffers) must always be 4.
         assert len(buffers) == 4  # noqa: PLR2004
         for i in range(4):
-            assert isinstance(buffers[i], (np.integer, int))
+            assert isinstance(buffers[i], np.integer | int)
 
     def _test_setup_vao_numbers(self) -> None:
         """Test the setup_vao_numbers function of the buffers module."""
@@ -69,9 +69,9 @@ class WorkaroundTestBuffers:
         positions_3d = np.array([[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]], dtype=np.float32)
         self.openGLWidget.makeCurrent()
         (vao, buffers) = setup_vao_numbers(digits, positions_3d)
-        assert isinstance(vao, (np.integer, int))
+        assert isinstance(vao, np.integer | int)
         assert isinstance(buffers, list)
         # len(buffers) must always be 2.
         assert len(buffers) == 2  # noqa: PLR2004
         for i in range(2):
-            assert isinstance(buffers[i], (np.integer, int))
+            assert isinstance(buffers[i], np.integer | int)
