@@ -32,7 +32,7 @@ jobs:
           python -m pip install build pytest pytest-qt pytest-xvfb
           python -m build
           python -m pip install dist/*.whl "numpy<2"
-      - name: Install Linux-specific libraries
+      - name: Install Linux dependencies
         run: |
           sudo apt update && sudo apt install -y libegl1-mesa-dev
           sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
