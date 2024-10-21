@@ -132,10 +132,7 @@ class MainWindow(QMainWindow):
         """Checks if molecular orbitals have been loaded and perform actions accordingly."""
         if self.mo_dialog.check_if_mos():
             self.mo_dialog.show()
-            self.mo_dialog.ui.orbTypeLabel.setText(self.mols.mols[0].mos.type)
-            self.mo_dialog.setup_orbital_selector()
-            self.mo_dialog.fill_orbital_selector()
-            self.mo_dialog.calculate_minimum_box_size()
+            self.mo_dialog.init_dialog()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""

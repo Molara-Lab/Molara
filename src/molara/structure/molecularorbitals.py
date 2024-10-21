@@ -25,7 +25,7 @@ class MolecularOrbitals:
         spins: list | None = None,
         occupations: list | None = None,
         basis_functions: list | None = None,
-        type: str = "cartesian",
+        type: str = "Cartesian",
     ) -> None:
         """Initialize the MolecularOrbitals class with all their information.
 

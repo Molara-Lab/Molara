@@ -202,7 +202,6 @@ class MoldenImporter(MoleculesImporter):
                     i += 1
                     if i == len(lines):
                         break
-                print(i_start, i)
                 (
                     mo_coefficients,
                     labels,
@@ -237,7 +236,7 @@ class MoldenImporter(MoleculesImporter):
             np.array(mo_coefficients).T, spherical_order=spherical_order
         )
         if spherical_order == "molden":
-            molecules.mols[0].mos.type = "spherical"
+            molecules.mols[0].mos.type = "Spherical"
         molecules.mols[0].mos.calculate_transformation_matrix()
         PopulationAnalysis(molecules.mols[0])
 
@@ -352,12 +351,11 @@ class MoldenImporter(MoleculesImporter):
         energies = []
         spins = []
         occupations = []
-        keys = ["Sym=", "Ene=", "Spin=", "Occup="]
+        keys = ["Sym", "Ene", "Spin", "Occup"]
         regex_split_line = r"\s*=\s*|\s+"
         while i < len(lines):
             words = re.split(regex_split_line, lines[i])
             words = list(filter(None, words))
-            print(words)
             if "Sym" in words:
                 labels.append(words[1])
                 i += 1
@@ -376,12 +374,12 @@ class MoldenImporter(MoleculesImporter):
             else:
                 mo_coefficients.append([])
                 while words[0] not in keys:
-                    print(words[0] in keys, words[0])
                     mo_coefficients[-1].append(float(words[1]))
                     i += 1
                     if i == len(lines):
                         break
-                    words = lines[i].split()
+                    words = re.split(regex_split_line, lines[i])
+                    words = list(filter(None, words))
         return mo_coefficients, labels, energies, spins, occupations
 
 

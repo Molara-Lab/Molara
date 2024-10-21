@@ -33,10 +33,11 @@ class PopulationAnalysis:
         self.occ_vector = np.array([occ for occ in molecule.mos.occupations])
         self.occ_matrix = np.diag(self.occ_vector)
 
-        # initialize the overlap matrix for cartesian basis functions
+        # calculate the overlap matrix for cartesian basis functions
         self.overlap_matrix_ao = np.zeros(
             (len(self.basis_functions), len(self.basis_functions))
         )
+        self.calculate_ao_overlap_cartesian()
 
         # initialize the overlap matrix for spherical basis functions
         self.overlap_matrix_ao_spherical: np.ndarray = np.array([])
@@ -45,48 +46,20 @@ class PopulationAnalysis:
         self.overlap_matrix_mo: np.ndarray = np.array([])
 
         if self.mo_type == "cartesian":
-            self.overlap_matrix_mo = np.zeros(
-                (len(self.basis_functions), len(self.basis_functions))
-            )
-            self.overlap_matrix_mo = np.dot(
-                self.mo_coefficients.T,
-                np.dot(self.overlap_matrix_ao, self.mo_coefficients),
-            )
             self.d_matrix = (
                 np.dot(
                     self.mo_coefficients[:, :], np.dot(self.occ_matrix, self.mo_coefficients[:, :].T)
                 )
             )
-            print(np.sum(self.d_matrix * self.overlap_matrix_ao))
+            self.population_matrix = self.d_matrix * self.overlap_matrix_ao
         else:
             self.mo_coefficients_spherical = molecule.mos.coefficients_spherical
             self.transformation_matrix = (
                 self.molecule.mos.transformation_matrix_spherical_cartesian
             )
-            print(self.number_of_electrons)
-            self.overlap_matrix_ao = np.zeros(
-                (len(self.basis_functions), len(self.basis_functions))
-            )
-            self.overlap_matrix_mo = np.zeros(
-                (len(self.basis_functions), len(self.basis_functions))
-            )
-            for i, basis_function_i in enumerate(self.basis_functions):
-                for j, basis_function_j in enumerate(self.basis_functions):
-                    self.overlap_matrix_ao[i, j] = contracted_overlap(
-                        basis_function_j,
-                        basis_function_i,
-                        self.basis_functions_positions[j],
-                        self.basis_functions_positions[i],
-                    )
             self.overlap_matrix_ao_spherical = np.dot(
                 self.transformation_matrix,
                 np.dot(self.overlap_matrix_ao, self.transformation_matrix.T),
-            )
-            self.overlap_matrix_mo = np.dot(
-                self.mo_coefficients_spherical.T,
-                np.dot(
-                    self.overlap_matrix_ao_spherical, self.mo_coefficients_spherical
-                ),
             )
             self.d_matrix = (
                 np.dot(
@@ -94,7 +67,9 @@ class PopulationAnalysis:
                     np.dot(self.occ_matrix, self.mo_coefficients_spherical[:, :].T),
                 )
             )
-            print(np.sum(self.d_matrix * self.overlap_matrix_ao_spherical))
+            self.population_matrix = self.d_matrix * self.overlap_matrix_ao_spherical
+
+        self.calculated_number_of_electrons = np.sum(self.population_matrix)
 
     def calculate_ao_overlap_cartesian(self):
         """

@@ -5,16 +5,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import time
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidgetItem
 from PySide6.QtGui import QCloseEvent
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
 from molara.eval.marchingcubes import marching_cubes
-from molara.eval.octree import octree
 from molara.eval.generate_voxel_grid import generate_voxel_grid
-from molara.eval.mos import calculate_mo_cartesian
+from molara.eval.populationanalysis import PopulationAnalysis
 
 
 if TYPE_CHECKING:
@@ -48,16 +46,22 @@ class MOsDialog(QDialog):
         self.display_box = False
         self.box_spheres = -1
         self.box_cylinders = -1
+        self.old_orbital = 0
+        self.selected_orbital = 0
+        self.number_of_alpha_orbitals = 0
+        # 0 for restricted, 1 for alpha, -1 for beta
+        self.display_spin = 0
 
         self.ui = Ui_MOs_dialog()
         self.ui.setupUi(self)
-        self.ui.displayMos.clicked.connect(self.test)
+        self.ui.displayMos.clicked.connect(self.visualize_orbital)
         self.ui.orbitalSelector.cellClicked.connect(self.select_row)
         self.ui.toggleDisplayBoxButton.clicked.connect(self.toggle_box)
         self.ui.cubeBoxSizeSpinBox.valueChanged.connect(self.draw_box)
-        # self.ui.voxelSizeSpinBox.valueChanged.connect(self.test)
-        # self.ui.isoValueSpinBox.valueChanged.connect(self.test)
         self.ui.checkBoxWireMesh.clicked.connect(self.display_wire_mesh)
+        self.ui.alphaCheckBox.clicked.connect(self.select_spin_alpha)
+        self.ui.betaCheckBox.clicked.connect(self.select_spin_beta)
+        self.ui.normalizationButton.clicked.connect(self.run_population_analysis)
 
         self.initial_box_scale = 2
         scale = self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
@@ -71,9 +75,58 @@ class MOsDialog(QDialog):
             dtype=np.float64,
         )
 
+    def init_dialog(self):
+        """Calls all the functions to initialize all the labels and buttons and so on."""
+        self.ui.orbTypeLabel.setText(self.mos.type)
+        self.setup_orbital_selector()
+        self.calculate_minimum_box_size()
+        self.init_spin_labels()
+        self.fill_orbital_selector()
+
+    def init_spin_labels(self):
+        """Initialize the labels for alpha, beta spins or a restricted calculation."""
+        if -1 in self.mos.spins and 1 in self.mos.spins:
+            self.ui.restrictedLabel.hide()
+            self.ui.alphaCheckBox.setChecked(True)
+            self.ui.betaCheckBox.setChecked(False)
+            self.display_spin = 1
+        else:
+            self.ui.restrictedLabel.setText("Restricted")
+            self.ui.alphaCheckBox.hide()
+            self.ui.betaCheckBox.hide()
+            self.display_spin = 0
+
+    def select_spin_alpha(self):
+        """Select the spin with the checkboxes and update the displayed mos accordingly."""
+        if self.ui.alphaCheckBox.isChecked():
+            self.ui.betaCheckBox.setChecked(False)
+        if not self.ui.alphaCheckBox.isChecked():
+            self.ui.alphaCheckBox.setChecked(True)
+        self.display_spin = 1
+        self.fill_orbital_selector()
+        self.select_row()
+
+    def select_spin_beta(self):
+        """Select the spin with the checkboxes and update the displayed mos accordingly."""
+        if self.ui.betaCheckBox.isChecked():
+            self.ui.alphaCheckBox.setChecked(False)
+        if not self.ui.betaCheckBox.isChecked():
+            self.ui.betaCheckBox.setChecked(True)
+        self.display_spin = -1
+        self.fill_orbital_selector()
+        self.select_row()
+
     def select_row(self):
         """When a cell is selected, select the whole row"""
         self.ui.orbitalSelector.selectRow(self.ui.orbitalSelector.currentRow())
+        if self.display_spin == 0:
+            self.selected_orbital = self.ui.orbitalSelector.currentRow()
+        if self.display_spin == 1:
+            self.selected_orbital = self.ui.orbitalSelector.currentRow()
+            self.old_orbital = self.selected_orbital
+        if self.display_spin == -1:
+            self.old_orbital = self.ui.orbitalSelector.currentRow()
+            self.selected_orbital = self.old_orbital + self.number_of_alpha_orbitals
 
     def setup_orbital_selector(self):
         """Set up the orbital selector."""
@@ -87,10 +140,6 @@ class MOsDialog(QDialog):
             QHeaderView.ResizeToContents,
             QHeaderView.Stretch,
         )
-
-        # font = QFont()  # or "Monospace", "Consolas", etc.
-        # font.setStyleHint(QFont.TypeWriter)
-        # self.ui.orbitalSelector.setFont(font)
 
         self.ui.orbitalSelector.setColumnCount(2)
         self.ui.orbitalSelector.setHorizontalHeaderLabels(["Energy", "Occupation"])
@@ -106,21 +155,43 @@ class MOsDialog(QDialog):
 
     def fill_orbital_selector(self):
         """Fill the orbital selector."""
-        self.ui.orbitalSelector.setRowCount(len(self.mos.energies))
+        number_of_orbitals = 0
+        max_number_of_orbitals = 0
+        start = 0
+        self.ui.orbitalSelector.clearContents()
+
+        if self.display_spin == 0:
+            max_number_of_orbitals = len(self.mos.energies)
+            number_of_orbitals = max_number_of_orbitals
+            start = 0
+        elif self.display_spin == 1:
+            max_number_of_orbitals = sum([1 for spin in self.mos.spins if spin == 1])
+            number_of_orbitals = max_number_of_orbitals
+            self.number_of_alpha_orbitals = number_of_orbitals
+            start = 0
+        elif self.display_spin == -1:
+            number_of_alpha_orbitals = sum([1 for spin in self.mos.spins if spin == 1])
+            number_of_orbitals = sum([1 for spin in self.mos.spins if spin == -1])
+            max_number_of_orbitals = number_of_orbitals + number_of_alpha_orbitals
+            self.number_of_alpha_orbitals = number_of_alpha_orbitals
+            start = number_of_alpha_orbitals
+
+        self.ui.orbitalSelector.setRowCount(number_of_orbitals)
 
         # Fill the selector with energies rounded up to 3 digits and all the numbers aligned to the right
-        for i, energy in enumerate(self.mos.energies):
+        for i in range(start, max_number_of_orbitals):
             energy_item = QTableWidgetItem()
             energy_item.setTextAlignment(Qt.AlignRight)
-            energy_item.setText(f"{energy:.3f}")
-            self.ui.orbitalSelector.setItem(i, 0, energy_item)
+            energy_item.setText(f"{self.mos.energies[i]:.3f}")
+            self.ui.orbitalSelector.setItem(i - start, 0, energy_item)
 
             occupation_item = QTableWidgetItem()
             occupation_item.setTextAlignment(Qt.AlignRight)
             occupation_item.setText(f"{self.mos.occupations[i]:.3f}")
-            self.ui.orbitalSelector.setItem(i, 1, occupation_item)
+            self.ui.orbitalSelector.setItem(i - start, 1, occupation_item)
 
-        self.ui.orbitalSelector.selectRow(0)
+        print(self.old_orbital - start, self.old_orbital)
+        self.ui.orbitalSelector.selectRow(self.old_orbital)
 
     def calculate_minimum_box_size(self):
         """Calculate the minimum box size to fit the molecular orbitals."""
@@ -162,7 +233,7 @@ class MOsDialog(QDialog):
         event.accept()
 
     def check_if_mos(self):
-        """Check if MOs are available."""
+        """Check if MOs are available and if so initializes the mos, aos, and atoms."""
         if not self.parent().structure_widget.structures:
             return False
         if self.parent().structure_widget.structures[0].mos.coefficients.size == 0:
@@ -172,8 +243,6 @@ class MOsDialog(QDialog):
         self.atoms = self.parent().structure_widget.structures[0].atoms
         return True
 
-    def test(self):
-        self.mcubes()
 
     def calculate_corners_of_cube(self):
         """Calculate the corners of the cube."""
@@ -210,8 +279,6 @@ class MOsDialog(QDialog):
 
     def draw_box(self):
         """Draw the box."""
-        if not self.display_box:
-            return
         self.remove_box()
         self.scale_box()
         corners = self.calculate_corners_of_cube()
@@ -235,6 +302,8 @@ class MOsDialog(QDialog):
         radius = 0.01
         colors = np.array([0, 0, 0] * 12, dtype=np.float32)
         radii = np.array([radius] * 12, dtype=np.float32)
+        if not self.display_box:
+            return
         self.box_cylinders = (
             self.parent().structure_widget.renderer.draw_cylinders_from_to(
                 positions,
@@ -251,7 +320,8 @@ class MOsDialog(QDialog):
         )
         self.parent().structure_widget.update()
 
-    def mcubes(self):
+    def visualize_orbital(self):
+        """Visualize the orbital."""
         self.voxel_size = np.array(
             [
                 [self.ui.voxelSizeSpinBox.value(), 0, 0],
@@ -260,25 +330,9 @@ class MOsDialog(QDialog):
             ],
             dtype=np.float64,
         )
-        iso = self.ui.isoValueSpinBox.value()
-        orbital = self.ui.orbitalSelector.currentRow()
 
-        max_length = 0
-        for ao in self.aos:
-            if len(ao.exponents) > max_length:
-                max_length = len(ao.exponents)
-        orbital_exponents = np.zeros((len(self.aos), max_length), dtype=np.float64)
-        orbital_coefficients = np.zeros((len(self.aos), max_length), dtype=np.float64)
-        orbital_norms = np.zeros((len(self.aos), max_length), dtype=np.float64)
-        orbital_positions = np.zeros((len(self.aos), 3), dtype=np.float64)
-        orbital_ijks = np.zeros((len(self.aos), 3), dtype=np.int64)
-        for ao_index, ao in enumerate(self.aos):
-            for i in range(len(ao.exponents)):
-                orbital_exponents[ao_index, i] = ao.exponents[i]
-                orbital_coefficients[ao_index, i] = ao.coefficients[i]
-                orbital_norms[ao_index, i] = ao.norms[i]
-            orbital_positions[ao_index, :] = ao.position
-            orbital_ijks[ao_index, :] = ao.ijk
+        iso = self.ui.isoValueSpinBox.value()
+        mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
         origin = self.origin
         direction = self.direction
         size = self.size
@@ -290,11 +344,8 @@ class MOsDialog(QDialog):
             ],
             dtype=np.int32,
         )
-        mo_coefficients = self.mos.coefficients[:, orbital]
-        self.parent().structure_widget.update()
 
-        t1 = time.time()
-        temp = generate_voxel_grid(
+        voxel_grid = generate_voxel_grid(
             np.array(origin, dtype=np.float64),
             direction,
             np.array(
@@ -305,13 +356,9 @@ class MOsDialog(QDialog):
             self.aos,
             mo_coefficients,
         )
-        t2 = time.time()
         vertices1, vertices2 = marching_cubes(
-            temp, iso, origin, self.voxel_size, voxel_number
+            voxel_grid, iso, origin, self.voxel_size, voxel_number
         )
-        t3 = time.time()
-        print("new_voxel: ", t2 - t1)
-        print("marching: ", t3 - t2)
 
         self.remove_orbitals()
 
@@ -322,128 +369,6 @@ class MOsDialog(QDialog):
             vertices2, np.array([[0, 0, 1]], dtype=np.float32)
         )
         self.drawn_orbitals = [orb1, orb2]
-
-    def test_function(self):
-        """Test function."""
-
-        self.mcubes()
-        iso = self.ui.isoValueSpinBox.value()
-        orbital = self.ui.orbitalSelector.currentRow()
-        mo_coefficients = self.mos.coefficients[orbital]
-        voxel_size = np.array([0.4, 0.4, 0.4], dtype=np.float64)
-        octree(
-            self.origin,
-            voxel_size,
-            self.direction,
-            self.size,
-            iso,
-            self.aos,
-            mo_coefficients,
-            self.parent().structure_widget,
-        )
-        self.parent().structure_widget.update()
-
-    def new_cube(
-        self,
-        depth,
-        c1,
-        iso,
-        size,
-        orbital_positions,
-        orbital_coefficients,
-        orbital_exponents,
-        orbital_norms,
-        orbital_ijks,
-        mo_coefficients,
-        aos_values,
-    ):
-        """draws 8 new cubes inside old cube defined by c1 and c2"""
-
-        direction = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64)
-        size = size / 2
-        corners = np.zeros((8, 3), dtype=np.float64)
-        for i in range(2):
-            for j in range(2):
-                for k in range(2):
-                    new_origin = (
-                        c1
-                        + direction[0] * i * size[0]
-                        + direction[1] * j * size[1]
-                        + direction[2] * k * size[2]
-                    )
-                    check_inside = False
-                    check_indide_num = 0
-                    for l in range(8):
-                        corners[l, :] = (
-                            new_origin
-                            + direction[0] * (l % 2) * size[0]
-                            + direction[1] * ((l // 2) % 2) * size[1]
-                            + direction[2] * (l // 4) * size[2]
-                        )
-                        if not check_inside:
-                            mo_val = calculate_mo_cartesian(
-                                corners[l, :] * 1.889726124565062,
-                                orbital_positions * 1.889726124565062,
-                                orbital_coefficients,
-                                orbital_exponents,
-                                orbital_norms,
-                                orbital_ijks,
-                                mo_coefficients,
-                                aos_values,
-                            )
-                        if mo_val > iso:
-                            check_indide_num += 1
-                        if check_indide_num < 8 and check_indide_num > 0:
-                            check_inside = True
-                    if check_inside:
-                        if depth > 0:
-                            self.new_cube(
-                                depth - 1,
-                                corners[0],
-                                iso,
-                                size,
-                                orbital_positions,
-                                orbital_coefficients,
-                                orbital_exponents,
-                                orbital_norms,
-                                orbital_ijks,
-                                mo_coefficients,
-                                aos_values,
-                            )
-                        else:
-                            positions = np.array(
-                                [
-                                    [corners[0], corners[1]],
-                                    [corners[0], corners[2]],
-                                    [corners[3], corners[1]],
-                                    [corners[3], corners[2]],
-                                    [corners[4], corners[5]],
-                                    [corners[4], corners[6]],
-                                    [corners[7], corners[5]],
-                                    [corners[7], corners[6]],
-                                    [corners[0], corners[4]],
-                                    [corners[1], corners[5]],
-                                    [corners[2], corners[6]],
-                                    [corners[3], corners[7]],
-                                ],
-                                dtype=np.float32,
-                            )
-                            radius = 0.005
-                            colors = np.array([0, 0, 0] * 12, dtype=np.float32)
-                            radii = np.array([radius] * 12, dtype=np.float32)
-                            if check_inside:
-                                self.box_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
-                                    positions,
-                                    radii,
-                                    colors,
-                                    10,
-                                )
-                                self.box_spheres = self.parent().structure_widget.renderer.draw_spheres(
-                                    np.array([new_origin], dtype=np.float32),
-                                    radii,
-                                    colors,
-                                    10,
-                                )
         self.parent().structure_widget.update()
 
     def remove_orbitals(self):
@@ -453,51 +378,9 @@ class MOsDialog(QDialog):
                 self.parent().structure_widget.renderer.remove_polygon(orb)
                 self.drawn_orbitals = [-1, -1]
 
-    def temp_MO(self) -> None:
-        steps = 100
-        runs = 20
-        orb = 5
-        step_size = 0.1
-        pos = []
-        vals = []
-        colors = []
-        radii = []
-
-        # Metropolis run
-        for run in range(runs):
-            idx = np.random.randint(0, high=len(self.atoms))
-            r = np.array(self.atoms[idx].position, dtype=np.float32)
-            r = np.array([0, 0, 0], dtype=np.float32)
-            vals.append(self.mos.get_mo_value(orb, self.aos, r))
-            pos.append(r)
-            if vals[-1] > 0:
-                colors.append(np.array([1, 0, 0], dtype=np.float32))
-            else:
-                colors.append(np.array([0, 0, 1], dtype=np.float32))
-            radii.append([0.1 * abs(vals[-1])])
-            for i in range(steps):
-                r = np.array(pos[-1]) + (np.random.rand(3) * 2 - 1) * step_size
-                val = self.mos.get_mo_value(orb, self.aos, r)
-                if val**2 > vals[-1] ** 2:
-                    vals.append(val)
-                    pos.append(r)
-                else:
-                    if np.random.rand() < val**2 / vals[-1] ** 2:
-                        vals.append(val)
-                        pos.append(r)
-                    else:
-                        vals.append(vals[-1])
-                        pos.append(pos[-1])
-                if vals[-1] > 0:
-                    colors.append(np.array([1, 0, 0], dtype=np.float32))
-                else:
-                    colors.append(np.array([0, 0, 1], dtype=np.float32))
-                radii.append([0.035 * abs(vals[-1])])
-
-        colors = np.array(colors, dtype=np.float32)
-        radii = np.array(radii, dtype=np.float32)
-        pos = np.array(pos, dtype=np.float32)
-        # Draw the points
-        self.parent().parent().ui.openGLWidget.renderer.draw_spheres(
-            pos, radii, colors, 2
-        )
+    def run_population_analysis(self):
+        """Run the population analysis to check if the calculated number of electrons matches the exact one."""
+        # Use QThreadpool in the future :)
+        population = PopulationAnalysis(self.parent().structure_widget.structures[0])
+        self.ui.exactCountLabel.setText(str(round(population.number_of_electrons, 8)))
+        self.ui.calculatedCountLabel.setText(str(round(population.calculated_number_of_electrons, 8)))
