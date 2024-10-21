@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import TYPE_CHECKING
+import re
 
 import numpy as np
 
@@ -201,6 +202,7 @@ class MoldenImporter(MoleculesImporter):
                     i += 1
                     if i == len(lines):
                         break
+                print(i_start, i)
                 (
                     mo_coefficients,
                     labels,
@@ -350,34 +352,36 @@ class MoldenImporter(MoleculesImporter):
         energies = []
         spins = []
         occupations = []
+        keys = ["Sym=", "Ene=", "Spin=", "Occup="]
+        regex_split_line = r"\s*=\s*|\s+"
         while i < len(lines):
-            words = lines[i].split()
-            if words[0] == "Sym=":
+            words = re.split(regex_split_line, lines[i])
+            words = list(filter(None, words))
+            print(words)
+            if "Sym" in words:
                 labels.append(words[1])
                 i += 1
-                words = lines[i].split()
-            if words[0] == "Ene=":
+            elif "Ene" in words:
                 energies.append(float(words[1]))
                 i += 1
-                words = lines[i].split()
-            if words[0] == "Spin=":
+            elif "Spin" in words:
                 if words[1] == "Alpha":
                     spins.append(1)
                 elif words[1] == "Beta":
                     spins.append(-1)
                 i += 1
-                words = lines[i].split()
-            if words[0] == "Occup=":
+            elif "Occup" in words:
                 occupations.append(float(words[1]))
                 i += 1
-                words = lines[i].split()
-            mo_coefficients.append([])
-            while words[0] != "Sym=" and words[0] != "Ene=":
-                mo_coefficients[-1].append(float(words[1]))
-                i += 1
-                if i == len(lines):
-                    break
-                words = lines[i].split()
+            else:
+                mo_coefficients.append([])
+                while words[0] not in keys:
+                    print(words[0] in keys, words[0])
+                    mo_coefficients[-1].append(float(words[1]))
+                    i += 1
+                    if i == len(lines):
+                        break
+                    words = lines[i].split()
         return mo_coefficients, labels, energies, spins, occupations
 
 
