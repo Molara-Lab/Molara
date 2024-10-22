@@ -1,10 +1,11 @@
 """This module serves the calculation of atomic orbitals."""
 
 from cython.parallel import prange
+from cython import boundscheck
 
 __copyright__ = "Copyright 2024, Molara"
 
-
+@boundscheck(False)
 cpdef int calculate_aos(
     double[:] electron_coords,
     double[:] atom_coords,
