@@ -74,6 +74,12 @@ def setup_vao(
         vertices.itemsize * 6,
         ctypes.c_void_p(12),
     )
+    if indices is not None:
+        ebo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+    else:
+        ebo = 0
 
     # Instance colors
     instance_vbo_color = glGenBuffers(1)
@@ -119,9 +125,6 @@ def setup_vao(
         )
         glVertexAttribDivisor(3 + i, 1)
     if indices is not None:
-        ebo = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
         buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
     else:
         buffers = [vbo, instance_vbo_color, instance_vbo_model]
