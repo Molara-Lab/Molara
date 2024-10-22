@@ -105,7 +105,8 @@ class PoscarImporter(Importer):
                 crystal = PymatgenImporter(self.path).load().get_current_mol()
             except ImportError:
                 warnings.warn(
-                    "pymatgen is not installed, using internal parser", stacklevel=2
+                    "pymatgen is not installed, using internal parser",
+                    stacklevel=2,
                 )
                 crystal = self.parse_poscar()
 
@@ -129,18 +130,12 @@ class PoscarImporter(Importer):
         positions_ = lines[8:]
         try:
             scale = float(scale_)
-            basis_vectors = [
-                [float(component) for component in robust_split(latvec_)[:3]]
-                for latvec_ in latvecs_
-            ]
+            basis_vectors = [[float(component) for component in robust_split(latvec_)[:3]] for latvec_ in latvecs_]
             species = robust_split(species_)
             numbers = [int(num) for num in robust_split(numbers_)]
             if len(positions_) == sum(numbers) * 2 + 1:
                 positions_ = positions_[0 : sum(numbers)]
-            positions = [
-                [float(component) for component in robust_split(pos)[:3]]
-                for pos in positions_
-            ]
+            positions = [[float(component) for component in robust_split(pos)[:3]] for pos in positions_]
         except ValueError as err:
             msg = "Error: faulty formatting of the POSCAR file."
             raise FileFormatError(msg) from err
@@ -148,7 +143,7 @@ class PoscarImporter(Importer):
             len(numbers) != len(species)
             or len(positions) != sum(numbers)
             or not mode.lower().startswith(
-                ("d", "c", "k")
+                ("d", "c", "k"),
             )  # Either cartesian or direct coords
         ):
             msg = "Error: faulty formatting of the POSCAR file."
@@ -156,10 +151,7 @@ class PoscarImporter(Importer):
 
         # For cartesian coordinates, convert to fractional coordinates
         if mode.lower().startswith(("c", "k")):
-            positions = [
-                np.dot(np.linalg.inv(basis_vectors).T, position).tolist()
-                for position in positions
-            ]
+            positions = [np.dot(np.linalg.inv(basis_vectors).T, position).tolist() for position in positions]
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
 
         atomic_numbers_extended = []

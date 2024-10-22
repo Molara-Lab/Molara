@@ -33,11 +33,13 @@ def compile_shaders() -> list[GLuint]:
     fragment_shader = compileShader(fragment_src_numbers, GL_FRAGMENT_SHADER)
     try:
         geometry_shader = compileShader(
-            geometry_src_numbers_indices, GL_GEOMETRY_SHADER
+            geometry_src_numbers_indices,
+            GL_GEOMETRY_SHADER,
         )
     except ShaderCompilationError:
         geometry_shader = compileShader(
-            geometry_src_numbers_no_indices, GL_GEOMETRY_SHADER
+            geometry_src_numbers_no_indices,
+            GL_GEOMETRY_SHADER,
         )
         print("Using geometry shader without indices")  # noqa: T201
     shader = glCreateProgram()

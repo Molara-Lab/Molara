@@ -32,9 +32,7 @@ class Camera:
         self.distance_from_target = 5.0
         self.zoom_sensitivity = 0.15
         self.projection_matrix: npt.ArrayLike | None = None
-        self.orthographic_projection = (
-            False  # specify whether orthographic projection shall be used
-        )
+        self.orthographic_projection = False  # specify whether orthographic projection shall be used
         self.calculate_projection_matrix()
 
         self.rotation = pyrr.Quaternion()
@@ -111,14 +109,8 @@ class Camera:
         distance_from_target = None
         if dy_struct and dz_struct:
             extra_space_factor = 1.5
-            dy = (
-                dy_struct
-                if dy_struct * self.width > dz_struct * self.height
-                else dz_struct * self.height / self.width
-            )
-            distance_from_target = (
-                extra_space_factor * dy / (2 * np.tan(np.radians(self.fov / 2)))
-            )
+            dy = dy_struct if dy_struct * self.width > dz_struct * self.height else dz_struct * self.height / self.width
+            distance_from_target = extra_space_factor * dy / (2 * np.tan(np.radians(self.fov / 2)))
 
         self.set_position(
             [1.0, 0.0, 0.0],
@@ -144,9 +136,7 @@ class Camera:
         self.position = pyrr.Vector3(position, dtype=np.float32)
         self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
-        self.distance_from_target = (
-            distance_from_target if distance_from_target else self.distance_from_target
-        )
+        self.distance_from_target = distance_from_target if distance_from_target else self.distance_from_target
         self.projection_matrix = None
         self.calculate_projection_matrix()
 
@@ -217,7 +207,7 @@ class Camera:
             zoom_factor,
         )  # Limit zoom factor to avoid zooming too far
         self.distance_from_target += np.log10(
-            zoom_factor * self.zoom_sensitivity
+            zoom_factor * self.zoom_sensitivity,
         ) * np.sign(zoom_factor - 1)
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
@@ -233,10 +223,7 @@ class Camera:
         """
         self.up_vector = self.rotation * self.initial_up_vector
         self.right_vector = self.rotation * self.initial_right_vector
-        self.position = (
-            self.rotation * self.initial_position * self.distance_from_target
-            + self.translation
-        )
+        self.position = self.rotation * self.initial_position * self.distance_from_target + self.translation
         self.position = np.array(self.position, dtype=np.float32)
         self.target = self.initial_target + self.translation
         if save:
@@ -264,11 +251,7 @@ class Camera:
         """
         x_translation = -(mouse_position[0] - old_mouse_position[0])
         y_translation = -(mouse_position[1] - old_mouse_position[1])
-        self.translation = (
-            self.right_vector * x_translation
-            + self.up_vector * y_translation
-            + self.last_translation
-        )
+        self.translation = self.right_vector * x_translation + self.up_vector * y_translation + self.last_translation
 
     def set_rotation_quaternion(
         self,
@@ -309,10 +292,7 @@ class Camera:
         )
 
         tolerance_parallel = 1e-5
-        if (
-            np.linalg.norm(previous_arcball_point - current_arcball_point)
-            > tolerance_parallel
-        ):
+        if np.linalg.norm(previous_arcball_point - current_arcball_point) > tolerance_parallel:
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
             rotation_axis = pyrr.vector3.normalize(rotation_axis)
             rotation_angle = np.arccos(
@@ -379,10 +359,12 @@ class Camera:
         )
         self.initial_position = pyrr.Vector3(data["initial_position"], dtype=np.float32)
         self.initial_up_vector = pyrr.Vector3(
-            data["initial_up_vector"], dtype=np.float32
+            data["initial_up_vector"],
+            dtype=np.float32,
         )
         self.initial_right_vector = pyrr.Vector3(
-            data["initial_right_vector"], dtype=np.float32
+            data["initial_right_vector"],
+            dtype=np.float32,
         )
         self.target = pyrr.Vector3(data["target"], dtype=np.float32)
         self.initial_target = pyrr.Vector3(data["initial_target"], dtype=np.float32)
@@ -394,7 +376,9 @@ class Camera:
         self.update()
 
     def adopt_config(
-        self, other_camera: Camera, custom_geometry: tuple[int, int] | None = None
+        self,
+        other_camera: Camera,
+        custom_geometry: tuple[int, int] | None = None,
     ) -> None:
         """Adopt the configuration of another Camera object.
 

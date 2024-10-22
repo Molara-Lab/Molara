@@ -36,7 +36,7 @@ class WorkaroundTestAtomLabels:
             self.main_window.show_init_xyz()
 
         digits, positions_3d = init_atom_number(
-            self.main_window.structure_widget.structures[0]
+            self.main_window.structure_widget.structures[0],
         )
 
         assert isinstance(digits, np.ndarray)

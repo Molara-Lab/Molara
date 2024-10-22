@@ -145,4 +145,3 @@ class Ui_MOs_dialog(object):
         self.toggleDisplayBoxButton.setText(QCoreApplication.translate("MOs_dialog", u"Display Box", None))
         self.displayMos.setText(QCoreApplication.translate("MOs_dialog", u"Display Orbital", None))
     # retranslateUi
-

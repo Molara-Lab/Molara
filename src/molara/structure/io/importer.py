@@ -3,25 +3,24 @@
 from __future__ import annotations
 
 import locale
+import re
 from abc import ABC, abstractmethod
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import TYPE_CHECKING
-import re
 
 import numpy as np
 
+from molara.eval.populationanalysis import PopulationAnalysis
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.io.importer_crystal import (
     PoscarImporter,
     PymatgenImporter,
     VasprunImporter,
 )
-
-from molara.eval.populationanalysis import PopulationAnalysis
+from molara.structure.molecularorbitals import MolecularOrbitals
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
-from molara.structure.molecularorbitals import MolecularOrbitals
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -106,8 +105,7 @@ class XyzImporter(MoleculesImporter):
                 self._molecule_from_xyz(lines[start_line:end_line]),
             )
             finished = (
-                start_line + 2 + num_atoms >= len(lines)
-                or not lines[start_line + 2 + num_atoms].strip().isdigit()
+                start_line + 2 + num_atoms >= len(lines) or not lines[start_line + 2 + num_atoms].strip().isdigit()
             )
             start_line = end_line
         return molecules
@@ -121,7 +119,8 @@ class CoordImporter(MoleculesImporter):
         molecules = Molecules()
 
         with open(
-            self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
+            self.path,
+            encoding=locale.getpreferredencoding(do_setlocale=False),
         ) as file:
             lines = file.readlines()  # To skip first row
 
@@ -151,7 +150,7 @@ class CoordImporter(MoleculesImporter):
 class MoldenImporter(MoleculesImporter):
     """Importer from *.molden files."""
 
-    def load(self) -> Molecules:  # noqa: C901
+    def load(self) -> Molecules:  # noqa: C901 PLR0915 PLR0912
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
@@ -161,7 +160,8 @@ class MoldenImporter(MoleculesImporter):
         normalization_mode = "none"
 
         with open(
-            self.path, encoding=locale.getpreferredencoding(do_setlocale=False)
+            self.path,
+            encoding=locale.getpreferredencoding(do_setlocale=False),
         ) as file:
             lines = file.readlines()
 
@@ -214,14 +214,14 @@ class MoldenImporter(MoleculesImporter):
         molecules.add_molecule(
             Molecule(np.array(atomic_numbers), np.array(coordinates)),  # type: ignore[reportPossiblyUnboundVariable]
         )
-        molecules.mols[0].mos = MolecularOrbitals(labels, energies, spins, occupations)
+        molecules.mols[0].mos = MolecularOrbitals(labels, energies, spins, occupations)  # type: ignore[reportPossiblyUnboundVariable]
         orbital_labels = []
-        for i in range(len(shells)):  # WATCH OUT ONLY FOR GTOs!!!!!!!!
+        for i in range(len(shells)):  # type: ignore[reportPossiblyUnboundVariable]
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_basis_functions(
-                shells[i],
-                exponents[i],
-                coefficients[i],
+                shells[i],  # type: ignore[reportPossiblyUnboundVariable]
+                exponents[i],  # type: ignore[reportPossiblyUnboundVariable]
+                coefficients[i],  # type: ignore[reportPossiblyUnboundVariable]
                 molecules.mols[0].atoms[i].position,
                 normalization_mode,
             )
@@ -229,14 +229,15 @@ class MoldenImporter(MoleculesImporter):
                 molecules.mols[0].atoms[i].basis_set.basis_functions.values(),
             )
             orbital_labels.append(
-                list(molecules.mols[0].atoms[i].basis_set.basis_functions.keys())
+                list(molecules.mols[0].atoms[i].basis_set.basis_functions.keys()),
             )
         molecules.mols[0].mos.basis_functions = orbital_labels
         molecules.mols[0].mos.set_mo_coefficients(
-            np.array(mo_coefficients).T, spherical_order=spherical_order
+            np.array(mo_coefficients).T,  # type: ignore[reportPossiblyUnboundVariable]
+            spherical_order=spherical_order,
         )
         if spherical_order == "molden":
-            molecules.mols[0].mos.type = "Spherical"
+            molecules.mols[0].mos.basis_type = "Spherical"
         molecules.mols[0].mos.calculate_transformation_matrix()
         PopulationAnalysis(molecules.mols[0])
 
@@ -272,11 +273,14 @@ class MoldenImporter(MoleculesImporter):
 
         return atomic_numbers, coordinates
 
-    def get_basisset(
-        self, lines: list[str]
+    def get_basisset(  # noqa: PLR0915
+        self,
+        lines: list[str],
     ) -> tuple[
-        list[list[str]], list[list[list[float]]], list[list[list[float]]]
-    ]:  # noqa: C901
+        list[list[str]],
+        list[list[list[float]]],
+        list[list[list[float]]],
+    ]:
         """Read the basis set from the lines of the basisset block.
 
         :param lines: The lines of the basis set block.
@@ -285,15 +289,15 @@ class MoldenImporter(MoleculesImporter):
         if "STO" in lines[0]:
             msg = "STO type not implemented."
             raise FileFormatError(msg)
-        coefficients = []
-        exponents = []
-        shells = []
-        shells_check = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
-        shells_all = []
-        coefficients_all = []
-        coefficients_shell = []
-        exponents_all = []
-        exponents_shell = []
+        coefficients: list = []
+        exponents: list = []
+        shells: list = []
+        shells_check: list = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
+        shells_all: list = []
+        coefficients_all: list = []
+        coefficients_shell: list = []
+        exponents_all: list = []
+        exponents_shell: list = []
         atom_idx = 0
         first = True
         last_empty_line = 0
@@ -314,8 +318,7 @@ class MoldenImporter(MoleculesImporter):
                     coefficients_shell = []
                     first = True
                     continue
-                else:
-                    continue
+                continue
             if words[0] in shells_check:
                 shells.append(words[0])
                 if not first:

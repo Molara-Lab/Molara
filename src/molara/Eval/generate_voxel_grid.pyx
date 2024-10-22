@@ -18,12 +18,12 @@ cpdef generate_voxel_grid(
 ):
     """
     Generates a 3D array of values. The voxel grid is defined by the origin, direction, voxel size and voxel count.
-    
+
     :param origin: The origin of the voxel grid
     :param direction: The direction of the voxel grid
     :param voxel_size: The size of each voxel
     :param voxel_count: The number of voxels in each direction
-    :param aos: The atomic orbitals paramters
+    :param aos: The atomic orbitals parameters
     :param mo_coeff: The molecular orbital coefficients
     :return: A 3D array of values
     """

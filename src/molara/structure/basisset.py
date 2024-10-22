@@ -208,7 +208,7 @@ class BasisFunction:
         elif normalization_mode == "molpro":
             self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
         elif normalization_mode == "none":
-            print("Warning: no guarantee that the orbitals are correct!")
+            # maybe create warning class and print a warning here
             self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
 
         self.coefficients = coefficients * calculate_normalization_contracted_gtos(
@@ -219,9 +219,14 @@ class BasisFunction:
         )
 
 
-def hermite_coefs(
-    i: int, j: int, t: int, qx: float, a: float, b: float
-) -> float:  # noqa: PLR0913
+def hermite_coefs(  # noqa: PLR0913
+    i: int,
+    j: int,
+    t: int,
+    qx: float,
+    a: float,
+    b: float,
+) -> float:
     """Recursive definition of Hermite Gaussian coefficients.
 
     Returns a float.
@@ -342,8 +347,7 @@ def calculate_normalization_primitive_gtos(
     return np.array(
         [
             np.sqrt(
-                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5))
-                / (fi * fj * fk * np.pi**1.5),
+                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5)) / (fi * fj * fk * np.pi**1.5),
             )
             for exponent in exponents
         ],
@@ -378,9 +382,9 @@ def calculate_normalization_contracted_gtos(
 
     for ia in range(len(exponents)):
         for ib in range(len(exponents)):
-            n += (coefficients[ia] * coefficients[ib] * norms[ia] * norms[ib]) / (
-                exponents[ia] + exponents[ib]
-            ) ** (m + 1.5)
+            n += (coefficients[ia] * coefficients[ib] * norms[ia] * norms[ib]) / (exponents[ia] + exponents[ib]) ** (
+                m + 1.5
+            )
     n = n * prefactor
 
     return n ** (-0.5)

@@ -75,20 +75,19 @@ class WorkaroundTestRenderer:
         def _test_ids_and_counters(result: int) -> None:
             """Test most recent cylinder ids, cylinder vao entries and...?."""
             assert result == mostrecent_cylinder_id
-            assert (
-                self.renderer.cylinders[mostrecent_cylinder_id]["vao"]
-                == cylinder_total_counter
-            )
+            assert self.renderer.cylinders[mostrecent_cylinder_id]["vao"] == cylinder_total_counter
             start_id = 1 + (cylinder_total_counter - 1) * 4
             end_id = 1 + cylinder_total_counter * 4
             buffers_comparison = list(range(start_id, end_id))
-            assert (
-                self.renderer.cylinders[mostrecent_cylinder_id]["buffers"]
-                == buffers_comparison
-            )
+            assert self.renderer.cylinders[mostrecent_cylinder_id]["buffers"] == buffers_comparison
 
         result = self.renderer.draw_cylinders(
-            positions, directions, radii, lengths, colors, subdivisions
+            positions,
+            directions,
+            radii,
+            lengths,
+            colors,
+            subdivisions,
         )
         # for the first added cylinder, cylinder_total_counter must be set to the vao id of the first cylinder.
         # this is because previous tests might have added cylinders already.
@@ -98,14 +97,24 @@ class WorkaroundTestRenderer:
         _test_ids_and_counters(result)
 
         result = self.renderer.draw_cylinders(
-            positions, directions, radii, lengths, colors, subdivisions
+            positions,
+            directions,
+            radii,
+            lengths,
+            colors,
+            subdivisions,
         )
         cylinder_total_counter += 1
         mostrecent_cylinder_id += 1
         _test_ids_and_counters(result)
 
         result = self.renderer.draw_cylinders(
-            positions, directions, radii, lengths, colors, subdivisions
+            positions,
+            directions,
+            radii,
+            lengths,
+            colors,
+            subdivisions,
         )
         cylinder_total_counter += 1
         mostrecent_cylinder_id += 1
@@ -113,7 +122,12 @@ class WorkaroundTestRenderer:
 
         self.renderer.remove_cylinder(0)
         result = self.renderer.draw_cylinders(
-            positions, directions, radii, lengths, colors, subdivisions
+            positions,
+            directions,
+            radii,
+            lengths,
+            colors,
+            subdivisions,
         )
         mostrecent_cylinder_id = 0
         cylinder_total_counter += 1
@@ -156,7 +170,10 @@ class WorkaroundTestRenderer:
         subdivisions = 10
 
         id_cylinder_from_to = self.renderer.draw_cylinders_from_to(
-            positions_from_to, radii, colors, subdivisions
+            positions_from_to,
+            radii,
+            colors,
+            subdivisions,
         )
         id_cylinder_normal = self.renderer.draw_cylinders(
             positions,
@@ -183,17 +200,11 @@ class WorkaroundTestRenderer:
         def _test_ids_and_counters(result: int) -> None:
             """Test most recent sphere ids, sphere vao entries and...?."""
             assert result == mostrecent_sphere_id
-            assert (
-                self.renderer.spheres[mostrecent_sphere_id]["vao"]
-                == sphere_total_counter
-            )
+            assert self.renderer.spheres[mostrecent_sphere_id]["vao"] == sphere_total_counter
             start_id = 1 + (sphere_total_counter - 1) * 4
             end_id = 1 + sphere_total_counter * 4
             buffers_comparison = list(range(start_id, end_id))
-            assert (
-                self.renderer.spheres[mostrecent_sphere_id]["buffers"]
-                == buffers_comparison
-            )
+            assert self.renderer.spheres[mostrecent_sphere_id]["buffers"] == buffers_comparison
 
         result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
         mostrecent_sphere_id += 1

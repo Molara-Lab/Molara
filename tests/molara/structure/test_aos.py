@@ -6,12 +6,10 @@ from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
+from numpy.testing import assert_almost_equal
 
 from molara.eval.aos import calculate_aos
 from molara.structure.io.importer import GeneralImporter
-from molara.util.testing import assert_vectors_equal
-from numpy.testing import assert_almost_equal
-
 
 if TYPE_CHECKING:
     from molara.structure.basisset import BasisSet
@@ -104,15 +102,21 @@ class TestAos(TestCase):
 
         for orb in self.basisset_h2.basis_functions:
             _test_orbital(
-                orb, self.basisset_h2, self.electron_pos_h2, self.nuclear_pos_h2
+                orb,
+                self.basisset_h2,
+                self.electron_pos_h2,
+                self.nuclear_pos_h2,
             )
         for orb in self.basisset_f2.basis_functions:
             _test_orbital(
-                orb, self.basisset_f2, self.electron_pos_f2, self.nuclear_pos_f2
+                orb,
+                self.basisset_f2,
+                self.electron_pos_f2,
+                self.nuclear_pos_f2,
             )
 
 
-def reference_calculate_aos(
+def reference_calculate_aos(  # noqa: PLR0913
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,
     exponents: np.ndarray,
@@ -211,7 +215,7 @@ def reference_calculate_aos(
 # Long-term: delete this function
 # The function is used to compare the results of the new implementation with the old one.
 # Once we are confident that the new implementation is correct, we can delete this function.
-def reference2_calculate_aos(  # noqa: C901 PLR0915
+def reference2_calculate_aos(  # noqa: C901 PLR0915 PLR0913
     electron_coords: np.ndarray,
     atom_coords: np.ndarray,
     exponents: np.ndarray,

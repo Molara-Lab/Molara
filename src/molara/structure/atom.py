@@ -16,12 +16,14 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 with open(
-    Path(__file__).absolute().parent / "periodic_table.json", encoding="utf-8"
+    Path(__file__).absolute().parent / "periodic_table.json",
+    encoding="utf-8",
 ) as ptable_json:
     _pt_data = json.load(ptable_json)
 
 with open(
-    Path(__file__).absolute().parent / "atom_colors.json", encoding="utf-8"
+    Path(__file__).absolute().parent / "atom_colors.json",
+    encoding="utf-8",
 ) as atom_colors_json:
     _atom_colors = json.load(atom_colors_json)
 
@@ -45,10 +47,7 @@ class Atom:
             self.electronegativity = None
         jmol_color = (
             np.array(
-                tuple(
-                    int(_atom_colors["Jmol"][self.symbol].strip("#")[i : i + 2], 16)
-                    for i in (0, 2, 4)
-                ),
+                tuple(int(_atom_colors["Jmol"][self.symbol].strip("#")[i : i + 2], 16) for i in (0, 2, 4)),
                 dtype=np.float64,
             )
             / 255
@@ -81,9 +80,7 @@ def element_symbol_to_atomic_number(symbol: str, h_isotopes: bool = False) -> in
     :param h_isotopes: include hydrogen isotopes (deuterium and tritium) in the dictionary.
     :return: atomic number (nuclear charge number) of the atom
     """
-    symbol_to_atomic_number = {
-        element: _pt_data[element]["Atomic no"] for element in _pt_data
-    }
+    symbol_to_atomic_number = {element: _pt_data[element]["Atomic no"] for element in _pt_data}
     if not h_isotopes:
         symbol_to_atomic_number.pop("D")
         symbol_to_atomic_number.pop("T")
@@ -96,9 +93,7 @@ def atomic_number_to_symbol(atomic_number: int) -> str:
     :param atomic_number: atomic number (nuclear charge number) of the atom
     """
     symbol_to_atomic_number = {
-        _pt_data[element]["Atomic no"]: element
-        for element in _pt_data
-        if element not in ["D", "T"]
+        _pt_data[element]["Atomic no"]: element for element in _pt_data if element not in ["D", "T"]
     }
     return symbol_to_atomic_number[atomic_number]
 

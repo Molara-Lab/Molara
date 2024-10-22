@@ -75,11 +75,6 @@ def setup_vao(
         ctypes.c_void_p(12),
     )
 
-    if indices is not None:
-        ebo = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
-
     # Instance colors
     instance_vbo_color = glGenBuffers(1)
     num_instances = len(colors)
@@ -124,6 +119,9 @@ def setup_vao(
         )
         glVertexAttribDivisor(3 + i, 1)
     if indices is not None:
+        ebo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
         buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
     else:
         buffers = [vbo, instance_vbo_color, instance_vbo_model]
@@ -133,7 +131,8 @@ def setup_vao(
 
 
 def setup_vao_numbers(
-    digits: np.ndarray, positions_3d: np.ndarray
+    digits: np.ndarray,
+    positions_3d: np.ndarray,
 ) -> tuple[int, list[int]]:
     """Set up a vertex attribute object and binds it to the GPU.
 

@@ -77,7 +77,7 @@ def get_ase_colors() -> dict[str, dict[str, tuple]]:
         ase_colors[scheme_name]["None"] = tuple(values[0])
         for atomic_number in range(1, len(values)):
             ase_colors[scheme_name][atomic_number_to_symbol(atomic_number)] = tuple(
-                values[atomic_number]
+                values[atomic_number],
             )
 
     return ase_colors

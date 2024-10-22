@@ -87,7 +87,9 @@ class Drawer:
         self.set_atom_model_matrices()
 
     def update_bonds(
-        self, bonds: np.ndarray | None = None, draw_bonds: bool = True
+        self,
+        bonds: np.ndarray | None = None,
+        draw_bonds: bool = True,
     ) -> None:
         """Update the bonds and/or bond matrices of the drawer."""
         self.draw_bonds = draw_bonds
@@ -118,7 +120,8 @@ class Drawer:
     def set_atom_colors(self) -> None:
         """Set the colors of the atoms."""
         self.atom_colors = np.array(
-            [atom.color[self.color_scheme] for atom in self.atoms], dtype=np.float32
+            [atom.color[self.color_scheme] for atom in self.atoms],
+            dtype=np.float32,
         )
 
     def set_cylinder_dimensions(self) -> None:
@@ -197,7 +200,8 @@ class Drawer:
             )
         else:
             self.atom_scales = np.array(
-                [3 * [scaling_factor] for _ in self.atoms], dtype=np.float32
+                [3 * [scaling_factor] for _ in self.atoms],
+                dtype=np.float32,
             )
 
     def reset_atom_model_matrices(self) -> None:

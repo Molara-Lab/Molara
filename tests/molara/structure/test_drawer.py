@@ -42,7 +42,8 @@ class TestDrawer(TestCase):
         self.atoms_glucose = [
             Atom(atomic_num_i, pos_i)
             for atomic_num_i, pos_i in zip(
-                self.atomic_nums_glucose, self.coords_glucose
+                self.atomic_nums_glucose,
+                self.coords_glucose,
             )
         ]
         # no bonds for now
@@ -116,7 +117,8 @@ class TestDrawer(TestCase):
         self.drawer_glucose.reset_atom_model_matrices()
         assert isinstance(self.drawer_glucose.sphere_model_matrices, np.ndarray)
         assert_array_equal(
-            self.drawer_glucose.sphere_model_matrices, np.array([], dtype=np.float32)
+            self.drawer_glucose.sphere_model_matrices,
+            np.array([], dtype=np.float32),
         )
 
     def test_reset_cylinders_model_matrices(self) -> None:
@@ -124,7 +126,8 @@ class TestDrawer(TestCase):
         self.drawer_glucose.reset_cylinders_model_matrices()
         assert isinstance(self.drawer_glucose.cylinder_model_matrices, np.ndarray)
         assert_array_equal(
-            self.drawer_glucose.cylinder_model_matrices, np.array([], dtype=np.float32)
+            self.drawer_glucose.cylinder_model_matrices,
+            np.array([], dtype=np.float32),
         )
 
     def test_reset_atom_colors(self) -> None:
@@ -132,5 +135,6 @@ class TestDrawer(TestCase):
         self.drawer_glucose.reset_atom_colors()
         assert isinstance(self.drawer_glucose.atom_colors, np.ndarray)
         assert_array_equal(
-            self.drawer_glucose.atom_colors, np.array([], dtype=np.float32)
+            self.drawer_glucose.atom_colors,
+            np.array([], dtype=np.float32),
         )

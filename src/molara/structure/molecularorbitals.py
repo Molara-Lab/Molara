@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.eval.aos import calculate_aos
 from molara.data.constants import ANGSTROM_TO_BOHR
+from molara.eval.aos import calculate_aos
 
 if TYPE_CHECKING:
     from molara.structure.basisset import BasisFunction
@@ -16,16 +16,16 @@ __copyright__ = "Copyright 2024, Molara"
 
 
 class MolecularOrbitals:
-    """Class to store molecular orbitals and their information"""
+    """Class to store molecular orbitals and their information."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         labels: list | None = None,
         energies: list | None = None,
         spins: list | None = None,
         occupations: list | None = None,
         basis_functions: list | None = None,
-        type: str = "Cartesian",
+        basis_type: str = "Cartesian",
     ) -> None:
         """Initialize the MolecularOrbitals class with all their information.
 
@@ -57,10 +57,7 @@ class MolecularOrbitals:
             self.basis_functions = basis_functions
         else:
             self.basis_functions = []
-        self.type = type
-
-        # TODO implement openshell case!
-        self.unrestricted = False
+        self.basis_type = basis_type
 
         self.coefficients: np.ndarray = np.array([])
         self.coefficients_spherical: np.ndarray = np.array([])
@@ -74,7 +71,9 @@ class MolecularOrbitals:
         self.construct_transformation_matrices()
 
     def set_mo_coefficients(
-        self, mo_coefficients: np.ndarray, spherical_order: str = "none"
+        self,
+        mo_coefficients: np.ndarray,
+        spherical_order: str = "none",
     ) -> None:
         """Set the coefficients for the molecular orbitals and transform to cartesian ones.
 
@@ -89,7 +88,7 @@ class MolecularOrbitals:
             self.calculate_transformation_matrix()
             self.coefficients_spherical = mo_coefficients
             self.coefficients = self.spherical_to_cartesian_transformation(
-                mo_coefficients
+                mo_coefficients,
             )
         else:
             msg = f"The spherical_order {spherical_order} is not supported."
@@ -150,12 +149,10 @@ class MolecularOrbitals:
             else:
                 msg = f"The shell {shell} type is not supported."
                 raise TypeError(msg)
-            print(mo, i)
         return mo
 
-    def construct_transformation_matrices(self) -> None:
-        """Construct the transformation matrices for the spherical to cartesian transformation"""
-
+    def construct_transformation_matrices(self) -> None:  # noqa: PLR0915
+        """Construct the transformation matrices for the spherical to cartesian transformation."""
         dxx = 0
         dyy = 1
         dzz = 2
@@ -259,12 +256,10 @@ class MolecularOrbitals:
         # sqrt(15) is taken into account when calculating the aos values
         transformation_f[f2s, fxyz] = 1
 
-        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         transformation_f[f3c, fxxx] = -np.sqrt(10) / 4
         # sqrt(5) is taken into account when calculating the aos values
         transformation_f[f3c, fxyy] = 3 * np.sqrt(2) / 4
 
-        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         transformation_f[f3s, fyyy] = np.sqrt(10) / 4
         # sqrt(5) is taken into account when calculating the aos values
         transformation_f[f3s, fxxy] = -3 * np.sqrt(2) / 4
@@ -306,39 +301,34 @@ class MolecularOrbitals:
         # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g2s, gzzxy] = 3 * np.sqrt(7) / 7
 
-        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g3c, gxxxz] = -np.sqrt(10) / 4
         # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g3c, gyyxz] = 3 * np.sqrt(2) / 4
 
-        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g3s, gyyyz] = np.sqrt(10) / 4
         # sqrt(7) * sqrt(5) is taken into account when calculating the aos values
         transformation_g[g3s, gxxyz] = -3 * np.sqrt(2) / 4
 
-        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         transformation_g[g4c, gxxxx] = -np.sqrt(35) / 8
         transformation_g[g4c, gyyyy] = -np.sqrt(35) / 8
         # sqrt(7) * sqrt(5) / sqrt(3) is taken into account when calculating the aos values
         transformation_g[g4c, gxxyy] = 3 * np.sqrt(3) / 4
 
-        # TODO AKS PROF. LÜCHOW WHY AMOLQC DOES THIS DIFFERENTLY? (|m| >= 3)
         # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g4s, gxxxy] = -np.sqrt(5) / 2
         # sqrt(7) is taken into account when calculating the aos values
         transformation_g[g4s, gyyyx] = np.sqrt(5) / 2
         self.t_sc_g = transformation_g
 
-    def calculate_transformation_matrix(self) -> None:
+    def calculate_transformation_matrix(self) -> None:  # noqa: C901 PLR0912
         """Calculate the transformation matrix for the spherical to cartesian transformation.
 
         Uses the matrices generated before to build the transformation matrix as a block diagonal matrix. This matrix
         enable the transformation from spherical harmonics to cartesian. It is not a square matrix if l>1!
         :return: np.ndarray: transformation matrix
         """
-
         # Get the number of basis functions
         d_count = 0
         f_count = 0
@@ -374,7 +364,7 @@ class MolecularOrbitals:
 
         # Allocate the transformation matrix
         transformation_matrix = np.zeros(
-            (number_of_spherical_basis_functions, number_of_cartersian_basis_functions)
+            (number_of_spherical_basis_functions, number_of_cartersian_basis_functions),
         )
 
         # Fill the transformation matrix as a block diagonal matrix
@@ -386,34 +376,29 @@ class MolecularOrbitals:
                 i_index += 1
                 j_index += 1
             elif block == "p":
-                transformation_matrix[i_index : i_index + 3, j_index : j_index + 3] = (
-                    np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+                transformation_matrix[i_index : i_index + 3, j_index : j_index + 3] = np.array(
+                    [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                 )
                 i_index += 3
                 j_index += 3
             elif block == "d":
-                transformation_matrix[i_index : i_index + 5, j_index : j_index + 6] = (
-                    self.t_sc_d
-                )
+                transformation_matrix[i_index : i_index + 5, j_index : j_index + 6] = self.t_sc_d
                 i_index += 5
                 j_index += 6
             elif block == "f":
-                transformation_matrix[i_index : i_index + 7, j_index : j_index + 10] = (
-                    self.t_sc_f
-                )
+                transformation_matrix[i_index : i_index + 7, j_index : j_index + 10] = self.t_sc_f
                 i_index += 7
                 j_index += 10
             elif block == "g":
-                transformation_matrix[i_index : i_index + 9, j_index : j_index + 15] = (
-                    self.t_sc_g
-                )
+                transformation_matrix[i_index : i_index + 9, j_index : j_index + 15] = self.t_sc_g
                 i_index += 9
                 j_index += 15
 
         self.transformation_matrix_spherical_cartesian = transformation_matrix
 
     def spherical_to_cartesian_transformation(
-        self, mo_coefficients: np.ndarray
+        self,
+        mo_coefficients: np.ndarray,
     ) -> np.ndarray:
         """Transform spherical coefficients to cartesian coefficients.
 
@@ -421,22 +406,16 @@ class MolecularOrbitals:
         :return: np.ndarray: cartesian coefficients
         """
         number_of_spherical_basis_functions_mos, number_of_mos = mo_coefficients.shape
-        number_of_spherical_basis_functions_transformation = (
-            self.transformation_matrix_spherical_cartesian.shape[0]
-        )
-        number_of_cartesian_basis_functions = (
-            self.transformation_matrix_spherical_cartesian.shape[1]
-        )
-        assert (
-            number_of_spherical_basis_functions_transformation
-            == number_of_spherical_basis_functions_mos
-        )
+        number_of_spherical_basis_functions_transformation = self.transformation_matrix_spherical_cartesian.shape[0]
+        number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
+        assert number_of_spherical_basis_functions_transformation == number_of_spherical_basis_functions_mos
 
         new_coefficients = np.zeros(
-            (number_of_cartesian_basis_functions, number_of_mos)
+            (number_of_cartesian_basis_functions, number_of_mos),
         )
         for i in range(number_of_mos):
             new_coefficients[:, i] = np.dot(
-                mo_coefficients[:, i], self.transformation_matrix_spherical_cartesian
+                mo_coefficients[:, i],
+                self.transformation_matrix_spherical_cartesian,
             )
         return np.array(new_coefficients, dtype=np.float64)

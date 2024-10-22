@@ -89,7 +89,9 @@ class TestMolecules(TestCase):
         assert pentane.draw_bonds
         assert len(pentane.atoms) == num_atoms_pentane
         for atom_i, atomic_num_i, coords_i in zip(
-            pentane.atoms, atomic_nums_pentane, coords_pentane
+            pentane.atoms,
+            atomic_nums_pentane,
+            coords_pentane,
         ):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
@@ -106,7 +108,9 @@ class TestMolecules(TestCase):
         assert glucose.draw_bonds
         assert len(glucose.atoms) == num_atoms_glucose
         for atom_i, atomic_num_i, coords_i in zip(
-            glucose.atoms, atomic_nums_glucose, coords_glucose
+            glucose.atoms,
+            atomic_nums_glucose,
+            coords_glucose,
         ):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
@@ -123,7 +127,9 @@ class TestMolecules(TestCase):
         assert molecules_pentane.draw_bonds
         assert len(molecules_pentane.atoms) == self.num_atoms_pentane
         for atom_i, atomic_num_i, coords_i in zip(
-            molecules_pentane.atoms, atomic_nums_pentane, coords_pentane
+            molecules_pentane.atoms,
+            atomic_nums_pentane,
+            coords_pentane,
         ):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
@@ -138,7 +144,9 @@ class TestMolecules(TestCase):
         assert molecules_glucose.draw_bonds
         assert len(molecules_glucose.atoms) == self.num_atoms_glucose
         for atom_i, atomic_num_i, coords_i in zip(
-            molecules_glucose.atoms, atomic_nums_glucose, coords_glucose
+            molecules_glucose.atoms,
+            atomic_nums_glucose,
+            coords_glucose,
         ):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i

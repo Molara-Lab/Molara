@@ -119,35 +119,67 @@ class TestAtom(TestCase):
 
         general_attribute_tests(self.hydrogen, "H", z_h)
         special_attribute_tests(
-            self.hydrogen, self.position_hydrogen, molmass_h, elneg_h, vdwrad_h
+            self.hydrogen,
+            self.position_hydrogen,
+            molmass_h,
+            elneg_h,
+            vdwrad_h,
         )
         general_attribute_tests(self.carbon, "C", z_c)
         special_attribute_tests(
-            self.carbon, self.position_carbon, molmass_c, elneg_c, vdwrad_c
+            self.carbon,
+            self.position_carbon,
+            molmass_c,
+            elneg_c,
+            vdwrad_c,
         )
         general_attribute_tests(self.strontium, "Sr", z_sr)
         special_attribute_tests(
-            self.strontium, self.position_strontium, molmass_sr, elneg_sr, vdwrad_sr
+            self.strontium,
+            self.position_strontium,
+            molmass_sr,
+            elneg_sr,
+            vdwrad_sr,
         )
         general_attribute_tests(self.nitrogen, "N", z_n)
         special_attribute_tests(
-            self.nitrogen, self.position_nitrogen, molmass_n, elneg_n, vdwrad_n
+            self.nitrogen,
+            self.position_nitrogen,
+            molmass_n,
+            elneg_n,
+            vdwrad_n,
         )
         general_attribute_tests(self.neodymium, "Nd", z_nd)
         special_attribute_tests(
-            self.neodymium, self.position_neodymium, molmass_nd, elneg_nd, vdwrad_nd
+            self.neodymium,
+            self.position_neodymium,
+            molmass_nd,
+            elneg_nd,
+            vdwrad_nd,
         )
         general_attribute_tests(self.lithium, "Li", z_li)
         special_attribute_tests(
-            self.lithium, self.position_lithium, molmass_li, elneg_li, vdwrad_li
+            self.lithium,
+            self.position_lithium,
+            molmass_li,
+            elneg_li,
+            vdwrad_li,
         )
         general_attribute_tests(self.oxygen, "O", z_o)
         special_attribute_tests(
-            self.oxygen, self.position_oxygen, molmass_o, elneg_o, vdwrad_o
+            self.oxygen,
+            self.position_oxygen,
+            molmass_o,
+            elneg_o,
+            vdwrad_o,
         )
         general_attribute_tests(self.argon, "Ar", z_ar)
         special_attribute_tests(
-            self.argon, self.position_argon, molmass_ar, elneg_ar, vdwrad_ar
+            self.argon,
+            self.position_argon,
+            molmass_ar,
+            elneg_ar,
+            vdwrad_ar,
         )
 
     def test_set_position(self) -> None:
@@ -199,7 +231,4 @@ class TestAtom(TestCase):
             element_i = elements[i]
             atomic_number = element_i["Atomic no"]
             symbol = i
-            assert (
-                element_symbol_to_atomic_number(symbol, h_isotopes=True)
-                == atomic_number
-            )
+            assert element_symbol_to_atomic_number(symbol, h_isotopes=True) == atomic_number

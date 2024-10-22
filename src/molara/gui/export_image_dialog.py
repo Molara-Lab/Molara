@@ -25,8 +25,9 @@ class ExportImageDialog(QDialog):
 
         # temporary adjustments for the dialog until features are implemented
         self.ui.tabWidget.setTabEnabled(
-            1, False
-        )  # noqa: FBT003 (disable the "Advanced" tab for now)
+            1,
+            False,  # noqa: FBT003
+        )
         self.ui.checkBox.setChecked(True)
         self.ui.checkBox.setDisabled(True)
 
@@ -53,52 +54,48 @@ class ExportImageDialog(QDialog):
     def update_height(self) -> None:
         """Update the height value in the form."""
         width = self.ui.widthSpinBox.value()
-        height = (
-            self.main_window.structure_widget.height()
-            * width
-            // self.main_window.structure_widget.width()
-        )
+        height = self.main_window.structure_widget.height() * width // self.main_window.structure_widget.width()
         self.ui.heightSpinBox.blockSignals(
-            True
-        )  # noqa: FBT003 (block signals to prevent infinite loop)
+            True,  # noqa: FBT003
+        )
         self.ui.heightSpinBox.setValue(height)
         self.ui.heightSpinBox.blockSignals(
-            False
-        )  # noqa: FBT003 (block signals to prevent infinite loop)
+            False,  # noqa: FBT003
+        )
 
     def update_width(self) -> None:
         """Update the width value in the form."""
         height = self.ui.heightSpinBox.value()
-        width = (
-            self.main_window.structure_widget.width()
-            * height
-            // self.main_window.structure_widget.height()
-        )
+        width = self.main_window.structure_widget.width() * height // self.main_window.structure_widget.height()
         self.ui.widthSpinBox.blockSignals(
-            True
-        )  # noqa: FBT003 (block signals to prevent infinite loop)
+            True,  # noqa: FBT003
+        )
         self.ui.widthSpinBox.setValue(width)
         self.ui.widthSpinBox.blockSignals(
-            False
-        )  # noqa: FBT003 (block signals to prevent infinite loop)
+            False,  # noqa: FBT003
+        )
 
     def show_dialog(self) -> None:
         """Show the dialog and set default values in the form."""
         self.ui.widthSpinBox.setValue(self.main_window.structure_widget.width())
         self.ui.heightSpinBox.setValue(self.main_window.structure_widget.height())
         self.ui.filenameInput.setText(
-            f"{Path.home()}/molara_image_{time.time():1.0f}.png"
+            f"{Path.home()}/molara_image_{time.time():1.0f}.png",
         )
         self.show()
 
     def accept(self) -> None:
         """Export the image and close the dialog."""
         # gather export specifics
-        width, height = int(self.ui.widthSpinBox.value()), int(
-            self.ui.heightSpinBox.value()
+        width, height = (
+            int(self.ui.widthSpinBox.value()),
+            int(
+                self.ui.heightSpinBox.value(),
+            ),
         )
         virtual_rendering_window = VirtualRenderingWindow(self.main_window)
         virtual_rendering_window.export_image(
-            self.ui.filenameInput.text(), custom_geometry=(width, height)
+            self.ui.filenameInput.text(),
+            custom_geometry=(width, height),
         )
         del virtual_rendering_window

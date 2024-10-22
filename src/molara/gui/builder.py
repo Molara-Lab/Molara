@@ -95,11 +95,7 @@ class BuilderDialog(QDialog):
     def select_add(self) -> None:
         """Select the add procedure. Depends on the number of atoms in the molecule."""
         self.disable_slot = False
-        num_atoms = (
-            0
-            if self.main_window.mols.num_mols == 0
-            else self.main_window.mols.mols[0].n_at
-        )
+        num_atoms = 0 if self.main_window.mols.num_mols == 0 else self.main_window.mols.mols[0].n_at
         params, atom_ids = self._get_parameters(num_atoms)
         self.exec_add_atom(num_atoms, params, atom_ids)
 
@@ -236,11 +232,7 @@ class BuilderDialog(QDialog):
             return
 
         # starting from the third atom, atoms must have been selected in order to specify relative position
-        atom_selection_check = (
-            self._check_selected_atoms(*atom_ids[:count_atoms])
-            if count_atoms >= 2
-            else True
-        )  # noqa: PLR2004
+        atom_selection_check = self._check_selected_atoms(*atom_ids[:count_atoms]) if count_atoms >= 2 else True  # noqa: PLR2004
         if not atom_selection_check:
             return
 
@@ -248,9 +240,7 @@ class BuilderDialog(QDialog):
         pos = self.calc_position_new_atom(count_atoms, params, atom_ids)
 
         # check for collisions
-        self.colliding_idx = (
-            mol.compute_collision(pos) if count_atoms >= 3 else None
-        )  # noqa: PLR2004
+        self.colliding_idx = mol.compute_collision(pos) if count_atoms >= 3 else None  # noqa: PLR2004
         if self.colliding_idx is not None:
             error_msg = f"The atom would collide with atom {self.colliding_idx+1}."
             self.ui.ErrorMessageBrowser.setText(error_msg)
@@ -260,7 +250,10 @@ class BuilderDialog(QDialog):
         mol.add_atom(atomic_num, np.squeeze(pos))
 
     def calc_position_new_atom(
-        self, count_atoms: int, params: tuple, atom_ids: list
+        self,
+        count_atoms: int,
+        params: tuple,
+        atom_ids: list,
     ) -> np.ndarray:
         """Calculate the position of the new atom to be added.
 
@@ -386,12 +379,16 @@ class BuilderDialog(QDialog):
                     temp_text = f"{np.rad2deg(text):.2f}"
 
                 self.ui.tableWidget.setItem(
-                    row, param_rows[i], QTableWidgetItem(temp_text)
+                    row,
+                    param_rows[i],
+                    QTableWidgetItem(temp_text),
                 )
                 if param_rows[i] != 0:
                     atom_id = self.z_matrix[row]["atom_ids"][i - 1]
                     self.ui.tableWidget.setItem(
-                        row, atom_id_rows[i], QTableWidgetItem(str(atom_id + 1))
+                        row,
+                        atom_id_rows[i],
+                        QTableWidgetItem(str(atom_id + 1)),
                     )
 
     def _update_z_matrix(self, tot_row: int) -> None:
@@ -444,27 +441,19 @@ class BuilderDialog(QDialog):
         if row >= 0:
             element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
             param_type_validity = bool(re.match("^[A-Z]", element))
-            param_type_validity = (
-                bool(element_symbol_to_atomic_number(element)) and param_type_validity
-            )
+            param_type_validity = bool(element_symbol_to_atomic_number(element)) and param_type_validity
 
         if row >= 1:
             dist = self.ui.tableWidget.item(row, 2).text()
-            param_type_validity = (
-                bool(re.match(r"^-?\d+(\.\d+)?$", dist)) and param_type_validity
-            )
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dist)) and param_type_validity
 
         if row >= 2:  # noqa: PLR2004
             angle = self.ui.tableWidget.item(row, 4).text()
-            param_type_validity = (
-                bool(re.match(r"^-?\d+(\.\d+)?$", angle)) and param_type_validity
-            )
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", angle)) and param_type_validity
 
         if row >= 3:  # noqa: PLR2004
             dihedral = self.ui.tableWidget.item(row, 6).text()
-            param_type_validity = (
-                bool(re.match(r"^-?\d+(\.\d+)?$", dihedral)) and param_type_validity
-            )
+            param_type_validity = bool(re.match(r"^-?\d+(\.\d+)?$", dihedral)) and param_type_validity
 
         if not param_type_validity:
             return (None,)

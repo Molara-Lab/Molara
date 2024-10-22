@@ -1,5 +1,7 @@
 """Contains the triangle lookup table for the marching cubes algorithm."""
 
+from __future__ import annotations
+
 import numpy as np
 
 # Source: https://gist.github.com/dwilliamson/c041e3454a713e58baf6e4f8e5fffecd
@@ -8,7 +10,7 @@ import numpy as np
 #
 # These tables differ from the original paper (Marching Cubes: A High Resolution 3D Surface Construction Algorithm)
 #
-# The co-ordinate system has the more convenient properties:
+# The coordinate system has the more convenient properties:
 #
 #    i = cube index [0, 7]
 #    x = (i & 1) >> 0
@@ -55,7 +57,7 @@ edge_vertex_indices = np.array(
         [1, 5],
         [2, 6],
         [3, 7],
-    ]
+    ],
 )
 
 # For each MC case, a list of triangles, specified as triples of edge indices, terminated by -1

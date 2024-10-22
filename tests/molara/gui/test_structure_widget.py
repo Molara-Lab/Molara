@@ -59,18 +59,12 @@ class WorkaroundTestStructureWidget:
         text_unit_cell_boundaries = "Hide Unit Cell Boundaries"
         assert structure_widget.draw_unit_cell_boundaries
 
-        assert (
-            window.ui.actionToggle_UnitCellBoundaries.text()
-            == text_unit_cell_boundaries
-        )
+        assert window.ui.actionToggle_UnitCellBoundaries.text() == text_unit_cell_boundaries
 
         structure_widget.toggle_unit_cell_boundaries()
         assert not structure_widget.draw_unit_cell_boundaries
         text_unit_cell_boundaries = "Show Unit Cell Boundaries"
-        assert (
-            window.ui.actionToggle_UnitCellBoundaries.text()
-            == text_unit_cell_boundaries
-        )
+        assert window.ui.actionToggle_UnitCellBoundaries.text() == text_unit_cell_boundaries
 
     def test_load_molecule_toggle_bonds(self) -> None:
         """Test the load_molecule and toggle_bonds methods."""

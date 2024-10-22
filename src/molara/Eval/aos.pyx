@@ -1,8 +1,6 @@
 """This module serves the calculation of atomic orbitals."""
 
 from cython.parallel import prange
-from cython import boundscheck, exceptval
-from cython import nogil
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -55,7 +53,7 @@ cpdef int calculate_aos(
     cdef int gzzxy = 14
 
     cdef double[3] relative_coords
-    cdef double rr, r2, u, dx, dy, dz, dx2, dy2, dz2, dxyz
+    cdef double r2, u, dx, dy, dz, dx2, dy2, dz2, dxyz
     cdef int ngto = exponents.shape[0]
     cdef int i, ic
     for i in range(3):

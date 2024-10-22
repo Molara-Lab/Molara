@@ -82,7 +82,8 @@ class StructureCustomizerDialog(QDialog):
         """Update the settings box."""
         if not self.home_path.joinpath("settings/structure").exists():
             Path(f"{self.home_path}/settings/structure").mkdir(
-                parents=True, exist_ok=True
+                parents=True,
+                exist_ok=True,
             )
         if not self.home_path.joinpath("settings/structure/Default.json").exists():
             shutil.copy(
@@ -228,11 +229,9 @@ class StructureCustomizerDialog(QDialog):
         if structures:
             if self.numbers:
                 self.parent().structure_widget.atom_indices_arrays = init_atom_number(
-                    structures[0]
+                    structures[0],
                 )
-                self.parent().structure_widget.number_scale = (
-                    self.ui.indexSizeSpinBox.value()
-                )
+                self.parent().structure_widget.number_scale = self.ui.indexSizeSpinBox.value()
             self.parent().structure_widget.show_atom_indices = self.numbers
 
             self.parent().structure_widget.set_vertex_attribute_objects()
@@ -286,10 +285,7 @@ class StructureCustomizerDialog(QDialog):
 
     def set_bonds(self, bonds: bool) -> None:
         """Set bonds to True or False."""
-        if (
-            self.parent().structure_widget.structures
-            and self.parent().structure_widget.structures[0].has_bonds
-        ):
+        if self.parent().structure_widget.structures and self.parent().structure_widget.structures[0].has_bonds:
             self.bonds = bonds
             if self.bonds:
                 self.ui.toggleBondsButton.setText("Hide Bonds")

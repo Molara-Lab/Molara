@@ -45,7 +45,7 @@ class TestCrystal(TestCase):
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
         )
         assert len(crystal.atoms) == crystal.calc_number_of_supercell_atoms(
-            self.supercell_dims
+            self.supercell_dims,
         )
 
         assert_array_equal(crystal.basis_vectors, self.basis_vectors)
@@ -72,17 +72,9 @@ class TestCrystal(TestCase):
             [1, 1, 1],
         )
         num_ = crystal_test.calc_number_of_supercell_atoms([1, 1, 1])
-        assert num_ == (
-            (1 + 1) * (1 + 1) * 1
-            + 2 * (1 + 1) * 1 * (1 + 1)
-            + 3 * 1 * (1 + 1) * (1 + 1)
-        )
+        assert num_ == ((1 + 1) * (1 + 1) * 1 + 2 * (1 + 1) * 1 * (1 + 1) + 3 * 1 * (1 + 1) * (1 + 1))
         num_ = crystal_test.calc_number_of_supercell_atoms([10, 100, 1000])
-        assert num_ == (
-            (10 + 1) * (100 + 1) * 1000
-            + 2 * (10 + 1) * 100 * (1000 + 1)
-            + 3 * 10 * (100 + 1) * (1000 + 1)
-        )
+        assert num_ == ((10 + 1) * (100 + 1) * 1000 + 2 * (10 + 1) * 100 * (1000 + 1) + 3 * 10 * (100 + 1) * (1000 + 1))
 
     @pytest.mark.skipif(not find_spec("ase"), reason="ASE is not installed.")
     def test_from_ase(self) -> None:
@@ -126,14 +118,16 @@ class TestCrystal(TestCase):
         )
         assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
         assert_almost_equal(
-            self.crystal.density_unitcell, 3.6229802861472007, decimal=5
+            self.crystal.density_unitcell,
+            3.6229802861472007,
+            decimal=5,
         )
         with pytest.raises(
             ValueError,
             match=r"Faulty shape of basis_vectors array. Shape must be \(3,3\).",
         ):
             _ = self.crystal.calc_volume_unitcell(
-                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]
+                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]],
             )
 
     def test_toggle_bonds(self) -> None:
@@ -160,16 +154,19 @@ class TestCrystal(TestCase):
         """Test the copy method."""
         _copy = self.crystal.copy()
         assert_array_equal(
-            _copy.atomic_nums_unitcell, self.crystal.atomic_nums_unitcell
+            _copy.atomic_nums_unitcell,
+            self.crystal.atomic_nums_unitcell,
         )
         assert_array_equal(_copy.coords_unitcell, self.crystal.coords_unitcell)
         assert_array_equal(_copy.basis_vectors, self.crystal.basis_vectors)
         assert_array_equal(_copy.supercell_dims, self.crystal.supercell_dims)
         assert_array_equal(
-            _copy.atomic_nums_supercell, self.crystal.atomic_nums_supercell
+            _copy.atomic_nums_supercell,
+            self.crystal.atomic_nums_supercell,
         )
         assert_array_equal(
-            _copy.fractional_coords_supercell, self.crystal.fractional_coords_supercell
+            _copy.fractional_coords_supercell,
+            self.crystal.fractional_coords_supercell,
         )
         assert_array_equal(
             _copy.cartesian_coordinates_supercell,
@@ -183,16 +180,19 @@ class TestCrystal(TestCase):
         """Test the multiplication operator."""
         _copy = self.crystal * self.supercell_dims
         assert_array_equal(
-            _copy.atomic_nums_unitcell, self.crystal.atomic_nums_unitcell
+            _copy.atomic_nums_unitcell,
+            self.crystal.atomic_nums_unitcell,
         )
         assert_array_equal(_copy.coords_unitcell, self.crystal.coords_unitcell)
         assert_array_equal(_copy.basis_vectors, self.crystal.basis_vectors)
         assert_array_equal(_copy.supercell_dims, [2, 7, 4])
         assert_array_equal(
-            _copy.atomic_nums_supercell, self.crystal.atomic_nums_supercell
+            _copy.atomic_nums_supercell,
+            self.crystal.atomic_nums_supercell,
         )
         assert_array_equal(
-            _copy.fractional_coords_supercell, self.crystal.fractional_coords_supercell
+            _copy.fractional_coords_supercell,
+            self.crystal.fractional_coords_supercell,
         )
         assert_array_equal(
             _copy.cartesian_coordinates_supercell,
@@ -246,21 +246,15 @@ class TestCrystal(TestCase):
                     ],
                     [
                         basis_vectors_matrix[0] + basis_vectors_matrix[1],
-                        basis_vectors_matrix[0]
-                        + basis_vectors_matrix[1]
-                        + basis_vectors_matrix[2],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
                     ],
                     [
                         basis_vectors_matrix[0] + basis_vectors_matrix[2],
-                        basis_vectors_matrix[0]
-                        + basis_vectors_matrix[1]
-                        + basis_vectors_matrix[2],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
                     ],
                     [
                         basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                        basis_vectors_matrix[0]
-                        + basis_vectors_matrix[1]
-                        + basis_vectors_matrix[2],
+                        basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
                     ],
                 ],
                 dtype=np.float32,

@@ -19,7 +19,8 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.skipif(
-    sys.platform == "win32", reason="Test is not compatible with Windows"
+    sys.platform == "win32",
+    reason="Test is not compatible with Windows",
 )
 def test_gui_and_rendering(qtbot: QtBot) -> None:
     """Tests the GUI and rendering.
@@ -30,7 +31,8 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     main_window_tests.run_tests()
 
     workaround_test_structure_widget = WorkaroundTestStructureWidget(
-        qtbot, main_window_tests.window
+        qtbot,
+        main_window_tests.window,
     )
     workaround_test_structure_widget.run_tests()
 
@@ -38,12 +40,14 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     workaround_test_renderer.run_tests()
 
     workaround_test_measurement_window = WorkaroundTestMeasurementDialog(
-        qtbot, main_window_tests.window
+        qtbot,
+        main_window_tests.window,
     )
     workaround_test_measurement_window.run_tests()
 
     workaround_test_export_image_dialog = WorkaroundTestExportImageDialog(
-        qtbot, main_window_tests.window
+        qtbot,
+        main_window_tests.window,
     )
     workaround_test_export_image_dialog.run_tests()
 
@@ -54,7 +58,8 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
 
 
 @pytest.mark.skipif(
-    sys.platform == "win32", reason="Test is not compatible with Windows"
+    sys.platform == "win32",
+    reason="Test is not compatible with Windows",
 )
 def test_builder(qtbot: QtBot) -> None:
     """Tests the BuilderDialog class.
@@ -66,7 +71,8 @@ def test_builder(qtbot: QtBot) -> None:
     main_window_tests = WorkaroundTestMainWindow(qtbot)
 
     workaround_test_builder_window = WorkaroundTestBuilderDialog(
-        qtbot, main_window_tests.window
+        qtbot,
+        main_window_tests.window,
     )
     workaround_test_builder_window.run_tests()
 

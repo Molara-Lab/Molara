@@ -101,7 +101,7 @@ class WorkaroundTestMeasurementDialog:
             v1 = pos1 - pos2
             v2 = pos3 - pos2
             angle = np.arccos(
-                np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+                np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
             )
             assert ui.tableAngles.item(i, 0).text()[:-2] == f"{np.degrees(angle):.3f}"
 

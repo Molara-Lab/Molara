@@ -58,11 +58,13 @@ class TestCamera(TestCase):
         other_camera.distance_from_target = 10.0
         other_camera.zoom_sensitivity = 0.2
         other_camera.initial_position = pyrr.Vector3(
-            [10.0, 20.0, 30.0], dtype=np.float32
+            [10.0, 20.0, 30.0],
+            dtype=np.float32,
         )
         other_camera.initial_up_vector = pyrr.Vector3([1.0, 2.0, 3.0], dtype=np.float32)
         other_camera.initial_right_vector = pyrr.Vector3(
-            [3.0, 2.0, 1.0], dtype=np.float32
+            [3.0, 2.0, 1.0],
+            dtype=np.float32,
         )
         other_camera.initial_target = pyrr.Vector3([-1.0, -2.0, -3.0], dtype=np.float32)
         other_camera.translation = pyrr.Vector3([7.0, 8.0, 9.0], dtype=np.float32)
@@ -94,7 +96,8 @@ class TestCamera(TestCase):
         assert_vectors_equal(camera.initial_position, other_camera.initial_position)
         assert_vectors_equal(camera.initial_up_vector, other_camera.initial_up_vector)
         assert_vectors_equal(
-            camera.initial_right_vector, other_camera.initial_right_vector
+            camera.initial_right_vector,
+            other_camera.initial_right_vector,
         )
         assert_vectors_equal(camera.last_translation, other_camera.last_translation)
         assert_vectors_equal(camera.initial_target, other_camera.initial_target)
@@ -105,7 +108,8 @@ class TestCamera(TestCase):
         assert_vectors_equal(camera.view_matrix_inv, other_camera.view_matrix_inv)
         assert_vectors_equal(camera.projection_matrix, other_camera.projection_matrix)
         assert_vectors_equal(
-            camera.projection_matrix_inv, other_camera.projection_matrix_inv
+            camera.projection_matrix_inv,
+            other_camera.projection_matrix_inv,
         )
 
     def test_reset(self) -> None:
@@ -122,30 +126,26 @@ class TestCamera(TestCase):
         fov = camera.fov
         distance_from_target = camera.distance_from_target
 
-        projection_matrix_perspective = (
-            pyrr.matrix44.create_perspective_projection_matrix(
-                fov,
-                width / height,
-                0.1,
-                100,
-                dtype=np.float32,
-            )
+        projection_matrix_perspective = pyrr.matrix44.create_perspective_projection_matrix(
+            fov,
+            width / height,
+            0.1,
+            100,
+            dtype=np.float32,
         )
 
         # calculate width and height of the clipping plane
         # such that it matches the field of view in the perspective projection
         h = distance_from_target * np.tan(np.radians(fov / 2))
         w = h * width / height
-        projection_matrix_orthographic = (
-            pyrr.matrix44.create_orthogonal_projection_matrix(
-                -w,
-                w,
-                -h,
-                h,
-                0.1,
-                100,
-                dtype=np.float32,
-            )
+        projection_matrix_orthographic = pyrr.matrix44.create_orthogonal_projection_matrix(
+            -w,
+            w,
+            -h,
+            h,
+            0.1,
+            100,
+            dtype=np.float32,
         )
 
         assert not camera.orthographic_projection
@@ -164,16 +164,14 @@ class TestCamera(TestCase):
         assert distance_from_target > old_distance_from_target
         h = distance_from_target * np.tan(np.radians(fov / 2))
         w = h * width / height
-        projection_matrix_orthographic = (
-            pyrr.matrix44.create_orthogonal_projection_matrix(
-                -w,
-                w,
-                -h,
-                h,
-                0.1,
-                100,
-                dtype=np.float32,
-            )
+        projection_matrix_orthographic = pyrr.matrix44.create_orthogonal_projection_matrix(
+            -w,
+            w,
+            -h,
+            h,
+            0.1,
+            100,
+            dtype=np.float32,
         )
         # in orthographic projection, the projection matrix must be updated when camera.update() is called.
         # here, we test if this is actually the case.
@@ -196,8 +194,7 @@ class TestCamera(TestCase):
         self.camera.set_distance_from_target(num_steps)
         new_distance = max(
             1.0,
-            former_distance
-            + np.log10(zoom_factor * zoom_sensitivity) * (np.sign(zoom_factor - 1)),
+            former_distance + np.log10(zoom_factor * zoom_sensitivity) * (np.sign(zoom_factor - 1)),
         )
         assert self.camera.distance_from_target == new_distance
 
@@ -211,14 +208,16 @@ class TestCamera(TestCase):
         camera.distance_from_target = 3.4
         camera.zoom_sensitivity = 0.23
         camera.initial_position = pyrr.Vector3(
-            [10.764, -2.543, 1.543], dtype=np.float32
+            [10.764, -2.543, 1.543],
+            dtype=np.float32,
         )
         camera.initial_up_vector = pyrr.Vector3([0.1, 0.2, 0.7], dtype=np.float32)
         camera.initial_right_vector = pyrr.Vector3([0.9, 0.2, 0.11], dtype=np.float32)
         camera.last_translation = pyrr.Vector3([0.1, 0.2, 0.3], dtype=np.float32)
         camera.initial_target = pyrr.Vector3([0.41, 0.52, 0.63], dtype=np.float32)
         camera.last_rotation = pyrr.Quaternion(
-            [0.01, 0.22, 0.13, 0.41], dtype=np.float32
+            [0.01, 0.22, 0.13, 0.41],
+            dtype=np.float32,
         )
 
         with NamedTemporaryFile(suffix=".json") as file:
@@ -315,7 +314,5 @@ class TestCamera(TestCase):
         up_vector = self.camera.up_vector
 
         self.camera.set_translation_vector(old_mouse_position, mouse_position)
-        new_translation = (
-            right_vector * x_translation + up_vector * y_translation + last_translation
-        )
+        new_translation = right_vector * x_translation + up_vector * y_translation + last_translation
         assert_vectors_equal(self.camera.translation.tolist(), new_translation.tolist())

@@ -20,7 +20,7 @@ cpdef double calculate_mo_cartesian(
 ) nogil:
 
     cdef double mo_value = 0.0
-    cdef int mo_index, number_of_orbitals, i, j
+    cdef int mo_index, number_of_orbitals, i
     cdef int s = 0, p = 1, d = 2, f = 3, g = 4
     cdef int aos_pre_calculated = 0, shell
 
@@ -29,7 +29,7 @@ cpdef double calculate_mo_cartesian(
     for mo_index in range(number_of_orbitals):
         shell = orbital_ijk[mo_index, 0] + orbital_ijk[mo_index, 1] + orbital_ijk[mo_index, 2]
         if aos_pre_calculated == 0:
-            j = calculate_aos(
+            _ = calculate_aos(
                 electron_position,
                 orbital_position[mo_index, :],
                 orbital_exponents[mo_index, :],

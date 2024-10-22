@@ -54,7 +54,7 @@ class WorkaroundTestExportImageDialog:
         assert self.export_image_dialog.ui.heightSpinBox.value() == height
         ui_export_image = self.export_image_dialog.ui
         assert ui_export_image.filenameInput.text().startswith(
-            f"{Path.home()}/molara_image_"
+            f"{Path.home()}/molara_image_",
         )
 
         self.export_image_dialog.reject()
@@ -67,10 +67,7 @@ class WorkaroundTestExportImageDialog:
         width_structurewidget = self.main_window.structure_widget.width()
         new_width = 194
         ui.widthSpinBox.setValue(new_width)
-        assert (
-            ui.heightSpinBox.value()
-            == new_width * height_structurewidget // width_structurewidget
-        )
+        assert ui.heightSpinBox.value() == new_width * height_structurewidget // width_structurewidget
 
     def _test_change_height(self) -> None:
         """Test changing the height of the image."""
@@ -79,10 +76,7 @@ class WorkaroundTestExportImageDialog:
         width_structurewidget = self.main_window.structure_widget.width()
         new_height = 491
         ui.heightSpinBox.setValue(new_height)
-        assert (
-            ui.widthSpinBox.value()
-            == new_height * width_structurewidget // height_structurewidget
-        )
+        assert ui.widthSpinBox.value() == new_height * width_structurewidget // height_structurewidget
 
     def _test_export_image(self) -> None:
         """Test exporting an image."""
