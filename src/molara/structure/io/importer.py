@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.eval.populationanalysis import PopulationAnalysis
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.io.importer_crystal import (
     PoscarImporter,
