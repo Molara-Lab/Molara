@@ -1,6 +1,6 @@
 """Calculates the value of a molecular orbital at a given point in space."""
 
-from molara.Eval.aos cimport calculate_aos
+from molara.eval.aos cimport calculate_aos
 from cython.parallel import prange
 from cython.cimports.molara.Eval.aos import calculate_aos
 from cython import boundscheck, exceptval
