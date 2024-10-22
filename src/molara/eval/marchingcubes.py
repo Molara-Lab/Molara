@@ -196,7 +196,7 @@ def calculate_normal_vertex(
 def get_edges(  # noqa: PLR0912 C901
     isovalue: float,
     voxel_values: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[list, list]:
     """Calculate the isosurface for a given voxel grid.
 
     :param isovalue: value of the isosurface
