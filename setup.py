@@ -19,7 +19,9 @@ extensions = [
     "src/molara/tools/mathtools.pyx",
     "src/molara/tools/raycasting.pyx",
     "src/molara/eval/aos.pyx",
+    "src/molara/eval/aos.pxd",
     "src/molara/eval/mos.pyx",
+    "src/molara/eval/mos.pxd",
     "src/molara/eval/generate_voxel_grid.pyx",
 ]
 

@@ -142,7 +142,9 @@ check-filenames = true
 # Specify the files to be compiled by Cython
 modules = [
     "src/molara/eval/aos.pyx",
+    "src/molara/eval/aos.pxd",
     "src/molara/eval/mos.pyx",
+    "src/molara/eval/mos.pxd",
     "src/molara/rendering/cylinder.pyx",
     "src/molara/rendering/sphere.pyx",
     "src/molara/rendering/matrices.pyx",
