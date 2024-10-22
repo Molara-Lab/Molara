@@ -13,14 +13,14 @@ __copyright__ = "Copyright 2024, Molara"
 
 # Modules to be compiled and include_dirs when necessary
 extensions = [
-    "src/molara/Rendering/cylinder.pyx",
-    "src/molara/Rendering/sphere.pyx",
-    "src/molara/Rendering/matrices.pyx",
-    "src/molara/Tools/mathtools.pyx",
-    "src/molara/Tools/raycasting.pyx",
-    "src/molara/Eval/aos.pyx",
-    "src/molara/Eval/mos.pyx",
-    "src/molara/Eval/generate_voxel_grid.pyx",
+    "src/molara/rendering/cylinder.pyx",
+    "src/molara/rendering/sphere.pyx",
+    "src/molara/rendering/matrices.pyx",
+    "src/molara/tools/mathtools.pyx",
+    "src/molara/tools/raycasting.pyx",
+    "src/molara/eval/aos.pyx",
+    "src/molara/eval/mos.pyx",
+    "src/molara/eval/generate_voxel_grid.pyx",
 ]
 
 
