@@ -2,7 +2,7 @@
 
 from molara.eval.aos cimport calculate_aos
 from cython.parallel import prange
-from cython.cimports.molara.Eval.aos import calculate_aos
+from cython.cimports.molara.eval.aos import calculate_aos
 from cython import boundscheck, exceptval
 
 
