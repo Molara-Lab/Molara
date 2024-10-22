@@ -16,12 +16,7 @@ NO_BONDS = np.array([[-1, -1]], dtype=np.int_)
 class Structure:
     """Base class for a structure with a set of atoms. Molecule and Crystal inherit from this."""
 
-    def __init__(
-        self: Structure,
-        atomic_numbers: np.ndarray,
-        coordinates: np.ndarray,
-        draw_bonds: bool = True,
-    ) -> None:
+    def __init__(self: Structure, atomic_numbers: np.ndarray, coordinates: np.ndarray, draw_bonds: bool = True) -> None:
         """Create a new Structure object.
 
         :param atomic_numbers: np.ndarray: atomic numbers of a atoms
@@ -136,11 +131,7 @@ class Structure:
             return
         self.drawer.update_bonds()
 
-    def add_atom(
-        self: Structure,
-        atomic_number: int,
-        coordinate: np.ndarray,
-    ) -> None:
+    def add_atom(self: Structure, atomic_number: int, coordinate: np.ndarray) -> None:
         """Add an atom to the structure.
 
         :param atomic_number: atomic number (nuclear charge number) of the atom

@@ -13,9 +13,7 @@ from molara.rendering.matrices import (
     calculate_scale_matrices,
     calculate_translation_matrices,
 )
-from molara.rendering.sphere import (
-    Sphere,
-)
+from molara.rendering.sphere import Sphere
 from molara.tools.mathtools import norm
 
 if TYPE_CHECKING:
@@ -218,33 +216,23 @@ class Drawer:
 
     def set_cylinder_translation_matrices(self) -> None:
         """Set the translation matrices for the spheres."""
-        self.cylinder_translation_matrices = calculate_translation_matrices(
-            np.array(self.cylinder_positions),
-        )
+        self.cylinder_translation_matrices = calculate_translation_matrices(np.array(self.cylinder_positions))
 
     def set_cylinder_scale_matrices(self) -> None:
         """Set the translation matrices for the cylinders."""
-        self.cylinder_scale_matrices = calculate_scale_matrices(
-            np.array(self.cylinder_dimensions),
-        )
+        self.cylinder_scale_matrices = calculate_scale_matrices(np.array(self.cylinder_dimensions))
 
     def set_cylinder_rotation_matrices(self) -> None:
         """Set the rotation matrices for the cylinders."""
-        self.cylinder_rotation_matrices = calculate_rotation_matrices(
-            np.array(self.cylinder_directions),
-        )
+        self.cylinder_rotation_matrices = calculate_rotation_matrices(np.array(self.cylinder_directions))
 
     def set_atom_translation_matrices(self) -> None:
         """Set the translation matrices for the spheres."""
-        self.sphere_translation_matrices = calculate_translation_matrices(
-            np.array(self.atom_positions),
-        )
+        self.sphere_translation_matrices = calculate_translation_matrices(np.array(self.atom_positions))
 
     def set_atom_scale_matrices(self) -> None:
         """Set the scale matrices for the spheres."""
-        self.sphere_scale_matrices = calculate_scale_matrices(
-            np.array(self.atom_scales),
-        )
+        self.sphere_scale_matrices = calculate_scale_matrices(np.array(self.atom_scales))
 
     def set_atom_model_matrices(self) -> None:
         """Set the model matrices for the spheres."""
@@ -274,10 +262,4 @@ def calculate_bond_cylinders_model_matrix(atom1: Atom, atom2: Atom) -> np.ndarra
 
     mat1 = calculate_cylinder_model_matrix(pos_quarter1, radius, length, difference)
     mat2 = calculate_cylinder_model_matrix(pos_quarter2, radius, length, difference)
-    return np.array(
-        [
-            mat2,
-            mat1,
-        ],
-        dtype=np.float32,
-    )
+    return np.array([mat2, mat1], dtype=np.float32)

@@ -34,10 +34,7 @@ class TestXyzExporter(unittest.TestCase):
                 [2.0, 4.0, 6.0],  # N
             ],
         )
-        self.structure = Structure(
-            atomic_numbers=self.atomic_numbers,
-            coordinates=self.coordinates,
-        )
+        self.structure = Structure(atomic_numbers=self.atomic_numbers, coordinates=self.coordinates)
 
     def test_write_structure(self) -> None:
         """Tests the write_structure method of the XyzExporter class."""
@@ -50,11 +47,7 @@ class TestXyzExporter(unittest.TestCase):
         with open(self.filename) as file:
             num_atoms = int(file.readline().strip())
             assert num_atoms == self.atomic_numbers.size
-        data = np.genfromtxt(
-            self.filename,
-            skip_header=2,
-            dtype=str,
-        )
+        data = np.genfromtxt(self.filename, skip_header=2, dtype=str)
         assert data.shape == (6, 4)
         assert data[:, 0].tolist() == ["C", "O", "He", "Li", "H", "N"]
         coordinates = data[:, 1:].astype(float)
@@ -80,10 +73,7 @@ class TestGeneralExporter(unittest.TestCase):
                 [0, 0, 0],  # Li
             ],
         )
-        self.structure = Structure(
-            atomic_numbers=self.atomic_numbers,
-            coordinates=self.coordinates,
-        )
+        self.structure = Structure(atomic_numbers=self.atomic_numbers, coordinates=self.coordinates)
 
     def test_write_structure_to_xyz(self) -> None:
         """Tests the write_structure method of the GeneralExporter class."""
@@ -96,11 +86,7 @@ class TestGeneralExporter(unittest.TestCase):
         with open(self.filename_xyz) as file:
             num_atoms = int(file.readline().strip())
             assert num_atoms == self.atomic_numbers.size
-        data = np.genfromtxt(
-            self.filename_xyz,
-            skip_header=2,
-            dtype=str,
-        )
+        data = np.genfromtxt(self.filename_xyz, skip_header=2, dtype=str)
         assert data.shape == (6, 4)
         assert data[:, 0].tolist() == ["F", "Ne", "Cl", "Zn", "P", "Li"]
         coordinates = data[:, 1:].astype(float)

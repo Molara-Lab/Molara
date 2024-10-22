@@ -49,14 +49,7 @@ class TestCrystal(TestCase):
 
         crystal_test = Crystal(
             [2] * 6,
-            [
-                [0.0, 0.0, 0.25],
-                [0.0, 0.25, 0.0],
-                [0.0, 0.1, 0.0],
-                [0.25, 0.0, 0.0],
-                [0.1, 0.0, 0.0],
-                [0.3, 0.0, 0.0],
-            ],
+            [[0.0, 0.0, 0.25], [0.0, 0.25, 0.0], [0.0, 0.1, 0.0], [0.25, 0.0, 0.0], [0.1, 0.0, 0.0], [0.3, 0.0, 0.0]],
             self.basis_vectors,
             [1, 1, 1],
         )
@@ -74,12 +67,7 @@ class TestCrystal(TestCase):
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
         basis_vectors = [[0.0, 1.785, 1.785], [1.785, 0.0, 1.785], [1.785, 1.785, 0.0]]
 
-        atoms = Atoms(
-            scaled_positions=coordinates,
-            numbers=atomic_numbers,
-            cell=basis_vectors,
-            pbc=True,
-        )
+        atoms = Atoms(scaled_positions=coordinates, numbers=atomic_numbers, cell=basis_vectors, pbc=True)
 
         crystal = Crystal.from_ase(atoms)
 
@@ -91,10 +79,7 @@ class TestCrystal(TestCase):
         """Test the supercell generation."""
         supercell_dims = [3, 3, 3]
         self.crystal.make_supercell(supercell_dims)
-        assert_array_equal(
-            self.crystal.supercell_dims,
-            supercell_dims,
-        )
+        assert_array_equal(self.crystal.supercell_dims, supercell_dims)
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
@@ -102,9 +87,7 @@ class TestCrystal(TestCase):
 
     def test_properties(self) -> None:
         """Test the properties of the crystal."""
-        assert self.crystal.molar_mass == float(
-            (elements["B"]["Atomic mass"] + elements["N"]["Atomic mass"]),
-        )
+        assert self.crystal.molar_mass == float(elements["B"]["Atomic mass"] + elements["N"]["Atomic mass"])
         assert_almost_equal(self.crystal.volume_unitcell, 11.3748225, decimal=5)
         assert_almost_equal(self.crystal.density_unitcell, 3.6229802861472007, decimal=5)
         with pytest.raises(ValueError, match=r"Faulty shape of basis_vectors array. Shape must be \(3,3\)."):

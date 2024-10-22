@@ -44,14 +44,8 @@ class StructureWidget(QOpenGLWidget):
         self.renderer = Renderer()
         self.structures: list[Structure | Molecule | Crystal] = []
         self.vertex_attribute_objects = [-1]
-        self.axes = [
-            -1,
-            -1,
-        ]  # -1 means no axes are drawn, any other integer means axes are drawn
-        self.box = [
-            -1,
-            -1,
-        ]
+        self.axes = [-1, -1]  # -1 means no axes are drawn, any other integer means axes are drawn
+        self.box = [-1, -1]
         self.rotate = False
         self.translate = False
         self.click_position: np.ndarray | None = None
@@ -117,10 +111,7 @@ class StructureWidget(QOpenGLWidget):
             self.structures[0],
             self.camera,
         )
-        self.renderer.draw_numbers(
-            self.atom_indices_arrays[0],
-            self.atom_indices_arrays[1],
-        )
+        self.renderer.draw_numbers(self.atom_indices_arrays[0], self.atom_indices_arrays[1])
 
     def reset_view(self) -> None:
         """Reset the view of the structure to the initial view."""
@@ -237,25 +228,14 @@ class StructureWidget(QOpenGLWidget):
                 (sphere_model_matrices, self.structures[i].drawer.sphere_model_matrices),
                 axis=0,
             )
-            atom_colors = np.concatenate(
-                (atom_colors, self.structures[i].drawer.atom_colors),
-                axis=0,
-            )
+            atom_colors = np.concatenate((atom_colors, self.structures[i].drawer.atom_colors), axis=0)
             cylinder_model_matrices = np.concatenate(
                 (cylinder_model_matrices, self.structures[i].drawer.cylinder_model_matrices),
                 axis=0,
             )
-            cylinder_colors = np.concatenate(
-                (cylinder_colors, self.structures[i].drawer.cylinder_colors),
-                axis=0,
-            )
+            cylinder_colors = np.concatenate((cylinder_colors, self.structures[i].drawer.cylinder_colors), axis=0)
         self.makeCurrent()
-        self.renderer.update_atoms_vao(
-            sphere_vertices,
-            sphere_indices,
-            sphere_model_matrices,
-            atom_colors,
-        )
+        self.renderer.update_atoms_vao(sphere_vertices, sphere_indices, sphere_model_matrices, atom_colors)
         self.renderer.update_bonds_vao(
             cylinder_vertices,
             cylinder_indices,
@@ -373,30 +353,14 @@ class StructureWidget(QOpenGLWidget):
             self.main_window.update_action_texts()
             return
 
-        positions = np.array(
-            [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
-            dtype=np.float32,
-        )
+        positions = np.array([[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]], dtype=np.float32)
         directions = np.eye(3, dtype=np.float32)
         colors = np.eye(3, dtype=np.float32)
         radii = np.array([radius] * 3, dtype=np.float32)
         lengths = np.array([length] * 3, dtype=np.float32)
-        self.axes[0] = self.renderer.draw_cylinders(
-            positions,
-            directions,
-            radii,
-            lengths,
-            colors,
-            25,
-        )
-        positions = np.array(
-            [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
-            dtype=np.float32,
-        )
-        colors = np.array(
-            [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
-            dtype=np.float32,
-        )
+        self.axes[0] = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, 25)
+        positions = np.array([[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]], dtype=np.float32)
+        colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]], dtype=np.float32)
         radii = np.array([radius] * 4, dtype=np.float32)
         self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
         self.update()
@@ -452,12 +416,7 @@ class StructureWidget(QOpenGLWidget):
         radius = max(lowerlim_radius, diagonal_length / 350)  # just some arbitrary scaling that looks nice
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
-        self.box[0] = self.renderer.draw_cylinders_from_to(
-            positions,
-            radii,
-            colors,
-            25,
-        )
+        self.box[0] = self.renderer.draw_cylinders_from_to(positions, radii, colors, 25)
         self.update()
 
         self.main_window.update_action_texts()
@@ -472,10 +431,7 @@ class StructureWidget(QOpenGLWidget):
             return -1
 
         click_position = np.array(
-            [
-                (xpos * 2 - self.width()) / self.width(),
-                (ypos * 2 - self.height()) / self.height(),
-            ],
+            [(xpos * 2 - self.width()) / self.width(), (ypos * 2 - self.height()) / self.height()],
             dtype=np.float32,
         )
         return select_sphere(
@@ -559,10 +515,7 @@ class StructureWidget(QOpenGLWidget):
         if len(self.structures) != 1:
             return
         self.measurement_selected_spheres = [-1] * 4
-        self.main_window.measurement_dialog.display_metrics(
-            self.structures[0],
-            self.measurement_selected_spheres,
-        )
+        self.main_window.measurement_dialog.display_metrics(self.structures[0], self.measurement_selected_spheres)
 
     def unselect_all_atoms(self) -> None:
         """Unselect all selected atoms."""

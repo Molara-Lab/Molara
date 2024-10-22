@@ -39,20 +39,8 @@ class TestAos(TestCase):
 
         Tests still need to be implemented.
         """
-        quantum_number_l = {
-            "s": 0,
-            "p": 1,
-            "d": 2,
-            "f": 3,
-            "g": 4,
-        }
-        orbital_array_lengths = {
-            "s": 1,
-            "p": 3,
-            "d": 6,
-            "f": 10,
-            "g": 15,
-        }
+        quantum_number_l = {"s": 0, "p": 1, "d": 2, "f": 3, "g": 4}
+        orbital_array_lengths = {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15}
         # orbital_lists = {
         #     "s": [],
         #     "p": [],
@@ -135,16 +123,7 @@ def reference_calculate_aos(
         directional_factors = np.array([dx, dy, dz])
     elif orbital == d:
         uao = np.zeros(6)
-        directional_factors = np.array(
-            [
-                dx2,
-                dy2,
-                dz2,
-                sqr3 * dx * dy,
-                sqr3 * dx * dz,
-                sqr3 * dy * dz,
-            ],
-        )
+        directional_factors = np.array([dx2, dy2, dz2, sqr3 * dx * dy, sqr3 * dx * dz, sqr3 * dy * dz])
     elif orbital == f:
         uao = np.zeros(10)
         directional_factors = np.array(

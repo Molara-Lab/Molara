@@ -77,11 +77,7 @@ class TestAtom(TestCase):
             1.88,  # ar
         )
 
-        def general_attribute_tests(
-            my_atom: Atom,
-            symbol: str,
-            atomic_number: int,
-        ) -> None:
+        def general_attribute_tests(my_atom: Atom, symbol: str, atomic_number: int) -> None:
             assert my_atom.symbol == symbol
             assert my_atom.atomic_number == atomic_number
             assert isinstance(my_atom.basis_set, Basisset)

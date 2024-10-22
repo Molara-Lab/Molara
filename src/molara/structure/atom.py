@@ -47,10 +47,7 @@ class Atom:
             / 255
         )
         cpk_color = np.array(_atom_colors["CPK_ase"][self.symbol], dtype=np.float64)
-        self.color = {
-            "CPK": cpk_color,
-            "Jmol": jmol_color,
-        }
+        self.color = {"CPK": cpk_color, "Jmol": jmol_color}
         self.vdw_radius = _pt_data[self.symbol]["Van der waals radius"]
         self.basis_set = Basisset()
         self.position = np.array([])

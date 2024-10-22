@@ -69,9 +69,7 @@ class XyzExporter(StructureExporter):
 class GeneralExporter(StructureExporter):
     """Tries to determine the file format and calls the correct exporter."""
 
-    _EXPORTER_BY_SUFFIX: Mapping[str, Any] = {
-        ".xyz": XyzExporter,
-    }
+    _EXPORTER_BY_SUFFIX: Mapping[str, Any] = {".xyz": XyzExporter}
 
     def __init__(self, path: PathLike | str) -> None:
         """Try to determine the file format and calls the correct exporter.

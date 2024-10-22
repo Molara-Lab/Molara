@@ -59,6 +59,4 @@ class Molecule(Structure):
                 index_e = split_string.index("energy:")
 
                 if index_e + 1 < len(split_string):
-                    self.energy = float(
-                        string.split()[split_string.index("energy:") + 1],
-                    )
+                    self.energy = float(string.split()[split_string.index("energy:") + 1])

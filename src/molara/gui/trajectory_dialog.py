@@ -9,11 +9,7 @@ import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import (
-    QDialog,
-    QMainWindow,
-    QVBoxLayout,
-)
+from PySide6.QtWidgets import QDialog, QMainWindow, QVBoxLayout
 
 from molara.gui.ui_trajectory import Ui_traj_dialog
 
@@ -146,10 +142,7 @@ class TrajectoryDialog(QDialog):
     def update_molecule(self) -> None:
         """Update molecule and delete old molecule."""
         self.parent().structure_widget.delete_structure()
-        self.parent().structure_widget.set_structure(
-            [self.parent().mols.get_current_mol()],
-            reset_view=False,
-        )
+        self.parent().structure_widget.set_structure([self.parent().mols.get_current_mol()], reset_view=False)
         self.update_energy_plot()
         if self.show_all:
             self.ui.overlayButton.setText("Show all")

@@ -6,26 +6,7 @@ import numpy as np
 
 __copyright__ = "Copyright 2024, Molara"
 
-fact2 = [
-    1,
-    1,
-    2,
-    3,
-    8,
-    15,
-    48,
-    105,
-    384,
-    945,
-    3840,
-    10395,
-    46080,
-    135135,
-    645120,
-    2027025,
-    10321920,
-    34459425,
-]
+fact2 = [1, 1, 2, 3, 8, 15, 48, 105, 384, 945, 3840, 10395, 46080, 135135, 645120, 2027025, 10321920, 34459425]
 
 
 class Basisset:
@@ -68,34 +49,10 @@ class Basisset:
         fi = 1
         gi = 1
         orbs = [
-            [
-                "s",
-            ],
-            [
-                "px",
-                "py",
-                "pz",
-            ],
-            [
-                "dxx",
-                "dyy",
-                "dzz",
-                "dxy",
-                "dxz",
-                "dyz",
-            ],
-            [
-                "fxxx",
-                "fyyy",
-                "fzzz",
-                "fxyy",
-                "fxxy",
-                "fxxz",
-                "fxzz",
-                "fyzz",
-                "fyyz",
-                "fxyz",
-            ],
+            ["s"],
+            ["px", "py", "pz"],
+            ["dxx", "dyy", "dzz", "dxy", "dxz", "dyz"],
+            ["fxxx", "fyyy", "fzzz", "fxyy", "fxxy", "fxxz", "fxzz", "fyzz", "fyyz", "fxyz"],
             [
                 "gxxxx",
                 "gyyyy",
@@ -120,52 +77,27 @@ class Basisset:
             exponents[i] = np.array(exponents[i])
             ijks = np.array(ijks, dtype=int)
             if shell == "s":
-                self.orbitals[f"s{si}"] = Orbital(
-                    ijks[0],
-                    exponents[i],
-                    coefficients[i],
-                    position,
-                )
+                self.orbitals[f"s{si}"] = Orbital(ijks[0], exponents[i], coefficients[i], position)
                 si += 1
                 i += 1
             elif shell == "p":
                 for j, orb in enumerate(orbs[1]):
-                    self.orbitals[f"{orb}{pi}"] = Orbital(
-                        ijks[j],
-                        exponents[i],
-                        coefficients[i],
-                        position,
-                    )
+                    self.orbitals[f"{orb}{pi}"] = Orbital(ijks[j], exponents[i], coefficients[i], position)
                 pi += 1
                 i += 1
             elif shell == "d":
                 for j, orb in enumerate(orbs[2]):
-                    self.orbitals[f"{orb}{di}"] = Orbital(
-                        ijks[j],
-                        exponents[i],
-                        coefficients[i],
-                        position,
-                    )
+                    self.orbitals[f"{orb}{di}"] = Orbital(ijks[j], exponents[i], coefficients[i], position)
                 di += 1
                 i += 1
             elif shell == "f":
                 for j, orb in enumerate(orbs[3]):
-                    self.orbitals[f"{orb}{fi}"] = Orbital(
-                        ijks[j],
-                        exponents[i],
-                        coefficients[i],
-                        position,
-                    )
+                    self.orbitals[f"{orb}{fi}"] = Orbital(ijks[j], exponents[i], coefficients[i], position)
                 fi += 1
                 i += 1
             elif shell == "g":
                 for j, orb in enumerate(orbs[4]):
-                    self.orbitals[f"{orb}{gi}"] = Orbital(
-                        ijks[j],
-                        exponents[i],
-                        coefficients[i],
-                        position,
-                    )
+                    self.orbitals[f"{orb}{gi}"] = Orbital(ijks[j], exponents[i], coefficients[i], position)
                 gi += 1
                 i += 1
             else:
@@ -177,13 +109,7 @@ class Basisset:
 class Orbital:
     """Class to store either an STO or GTO."""
 
-    def __init__(
-        self,
-        ijk: np.ndarray,
-        exponents: np.ndarray,
-        coefficients: np.ndarray,
-        position: np.ndarray,
-    ) -> None:
+    def __init__(self, ijk: np.ndarray, exponents: np.ndarray, coefficients: np.ndarray, position: np.ndarray) -> None:
         """Initialize the orbital class.
 
         :param ijk: list of ijk values
@@ -204,10 +130,7 @@ class Orbital:
         self.position = position
 
 
-def calculate_normalization_primitive_gtos(
-    ijk: np.ndarray,
-    exponents: np.ndarray,
-) -> np.ndarray:
+def calculate_normalization_primitive_gtos(ijk: np.ndarray, exponents: np.ndarray) -> np.ndarray:
     """Normalize the primitive gaussians.
 
     :param ijk: list of ijk values
@@ -224,12 +147,7 @@ def calculate_normalization_primitive_gtos(
     fk = 1 if k == 0 else fact2[2 * k - 1]
 
     return np.array(
-        [
-            np.sqrt(
-                (2 ** (2 * m + 1.5) * exponent ** (m + 1.5)) / (fi * fj * fk * np.pi**1.5),
-            )
-            for exponent in exponents
-        ],
+        [np.sqrt((2 ** (2 * m + 1.5) * exponent ** (m + 1.5)) / (fi * fj * fk * np.pi**1.5)) for exponent in exponents],
     )
 
 

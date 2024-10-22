@@ -12,9 +12,7 @@ class VirtualRenderingWindow(QWidget):
 
     def __init__(self, parent: QMainWindow) -> None:
         """Instantiate the virtual rendering window object."""
-        super().__init__(
-            parent,
-        )
+        super().__init__(parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.main_window = parent

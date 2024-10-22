@@ -61,10 +61,7 @@ class Crystal(Structure):
         self.volume_unitcell = Crystal.calc_volume_unitcell(self.basis_vectors)
         self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
-    def _fold_coords_into_unitcell(
-        self,
-        fractional_coords: ArrayLike,
-    ) -> list[list[float]]:
+    def _fold_coords_into_unitcell(self, fractional_coords: ArrayLike) -> list[list[float]]:
         """Folds coordinates into unit cell.
 
         :param fractional_coords: particle positions in fractional coordinates
@@ -86,27 +83,15 @@ class Crystal(Structure):
         translations_a = 1.0 * steps_a + 0.0 * steps_b + 0.0 * steps_c
         translations_b = 0.0 * steps_a + 1.0 * steps_b + 0.0 * steps_c
         translations_c = 0.0 * steps_a + 0.0 * steps_b + 1.0 * steps_c
-        translation_vectors = np.array(
-            [
-                translations_a.flatten(),
-                translations_b.flatten(),
-                translations_c.flatten(),
-            ],
-        ).T
+        translation_vectors = np.array([translations_a.flatten(), translations_b.flatten(), translations_c.flatten()]).T
 
         num_unit_cells = translation_vectors.shape[0]
         self.fractional_coords_supercell = np.empty((0, 3), float)
         self.atomic_nums_supercell = np.empty(0, int)
 
         # create supercell arrays
-        for atomic_number_i, position_i in zip(
-            self.atomic_nums_unitcell,
-            self.coords_unitcell,
-        ):
-            self.atomic_nums_supercell = np.append(
-                self.atomic_nums_supercell,
-                [atomic_number_i] * num_unit_cells,
-            )
+        for atomic_number_i, position_i in zip(self.atomic_nums_unitcell, self.coords_unitcell):
+            self.atomic_nums_supercell = np.append(self.atomic_nums_supercell, [atomic_number_i] * num_unit_cells)
             self.fractional_coords_supercell = np.append(
                 self.fractional_coords_supercell,
                 position_i + translation_vectors,
@@ -117,10 +102,7 @@ class Crystal(Structure):
         extra_atomic_nums, extra_fractional_coords = self.make_supercell_edge_atoms()
 
         if extra_atomic_nums:
-            self.atomic_nums_supercell = np.append(
-                self.atomic_nums_supercell,
-                extra_atomic_nums,
-            )
+            self.atomic_nums_supercell = np.append(self.atomic_nums_supercell, extra_atomic_nums)
             self.fractional_coords_supercell = np.append(
                 self.fractional_coords_supercell,
                 extra_fractional_coords,
@@ -133,17 +115,10 @@ class Crystal(Structure):
             self.basis_vectors,
         )
         # ... and instantiate atoms in super().__init__
-        super().__init__(
-            self.atomic_nums_supercell,
-            self.cartesian_coordinates_supercell,
-            draw_bonds=False,
-        )
+        super().__init__(self.atomic_nums_supercell, self.cartesian_coordinates_supercell, draw_bonds=False)
 
     @staticmethod
-    def fractional_to_cartesian_coords(
-        fractional_coords: ArrayLike,
-        basis_vectors: ArrayLike,
-    ) -> np.ndarray:
+    def fractional_to_cartesian_coords(fractional_coords: ArrayLike, basis_vectors: ArrayLike) -> np.ndarray:
         """Transform fractional coordinates (coordinates in terms of basis vectors) to cartesian coordinates.
 
         :param fractional_coords: fractional coordinates of the atoms
@@ -303,11 +278,7 @@ class Crystal(Structure):
         return round(np.abs(np.linalg.det(basis_vectors)), 12)
 
     @classmethod
-    def from_pymatgen(
-        cls: type[Crystal],
-        structure: Pmgstructure,
-        supercell_dims: list[int],
-    ) -> Crystal:
+    def from_pymatgen(cls: type[Crystal], structure: Pmgstructure, supercell_dims: list[int]) -> Crystal:
         """Create a Crystal object from a pymatgen.Structure object.
 
         :param structure: pymatgen.Structure object
@@ -325,21 +296,11 @@ class Crystal(Structure):
             "For non-periodic systems, use Molecule.from_ase(). "
             "Partially periodic systems are not supported yet."
         )
-        return cls(
-            atoms.get_atomic_numbers(),
-            atoms.get_scaled_positions(),
-            atoms.get_cell(),
-            supercell_dims=[1, 1, 1],
-        )
+        return cls(atoms.get_atomic_numbers(), atoms.get_scaled_positions(), atoms.get_cell(), supercell_dims=[1, 1, 1])
 
     def copy(self) -> Crystal:
         """Return a copy of the Crystal object."""
-        return Crystal(
-            self.atomic_nums_unitcell,
-            self.coords_unitcell,
-            self.basis_vectors,
-            self.supercell_dims,
-        )
+        return Crystal(self.atomic_nums_unitcell, self.coords_unitcell, self.basis_vectors, self.supercell_dims)
 
     """ overloading operators """
 

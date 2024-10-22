@@ -36,12 +36,7 @@ class ExportImageDialog(QDialog):
 
     def choose_filename(self) -> None:
         """Open a file dialog to choose a filename."""
-        filename, suffix = QFileDialog.getSaveFileName(
-            self,
-            "Export Image",
-            f"{Path.home()}",
-            "*.png;;*.jpg",
-        )
+        filename, suffix = QFileDialog.getSaveFileName(self, "Export Image", f"{Path.home()}", "*.png;;*.jpg")
         if not filename:
             return
         if not filename.endswith(suffix[1:]):

@@ -46,12 +46,7 @@ class WorkaroundTestBuffers:
         sphere_model_matrices = calculate_sphere_model_matrix(position, sphere_radius)
 
         self.openGLWidget.makeCurrent()
-        (vao, buffers) = setup_vao(
-            sphere_mesh.vertices,
-            sphere_mesh.indices,
-            sphere_model_matrices,
-            sphere_colors,
-        )
+        (vao, buffers) = setup_vao(sphere_mesh.vertices, sphere_mesh.indices, sphere_model_matrices, sphere_colors)
 
         assert isinstance(vao, (np.integer, int))
         assert isinstance(buffers, list)

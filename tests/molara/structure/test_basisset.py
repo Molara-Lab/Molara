@@ -27,22 +27,8 @@ class TestBasisset(TestCase):
         self.correct_matrix = np.array(
             [
                 [1.0, 0.9695444742892854, 0.7785233616946461, 0.0, 0.0, 0.0],
-                [
-                    0.9695444742892855,
-                    0.9999999999999999,
-                    0.8972992962394406,
-                    0.0,
-                    0.0,
-                    0.0,
-                ],
-                [
-                    0.7785233616946463,
-                    0.8972992962394406,
-                    0.9999999999999999,
-                    0.0,
-                    0.0,
-                    0.0,
-                ],
+                [0.9695444742892855, 0.9999999999999999, 0.8972992962394406, 0.0, 0.0, 0.0],
+                [0.7785233616946463, 0.8972992962394406, 0.9999999999999999, 0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0, 0.9999999999999999, 0.0, 0.0],
                 [0.0, 0.0, 0.0, 0.0, 0.9999999999999999, 0.0],
                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.9999999999999999],
@@ -51,9 +37,7 @@ class TestBasisset(TestCase):
 
     def test_normalized(self) -> None:
         """Test if the basis set is normalized."""
-        overlap_matrix = np.zeros(
-            (len(self.basisset.orbitals), len(self.basisset.orbitals)),
-        )
+        overlap_matrix = np.zeros((len(self.basisset.orbitals), len(self.basisset.orbitals)))
         for i, orb1 in enumerate(self.basisset.orbitals):
             for j, orb2 in enumerate(self.basisset.orbitals):
                 overlap_matrix[i, j] = contracted_overlap(
@@ -129,12 +113,7 @@ def primitive_overlap(  # noqa: PLR0913
     return s1 * s2 * s3 * np.power(np.pi / (a + b), 1.5)
 
 
-def contracted_overlap(
-    a: Orbital,
-    b: Orbital,
-    a_xyz: np.ndarray,
-    b_xyz: np.ndarray,
-) -> float:
+def contracted_overlap(a: Orbital, b: Orbital, a_xyz: np.ndarray, b_xyz: np.ndarray) -> float:
     """Evaluate overlap between two contracted Gaussians.
 
     Returns a float.
@@ -152,13 +131,6 @@ def contracted_overlap(
                 * b.norms[ib]
                 * ca
                 * cb
-                * primitive_overlap(
-                    a.exponents[ia],
-                    a.ijk,
-                    a_xyz,
-                    b.exponents[ib],
-                    b.ijk,
-                    b_xyz,
-                )
+                * primitive_overlap(a.exponents[ia], a.ijk, a_xyz, b.exponents[ib], b.ijk, b_xyz)
             )
     return s

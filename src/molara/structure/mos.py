@@ -73,13 +73,7 @@ class Mos:
         i = 0
         while i < len(mo_coefficients):
             shell = sum(aos[i].ijk)
-            ao_values = calculate_aos(
-                electron_position,
-                aos[i].position,
-                aos[i].exponents,
-                aos[i].coefficients,
-                shell,
-            )
+            ao_values = calculate_aos(electron_position, aos[i].position, aos[i].exponents, aos[i].coefficients, shell)
             if shell == s:
                 mo += mo_coefficients[i] * ao_values[0]
                 i += 1

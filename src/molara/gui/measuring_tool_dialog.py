@@ -25,9 +25,7 @@ class MeasurementDialog(QDialog):
 
         :param parent: the MainWindow widget
         """
-        super().__init__(
-            parent,
-        )
+        super().__init__(parent)
         self.main_window = parent
 
         self.ui = Ui_measuring_tool()
@@ -170,9 +168,7 @@ class MeasurementDialog(QDialog):
             if selected_atoms[i] != -1 and selected_atoms[i + 1] != -1 and selected_atoms[i + 2] != -1:
                 v1 = structure.atoms[selected_atoms[i]].position - structure.atoms[selected_atoms[i + 1]].position
                 v2 = structure.atoms[selected_atoms[i + 2]].position - structure.atoms[selected_atoms[i + 1]].position
-                a = np.arccos(
-                    np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
-                )
+                a = np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
                 item = QTableWidgetItem(f"{np.degrees(a):.3f}" + " \u00b0")
                 item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                 self.ui.tableAngles.setItem(i, 0, item)

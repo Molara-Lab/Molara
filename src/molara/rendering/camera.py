@@ -43,18 +43,10 @@ class Camera:
         self.last_rotation = self.rotation
         self.last_translation = self.translation
         self.initial_target = self.target
-        self.initial_position = pyrr.Vector3(
-            pyrr.vector3.normalize(self.position),
-            dtype=np.float32,
-        )
+        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position), dtype=np.float32)
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
-        self.view_matrix = pyrr.matrix44.create_look_at(
-            self.position,
-            self.target,
-            self.up_vector,
-            dtype=np.float32,
-        )
+        self.view_matrix = pyrr.matrix44.create_look_at(self.position, self.target, self.up_vector, dtype=np.float32)
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
 
     def calculate_projection_matrix(self) -> None:
@@ -112,12 +104,7 @@ class Camera:
             dy = dy_struct if dy_struct * self.width > dz_struct * self.height else dz_struct * self.height / self.width
             distance_from_target = extra_space_factor * dy / (2 * np.tan(np.radians(self.fov / 2)))
 
-        self.set_position(
-            [1.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [0.0, 0.0, -1.0],
-            distance_from_target,
-        )
+        self.set_position([1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0], distance_from_target)
 
     def set_position(
         self,
@@ -147,19 +134,11 @@ class Camera:
         self.position *= self.distance_from_target
         self.target = pyrr.Vector3([0.0, 0.0, 0.0], dtype=np.float32)
         self.initial_target = self.target
-        self.initial_position = pyrr.Vector3(
-            pyrr.vector3.normalize(self.position),
-            dtype=np.float32,
-        )
+        self.initial_position = pyrr.Vector3(pyrr.vector3.normalize(self.position), dtype=np.float32)
         self.initial_up_vector = self.up_vector
         self.initial_right_vector = self.right_vector
 
-        self.view_matrix = pyrr.matrix44.create_look_at(
-            self.position,
-            self.target,
-            self.up_vector,
-            dtype=np.float32,
-        )
+        self.view_matrix = pyrr.matrix44.create_look_at(self.position, self.target, self.up_vector, dtype=np.float32)
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         self.projection_matrix_inv = pyrr.matrix44.inverse(self.projection_matrix)
 
@@ -180,10 +159,7 @@ class Camera:
         elif axis == "z":
             rotation_axis = pyrr.Vector3([0, 1, 0], dtype=np.float32)
             rotation_angle = np.pi / 2.0
-        self.rotation = pyrr.Quaternion() * pyrr.Quaternion.from_axis_rotation(
-            rotation_axis,
-            rotation_angle,
-        )
+        self.rotation = pyrr.Quaternion() * pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
         self.last_rotation = self.rotation
         self.update()
 
@@ -202,10 +178,7 @@ class Camera:
         """
         zoom_factor = 1.0
         zoom_factor += num_steps * 1  # Empirical value to control zoom sensitivity
-        zoom_factor = max(
-            0.1,
-            zoom_factor,
-        )  # Limit zoom factor to avoid zooming too far
+        zoom_factor = max(0.1, zoom_factor)  # Limit zoom factor to avoid zooming too far
         self.distance_from_target += np.log10(zoom_factor * self.zoom_sensitivity) * np.sign(zoom_factor - 1)
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
@@ -227,21 +200,12 @@ class Camera:
         if save:
             self.last_rotation = self.rotation
             self.last_translation = self.translation
-        self.view_matrix = pyrr.matrix44.create_look_at(
-            self.position,
-            self.target,
-            self.up_vector,
-            dtype=np.float32,
-        )
+        self.view_matrix = pyrr.matrix44.create_look_at(self.position, self.target, self.up_vector, dtype=np.float32)
         self.view_matrix_inv = pyrr.matrix44.inverse(self.view_matrix)
         if self.orthographic_projection:
             self.calculate_projection_matrix()
 
-    def set_translation_vector(
-        self,
-        old_mouse_position: np.ndarray,
-        mouse_position: np.ndarray,
-    ) -> None:
+    def set_translation_vector(self, old_mouse_position: np.ndarray, mouse_position: np.ndarray) -> None:
         """Calculate the translation matrix using the normalized mouse positions.
 
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
@@ -251,11 +215,7 @@ class Camera:
         y_translation = -(mouse_position[1] - old_mouse_position[1])
         self.translation = self.right_vector * x_translation + self.up_vector * y_translation + self.last_translation
 
-    def set_rotation_quaternion(
-        self,
-        old_mouse_position: np.ndarray,
-        new_mouse_position: np.ndarray,
-    ) -> None:
+    def set_rotation_quaternion(self, old_mouse_position: np.ndarray, new_mouse_position: np.ndarray) -> None:
         """Calculate the rotation quaternion using the normalized mouse positions.
 
         :param old_mouse_position: Old normalized x and y coordinate of the mouse position on the opengl widget.
@@ -280,27 +240,16 @@ class Camera:
                 y /= length
             return np.array([x, y, -z], dtype=np.float32)
 
-        previous_arcball_point = calculate_arcball_point(
-            old_mouse_position[0],
-            old_mouse_position[1],
-        )
-        current_arcball_point = calculate_arcball_point(
-            new_mouse_position[0],
-            new_mouse_position[1],
-        )
+        previous_arcball_point = calculate_arcball_point(old_mouse_position[0], old_mouse_position[1])
+        current_arcball_point = calculate_arcball_point(new_mouse_position[0], new_mouse_position[1])
 
         tolerance_parallel = 1e-5
         if np.linalg.norm(previous_arcball_point - current_arcball_point) > tolerance_parallel:
             rotation_axis = np.cross(current_arcball_point, previous_arcball_point)
             rotation_axis = pyrr.vector3.normalize(rotation_axis)
-            rotation_angle = np.arccos(
-                np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1),
-            )
+            rotation_angle = np.arccos(np.clip(np.dot(previous_arcball_point, current_arcball_point), -1, 1))
 
-            self.rotation = self.last_rotation * pyrr.Quaternion.from_axis_rotation(
-                rotation_axis,
-                rotation_angle,
-            )
+            self.rotation = self.last_rotation * pyrr.Quaternion.from_axis_rotation(rotation_axis, rotation_angle)
         else:
             self.rotation = self.last_rotation
 
@@ -349,12 +298,7 @@ class Camera:
         self.width = data["width"]
         self.height = data["height"]
         self.zoom_sensitivity = data["zoom_sensitivity"]
-        self.set_position(
-            data["position"],
-            data["up_vector"],
-            data["right_vector"],
-            data["distance_from_target"],
-        )
+        self.set_position(data["position"], data["up_vector"], data["right_vector"], data["distance_from_target"])
         self.initial_position = pyrr.Vector3(data["initial_position"], dtype=np.float32)
         self.initial_up_vector = pyrr.Vector3(data["initial_up_vector"], dtype=np.float32)
         self.initial_right_vector = pyrr.Vector3(data["initial_right_vector"], dtype=np.float32)

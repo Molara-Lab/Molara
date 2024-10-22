@@ -84,10 +84,7 @@ class PoscarImporter(Importer):
     This class can be used to import poscar files. It tries the pymatgen import first.
     """
 
-    def __init__(
-        self,
-        path: PathLike | str,
-    ) -> None:
+    def __init__(self, path: PathLike | str) -> None:
         """Initialize the Importer object.
 
         :param path: input file path
@@ -186,9 +183,7 @@ class VasprunImporter(Importer):
             crystal = Crystal.from_pymatgen(structure, supercell_dims=[1, 1, 1])
         except ImportError as err:
             msg = "pymatgen is not installed, cannot read vasprun.xml files"
-            raise ImportError(
-                msg,
-            ) from err
+            raise ImportError(msg) from err
         crystals = Crystals()
         crystals.add_crystal(crystal)
         return crystals

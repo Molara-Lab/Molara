@@ -48,9 +48,7 @@ class BuilderDialog(QDialog):
 
         :param parent: the parent widget (main window).
         """
-        super().__init__(
-            parent,
-        )  # structure widget is passed as a parent
+        super().__init__(parent)  # structure widget is passed as a parent
         self.ui = Ui_builder()
         self.ui.setupUi(self)
         self.ui.AddAtomButton.clicked.connect(self.select_add)
@@ -212,9 +210,7 @@ class BuilderDialog(QDialog):
         # check if atom is the very first to be added
         if count_atoms == 0:
             pos = self.calc_position_new_atom(count_atoms, params, atom_ids)
-            self.main_window.mols.add_molecule(
-                Molecule(np.array([atomic_num]), pos, draw_bonds=False),
-            )
+            self.main_window.mols.add_molecule(Molecule(np.array([atomic_num]), pos, draw_bonds=False))
             return
 
         # starting from the third atom, atoms must have been selected in order to specify relative position
@@ -397,12 +393,7 @@ class BuilderDialog(QDialog):
             return (element, dist), [0]
         if num_atoms == 2:  # noqa: PLR2004
             return (element, dist, angle), atom_ids
-        return (
-            element,
-            dist,
-            angle,
-            dihedral,
-        ), atom_ids
+        return (element, dist, angle, dihedral), atom_ids
 
     def _get_parameters_from_table(self, row: int) -> tuple:
         """Return the parameter of a specified row in the table.

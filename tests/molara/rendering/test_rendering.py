@@ -128,11 +128,7 @@ class WorkaroundTestRenderer:
         """Test the draw_cylinders_from_to method of the Renderer class."""
         self.openGLWidget.makeCurrent()
         positions_from_to = np.array(
-            [
-                [[1.2, 3.4, 5.6], [9.8, 7.6, 5.4]],
-                [[-3.3, -2.2, 1.1], [9.9, 8.8, -7.7]],
-                [[0, 0, 0], [1, 1, 1]],
-            ],
+            [[[1.2, 3.4, 5.6], [9.8, 7.6, 5.4]], [[-3.3, -2.2, 1.1], [9.9, 8.8, -7.7]], [[0, 0, 0], [1, 1, 1]]],
             dtype=np.float32,
         )
         positions = positions_from_to.mean(axis=1, dtype=np.float32)

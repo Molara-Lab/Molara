@@ -27,9 +27,7 @@ def fetch_periodic_table() -> dict[str, dict[str, str]]:
 
 def fetch_license() -> str:
     """Fetch the license text from the pymatgen repository."""
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/materialsproject/pymatgen/master/LICENSE",
-    ) as url:
+    with urllib.request.urlopen("https://raw.githubusercontent.com/materialsproject/pymatgen/master/LICENSE") as url:
         return url.read().decode("utf-8")
 
 

@@ -95,9 +95,7 @@ class XyzImporter(MoleculesImporter):
         start_line = 0
         while not finished and max_mols >= molecules.num_mols:
             end_line = start_line + num_atoms + 2
-            molecules.add_molecule(
-                self._molecule_from_xyz(lines[start_line:end_line]),
-            )
+            molecules.add_molecule(self._molecule_from_xyz(lines[start_line:end_line]))
             finished = (
                 start_line + 2 + num_atoms >= len(lines) or not lines[start_line + 2 + num_atoms].strip().isdigit()
             )
@@ -131,9 +129,7 @@ class CoordImporter(MoleculesImporter):
                 atomic_numbers.append(element_symbol_to_atomic_number(atom_info[-1]))
             coordinates.append([float(coord) * 0.529177249 for coord in atom_info[:3]])
 
-        molecules.add_molecule(
-            Molecule(np.array(atomic_numbers), np.array(coordinates)),
-        )
+        molecules.add_molecule(Molecule(np.array(atomic_numbers), np.array(coordinates)))
 
         return molecules
 
@@ -175,13 +171,7 @@ class MoldenImporter(MoleculesImporter):
                     i += 1
                     if i == len(lines):
                         break
-                (
-                    mo_coefficients,
-                    labels,
-                    energies,
-                    spins,
-                    occupations,
-                ) = self.get_mo_coefficients(lines[i_start:i])
+                (mo_coefficients, labels, energies, spins, occupations) = self.get_mo_coefficients(lines[i_start:i])
             i += 1
 
         molecules.add_molecule(
@@ -199,9 +189,7 @@ class MoldenImporter(MoleculesImporter):
                 atom["coefficients"],
                 molecules.mols[0].atoms[i].position,
             )
-            molecules.mols[0].aos.extend(
-                molecules.mols[0].atoms[i].basis_set.orbitals_list,
-            )
+            molecules.mols[0].aos.extend(molecules.mols[0].atoms[i].basis_set.orbitals_list)
         return molecules
 
     def get_atoms(self, lines: list[str]) -> tuple[list[int], list[list[float]]]:
@@ -225,9 +213,7 @@ class MoldenImporter(MoleculesImporter):
             atom_info = lines[i].split()
             atomic_numbers.append(int(atom_info[2]))
             if not angstrom:
-                coordinates.append(
-                    [float(coord) * bohr_to_angstrom for coord in atom_info[3:6]],
-                )
+                coordinates.append([float(coord) * bohr_to_angstrom for coord in atom_info[3:6]])
             else:
                 coordinates.append([float(coord) for coord in atom_info[3:6]])
             i += 1
@@ -247,18 +233,8 @@ class MoldenImporter(MoleculesImporter):
         coefficients = []
         exponents = []
         shells = ["s", "p", "d", "f", "g", "h", "i", "j", "k"]
-        basisset: list = [
-            {
-                "shells": [],
-                "exponents": [],
-                "coefficients": [],
-            },
-        ]
-        new_basisset_dict: dict = {
-            "shells": [],
-            "exponents": [],
-            "coefficients": [],
-        }
+        basisset: list = [{"shells": [], "exponents": [], "coefficients": []}]
+        new_basisset_dict: dict = {"shells": [], "exponents": [], "coefficients": []}
         words = lines[i].split()
         while i < len(lines):
             if not words:  # check if end of gto block
@@ -376,10 +352,7 @@ class QmImporter(MoleculesImporter):
 
         return molecules
 
-    def _get_electronic_energies_in_hartree(
-        self,
-        cclib_data: ccData,
-    ) -> np.ndarray | None:
+    def _get_electronic_energies_in_hartree(self, cclib_data: ccData) -> np.ndarray | None:
         """Convert cclib energy to hartree.
 
         :param cclib_data: cclib data
@@ -429,10 +402,7 @@ class GeneralImporter(MoleculesImporter):
         ".molden": MoldenImporter,
     }
 
-    def __init__(
-        self,
-        path: PathLike | str,
-    ) -> None:
+    def __init__(self, path: PathLike | str) -> None:
         """Instantiate GeneralImporter object.
 
         :param path: input file path

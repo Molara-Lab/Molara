@@ -112,12 +112,7 @@ class Renderer:
             )
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
-        cylinder = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(cylinder_mesh.vertices),
-            "buffers": [],
-        }
+        cylinder = {"vao": 0, "n_instances": n_instances, "n_vertices": len(cylinder_mesh.vertices), "buffers": []}
         cylinder["vao"], cylinder["buffers"] = setup_vao(
             cylinder_mesh.vertices,
             cylinder_mesh.indices,
@@ -173,13 +168,7 @@ class Renderer:
         directions = np.array(_directions) / lengths[:, None]
         return self.draw_cylinders(positions_middle, -directions, radii, lengths, colors, subdivisions)
 
-    def draw_spheres(
-        self,
-        positions: np.ndarray,
-        radii: np.ndarray,
-        colors: np.ndarray,
-        subdivisions: int,
-    ) -> int:
+    def draw_spheres(self, positions: np.ndarray, radii: np.ndarray, colors: np.ndarray, subdivisions: int) -> int:
         """Draws one or multiple spheres.
 
         If only one sphere is drawn, the positions, radii and colors are given
@@ -206,12 +195,7 @@ class Renderer:
                 model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
                 model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
 
-        sphere = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(sphere_mesh.vertices),
-            "buffers": [],
-        }
+        sphere = {"vao": 0, "n_instances": n_instances, "n_vertices": len(sphere_mesh.vertices), "buffers": []}
         sphere["vao"], sphere["buffers"] = setup_vao(
             sphere_mesh.vertices,
             sphere_mesh.indices,
@@ -251,12 +235,7 @@ class Renderer:
             for buffer in cylinder["buffers"]:
                 glDeleteBuffers(1, [buffer])
             glDeleteVertexArrays(1, [cylinder["vao"]])
-        self.cylinders[i_cylinder] = {
-            "vao": 0,
-            "n_instances": 0,
-            "n_vertices": 0,
-            "buffers": [],
-        }
+        self.cylinders[i_cylinder] = {"vao": 0, "n_instances": 0, "n_vertices": 0, "buffers": []}
 
     def remove_sphere(self, i_sphere: int) -> None:
         """Remove a sphere from the list of spheres.
@@ -273,12 +252,7 @@ class Renderer:
                 for buffer in sphere["buffers"]:
                     glDeleteBuffers(1, [buffer])
                 glDeleteVertexArrays(1, [sphere["vao"]])
-            self.spheres[i_sphere] = {
-                "vao": 0,
-                "n_instances": 0,
-                "n_vertices": 0,
-                "buffers": [],
-            }
+            self.spheres[i_sphere] = {"vao": 0, "n_instances": 0, "n_vertices": 0, "buffers": []}
 
     def update_atoms_vao(
         self,
@@ -305,20 +279,11 @@ class Renderer:
             for buffer in self.atoms_vao["buffers"]:
                 glDeleteBuffers(1, int(buffer))
             glDeleteVertexArrays(1, int(self.atoms_vao["vao"]))
-        self.atoms_vao["vao"], self.atoms_vao["buffers"] = setup_vao(
-            vertices,
-            indices,
-            model_matrices,
-            colors,
-        )
+        self.atoms_vao["vao"], self.atoms_vao["buffers"] = setup_vao(vertices, indices, model_matrices, colors)
         self.atoms_vao["n_atoms"] = len(model_matrices)
         self.atoms_vao["n_vertices"] = len(vertices)
 
-    def draw_numbers(
-        self,
-        digits: np.ndarray,
-        positions_3d: np.ndarray,
-    ) -> None:
+    def draw_numbers(self, digits: np.ndarray, positions_3d: np.ndarray) -> None:
         """Update the vertex attribute object for the numbers.
 
         :param digits: Digits of the numbers.
@@ -363,20 +328,11 @@ class Renderer:
             for buffer in self.bonds_vao["buffers"]:
                 glDeleteBuffers(1, int(buffer))
             glDeleteVertexArrays(1, int(self.bonds_vao["vao"]))
-        self.bonds_vao["vao"], self.bonds_vao["buffers"] = setup_vao(
-            vertices,
-            indices,
-            model_matrices,
-            colors,
-        )
+        self.bonds_vao["vao"], self.bonds_vao["buffers"] = setup_vao(vertices, indices, model_matrices, colors)
         self.bonds_vao["n_bonds"] = len(model_matrices)
         self.bonds_vao["n_vertices"] = len(vertices)
 
-    def draw_scene(
-        self,
-        camera: Camera,
-        bonds: bool,
-    ) -> None:
+    def draw_scene(self, camera: Camera, bonds: bool) -> None:
         """Draws the scene.
 
         :param camera: Camera object.

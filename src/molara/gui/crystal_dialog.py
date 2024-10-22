@@ -36,9 +36,7 @@ class CrystalDialog(QDialog):
         self.list_of_coordinates: list = []
         self.list_of_atomic_numbers: list[int] = []
         self.change_crystal_system("Cubic")
-        self.ui.selectCrystalSystem.currentTextChanged.connect(
-            self.change_crystal_system,
-        )
+        self.ui.selectCrystalSystem.currentTextChanged.connect(self.change_crystal_system)
         self.ui.buttonAddAtom.clicked.connect(self.add_atom)
         self.ui.pushButton.clicked.connect(self.reset)
         self.ui.listAtoms.setColumnCount(4)
@@ -82,11 +80,7 @@ class CrystalDialog(QDialog):
             self.ui.inputSupercell_c.value(),
         )
         supercell_dims = [dim_a, dim_b, dim_c]
-        a, b, c = (
-            self.ui.inputLatConst_a.value(),
-            self.ui.inputLatConst_b.value(),
-            self.ui.inputLatConst_c.value(),
-        )
+        a, b, c = (self.ui.inputLatConst_a.value(), self.ui.inputLatConst_b.value(), self.ui.inputLatConst_c.value())
         alpha, beta, gamma = (
             self.ui.inputLatAngle_alpha.value(),
             self.ui.inputLatAngle_beta.value(),
@@ -99,11 +93,7 @@ class CrystalDialog(QDialog):
             cosbeta = np.cos(beta / 180.0 * np.pi)
             cosgamma = np.cos(gamma / 180.0 * np.pi)
             avec = [a, 0.0, 0.0]
-            bvec = [
-                b * cosgamma,
-                b * np.sqrt(1.0 - cosgamma**2),
-                0.0,
-            ]
+            bvec = [b * cosgamma, b * np.sqrt(1.0 - cosgamma**2), 0.0]
             cvec = [
                 c * cosbeta,
                 c * (cosalpha - cosbeta * cosgamma) / np.sqrt(1.0 - cosgamma**2),
@@ -178,9 +168,7 @@ class CrystalDialog(QDialog):
         self.ui.inputLatConst_a.setEnabled(aid in ids)
         self.ui.inputLatConst_b.setEnabled(bid in ids)
         self.ui.inputLatConst_c.setEnabled(cid in ids)
-        receivers_count = self.ui.inputLatConst_a.receivers(
-            SIGNAL("valueChanged(double)"),
-        )
+        receivers_count = self.ui.inputLatConst_a.receivers(SIGNAL("valueChanged(double)"))
         if receivers_count > 0:
             self.ui.inputLatConst_a.valueChanged.disconnect()
         if cid in ids and bid not in ids:

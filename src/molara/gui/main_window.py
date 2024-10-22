@@ -83,25 +83,15 @@ class MainWindow(QMainWindow):
         self.ui.actionto_y_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("y"))
         self.ui.actionto_z_axis.triggered.connect(lambda: self.structure_widget.set_view_to_axis("z"))
         self.ui.actionToggle_Axes.triggered.connect(self.structure_widget.toggle_axes)
-        self.ui.actionCenter_Molecule.triggered.connect(
-            self.structure_widget.center_structure,
-        )
-        self.ui.actionOpen_Trajectory_Dialog.triggered.connect(
-            self.trajectory_dialog.show,
-        )
+        self.ui.actionCenter_Molecule.triggered.connect(self.structure_widget.center_structure)
+        self.ui.actionOpen_Trajectory_Dialog.triggered.connect(self.trajectory_dialog.show)
         self.ui.actionToggle_Projection.triggered.connect(self.structure_widget.toggle_projection)
         self.ui.actionExport_CameraSettings.triggered.connect(self.export_camera_settings)
         self.ui.actionImport_CameraSettings.triggered.connect(self.import_camera_settings)
-        self.ui.actionOpen_Structure_Customizer.triggered.connect(
-            self.show_structure_customizer_dialog,
-        )
+        self.ui.actionOpen_Structure_Customizer.triggered.connect(self.show_structure_customizer_dialog)
         # tools
-        self.ui.actionBuilder.triggered.connect(
-            self.show_builder_dialog,
-        )
-        self.ui.actionMeasure.triggered.connect(
-            self.show_measurement_dialog,
-        )
+        self.ui.actionBuilder.triggered.connect(self.show_builder_dialog)
+        self.ui.actionMeasure.triggered.connect(self.show_measurement_dialog)
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
@@ -145,11 +135,7 @@ class MainWindow(QMainWindow):
 
     def show_file_open_dialog(self) -> None:
         """Select a file in the file open dialog."""
-        file_name = QFileDialog.getOpenFileName(
-            self,
-            "Import structure from file",
-            dir=".",
-        )[0]
+        file_name = QFileDialog.getOpenFileName(self, "Import structure from file", dir=".")[0]
         if file_name == "":
             return
         self.load_molecules(file_name)
@@ -179,12 +165,7 @@ class MainWindow(QMainWindow):
         """Save structure to file."""
         if not self.structure_widget.structures:
             return
-        file_name = QFileDialog.getSaveFileName(
-            self,
-            "Export structure to file",
-            f"{Path.home()}",
-            "*",
-        )[0]
+        file_name = QFileDialog.getSaveFileName(self, "Export structure to file", f"{Path.home()}", "*")[0]
         if file_name == "":
             return
         exporter = GeneralExporter(file_name)
@@ -192,12 +173,7 @@ class MainWindow(QMainWindow):
 
     def export_camera_settings(self) -> None:
         """Export camera settings to .npz file."""
-        file_name = QFileDialog.getSaveFileName(
-            self,
-            "Export camera settings to file",
-            ".",
-            ".json",
-        )[0]
+        file_name = QFileDialog.getSaveFileName(self, "Export camera settings to file", ".", ".json")[0]
         if file_name == "":
             return
         try:
@@ -207,12 +183,7 @@ class MainWindow(QMainWindow):
 
     def import_camera_settings(self) -> None:
         """Import camera settings from .npz file."""
-        file_name = QFileDialog.getOpenFileName(
-            self,
-            "Import camera settings from file",
-            ".",
-            "*.json",
-        )[0]
+        file_name = QFileDialog.getOpenFileName(self, "Import camera settings from file", ".", "*.json")[0]
         if file_name == "":
             return
         try:
@@ -247,12 +218,7 @@ class MainWindow(QMainWindow):
 
     def show_poscar(self) -> bool | None:
         """Read poscar file and shows the first structure in this file."""
-        file_name = QFileDialog.getOpenFileName(
-            self,
-            caption="Open POSCAR file",
-            dir=".",
-            filter="POSCAR Files (*)",
-        )[0]
+        file_name = QFileDialog.getOpenFileName(self, caption="Open POSCAR file", dir=".", filter="POSCAR Files (*)")[0]
         if file_name == "":
             return None
 

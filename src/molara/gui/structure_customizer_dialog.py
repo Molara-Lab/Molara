@@ -9,10 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtWidgets import (
-    QDialog,
-    QMainWindow,
-)
+from PySide6.QtWidgets import QDialog, QMainWindow
 
 from molara.gui.ui_structure_customizer import Ui_structure_customizer
 from molara.rendering.atom_labels import init_atom_number

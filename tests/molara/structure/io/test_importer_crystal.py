@@ -23,30 +23,12 @@ def assert_crystals_equal(crystal1: Crystal, crystal2: Crystal) -> None:
     :param crystal1: first crystal of the comparison
     :param crystal2: second crystal of the comparison
     """
-    assert_array_equal(
-        crystal1.basis_vectors,
-        crystal2.basis_vectors,
-    )
-    assert_array_equal(
-        crystal1.atomic_nums_supercell,
-        crystal2.atomic_nums_supercell,
-    )
-    assert_array_equal(
-        crystal1.atomic_nums_unitcell,
-        crystal2.atomic_nums_unitcell,
-    )
-    assert_array_equal(
-        crystal1.fractional_coords_supercell,
-        crystal2.fractional_coords_supercell,
-    )
-    assert_array_equal(
-        crystal1.cartesian_coordinates_supercell,
-        crystal2.cartesian_coordinates_supercell,
-    )
-    assert_array_equal(
-        crystal1.coords_unitcell,
-        crystal2.coords_unitcell,
-    )
+    assert_array_equal(crystal1.basis_vectors, crystal2.basis_vectors)
+    assert_array_equal(crystal1.atomic_nums_supercell, crystal2.atomic_nums_supercell)
+    assert_array_equal(crystal1.atomic_nums_unitcell, crystal2.atomic_nums_unitcell)
+    assert_array_equal(crystal1.fractional_coords_supercell, crystal2.fractional_coords_supercell)
+    assert_array_equal(crystal1.cartesian_coordinates_supercell, crystal2.cartesian_coordinates_supercell)
+    assert_array_equal(crystal1.coords_unitcell, crystal2.coords_unitcell)
 
 
 @pytest.mark.skipif(not find_spec("pymatgen"), reason="pymatgen not installed")
@@ -72,16 +54,10 @@ class TestPymatgenImporter(TestCase):
         """Test the load method of the PymatgenImporter class."""
         crystal = self.crystal
         assert_array_equal(crystal.atomic_nums_unitcell, [5, 7])
-        assert_array_equal(
-            crystal.coords_unitcell,
-            [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]],
-        )
+        assert_array_equal(crystal.coords_unitcell, [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]])
         supercell_dims = self.supercell_dims
         crystal.make_supercell(supercell_dims)
-        assert_array_equal(
-            supercell_dims,
-            crystal.supercell_dims,
-        )
+        assert_array_equal(supercell_dims, crystal.supercell_dims)
         assert len(crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
@@ -101,10 +77,7 @@ class TestPoscarImporter(TestCase):
     def test_load(self) -> None:
         """Test the load method of the PoscarImporter class."""
         supercell_dims = self.supercell_dims
-        assert_array_equal(
-            supercell_dims,
-            self.crystal.supercell_dims,
-        )
+        assert_array_equal(supercell_dims, self.crystal.supercell_dims)
         assert len(self.crystal.atoms) == (
             (supercell_dims[0] + 1) * (supercell_dims[1] + 1) * (supercell_dims[2] + 1)
             + supercell_dims[0] * supercell_dims[1] * supercell_dims[2]
@@ -113,19 +86,9 @@ class TestPoscarImporter(TestCase):
         # test negative scale factor
         importer = PoscarImporter("tests/input_files/poscar/BN_POSCAR_negative_scale")
         crystal = importer.load(use_pymatgen=False).get_current_mol()
-        assert_array_equal(
-            crystal.atomic_nums_unitcell,
-            [5, 7],
-        )
-        assert_array_equal(
-            crystal.coords_unitcell,
-            [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]],
-        )
-        assert_almost_equal(
-            crystal.volume_unitcell,
-            11.37,
-            decimal=5,
-        )
+        assert_array_equal(crystal.atomic_nums_unitcell, [5, 7])
+        assert_array_equal(crystal.coords_unitcell, [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]])
+        assert_almost_equal(crystal.volume_unitcell, 11.37, decimal=5)
 
         # test if pymatgen import works
         if not find_spec("pymatgen"):
@@ -149,11 +112,7 @@ class TestPoscarImporter(TestCase):
         crystal = crystals.get_current_mol()
         crystal.make_supercell(self.supercell_dims)
 
-        assert_almost_equal(
-            crystal.fractional_coords_supercell,
-            self.crystal.fractional_coords_supercell,
-            decimal=5,
-        )
+        assert_almost_equal(crystal.fractional_coords_supercell, self.crystal.fractional_coords_supercell, decimal=5)
 
     def test_from_poscar_faulty(self) -> None:
         """Test the handling of faulty POSCAR files."""
@@ -202,10 +161,7 @@ class TestVasprunImporter(TestCase):
         assert isinstance(self.structure, Crystals)
         current_mol = self.structure.get_current_mol()
         assert_array_equal(current_mol.atomic_nums_unitcell, [14])
-        assert_array_equal(
-            current_mol.coords_unitcell,
-            [[0.0, 0.0, 0.0]],
-        )
+        assert_array_equal(current_mol.coords_unitcell, [[0.0, 0.0, 0.0]])
 
         # test case that pymatgen is not installed
         msg = "pymatgen is not installed, cannot read vasprun.xml files"

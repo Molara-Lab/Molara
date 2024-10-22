@@ -56,24 +56,10 @@ def setup_vao(
 
     # Vertex positions
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        vertices.itemsize * 6,
-        ctypes.c_void_p(0),
-    )
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 6, ctypes.c_void_p(0))
 
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        vertices.itemsize * 6,
-        ctypes.c_void_p(12),
-    )
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertices.itemsize * 6, ctypes.c_void_p(12))
 
     ebo = glGenBuffers(1)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
@@ -83,44 +69,20 @@ def setup_vao(
     instance_vbo_color = glGenBuffers(1)
     num_instances = len(colors)
     glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_color)
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        num_instances * 3 * colors.itemsize,
-        colors,
-        GL_DYNAMIC_DRAW,
-    )
+    glBufferData(GL_ARRAY_BUFFER, num_instances * 3 * colors.itemsize, colors, GL_DYNAMIC_DRAW)
     glEnableVertexAttribArray(2)
-    glVertexAttribPointer(
-        2,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        colors.itemsize * 3,
-        ctypes.c_void_p(0),
-    )
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, colors.itemsize * 3, ctypes.c_void_p(0))
     glVertexAttribDivisor(2, 1)
 
     # Instance matrices
     instance_vbo_model = glGenBuffers(1)
     num_instances = len(model_matrices)
     glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_model)
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        num_instances * 16 * model_matrices.itemsize,
-        model_matrices,
-        GL_DYNAMIC_DRAW,
-    )
+    glBufferData(GL_ARRAY_BUFFER, num_instances * 16 * model_matrices.itemsize, model_matrices, GL_DYNAMIC_DRAW)
 
     for i in range(4):
         glEnableVertexAttribArray(3 + i)
-        glVertexAttribPointer(
-            3 + i,
-            4,
-            GL_FLOAT,
-            GL_FALSE,
-            16 * 4,
-            ctypes.c_void_p(i * 16),
-        )
+        glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, 16 * 4, ctypes.c_void_p(i * 16))
         glVertexAttribDivisor(3 + i, 1)
     buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
     glBindVertexArray(0)

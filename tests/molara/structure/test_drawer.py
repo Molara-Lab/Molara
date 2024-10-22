@@ -43,17 +43,9 @@ class TestDrawer(TestCase):
             Atom(atomic_num_i, pos_i) for atomic_num_i, pos_i in zip(self.atomic_nums_glucose, self.coords_glucose)
         ]
         # no bonds for now
-        self.bonds_glucose = np.array(
-            [
-                [[-1]],
-            ],
-        )
+        self.bonds_glucose = np.array([[[-1]]])
         draw_bonds = False
-        self.drawer_glucose = Drawer(
-            self.atoms_glucose,
-            self.bonds_glucose,
-            draw_bonds,
-        )
+        self.drawer_glucose = Drawer(self.atoms_glucose, self.bonds_glucose, draw_bonds)
 
     def test_setup(self) -> None:
         """Test the Drawer setup."""
