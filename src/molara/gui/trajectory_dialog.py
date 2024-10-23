@@ -169,7 +169,13 @@ class TrajectoryDialog(QDialog):
         self.sc.axes.cla()
         (self.energy_plot,) = self.sc.axes.plot(
             np.arange(self.parent().mols.num_mols),
+            self.parent().mols.energies,
+            "x-",
+        )
+        (self.current_energy_plot,) = self.sc.axes.plot(
+            self.parent().mols.mol_index,
             self.parent().mols.energies[self.parent().mols.mol_index],
+            "o",
         )
         self.sc.axes.set_xlabel(r"steps")
         self.sc.axes.set_ylabel(r"energy$\,/\,E_\mathrm{h}$")
