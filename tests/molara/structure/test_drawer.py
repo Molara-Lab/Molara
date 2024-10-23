@@ -40,7 +40,8 @@ class TestDrawer(TestCase):
         self.atomic_nums_glucose = np.array(xyz_data_glucose[:, 0], dtype=int)
         self.coords_glucose = xyz_data_glucose[:, 1:]
         self.atoms_glucose = [
-            Atom(atomic_num_i, pos_i) for atomic_num_i, pos_i in zip(self.atomic_nums_glucose, self.coords_glucose)
+            Atom(atomic_num_i, pos_i)
+            for atomic_num_i, pos_i in zip(self.atomic_nums_glucose, self.coords_glucose, strict=True)
         ]
         # no bonds for now
         self.bonds_glucose = np.array(
@@ -76,6 +77,7 @@ class TestDrawer(TestCase):
             self.atoms_glucose,
             self.atomic_nums_glucose,
             self.coords_glucose,
+            strict=True,
         ):
             assert isinstance(atom_i_drawer, Atom)
             assert atom_i_drawer == atom_i_test

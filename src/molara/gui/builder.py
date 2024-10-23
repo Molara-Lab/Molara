@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
@@ -15,6 +15,8 @@ from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from PySide6.QtWidgets import QMainWindow
     from typing_extensions import ParamSpec
 
