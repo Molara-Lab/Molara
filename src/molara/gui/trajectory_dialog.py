@@ -102,16 +102,10 @@ class TrajectoryDialog(QDialog):
         self.show_all = not self.show_all
         if self.show_all:
             self.ui.overlayButton.setText("Show current")
-            self.parent().structure_widget.set_structure(
-                self.parent().mols.all_molecules,
-                reset_view=False,
-            )
+            self.parent().structure_widget.set_structure(self.parent().mols.all_molecules, reset_view=False)
         else:
             self.ui.overlayButton.setText("Show all")
-            self.parent().structure_widget.set_structure(
-                [self.parent().mols.get_current_mol()],
-                reset_view=False,
-            )
+            self.parent().structure_widget.set_structure([self.parent().mols.get_current_mol()], reset_view=False)
 
     def get_next_mol(self) -> None:
         """Call molecules object to get the next molecule and update it in the GUI."""
@@ -168,22 +162,14 @@ class TrajectoryDialog(QDialog):
         """
         min_interval = 1
         max_interval = 500
-        self.timer.setInterval(
-            min_interval * (max_interval / min_interval) ** (value * 0.001),
-        )
+        self.timer.setInterval(min_interval * (max_interval / min_interval) ** (value * 0.001))
 
     def initial_energy_plot(self) -> None:
         """Plot the energies of the molecules in the molecules object."""
         self.sc.axes.cla()
         (self.energy_plot,) = self.sc.axes.plot(
             np.arange(self.parent().mols.num_mols),
-            self.parent().mols.energies,
-            "x-",
-        )
-        (self.current_energy_plot,) = self.sc.axes.plot(
-            self.parent().mols.mol_index,
             self.parent().mols.energies[self.parent().mols.mol_index],
-            "o",
         )
         self.sc.axes.set_xlabel(r"steps")
         self.sc.axes.set_ylabel(r"energy$\,/\,E_\mathrm{h}$")

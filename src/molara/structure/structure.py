@@ -171,11 +171,7 @@ class Structure:
 
         if self.n_at != 0:
             self.bonded_pairs = self.calculate_bonds()
-            self.drawer = Drawer(
-                self.atoms,
-                self.bonded_pairs,
-                draw_bonds=self.draw_bonds,
-            )
+            self.drawer = Drawer(self.atoms, self.bonded_pairs, draw_bonds=self.draw_bonds)
 
         self.atomic_numbers = np.delete(self.atomic_numbers, index)
         self.coords = np.delete(self.coords, index)

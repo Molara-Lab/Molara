@@ -8,63 +8,23 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
-    QCoreApplication,
-    QDate,
-    QDateTime,
-    QLocale,
-    QMetaObject,
-    QObject,
-    QPoint,
-    QRect,
-    QSize,
-    QTime,
-    QUrl,
-    Qt,
-)
-from PySide6.QtGui import (
-    QBrush,
-    QColor,
-    QConicalGradient,
-    QCursor,
-    QFont,
-    QFontDatabase,
-    QGradient,
-    QIcon,
-    QImage,
-    QKeySequence,
-    QLinearGradient,
-    QPainter,
-    QPalette,
-    QPixmap,
-    QRadialGradient,
-    QTransform,
-)
-from PySide6.QtWidgets import (
-    QAbstractButton,
-    QApplication,
-    QCheckBox,
-    QComboBox,
-    QDialog,
-    QDialogButtonBox,
-    QDoubleSpinBox,
-    QFrame,
-    QHeaderView,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QSizePolicy,
-    QSpinBox,
-    QTableWidget,
-    QTableWidgetItem,
-    QWidget,
-)
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboBox,
+    QDialog, QDialogButtonBox, QDoubleSpinBox, QFrame,
+    QHeaderView, QLabel, QLineEdit, QPushButton,
+    QSizePolicy, QSpinBox, QTableWidget, QTableWidgetItem,
+    QWidget)
 
 class Ui_CrystalDialog(object):
     def setupUi(self, CrystalDialog):
         if not CrystalDialog.objectName():
-            CrystalDialog.setObjectName("CrystalDialog")
+            CrystalDialog.setObjectName(u"CrystalDialog")
         CrystalDialog.resize(400, 476)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -72,22 +32,22 @@ class Ui_CrystalDialog(object):
         sizePolicy.setHeightForWidth(CrystalDialog.sizePolicy().hasHeightForWidth())
         CrystalDialog.setSizePolicy(sizePolicy)
         self.buttonBox = QDialogButtonBox(CrystalDialog)
-        self.buttonBox.setObjectName("buttonBox")
+        self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setGeometry(QRect(50, 440, 341, 32))
         self.buttonBox.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
         self.buttonAddAtom = QPushButton(CrystalDialog)
-        self.buttonAddAtom.setObjectName("buttonAddAtom")
+        self.buttonAddAtom.setObjectName(u"buttonAddAtom")
         self.buttonAddAtom.setGeometry(QRect(300, 70, 90, 28))
         self.buttonAddAtom.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.checkBoxPreview = QCheckBox(CrystalDialog)
-        self.checkBoxPreview.setObjectName("checkBoxPreview")
+        self.checkBoxPreview.setObjectName(u"checkBoxPreview")
         self.checkBoxPreview.setEnabled(False)
         self.checkBoxPreview.setGeometry(QRect(200, 410, 131, 21))
         self.checkBoxPreview.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.line = QFrame(CrystalDialog)
-        self.line.setObjectName("line")
+        self.line.setObjectName(u"line")
         self.line.setGeometry(QRect(110, 10, 20, 461))
         self.line.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.line.setFrameShape(QFrame.VLine)
@@ -100,30 +60,28 @@ class Ui_CrystalDialog(object):
         self.selectCrystalSystem.addItem("")
         self.selectCrystalSystem.addItem("")
         self.selectCrystalSystem.addItem("")
-        self.selectCrystalSystem.setObjectName("selectCrystalSystem")
+        self.selectCrystalSystem.setObjectName(u"selectCrystalSystem")
         self.selectCrystalSystem.setEnabled(True)
         self.selectCrystalSystem.setGeometry(QRect(20, 10, 76, 24))
-        self.selectCrystalSystem.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.selectCrystalSystem.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.selectSpaceGroup = QComboBox(CrystalDialog)
         self.selectSpaceGroup.addItem("")
         self.selectSpaceGroup.addItem("")
         self.selectSpaceGroup.addItem("")
         self.selectSpaceGroup.addItem("")
-        self.selectSpaceGroup.setObjectName("selectSpaceGroup")
+        self.selectSpaceGroup.setObjectName(u"selectSpaceGroup")
         self.selectSpaceGroup.setEnabled(True)
         self.selectSpaceGroup.setGeometry(QRect(20, 40, 76, 24))
         self.selectSpaceGroup.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputLatConst_a = QDoubleSpinBox(CrystalDialog)
-        self.inputLatConst_a.setObjectName("inputLatConst_a")
+        self.inputLatConst_a.setObjectName(u"inputLatConst_a")
         self.inputLatConst_a.setGeometry(QRect(47, 110, 65, 26))
         self.inputLatConst_a.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputLatConst_a.setMinimum(0.010000000000000)
         self.inputLatConst_a.setSingleStep(0.010000000000000)
         self.inputLatConst_a.setValue(1.000000000000000)
         self.inputLatConst_b = QDoubleSpinBox(CrystalDialog)
-        self.inputLatConst_b.setObjectName("inputLatConst_b")
+        self.inputLatConst_b.setObjectName(u"inputLatConst_b")
         self.inputLatConst_b.setEnabled(False)
         self.inputLatConst_b.setGeometry(QRect(47, 140, 65, 26))
         self.inputLatConst_b.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
@@ -131,7 +89,7 @@ class Ui_CrystalDialog(object):
         self.inputLatConst_b.setSingleStep(0.010000000000000)
         self.inputLatConst_b.setValue(1.000000000000000)
         self.inputLatConst_c = QDoubleSpinBox(CrystalDialog)
-        self.inputLatConst_c.setObjectName("inputLatConst_c")
+        self.inputLatConst_c.setObjectName(u"inputLatConst_c")
         self.inputLatConst_c.setEnabled(False)
         self.inputLatConst_c.setGeometry(QRect(47, 170, 65, 26))
         self.inputLatConst_c.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
@@ -139,101 +97,93 @@ class Ui_CrystalDialog(object):
         self.inputLatConst_c.setSingleStep(0.010000000000000)
         self.inputLatConst_c.setValue(1.000000000000000)
         self.inputAtomCoord_a = QDoubleSpinBox(CrystalDialog)
-        self.inputAtomCoord_a.setObjectName("inputAtomCoord_a")
+        self.inputAtomCoord_a.setObjectName(u"inputAtomCoord_a")
         self.inputAtomCoord_a.setGeometry(QRect(190, 30, 62, 26))
         self.inputAtomCoord_a.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputAtomCoord_a.setMaximum(0.990000000000000)
         self.inputAtomCoord_a.setSingleStep(0.010000000000000)
         self.inputAtomCoord_b = QDoubleSpinBox(CrystalDialog)
-        self.inputAtomCoord_b.setObjectName("inputAtomCoord_b")
+        self.inputAtomCoord_b.setObjectName(u"inputAtomCoord_b")
         self.inputAtomCoord_b.setGeometry(QRect(260, 30, 62, 26))
         self.inputAtomCoord_b.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputAtomCoord_b.setMaximum(0.990000000000000)
         self.inputAtomCoord_b.setSingleStep(0.010000000000000)
         self.inputAtomCoord_c = QDoubleSpinBox(CrystalDialog)
-        self.inputAtomCoord_c.setObjectName("inputAtomCoord_c")
+        self.inputAtomCoord_c.setObjectName(u"inputAtomCoord_c")
         self.inputAtomCoord_c.setGeometry(QRect(330, 30, 62, 26))
         self.inputAtomCoord_c.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputAtomCoord_c.setMaximum(0.990000000000000)
         self.inputAtomCoord_c.setSingleStep(0.010000000000000)
         self.inputElementSymbol = QLineEdit(CrystalDialog)
-        self.inputElementSymbol.setObjectName("inputElementSymbol")
+        self.inputElementSymbol.setObjectName(u"inputElementSymbol")
         self.inputElementSymbol.setEnabled(True)
         self.inputElementSymbol.setGeometry(QRect(130, 30, 51, 28))
-        self.inputElementSymbol.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.inputElementSymbol.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelElementSymbol = QLabel(CrystalDialog)
-        self.labelElementSymbol.setObjectName("labelElementSymbol")
+        self.labelElementSymbol.setObjectName(u"labelElementSymbol")
         self.labelElementSymbol.setGeometry(QRect(130, 10, 58, 16))
-        self.labelElementSymbol.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.labelElementSymbol.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelCoord_a = QLabel(CrystalDialog)
-        self.labelCoord_a.setObjectName("labelCoord_a")
+        self.labelCoord_a.setObjectName(u"labelCoord_a")
         self.labelCoord_a.setGeometry(QRect(190, 10, 58, 16))
         self.labelCoord_a.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelCoord_b = QLabel(CrystalDialog)
-        self.labelCoord_b.setObjectName("labelCoord_b")
+        self.labelCoord_b.setObjectName(u"labelCoord_b")
         self.labelCoord_b.setGeometry(QRect(260, 10, 58, 16))
         self.labelCoord_b.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelCoord_c = QLabel(CrystalDialog)
-        self.labelCoord_c.setObjectName("labelCoord_c")
+        self.labelCoord_c.setObjectName(u"labelCoord_c")
         self.labelCoord_c.setGeometry(QRect(330, 10, 58, 16))
         self.labelCoord_c.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelLatConst_a = QLabel(CrystalDialog)
-        self.labelLatConst_a.setObjectName("labelLatConst_a")
+        self.labelLatConst_a.setObjectName(u"labelLatConst_a")
         self.labelLatConst_a.setGeometry(QRect(20, 110, 16, 20))
         self.labelLatConst_a.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelLatConst_b = QLabel(CrystalDialog)
-        self.labelLatConst_b.setObjectName("labelLatConst_b")
+        self.labelLatConst_b.setObjectName(u"labelLatConst_b")
         self.labelLatConst_b.setGeometry(QRect(20, 140, 16, 20))
         self.labelLatConst_b.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelLatConst_C = QLabel(CrystalDialog)
-        self.labelLatConst_C.setObjectName("labelLatConst_C")
+        self.labelLatConst_C.setObjectName(u"labelLatConst_C")
         self.labelLatConst_C.setGeometry(QRect(20, 170, 16, 20))
         self.labelLatConst_C.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelTitleLatConst = QLabel(CrystalDialog)
-        self.labelTitleLatConst.setObjectName("labelTitleLatConst")
+        self.labelTitleLatConst.setObjectName(u"labelTitleLatConst")
         self.labelTitleLatConst.setGeometry(QRect(10, 90, 101, 16))
-        self.labelTitleLatConst.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.labelTitleLatConst.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputSupercell_a = QSpinBox(CrystalDialog)
-        self.inputSupercell_a.setObjectName("inputSupercell_a")
+        self.inputSupercell_a.setObjectName(u"inputSupercell_a")
         self.inputSupercell_a.setGeometry(QRect(50, 380, 42, 26))
         self.inputSupercell_a.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputSupercell_a.setMinimum(1)
         self.inputSupercell_b = QSpinBox(CrystalDialog)
-        self.inputSupercell_b.setObjectName("inputSupercell_b")
+        self.inputSupercell_b.setObjectName(u"inputSupercell_b")
         self.inputSupercell_b.setGeometry(QRect(50, 410, 42, 26))
         self.inputSupercell_b.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputSupercell_b.setMinimum(1)
         self.inputSupercell_c = QSpinBox(CrystalDialog)
-        self.inputSupercell_c.setObjectName("inputSupercell_c")
+        self.inputSupercell_c.setObjectName(u"inputSupercell_c")
         self.inputSupercell_c.setGeometry(QRect(50, 440, 42, 26))
         self.inputSupercell_c.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputSupercell_c.setMinimum(1)
         self.labelTitleSupercell = QLabel(CrystalDialog)
-        self.labelTitleSupercell.setObjectName("labelTitleSupercell")
+        self.labelTitleSupercell.setObjectName(u"labelTitleSupercell")
         self.labelTitleSupercell.setGeometry(QRect(10, 350, 101, 16))
-        self.labelTitleSupercell.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.labelTitleSupercell.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelSupercell_a = QLabel(CrystalDialog)
-        self.labelSupercell_a.setObjectName("labelSupercell_a")
+        self.labelSupercell_a.setObjectName(u"labelSupercell_a")
         self.labelSupercell_a.setGeometry(QRect(20, 380, 16, 20))
         self.labelSupercell_a.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelSupercell_b = QLabel(CrystalDialog)
-        self.labelSupercell_b.setObjectName("labelSupercell_b")
+        self.labelSupercell_b.setObjectName(u"labelSupercell_b")
         self.labelSupercell_b.setGeometry(QRect(20, 410, 16, 20))
         self.labelSupercell_b.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelSupercell_c = QLabel(CrystalDialog)
-        self.labelSupercell_c.setObjectName("labelSupercell_c")
+        self.labelSupercell_c.setObjectName(u"labelSupercell_c")
         self.labelSupercell_c.setGeometry(QRect(20, 440, 16, 20))
         self.labelSupercell_c.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.listAtoms = QTableWidget(CrystalDialog)
-        self.listAtoms.setObjectName("listAtoms")
+        self.listAtoms.setObjectName(u"listAtoms")
         self.listAtoms.setGeometry(QRect(130, 110, 256, 291))
         self.listAtoms.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.listAtoms.horizontalHeader().setCascadingSectionResizes(False)
@@ -241,65 +191,51 @@ class Ui_CrystalDialog(object):
         self.listAtoms.horizontalHeader().setDefaultSectionSize(60)
         self.listAtoms.horizontalHeader().setStretchLastSection(True)
         self.pushButton = QPushButton(CrystalDialog)
-        self.pushButton.setObjectName("pushButton")
+        self.pushButton.setObjectName(u"pushButton")
         self.pushButton.setGeometry(QRect(130, 70, 90, 28))
         self.pushButton.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelTitleLatAngles = QLabel(CrystalDialog)
-        self.labelTitleLatAngles.setObjectName("labelTitleLatAngles")
+        self.labelTitleLatAngles.setObjectName(u"labelTitleLatAngles")
         self.labelTitleLatAngles.setGeometry(QRect(10, 210, 101, 16))
-        self.labelTitleLatAngles.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.labelTitleLatAngles.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputLatAngle_beta = QDoubleSpinBox(CrystalDialog)
-        self.inputLatAngle_beta.setObjectName("inputLatAngle_beta")
+        self.inputLatAngle_beta.setObjectName(u"inputLatAngle_beta")
         self.inputLatAngle_beta.setEnabled(False)
         self.inputLatAngle_beta.setGeometry(QRect(47, 270, 65, 26))
-        self.inputLatAngle_beta.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.inputLatAngle_beta.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputLatAngle_beta.setMinimum(0.010000000000000)
         self.inputLatAngle_beta.setMaximum(179.990000000000009)
         self.inputLatAngle_beta.setSingleStep(0.010000000000000)
         self.inputLatAngle_beta.setValue(90.000000000000000)
         self.labelLatAngle_alpha = QLabel(CrystalDialog)
-        self.labelLatAngle_alpha.setObjectName("labelLatAngle_alpha")
+        self.labelLatAngle_alpha.setObjectName(u"labelLatAngle_alpha")
         self.labelLatAngle_alpha.setGeometry(QRect(20, 240, 16, 20))
-        self.labelLatAngle_alpha.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.labelLatAngle_alpha.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.labelLatAngle_beta = QLabel(CrystalDialog)
-        self.labelLatAngle_beta.setObjectName("labelLatAngle_beta")
+        self.labelLatAngle_beta.setObjectName(u"labelLatAngle_beta")
         self.labelLatAngle_beta.setGeometry(QRect(20, 270, 16, 20))
-        self.labelLatAngle_beta.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.labelLatAngle_beta.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputLatAngle_alpha = QDoubleSpinBox(CrystalDialog)
-        self.inputLatAngle_alpha.setObjectName("inputLatAngle_alpha")
+        self.inputLatAngle_alpha.setObjectName(u"inputLatAngle_alpha")
         self.inputLatAngle_alpha.setGeometry(QRect(47, 240, 65, 26))
-        self.inputLatAngle_alpha.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.inputLatAngle_alpha.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputLatAngle_alpha.setMinimum(0.010000000000000)
         self.inputLatAngle_alpha.setMaximum(179.990000000000009)
         self.inputLatAngle_alpha.setSingleStep(0.010000000000000)
         self.inputLatAngle_alpha.setValue(90.000000000000000)
         self.inputLatAngle_gamma = QDoubleSpinBox(CrystalDialog)
-        self.inputLatAngle_gamma.setObjectName("inputLatAngle_gamma")
+        self.inputLatAngle_gamma.setObjectName(u"inputLatAngle_gamma")
         self.inputLatAngle_gamma.setEnabled(False)
         self.inputLatAngle_gamma.setGeometry(QRect(47, 300, 65, 26))
-        self.inputLatAngle_gamma.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.inputLatAngle_gamma.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         self.inputLatAngle_gamma.setMinimum(0.010000000000000)
         self.inputLatAngle_gamma.setMaximum(179.990000000000009)
         self.inputLatAngle_gamma.setSingleStep(0.010000000000000)
         self.inputLatAngle_gamma.setValue(90.000000000000000)
         self.labelLatAngle_gamma = QLabel(CrystalDialog)
-        self.labelLatAngle_gamma.setObjectName("labelLatAngle_gamma")
+        self.labelLatAngle_gamma.setObjectName(u"labelLatAngle_gamma")
         self.labelLatAngle_gamma.setGeometry(QRect(20, 300, 16, 20))
-        self.labelLatAngle_gamma.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedKingdom)
-        )
+        self.labelLatAngle_gamma.setLocale(QLocale(QLocale.English, QLocale.UnitedKingdom))
         QWidget.setTabOrder(self.selectCrystalSystem, self.selectSpaceGroup)
         QWidget.setTabOrder(self.selectSpaceGroup, self.inputLatConst_a)
         QWidget.setTabOrder(self.inputLatConst_a, self.inputLatConst_b)
@@ -324,118 +260,40 @@ class Ui_CrystalDialog(object):
         self.buttonBox.rejected.connect(CrystalDialog.reject)
 
         QMetaObject.connectSlotsByName(CrystalDialog)
-
     # setupUi
 
     def retranslateUi(self, CrystalDialog):
-        CrystalDialog.setWindowTitle(
-            QCoreApplication.translate(
-                "CrystalDialog", "Create custom crystal structure", None
-            )
-        )
-        self.buttonAddAtom.setText(
-            QCoreApplication.translate("CrystalDialog", "Add Atom", None)
-        )
-        self.checkBoxPreview.setText(
-            QCoreApplication.translate("CrystalDialog", "Show Preview", None)
-        )
-        self.selectCrystalSystem.setItemText(
-            0, QCoreApplication.translate("CrystalDialog", "Cubic", None)
-        )
-        self.selectCrystalSystem.setItemText(
-            1, QCoreApplication.translate("CrystalDialog", "Tetragonal", None)
-        )
-        self.selectCrystalSystem.setItemText(
-            2, QCoreApplication.translate("CrystalDialog", "Orthorhombic", None)
-        )
-        self.selectCrystalSystem.setItemText(
-            3, QCoreApplication.translate("CrystalDialog", "Hexagonal", None)
-        )
-        self.selectCrystalSystem.setItemText(
-            4, QCoreApplication.translate("CrystalDialog", "Monoclinic", None)
-        )
-        self.selectCrystalSystem.setItemText(
-            5, QCoreApplication.translate("CrystalDialog", "Triclinic", None)
-        )
-        self.selectCrystalSystem.setItemText(
-            6, QCoreApplication.translate("CrystalDialog", "(Trigonal)", None)
-        )
+        CrystalDialog.setWindowTitle(QCoreApplication.translate("CrystalDialog", u"Create custom crystal structure", None))
+        self.buttonAddAtom.setText(QCoreApplication.translate("CrystalDialog", u"Add Atom", None))
+        self.checkBoxPreview.setText(QCoreApplication.translate("CrystalDialog", u"Show Preview", None))
+        self.selectCrystalSystem.setItemText(0, QCoreApplication.translate("CrystalDialog", u"Cubic", None))
+        self.selectCrystalSystem.setItemText(1, QCoreApplication.translate("CrystalDialog", u"Tetragonal", None))
+        self.selectCrystalSystem.setItemText(2, QCoreApplication.translate("CrystalDialog", u"Orthorhombic", None))
+        self.selectCrystalSystem.setItemText(3, QCoreApplication.translate("CrystalDialog", u"Hexagonal", None))
+        self.selectCrystalSystem.setItemText(4, QCoreApplication.translate("CrystalDialog", u"Monoclinic", None))
+        self.selectCrystalSystem.setItemText(5, QCoreApplication.translate("CrystalDialog", u"Triclinic", None))
+        self.selectCrystalSystem.setItemText(6, QCoreApplication.translate("CrystalDialog", u"(Trigonal)", None))
 
-        self.selectSpaceGroup.setItemText(
-            0, QCoreApplication.translate("CrystalDialog", "\u2013", None)
-        )
-        self.selectSpaceGroup.setItemText(
-            1, QCoreApplication.translate("CrystalDialog", "m3m", None)
-        )
-        self.selectSpaceGroup.setItemText(
-            2, QCoreApplication.translate("CrystalDialog", "4/mmm", None)
-        )
-        self.selectSpaceGroup.setItemText(
-            3, QCoreApplication.translate("CrystalDialog", "mmm", None)
-        )
+        self.selectSpaceGroup.setItemText(0, QCoreApplication.translate("CrystalDialog", u"\u2013", None))
+        self.selectSpaceGroup.setItemText(1, QCoreApplication.translate("CrystalDialog", u"m3m", None))
+        self.selectSpaceGroup.setItemText(2, QCoreApplication.translate("CrystalDialog", u"4/mmm", None))
+        self.selectSpaceGroup.setItemText(3, QCoreApplication.translate("CrystalDialog", u"mmm", None))
 
-        self.labelElementSymbol.setText(
-            QCoreApplication.translate("CrystalDialog", "Element", None)
-        )
-        self.labelCoord_a.setText(
-            QCoreApplication.translate("CrystalDialog", "coord. a", None)
-        )
-        self.labelCoord_b.setText(
-            QCoreApplication.translate("CrystalDialog", "coord. b", None)
-        )
-        self.labelCoord_c.setText(
-            QCoreApplication.translate("CrystalDialog", "coord. c", None)
-        )
-        self.labelLatConst_a.setText(
-            QCoreApplication.translate("CrystalDialog", "a", None)
-        )
-        self.labelLatConst_b.setText(
-            QCoreApplication.translate("CrystalDialog", "b", None)
-        )
-        self.labelLatConst_C.setText(
-            QCoreApplication.translate("CrystalDialog", "c", None)
-        )
-        self.labelTitleLatConst.setText(
-            QCoreApplication.translate("CrystalDialog", "Lattice constants", None)
-        )
-        self.labelTitleSupercell.setText(
-            QCoreApplication.translate("CrystalDialog", "Supercell", None)
-        )
-        self.labelSupercell_a.setText(
-            QCoreApplication.translate(
-                "CrystalDialog",
-                "<html><head/><body><p>N<sub>a</sub><br/></p></body></html>",
-                None,
-            )
-        )
-        self.labelSupercell_b.setText(
-            QCoreApplication.translate(
-                "CrystalDialog",
-                "<html><head/><body><p>N<sub>b</sub><br/></p></body></html>",
-                None,
-            )
-        )
-        self.labelSupercell_c.setText(
-            QCoreApplication.translate(
-                "CrystalDialog",
-                "<html><head/><body><p>N<sub>c</sub><br/></p></body></html>",
-                None,
-            )
-        )
-        self.pushButton.setText(
-            QCoreApplication.translate("CrystalDialog", "Clear Atoms", None)
-        )
-        self.labelTitleLatAngles.setText(
-            QCoreApplication.translate("CrystalDialog", "Lattice angles", None)
-        )
-        self.labelLatAngle_alpha.setText(
-            QCoreApplication.translate("CrystalDialog", "\u03b1", None)
-        )
-        self.labelLatAngle_beta.setText(
-            QCoreApplication.translate("CrystalDialog", "\u03b2", None)
-        )
-        self.labelLatAngle_gamma.setText(
-            QCoreApplication.translate("CrystalDialog", "\u03b3", None)
-        )
-
+        self.labelElementSymbol.setText(QCoreApplication.translate("CrystalDialog", u"Element", None))
+        self.labelCoord_a.setText(QCoreApplication.translate("CrystalDialog", u"coord. a", None))
+        self.labelCoord_b.setText(QCoreApplication.translate("CrystalDialog", u"coord. b", None))
+        self.labelCoord_c.setText(QCoreApplication.translate("CrystalDialog", u"coord. c", None))
+        self.labelLatConst_a.setText(QCoreApplication.translate("CrystalDialog", u"a", None))
+        self.labelLatConst_b.setText(QCoreApplication.translate("CrystalDialog", u"b", None))
+        self.labelLatConst_C.setText(QCoreApplication.translate("CrystalDialog", u"c", None))
+        self.labelTitleLatConst.setText(QCoreApplication.translate("CrystalDialog", u"Lattice constants", None))
+        self.labelTitleSupercell.setText(QCoreApplication.translate("CrystalDialog", u"Supercell", None))
+        self.labelSupercell_a.setText(QCoreApplication.translate("CrystalDialog", u"<html><head/><body><p>N<sub>a</sub><br/></p></body></html>", None))
+        self.labelSupercell_b.setText(QCoreApplication.translate("CrystalDialog", u"<html><head/><body><p>N<sub>b</sub><br/></p></body></html>", None))
+        self.labelSupercell_c.setText(QCoreApplication.translate("CrystalDialog", u"<html><head/><body><p>N<sub>c</sub><br/></p></body></html>", None))
+        self.pushButton.setText(QCoreApplication.translate("CrystalDialog", u"Clear Atoms", None))
+        self.labelTitleLatAngles.setText(QCoreApplication.translate("CrystalDialog", u"Lattice angles", None))
+        self.labelLatAngle_alpha.setText(QCoreApplication.translate("CrystalDialog", u"\u03b1", None))
+        self.labelLatAngle_beta.setText(QCoreApplication.translate("CrystalDialog", u"\u03b2", None))
+        self.labelLatAngle_gamma.setText(QCoreApplication.translate("CrystalDialog", u"\u03b3", None))
     # retranslateUi

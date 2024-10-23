@@ -240,14 +240,7 @@ class Renderer:
         positions_middle = np.array(_positions_middle)
         lengths = np.array(_lengths)
         directions = np.array(_directions) / lengths[:, None]
-        return self.draw_cylinders(
-            positions_middle,
-            -directions,
-            radii,
-            lengths,
-            colors,
-            subdivisions,
-        )
+        return self.draw_cylinders(positions_middle, -directions, radii, lengths, colors, subdivisions)
 
     def draw_spheres(
         self,
@@ -413,9 +406,7 @@ class Renderer:
         self.number_vao = []
 
         vao, buffers = setup_vao_numbers(digits, positions_3d)
-        self.number_vao.append(
-            {"vao": vao, "n_instances": len(digits), "buffers": buffers},
-        )
+        self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
 
     def update_bonds_vao(
         self,

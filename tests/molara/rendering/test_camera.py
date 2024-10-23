@@ -57,15 +57,9 @@ class TestCamera(TestCase):
         other_camera.fov = 60.0
         other_camera.distance_from_target = 10.0
         other_camera.zoom_sensitivity = 0.2
-        other_camera.initial_position = pyrr.Vector3(
-            [10.0, 20.0, 30.0],
-            dtype=np.float32,
-        )
+        other_camera.initial_position = pyrr.Vector3([10.0, 20.0, 30.0], dtype=np.float32)
         other_camera.initial_up_vector = pyrr.Vector3([1.0, 2.0, 3.0], dtype=np.float32)
-        other_camera.initial_right_vector = pyrr.Vector3(
-            [3.0, 2.0, 1.0],
-            dtype=np.float32,
-        )
+        other_camera.initial_right_vector = pyrr.Vector3([3.0, 2.0, 1.0], dtype=np.float32)
         other_camera.initial_target = pyrr.Vector3([-1.0, -2.0, -3.0], dtype=np.float32)
         other_camera.translation = pyrr.Vector3([7.0, 8.0, 9.0], dtype=np.float32)
         other_camera.rotation = pyrr.Quaternion([6.0, 2.0, 4.0, 1.0], dtype=np.float32)
@@ -95,10 +89,7 @@ class TestCamera(TestCase):
         assert_vectors_equal(camera.target, other_camera.target)
         assert_vectors_equal(camera.initial_position, other_camera.initial_position)
         assert_vectors_equal(camera.initial_up_vector, other_camera.initial_up_vector)
-        assert_vectors_equal(
-            camera.initial_right_vector,
-            other_camera.initial_right_vector,
-        )
+        assert_vectors_equal(camera.initial_right_vector, other_camera.initial_right_vector)
         assert_vectors_equal(camera.last_translation, other_camera.last_translation)
         assert_vectors_equal(camera.initial_target, other_camera.initial_target)
 
@@ -107,10 +98,7 @@ class TestCamera(TestCase):
         assert_vectors_equal(camera.view_matrix, other_camera.view_matrix)
         assert_vectors_equal(camera.view_matrix_inv, other_camera.view_matrix_inv)
         assert_vectors_equal(camera.projection_matrix, other_camera.projection_matrix)
-        assert_vectors_equal(
-            camera.projection_matrix_inv,
-            other_camera.projection_matrix_inv,
-        )
+        assert_vectors_equal(camera.projection_matrix_inv, other_camera.projection_matrix_inv)
 
     def test_reset(self) -> None:
         """Test Camera reset."""
@@ -207,18 +195,12 @@ class TestCamera(TestCase):
         camera.width, camera.height = 468, 325
         camera.distance_from_target = 3.4
         camera.zoom_sensitivity = 0.23
-        camera.initial_position = pyrr.Vector3(
-            [10.764, -2.543, 1.543],
-            dtype=np.float32,
-        )
+        camera.initial_position = pyrr.Vector3([10.764, -2.543, 1.543], dtype=np.float32)
         camera.initial_up_vector = pyrr.Vector3([0.1, 0.2, 0.7], dtype=np.float32)
         camera.initial_right_vector = pyrr.Vector3([0.9, 0.2, 0.11], dtype=np.float32)
         camera.last_translation = pyrr.Vector3([0.1, 0.2, 0.3], dtype=np.float32)
         camera.initial_target = pyrr.Vector3([0.41, 0.52, 0.63], dtype=np.float32)
-        camera.last_rotation = pyrr.Quaternion(
-            [0.01, 0.22, 0.13, 0.41],
-            dtype=np.float32,
-        )
+        camera.last_rotation = pyrr.Quaternion([0.01, 0.22, 0.13, 0.41], dtype=np.float32)
 
         with NamedTemporaryFile(suffix=".json") as file:
             filename = file.name

@@ -81,14 +81,7 @@ class WorkaroundTestRenderer:
             buffers_comparison = list(range(start_id, end_id))
             assert self.renderer.cylinders[mostrecent_cylinder_id]["buffers"] == buffers_comparison
 
-        result = self.renderer.draw_cylinders(
-            positions,
-            directions,
-            radii,
-            lengths,
-            colors,
-            subdivisions,
-        )
+        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         # for the first added cylinder, cylinder_total_counter must be set to the vao id of the first cylinder.
         # this is because previous tests might have added cylinders already.
         # after this, every added cylinder should increase the cylinder_total_counter by 1.
@@ -96,39 +89,18 @@ class WorkaroundTestRenderer:
         mostrecent_cylinder_id += 1
         _test_ids_and_counters(result)
 
-        result = self.renderer.draw_cylinders(
-            positions,
-            directions,
-            radii,
-            lengths,
-            colors,
-            subdivisions,
-        )
+        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         cylinder_total_counter += 1
         mostrecent_cylinder_id += 1
         _test_ids_and_counters(result)
 
-        result = self.renderer.draw_cylinders(
-            positions,
-            directions,
-            radii,
-            lengths,
-            colors,
-            subdivisions,
-        )
+        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         cylinder_total_counter += 1
         mostrecent_cylinder_id += 1
         _test_ids_and_counters(result)
 
         self.renderer.remove_cylinder(0)
-        result = self.renderer.draw_cylinders(
-            positions,
-            directions,
-            radii,
-            lengths,
-            colors,
-            subdivisions,
-        )
+        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
         mostrecent_cylinder_id = 0
         cylinder_total_counter += 1
 
@@ -169,12 +141,7 @@ class WorkaroundTestRenderer:
         colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
         subdivisions = 10
 
-        id_cylinder_from_to = self.renderer.draw_cylinders_from_to(
-            positions_from_to,
-            radii,
-            colors,
-            subdivisions,
-        )
+        id_cylinder_from_to = self.renderer.draw_cylinders_from_to(positions_from_to, radii, colors, subdivisions)
         id_cylinder_normal = self.renderer.draw_cylinders(
             positions,
             directions,
@@ -251,10 +218,7 @@ class WorkaroundTestRenderer:
         with mock.patch.object(sys, "argv", testargs):
             self.main_window.show_init_xyz()
         digits = np.array([1, 2, 3, 4, 5], dtype=np.int32)
-        positions_3d = np.array(
-            [[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]],
-            dtype=np.float32,
-        )
+        positions_3d = np.array([[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]], dtype=np.float32)
         self.renderer.draw_numbers(digits, positions_3d)
 
         # Test if the vaos are deleted correctly.

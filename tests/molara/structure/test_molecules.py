@@ -82,17 +82,10 @@ class TestMolecules(TestCase):
         """Test the result of the setUp routine."""
         # test pentane
         pentane, num_atoms_pentane = self.pentane, self.num_atoms_pentane
-        atomic_nums_pentane, coords_pentane = (
-            self.atomic_nums_pentane,
-            self.coords_pentane,
-        )
+        atomic_nums_pentane, coords_pentane = self.atomic_nums_pentane, self.coords_pentane
         assert pentane.draw_bonds
         assert len(pentane.atoms) == num_atoms_pentane
-        for atom_i, atomic_num_i, coords_i in zip(
-            pentane.atoms,
-            atomic_nums_pentane,
-            coords_pentane,
-        ):
+        for atom_i, atomic_num_i, coords_i in zip(pentane.atoms, atomic_nums_pentane, coords_pentane):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)
@@ -101,17 +94,10 @@ class TestMolecules(TestCase):
 
         # test glucose
         glucose, num_atoms_glucose = self.glucose, self.num_atoms_glucose
-        atomic_nums_glucose, coords_glucose = (
-            self.atomic_nums_glucose,
-            self.coords_glucose,
-        )
+        atomic_nums_glucose, coords_glucose = self.atomic_nums_glucose, self.coords_glucose
         assert glucose.draw_bonds
         assert len(glucose.atoms) == num_atoms_glucose
-        for atom_i, atomic_num_i, coords_i in zip(
-            glucose.atoms,
-            atomic_nums_glucose,
-            coords_glucose,
-        ):
+        for atom_i, atomic_num_i, coords_i in zip(glucose.atoms, atomic_nums_glucose, coords_glucose):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)
@@ -126,11 +112,7 @@ class TestMolecules(TestCase):
         assert isinstance(molecules_pentane, Molecule)
         assert molecules_pentane.draw_bonds
         assert len(molecules_pentane.atoms) == self.num_atoms_pentane
-        for atom_i, atomic_num_i, coords_i in zip(
-            molecules_pentane.atoms,
-            atomic_nums_pentane,
-            coords_pentane,
-        ):
+        for atom_i, atomic_num_i, coords_i in zip(molecules_pentane.atoms, atomic_nums_pentane, coords_pentane):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)
@@ -143,11 +125,7 @@ class TestMolecules(TestCase):
         assert isinstance(molecules_glucose, Molecule)
         assert molecules_glucose.draw_bonds
         assert len(molecules_glucose.atoms) == self.num_atoms_glucose
-        for atom_i, atomic_num_i, coords_i in zip(
-            molecules_glucose.atoms,
-            atomic_nums_glucose,
-            coords_glucose,
-        ):
+        for atom_i, atomic_num_i, coords_i in zip(molecules_glucose.atoms, atomic_nums_glucose, coords_glucose):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)

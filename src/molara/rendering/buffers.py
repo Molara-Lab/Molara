@@ -133,10 +133,7 @@ def setup_vao(
     return vao, buffers
 
 
-def setup_vao_numbers(
-    digits: np.ndarray,
-    positions_3d: np.ndarray,
-) -> tuple[int, list[int]]:
+def setup_vao_numbers(digits: np.ndarray, positions_3d: np.ndarray) -> tuple[int, list[int]]:
     """Set up a vertex attribute object and binds it to the GPU.
 
     :param digits: The digits to be displayed.
@@ -159,14 +156,7 @@ def setup_vao_numbers(
     glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_positions_3d)
     glBufferData(GL_ARRAY_BUFFER, positions_3d, GL_DYNAMIC_DRAW)
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        instance_vbo_positions_3d.itemsize * 3,
-        ctypes.c_void_p(0),
-    )
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, instance_vbo_positions_3d.itemsize * 3, ctypes.c_void_p(0))
 
     buffers = [instance_vbo_digits, instance_vbo_positions_3d]
     glBindVertexArray(0)

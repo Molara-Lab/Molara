@@ -79,15 +79,7 @@ class BuilderDialog(QDialog):
         for col, width in enumerate(column_widths):
             self.ui.tableWidget.setColumnWidth(col, width)
 
-        text_data = [
-            "Element",
-            "At. 1",
-            "Distance[A]",
-            "At. 2",
-            "Angle[°]",
-            "At. 3",
-            "Dihedral[°]",
-        ]
+        text_data = ["Element", "At. 1", "Distance[A]", "At. 2", "Angle[°]", "At. 3", "Dihedral[°]"]
         for column, text in enumerate(text_data):
             self.ui.tableWidget.setHorizontalHeaderItem(column, QTableWidgetItem(text))
 
@@ -168,13 +160,7 @@ class BuilderDialog(QDialog):
         if not self.z_matrix:
             return
 
-        mol: Molecule = Molecule(
-            np.array([1]),
-            np.array([[0.0, 0.0, 0.0]]),
-            None,
-            dummy=True,
-            draw_bonds=False,
-        )
+        mol: Molecule = Molecule(np.array([1]), np.array([[0.0, 0.0, 0.0]]), None, dummy=True, draw_bonds=False)
         for i in range(len(self.z_matrix)):
             params = self.z_matrix[i]["parameter"]
             atom_ids = self.z_matrix[i]["atom_ids"]
@@ -249,12 +235,7 @@ class BuilderDialog(QDialog):
         mol.toggle_bonds() if count_atoms == 1 else None
         mol.add_atom(atomic_num, np.squeeze(pos))
 
-    def calc_position_new_atom(
-        self,
-        count_atoms: int,
-        params: tuple,
-        atom_ids: list,
-    ) -> np.ndarray:
+    def calc_position_new_atom(self, count_atoms: int, params: tuple, atom_ids: list) -> np.ndarray:
         """Calculate the position of the new atom to be added.
 
         :param count_atoms: number of atoms that have been added so far
@@ -378,18 +359,10 @@ class BuilderDialog(QDialog):
                 else:  # angles (bond angle, dihedral angle)
                     temp_text = f"{np.rad2deg(text):.2f}"
 
-                self.ui.tableWidget.setItem(
-                    row,
-                    param_rows[i],
-                    QTableWidgetItem(temp_text),
-                )
+                self.ui.tableWidget.setItem(row, param_rows[i], QTableWidgetItem(temp_text))
                 if param_rows[i] != 0:
                     atom_id = self.z_matrix[row]["atom_ids"][i - 1]
-                    self.ui.tableWidget.setItem(
-                        row,
-                        atom_id_rows[i],
-                        QTableWidgetItem(str(atom_id + 1)),
-                    )
+                    self.ui.tableWidget.setItem(row, atom_id_rows[i], QTableWidgetItem(str(atom_id + 1)))
 
     def _update_z_matrix(self, tot_row: int) -> None:
         """Update the complete z-matrix table.

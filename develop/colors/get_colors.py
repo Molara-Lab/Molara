@@ -10,10 +10,7 @@ import json
 
 import bs4
 import requests
-from ase.data.colors import (
-    cpk_colors,
-    jmol_colors,
-)  # pylint: ignore[reportMissingImports]
+from ase.data.colors import cpk_colors, jmol_colors  # pylint: ignore[reportMissingImports]
 from bs4 import BeautifulSoup
 
 from molara.structure.atom import atomic_number_to_symbol
@@ -76,9 +73,7 @@ def get_ase_colors() -> dict[str, dict[str, tuple]]:
         ase_colors[scheme_name] = {}
         ase_colors[scheme_name]["None"] = tuple(values[0])
         for atomic_number in range(1, len(values)):
-            ase_colors[scheme_name][atomic_number_to_symbol(atomic_number)] = tuple(
-                values[atomic_number],
-            )
+            ase_colors[scheme_name][atomic_number_to_symbol(atomic_number)] = tuple(values[atomic_number])
 
     return ase_colors
 

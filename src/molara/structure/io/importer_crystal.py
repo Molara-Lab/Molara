@@ -104,10 +104,7 @@ class PoscarImporter(Importer):
             try:
                 crystal = PymatgenImporter(self.path).load().get_current_mol()
             except ImportError:
-                warnings.warn(
-                    "pymatgen is not installed, using internal parser",
-                    stacklevel=2,
-                )
+                warnings.warn("pymatgen is not installed, using internal parser", stacklevel=2)
                 crystal = self.parse_poscar()
 
         else:
@@ -142,9 +139,7 @@ class PoscarImporter(Importer):
         if (
             len(numbers) != len(species)
             or len(positions) != sum(numbers)
-            or not mode.lower().startswith(
-                ("d", "c", "k"),
-            )  # Either cartesian or direct coords
+            or not mode.lower().startswith(("d", "c", "k"))  # Either cartesian or direct coords
         ):
             msg = "Error: faulty formatting of the POSCAR file."
             raise FileFormatError(msg)

@@ -53,9 +53,7 @@ class WorkaroundTestExportImageDialog:
         assert self.export_image_dialog.ui.widthSpinBox.value() == width
         assert self.export_image_dialog.ui.heightSpinBox.value() == height
         ui_export_image = self.export_image_dialog.ui
-        assert ui_export_image.filenameInput.text().startswith(
-            f"{Path.home()}/molara_image_",
-        )
+        assert ui_export_image.filenameInput.text().startswith(f"{Path.home()}/molara_image_")
 
         self.export_image_dialog.reject()
         assert not self.export_image_dialog.isVisible()

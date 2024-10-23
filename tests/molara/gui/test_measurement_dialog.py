@@ -87,11 +87,7 @@ class WorkaroundTestMeasurementDialog:
         ui = self.measurement_dialog.ui
         structure = self.main_window.structure_widget.structures[0]
         for i in range(2):
-            atom_id1, atom_id2, atom_id3 = (
-                selected_atoms[i],
-                selected_atoms[i + 1],
-                selected_atoms[i + 2],
-            )
+            atom_id1, atom_id2, atom_id3 = selected_atoms[i], selected_atoms[i + 1], selected_atoms[i + 2]
             if atom_id1 == -1 or atom_id2 == -1 or atom_id3 == -1:
                 assert ui.tableAngles.item(i, 0).text() == ""
                 continue
@@ -100,9 +96,7 @@ class WorkaroundTestMeasurementDialog:
             pos3 = structure.atoms[atom_id3].position
             v1 = pos1 - pos2
             v2 = pos3 - pos2
-            angle = np.arccos(
-                np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)),
-            )
+            angle = np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
             assert ui.tableAngles.item(i, 0).text()[:-2] == f"{np.degrees(angle):.3f}"
 
     def _test_dihedral_texts(self, selected_atoms: list[int]) -> None:

@@ -156,7 +156,7 @@ class WorkaroundTestMainWindow:
     def tearDown(self) -> None:
         """Clean up the test."""
         self.window.close()
-        (QApplication.instance().shutdown() if QApplication.instance() is not None else None)
+        QApplication.instance().shutdown() if QApplication.instance() is not None else None
 
     def test_export_image_dialog(self) -> None:
         """Test the export_image_dialog method."""
@@ -258,9 +258,7 @@ class WorkaroundTestMainWindow:
 
         assert Path("~/.molara/settings/structure").expanduser().exists()
         assert Path("~/.molara/settings/structure/Default.json").expanduser().exists()
-        with open(
-            Path("~/.molara/settings/structure/Default.json").expanduser(),
-        ) as file:
+        with open(Path("~/.molara/settings/structure/Default.json").expanduser()) as file:
             assert file.read() == (
                 '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, '
                 '"atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'

@@ -59,9 +59,7 @@ class Crystal(Structure):
         self.make_supercell(supercell_dims)
         self.molar_mass = np.sum([elements[i]["Atomic mass"] for i in self.elements])
         self.volume_unitcell = Crystal.calc_volume_unitcell(self.basis_vectors)
-        self.density_unitcell = float(
-            (self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24,
-        )
+        self.density_unitcell = float((self.molar_mass / constants.Avogadro) / self.volume_unitcell * 1e24)
 
     def _fold_coords_into_unitcell(
         self,
@@ -169,10 +167,7 @@ class Crystal(Structure):
         ids_edge_atoms_unique = np.unique(ids_edge_atoms)
         num_edge_atoms_unitcell = len(ids_edge_atoms_unique)
 
-        base_value = (num_atoms_unitcell - num_edge_atoms_unitcell) * np.prod(
-            supercell_dims,
-            dtype=int,
-        )
+        base_value = (num_atoms_unitcell - num_edge_atoms_unitcell) * np.prod(supercell_dims, dtype=int)
         for id_edge_atom in ids_edge_atoms_unique:
             factor = 1
             coords = np.array(self.coords_unitcell[id_edge_atom])
@@ -270,30 +265,12 @@ class Crystal(Structure):
                     [zero_vec, basis_vectors_matrix[0]],
                     [zero_vec, basis_vectors_matrix[1]],
                     [zero_vec, basis_vectors_matrix[2]],
-                    [
-                        basis_vectors_matrix[0],
-                        basis_vectors_matrix[0] + basis_vectors_matrix[1],
-                    ],
-                    [
-                        basis_vectors_matrix[0],
-                        basis_vectors_matrix[0] + basis_vectors_matrix[2],
-                    ],
-                    [
-                        basis_vectors_matrix[1],
-                        basis_vectors_matrix[1] + basis_vectors_matrix[0],
-                    ],
-                    [
-                        basis_vectors_matrix[1],
-                        basis_vectors_matrix[1] + basis_vectors_matrix[2],
-                    ],
-                    [
-                        basis_vectors_matrix[2],
-                        basis_vectors_matrix[2] + basis_vectors_matrix[1],
-                    ],
-                    [
-                        basis_vectors_matrix[2],
-                        basis_vectors_matrix[2] + basis_vectors_matrix[0],
-                    ],
+                    [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[1]],
+                    [basis_vectors_matrix[0], basis_vectors_matrix[0] + basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[0]],
+                    [basis_vectors_matrix[1], basis_vectors_matrix[1] + basis_vectors_matrix[2]],
+                    [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[1]],
+                    [basis_vectors_matrix[2], basis_vectors_matrix[2] + basis_vectors_matrix[0]],
                     [
                         basis_vectors_matrix[0] + basis_vectors_matrix[1],
                         basis_vectors_matrix[0] + basis_vectors_matrix[1] + basis_vectors_matrix[2],
@@ -335,12 +312,7 @@ class Crystal(Structure):
 
         :param structure: pymatgen.Structure object
         """
-        return cls(
-            list(structure.atomic_numbers),
-            structure.frac_coords,
-            structure.lattice.matrix,
-            supercell_dims,
-        )
+        return cls(list(structure.atomic_numbers), structure.frac_coords, structure.lattice.matrix, supercell_dims)
 
     @classmethod
     def from_ase(cls: type[Crystal], atoms: Atoms) -> Crystal:

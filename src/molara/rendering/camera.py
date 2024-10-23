@@ -206,9 +206,7 @@ class Camera:
             0.1,
             zoom_factor,
         )  # Limit zoom factor to avoid zooming too far
-        self.distance_from_target += np.log10(
-            zoom_factor * self.zoom_sensitivity,
-        ) * np.sign(zoom_factor - 1)
+        self.distance_from_target += np.log10(zoom_factor * self.zoom_sensitivity) * np.sign(zoom_factor - 1)
         self.distance_from_target = max(self.distance_from_target, 1.0)
 
     def toggle_projection(self) -> None:
@@ -358,14 +356,8 @@ class Camera:
             data["distance_from_target"],
         )
         self.initial_position = pyrr.Vector3(data["initial_position"], dtype=np.float32)
-        self.initial_up_vector = pyrr.Vector3(
-            data["initial_up_vector"],
-            dtype=np.float32,
-        )
-        self.initial_right_vector = pyrr.Vector3(
-            data["initial_right_vector"],
-            dtype=np.float32,
-        )
+        self.initial_up_vector = pyrr.Vector3(data["initial_up_vector"], dtype=np.float32)
+        self.initial_right_vector = pyrr.Vector3(data["initial_right_vector"], dtype=np.float32)
         self.target = pyrr.Vector3(data["target"], dtype=np.float32)
         self.initial_target = pyrr.Vector3(data["initial_target"], dtype=np.float32)
         self.translation = pyrr.Vector3(data["translation"], dtype=np.float32)
@@ -375,11 +367,7 @@ class Camera:
         self.calculate_projection_matrix()
         self.update()
 
-    def adopt_config(
-        self,
-        other_camera: Camera,
-        custom_geometry: tuple[int, int] | None = None,
-    ) -> None:
+    def adopt_config(self, other_camera: Camera, custom_geometry: tuple[int, int] | None = None) -> None:
         """Adopt the configuration of another Camera object.
 
         :param other_camera: the other Camera object
