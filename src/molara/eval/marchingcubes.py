@@ -101,40 +101,34 @@ def marching_cubes(
                         vertex1 = list(p11 + t1 * (p12 - p11))
                         vertex2 = list(p21 + t2 * (p22 - p21))
                         vertex3 = list(p31 + t3 * (p32 - p31))
-                        if i < x_voxels - 2 and j < y_voxels - 2 and k < z_voxels - 2:
-                            n1 = list(
-                                -prefactor
-                                * calculate_normal_vertex(
-                                    grid,
-                                    voxel_indices[c11, :],
-                                    voxel_indices[c12, :],
-                                    t1,
-                                ),
-                            )
-                            n2 = list(
-                                -prefactor
-                                * calculate_normal_vertex(
-                                    grid,
-                                    voxel_indices[c21, :],
-                                    voxel_indices[c22, :],
-                                    t2,
-                                ),
-                            )
-                            n3 = list(
-                                -prefactor
-                                * calculate_normal_vertex(
-                                    grid,
-                                    voxel_indices[c31, :],
-                                    voxel_indices[c32, :],
-                                    t3,
-                                ),
-                            )
-                        else:
-                            n = np.cross(
-                                np.array(vertex2) - np.array(vertex1),
-                                np.array(vertex3) - np.array(vertex1),
-                            )
-                            n1 = n2 = n3 = list(n / np.linalg.norm(n))
+
+                        n1 = list(
+                            -prefactor
+                            * calculate_normal_vertex(
+                                grid,
+                                voxel_indices[c11, :],
+                                voxel_indices[c12, :],
+                                t1,
+                            ),
+                        )
+                        n2 = list(
+                            -prefactor
+                            * calculate_normal_vertex(
+                                grid,
+                                voxel_indices[c21, :],
+                                voxel_indices[c22, :],
+                                t2,
+                            ),
+                        )
+                        n3 = list(
+                            -prefactor
+                            * calculate_normal_vertex(
+                                grid,
+                                voxel_indices[c31, :],
+                                voxel_indices[c32, :],
+                                t3,
+                            ),
+                        )
                         verts[phase] += vertex1 + n1 + vertex2 + n2 + vertex3 + n3
 
     return np.array(verts[0], dtype=np.float32), np.array(verts[1], dtype=np.float32)
@@ -167,10 +161,17 @@ def calculate_normal_corner(
     x = corner_index[0]
     y = corner_index[1]
     z = corner_index[2]
-    dx = grid[x + 1, y, z] - grid[x - 1, y, z]
-    dy = grid[x, y + 1, z] - grid[x, y - 1, z]
-    dz = grid[x, y, z + 1] - grid[x, y, z - 1]
-    return np.array([dx, dy, dz]) * np.linalg.norm(np.array([dx, dy, dz]))
+    max_x, max_y, max_z = grid.shape
+    x_minus = max(x - 1, 0)
+    x_plus = min(x + 1, max_x - 1)
+    y_minus = max(y - 1, 0)
+    y_plus = min(y + 1, max_y - 1)
+    z_minus = max(z - 1, 0)
+    z_plus = min(z + 1, max_z - 1)
+    dx = grid[x_plus, y, z] - grid[x_minus, y, z]
+    dy = grid[x, y_plus, z] - grid[x, y_minus, z]
+    dz = grid[x, y, z_plus] - grid[x, y, z_minus]
+    return np.array([dx, dy, dz]) / np.linalg.norm(np.array([dx, dy, dz]))
 
 
 def calculate_normal_vertex(
@@ -190,10 +191,10 @@ def calculate_normal_vertex(
     n1 = calculate_normal_corner(grid, corner_index_a)
     n2 = calculate_normal_corner(grid, corner_index_b)
     n = n1 + t1 * (n2 - n1)
-    return n * np.linalg.norm(n)
+    return n / np.linalg.norm(n)
 
 
-def get_edges(  # noqa: PLR0912 C901
+def get_edges(
     isovalue: float,
     voxel_values: np.ndarray,
 ) -> tuple[list, list]:
@@ -204,40 +205,14 @@ def get_edges(  # noqa: PLR0912 C901
     :param phase: phase of the orbital
     :return: vertices and indices of the isosurface
     """
-    triangle_table_index_1 = np.int16(0)
-    triangle_table_index_2 = np.int16(0)
-    if voxel_values[0] > isovalue:
-        triangle_table_index_1 += 1
-    if voxel_values[1] > isovalue:
-        triangle_table_index_1 += 2
-    if voxel_values[2] > isovalue:
-        triangle_table_index_1 += 4
-    if voxel_values[3] > isovalue:
-        triangle_table_index_1 += 8
-    if voxel_values[4] > isovalue:
-        triangle_table_index_1 += 16
-    if voxel_values[5] > isovalue:
-        triangle_table_index_1 += 32
-    if voxel_values[6] > isovalue:
-        triangle_table_index_1 += 64
-    if voxel_values[7] > isovalue:
-        triangle_table_index_1 += 128
-    if voxel_values[0] < -isovalue:
-        triangle_table_index_2 += 1
-    if voxel_values[1] < -isovalue:
-        triangle_table_index_2 += 2
-    if voxel_values[2] < -isovalue:
-        triangle_table_index_2 += 4
-    if voxel_values[3] < -isovalue:
-        triangle_table_index_2 += 8
-    if voxel_values[4] < -isovalue:
-        triangle_table_index_2 += 16
-    if voxel_values[5] < -isovalue:
-        triangle_table_index_2 += 32
-    if voxel_values[6] < -isovalue:
-        triangle_table_index_2 += 64
-    if voxel_values[7] < -isovalue:
-        triangle_table_index_2 += 128
+    triangle_table_index_1 = 0
+    triangle_table_index_2 = 0
+    for i in range(8):
+        if voxel_values[i] > isovalue:
+            # same as doing triangle_table_index_1 + 2**i
+            triangle_table_index_1 |= 1 << i
+        if voxel_values[i] < -isovalue:
+            triangle_table_index_2 |= 1 << i
     return (
         triangle_table[triangle_table_index_1],
         triangle_table[triangle_table_index_2],
