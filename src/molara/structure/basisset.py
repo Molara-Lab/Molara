@@ -29,9 +29,9 @@ fact2 = [
 
 
 class BasisSet:
-    """Class for either a STO or GTO basisset for each atom in the same order as in molecule.
+    """Class for either an STO or GTO basis set for each atom, in the same order as in the molecule.
 
-    GTOs are gaussian type orbitals, STOs are slater type orbitals.
+    GTOs are Gaussian-type orbitals; STOs are Slater-type orbitals.
     """
 
     def __init__(self, basis_type: str = "None") -> None:
@@ -49,7 +49,7 @@ class BasisSet:
         exponents: list,
         coefficients: list,
         position: np.ndarray,
-        normalization_mode: str = "None",
+        normalization_mode: str = "none",
     ) -> None:
         """Generate the basis functions for the basis set and normalizes the primitive functions if needed.
 
@@ -244,7 +244,7 @@ def hermite_coefs(  # noqa: PLR0913
         return 0.0  # out of bounds for t
     if i == j == t == 0:
         # base case
-        return np.exp(-q * qx * qx)  # K_AB elif j == 0:
+        return np.exp(-q * qx * qx)  # K_AB
 
     if j == 0:
         # decrement index i

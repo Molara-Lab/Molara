@@ -49,8 +49,11 @@ class Molecule(Structure):
         """Update the basis set positions after the atoms have been updated."""
         self.basis_set = []
         for atom in self.atoms:
+            if not hasattr(atom, "basis_set") or atom.basis_set is None:
+                continue
             for basis_function in atom.basis_set.basis_functions.values():
-                self.basis_set.append(basis_function)
+                if basis_function is not None:
+                    self.basis_set.append(basis_function)
 
     def center_coordinates(self: Molecule) -> None:
         """Centers the structure around the center of mass."""

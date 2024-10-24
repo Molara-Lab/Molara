@@ -1,10 +1,15 @@
 """Calculates the value of a molecular orbital at a given point in space."""
 
-from molara.eval.aos cimport calculate_aos
 from cython.parallel import prange
 from cython.cimports.molara.eval.aos import calculate_aos
 from cython import boundscheck, exceptval
 
+cdef enum ShellType:
+    s = 0
+    p = 1
+    d = 2
+    f = 3
+    g = 4
 
 @exceptval(check=False)
 @boundscheck(False)
@@ -21,7 +26,6 @@ cpdef double calculate_mo_cartesian(
 
     cdef double mo_value = 0.0
     cdef int mo_index, number_of_orbitals, i
-    cdef int s = 0, p = 1, d = 2, f = 3, g = 4
     cdef int aos_pre_calculated = 0, shell
 
     number_of_orbitals = orbital_coefficients.shape[0]
@@ -38,21 +42,21 @@ cpdef double calculate_mo_cartesian(
                 shell,
                 aos_values,
             )
-            if shell == s:
+            if shell == ShellType.s:
                 mo_value += mo_coefficients[mo_index] * aos_values[0]
-            if shell == p:
+            if shell == ShellType.p:
                 for i in prange(3):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 2
-            if shell == d:
+            if shell == ShellType.d:
                 for i in prange(6):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 5
-            if shell == f:
+            if shell == ShellType.f:
                 for i in prange(10):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 9
-            if shell == g:
+            if shell == ShellType.g:
                 for i in prange(15):
                     mo_value += mo_coefficients[mo_index + i] * aos_values[i]
                 aos_pre_calculated = 14

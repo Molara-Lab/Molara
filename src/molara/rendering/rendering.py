@@ -76,10 +76,9 @@ class Renderer:
         vertices: np.ndarray,
         colors: np.ndarray,
     ) -> int:
-        """Draws one polygon.
+        """Draw one polygon.
 
         :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
-        :param indices: Gives the connectivity of the vertices.
         :param colors: Colors of the vertices.
         :return: Returns the index of the polygon in the list of polygons.
         """

@@ -79,7 +79,7 @@ def setup_vao(
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
     else:
-        ebo = 0
+        ebo = None
 
     # Instance colors
     instance_vbo_color = glGenBuffers(1)

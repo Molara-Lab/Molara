@@ -42,7 +42,6 @@ class MOsDialog(QDialog):
         self.origin = np.zeros(3, dtype=np.float64)
         self.box_center = np.zeros(3, dtype=np.float64)
         self.minimum_box_size = np.zeros(3, dtype=np.float64)
-        self.check_if_mos()
         self.drawn_orbitals = [-1, -1]
         self.display_box = False
         self.box_spheres = -1
@@ -379,7 +378,7 @@ class MOsDialog(QDialog):
         for orb in self.drawn_orbitals:
             if orb != -1:
                 self.parent().structure_widget.renderer.remove_polygon(orb)
-                self.drawn_orbitals = [-1, -1]
+        self.drawn_orbitals = [-1, -1]
 
     def run_population_analysis(self) -> None:
         """Run the population analysis to check if the calculated number of electrons matches the exact one."""

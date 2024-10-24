@@ -34,7 +34,7 @@ class MolecularOrbitals:
         :param spins: list of spins for the mos
         :param occupations: list of occupations for the mos
         :param basis_functions: list of basis functions for the mos
-        :param type: str: type of the mos, either cartesian or spherical
+        :param basis_type: str: type of the mos, either cartesian or spherical
         :return:
         """
         if labels is not None:
@@ -64,9 +64,9 @@ class MolecularOrbitals:
         self.coefficients_display: np.ndarray = np.array([])
 
         # Construct transformation matrices for spherical to cartesian transformation
-        self.t_sc_d = np.zeros((5, 6), dtype=np.float64)
-        self.t_sc_f = np.zeros((7, 10), dtype=np.float64)
-        self.t_sc_g = np.zeros((9, 15), dtype=np.float64)
+        self.t_sc_d: np.ndarray = np.array([])
+        self.t_sc_f: np.ndarray = np.array([])
+        self.t_sc_g: np.ndarray = np.array([])
         self.transformation_matrix_spherical_cartesian: np.ndarray = np.array([])
         self.construct_transformation_matrices()
 
@@ -83,7 +83,7 @@ class MolecularOrbitals:
         """
         self.coefficients_display = mo_coefficients
         if spherical_order == "none":
-            self.coefficients = mo_coefficients
+            self.coefficients = self.coefficients_display
         elif spherical_order == "molden":
             self.calculate_transformation_matrix()
             self.coefficients_spherical = mo_coefficients
@@ -92,7 +92,7 @@ class MolecularOrbitals:
             )
         else:
             msg = f"The spherical_order {spherical_order} is not supported."
-            raise TypeError(msg)
+            raise ValueError(msg)
 
     def get_mo_value(  # noqa: C901
         self,
@@ -148,7 +148,7 @@ class MolecularOrbitals:
                     i += 1
             else:
                 msg = f"The shell {shell} type is not supported."
-                raise TypeError(msg)
+                raise ValueError(msg)
         return mo
 
     def construct_transformation_matrices(self) -> None:  # noqa: PLR0915
@@ -327,19 +327,18 @@ class MolecularOrbitals:
 
         Uses the matrices generated before to build the transformation matrix as a block diagonal matrix. This matrix
         enable the transformation from spherical harmonics to cartesian. It is not a square matrix if l>1!
-        :return: np.ndarray: transformation matrix
         """
         # Get the number of basis functions
         d_count = 0
         f_count = 0
         g_count = 0
-        number_of_cartersian_basis_functions = 0
+        number_of_cartesian_basis_functions = 0
         orbital_keys_dfg = ["dxx", "fxxx", "gxxxx"]
         orbital_keys_sp = ["s", "px"]
         basis_functions_block_list = []
         for atom_basis in self.basis_functions:
             for basis_function in atom_basis:
-                number_of_cartersian_basis_functions += 1
+                number_of_cartesian_basis_functions += 1
                 for key_dfg in orbital_keys_dfg:
                     if key_dfg in basis_function:
                         if key_dfg == "dxx":
@@ -358,13 +357,13 @@ class MolecularOrbitals:
                         elif key_sp == "px":
                             basis_functions_block_list.append("p")
 
-        number_of_spherical_basis_functions = number_of_cartersian_basis_functions - (
+        number_of_spherical_basis_functions = number_of_cartesian_basis_functions - (
             d_count * 1 + f_count * 3 + g_count * 6
         )
 
         # Allocate the transformation matrix
         transformation_matrix = np.zeros(
-            (number_of_spherical_basis_functions, number_of_cartersian_basis_functions),
+            (number_of_spherical_basis_functions, number_of_cartesian_basis_functions),
         )
 
         # Fill the transformation matrix as a block diagonal matrix
@@ -405,10 +404,16 @@ class MolecularOrbitals:
         :param mo_coefficients: np.ndarray: coefficients for the mos
         :return: np.ndarray: cartesian coefficients
         """
+        # Only works if the number of MOS is correct, i.e. not for truncated molden files...
         number_of_spherical_basis_functions_mos, number_of_mos = mo_coefficients.shape
         number_of_spherical_basis_functions_transformation = self.transformation_matrix_spherical_cartesian.shape[0]
         number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
-        assert number_of_spherical_basis_functions_transformation == number_of_spherical_basis_functions_mos
+        if number_of_spherical_basis_functions_transformation != number_of_spherical_basis_functions_mos:
+            msg = (
+                "The number of spherical basis functions does not match between the transformation matrix and"
+                " MO coefficients."
+            )
+            raise ValueError(msg)
 
         new_coefficients = np.zeros(
             (number_of_cartesian_basis_functions, number_of_mos),

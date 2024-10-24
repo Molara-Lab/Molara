@@ -13,8 +13,8 @@ cpdef generate_voxel_grid(
         double[:, :] direction,
         double[:] voxel_size,
         int[:] voxel_count,
-        aos = None,
-        mo_coeff = None,
+        aos,
+        mo_coeff,
 ):
     """
     Generates a 3D array of values. The voxel grid is defined by the origin, direction, voxel size and voxel count.
@@ -34,7 +34,8 @@ cpdef generate_voxel_grid(
     cdef int max_length = 0, ao_index, i, j, k, l, len_ao
     cdef double[:] aos_values = npc.ndarray(shape=15) # only up to g orbitals!
     cdef double[:] electron_position = npc.ndarray(shape=3)
-    cdef double[:] electron_position_i = npc.ndarray(shape=3), electron_position_j = npc.ndarray(shape=3),
+    cdef double[:] electron_position_i = npc.ndarray(shape=3)
+    cdef double[:] electron_position_j = npc.ndarray(shape=3)
     cdef double[:] electron_position_k = npc.ndarray(shape=3)
     cdef double scaled_direction
     cdef int voxel_count_i = voxel_count[0], voxel_count_j = voxel_count[1], voxel_count_k = voxel_count[2]

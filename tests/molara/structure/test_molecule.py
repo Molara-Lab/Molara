@@ -10,7 +10,6 @@ from numpy.testing import assert_almost_equal, assert_array_equal
 
 from molara.structure.atom import Atom
 from molara.structure.molecule import Molecule
-from molara.util.testing import assert_vectors_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -147,12 +146,12 @@ class TestMolecule(TestCase):
         """Test the center_coordinates routine."""
         # test ccl4
         self.ccl4.center_coordinates()
-        assert_vectors_equal(self.ccl4.center_of_mass, np.zeros(3))
+        assert_almost_equal(self.ccl4.center_of_mass, np.zeros(3), decimal=5)
         offset = np.array([1.234, 2.345, 3.456])
         for atom_i in self.ccl4.atoms:
             atom_i.set_position(atom_i.position + offset)
         self.ccl4.center_coordinates()
-        assert_vectors_equal(self.ccl4.center_of_mass, np.zeros(3))
+        assert_almost_equal(self.ccl4.center_of_mass, np.zeros(3), decimal=5)
 
         # test water
         self.water.center_coordinates()

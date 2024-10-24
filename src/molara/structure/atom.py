@@ -62,7 +62,11 @@ class Atom:
         :param position: new position of the atom
         :return: None
         """
-        self.position = np.array(position, dtype=np.float64)
+        position_array = np.array(position, dtype=np.float64)
+        if position_array.shape != (3,):
+            msg = "Position must be a 3D coordinate"
+            raise ValueError(msg)
+        self.position = position_array
         for basis_function in self.basis_set.basis_functions.values():
             basis_function.position = self.position
 

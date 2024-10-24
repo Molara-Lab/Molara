@@ -75,10 +75,12 @@ class PopulationAnalysis:
     def calculate_ao_overlap_cartesian(self) -> None:
         """Calculate the overlap matrix using cartesian basis functions."""
         for i, basis_function_i in enumerate(self.basis_functions):
-            for j, basis_function_j in enumerate(self.basis_functions):
+            for j in range(i, len(self.basis_functions)):
+                basis_function_j = self.basis_functions[j]
                 self.overlap_matrix_ao[i, j] = contracted_overlap(
                     basis_function_j,
                     basis_function_i,
                     self.basis_functions_positions[j],
                     self.basis_functions_positions[i],
                 )
+                self.overlap_matrix_ao[j, i] = self.overlap_matrix_ao[i, j]

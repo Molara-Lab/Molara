@@ -2,6 +2,7 @@
 
 from cython.parallel import prange
 from cython import boundscheck
+from libc.math cimport exp
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -18,7 +19,6 @@ cpdef int calculate_aos(
     cdef double sqr3 = 1.73205080756887729
     cdef double sqr5 = 2.236067977499789696
     cdef double sqr7 = 2.645751311064591
-    cdef double e = 2.718281828459045
 
     cdef int s = 0
     cdef int p = 1
@@ -64,7 +64,7 @@ cpdef int calculate_aos(
           relative_coords[2]**2)
     u = 0
     for ic in prange(ngto):
-        u += norms[ic] * coefficients[ic] * e**(-exponents[ic] * r2)
+        u += norms[ic] * coefficients[ic] * exp(-exponents[ic] * r2)
     if orbital == s:
         uao[0] = u
     elif orbital == p:
