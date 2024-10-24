@@ -13,6 +13,7 @@ from molara.gui.builder import BuilderDialog
 from molara.gui.crystal_dialog import CrystalDialog
 from molara.gui.export_image_dialog import ExportImageDialog
 from molara.gui.measuring_tool_dialog import MeasurementDialog
+from molara.gui.mos_dialog import MOsDialog
 from molara.gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.gui.supercell_dialog import SupercellDialog
 from molara.gui.trajectory_dialog import TrajectoryDialog
@@ -55,6 +56,7 @@ class MainWindow(QMainWindow):
         self.builder_dialog = BuilderDialog(self)
         self.supercell_dialog = SupercellDialog(self)
         self.structure_customizer_dialog = StructureCustomizerDialog(self)
+        self.mo_dialog = MOsDialog(self)
 
         self.mols = Molecules()
 
@@ -102,12 +104,21 @@ class MainWindow(QMainWindow):
         self.ui.actionMeasure.triggered.connect(
             self.show_measurement_dialog,
         )
+        self.ui.actionDisplay_MOs.triggered.connect(
+            self.show_mo_dialog,
+        )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
         self.update_action_texts()
+
+    def show_mo_dialog(self) -> None:
+        """Check if molecular orbitals have been loaded and perform actions accordingly."""
+        if self.mo_dialog.check_if_mos():
+            self.mo_dialog.show()
+            self.mo_dialog.init_dialog()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""

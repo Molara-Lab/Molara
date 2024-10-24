@@ -9,7 +9,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 
 from molara.structure.atom import Atom, element_symbol_to_atomic_number, elements
-from molara.structure.basisset import Basisset
+from molara.structure.basisset import BasisSet
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
@@ -84,7 +84,7 @@ class TestAtom(TestCase):
         ) -> None:
             assert my_atom.symbol == symbol
             assert my_atom.atomic_number == atomic_number
-            assert isinstance(my_atom.basis_set, Basisset)
+            assert isinstance(my_atom.basis_set, BasisSet)
 
         def special_attribute_tests(
             my_atom: Atom,

@@ -11,7 +11,7 @@ from numpy.testing import assert_array_almost_equal_nulp
 from molara.structure.io.importer import GeneralImporter
 
 if TYPE_CHECKING:
-    from molara.structure.basisset import Orbital
+    from molara.structure.basisset import BasisFunction
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -52,13 +52,13 @@ class TestBasisset(TestCase):
     def test_normalized(self) -> None:
         """Test if the basis set is normalized."""
         overlap_matrix = np.zeros(
-            (len(self.basisset.orbitals), len(self.basisset.orbitals)),
+            (len(self.basisset.basis_functions), len(self.basisset.basis_functions)),
         )
-        for i, orb1 in enumerate(self.basisset.orbitals):
-            for j, orb2 in enumerate(self.basisset.orbitals):
+        for i, orb1 in enumerate(self.basisset.basis_functions):
+            for j, orb2 in enumerate(self.basisset.basis_functions):
                 overlap_matrix[i, j] = contracted_overlap(
-                    self.basisset.orbitals[orb1],
-                    self.basisset.orbitals[orb2],
+                    self.basisset.basis_functions[orb1],
+                    self.basisset.basis_functions[orb2],
                     np.array([0.0, 0.0, 0.0]),
                     np.array([0.0, 0.0, 0.0]),
                 )
@@ -130,8 +130,8 @@ def primitive_overlap(  # noqa: PLR0913
 
 
 def contracted_overlap(
-    a: Orbital,
-    b: Orbital,
+    a: BasisFunction,
+    b: BasisFunction,
     a_xyz: np.ndarray,
     b_xyz: np.ndarray,
 ) -> float:

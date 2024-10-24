@@ -33,7 +33,7 @@ __copyright__ = "Copyright 2024, Molara"
 
 def setup_vao(
     vertices: np.ndarray,
-    indices: np.ndarray,
+    indices: np.ndarray | None,
     model_matrices: np.ndarray,
     colors: np.ndarray,
 ) -> tuple[int, list[int]]:
@@ -74,10 +74,12 @@ def setup_vao(
         vertices.itemsize * 6,
         ctypes.c_void_p(12),
     )
-
-    ebo = glGenBuffers(1)
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+    if indices is not None:
+        ebo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+    else:
+        ebo = None
 
     # Instance colors
     instance_vbo_color = glGenBuffers(1)
@@ -122,7 +124,10 @@ def setup_vao(
             ctypes.c_void_p(i * 16),
         )
         glVertexAttribDivisor(3 + i, 1)
-    buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
+    if indices is not None:
+        buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
+    else:
+        buffers = [vbo, instance_vbo_color, instance_vbo_model]
     glBindVertexArray(0)
 
     return vao, buffers
