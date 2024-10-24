@@ -204,8 +204,8 @@ def get_edges(  # noqa: PLR0912 C901
     :param phase: phase of the orbital
     :return: vertices and indices of the isosurface
     """
-    triangle_table_index_1 = np.int8(0)
-    triangle_table_index_2 = np.int8(0)
+    triangle_table_index_1 = np.int16(0)
+    triangle_table_index_2 = np.int16(0)
     if voxel_values[0] > isovalue:
         triangle_table_index_1 += 1
     if voxel_values[1] > isovalue:
