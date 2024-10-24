@@ -50,6 +50,8 @@ class MOsDialog(QDialog):
         self.old_orbital = 0
         self.selected_orbital = 0
         self.number_of_alpha_orbitals = 0
+        self.number_of_beta_orbitals = 0
+        self.number_of_orbitals = 0
         # 0 for restricted, 1 for alpha, -1 for beta
         self.display_spin = 0
 
@@ -165,19 +167,23 @@ class MOsDialog(QDialog):
         self.ui.orbitalSelector.clearContents()
 
         if self.display_spin == 0:
-            max_number_of_orbitals = len(self.mos.energies)
+            self.number_of_orbitals = len(self.mos.energies)
             number_of_orbitals = max_number_of_orbitals
             start = 0
         elif self.display_spin == 1:
             max_number_of_orbitals = sum([1 for spin in self.mos.spins if spin == 1])
             number_of_orbitals = max_number_of_orbitals
             self.number_of_alpha_orbitals = number_of_orbitals
+            self.number_of_orbitals = len(self.mos.energies)
+            self.number_of_beta_orbitals = self.number_of_orbitals - number_of_orbitals
             start = 0
         elif self.display_spin == -1:
             number_of_alpha_orbitals = sum([1 for spin in self.mos.spins if spin == 1])
             number_of_orbitals = sum([1 for spin in self.mos.spins if spin == -1])
-            max_number_of_orbitals = number_of_orbitals + number_of_alpha_orbitals
+            self.number_of_orbitals = number_of_orbitals + number_of_alpha_orbitals
+            max_number_of_orbitals = self.number_of_orbitals
             self.number_of_alpha_orbitals = number_of_alpha_orbitals
+            self.number_of_beta_orbitals = self.number_of_orbitals - number_of_orbitals
             start = number_of_alpha_orbitals
 
         self.ui.orbitalSelector.setRowCount(number_of_orbitals)
