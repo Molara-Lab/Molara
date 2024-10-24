@@ -51,7 +51,7 @@ class PopulationAnalysis:
         # initialize the overlap matrix for molecular orbitals
         self.overlap_matrix_mo: np.ndarray = np.array([])
 
-        if self.mo_type == "cartesian":
+        if self.mo_type == "Cartesian":
             self.d_matrix = np.dot(
                 self.mo_coefficients[:, :],
                 np.dot(self.occ_matrix, self.mo_coefficients[:, :].T),

@@ -167,7 +167,8 @@ class MOsDialog(QDialog):
 
         if self.display_spin == 0:
             self.number_of_orbitals = len(self.mos.energies)
-            number_of_orbitals = max_number_of_orbitals
+            number_of_orbitals = self.number_of_orbitals
+            max_number_of_orbitals = self.number_of_orbitals
             start = 0
         elif self.display_spin == 1:
             max_number_of_orbitals = sum([1 for spin in self.mos.spins if spin == 1])
