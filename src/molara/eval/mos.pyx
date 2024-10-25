@@ -2,6 +2,7 @@
 
 from cython.cimports.molara.eval.aos import calculate_aos
 from cython import boundscheck, exceptval
+from libc.stdint cimport int64_t
 
 cdef int number_of_basis_functions[5]
 
@@ -19,7 +20,7 @@ cpdef double calculate_mo_cartesian(
         double[:,:] orbital_coefficients,
         double[:,:] orbital_exponents,
         double[:,:] orbital_norms,
-        long[:] shells,
+        int64_t[:] shells,
         double[:] mo_coefficients,
         double[:] aos_values,
 ) nogil:

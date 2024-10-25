@@ -1,10 +1,12 @@
+from libc.stdint cimport int64_t
+
 cpdef double calculate_mo_cartesian(
         double[:],
         double[:,:],
         double[:,:],
         double[:,:],
         double[:,:],
-        long[:],
+        int64_t[:],
         double[:],
         double[:],
 ) nogil

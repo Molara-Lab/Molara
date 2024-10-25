@@ -4,6 +4,7 @@ cimport numpy as npc
 import numpy as np
 from cython.cimports.molara.eval.mos import calculate_mo_cartesian
 from molara.data.constants import ANGSTROM_TO_BOHR
+from libc.stdint cimport int64_t
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -30,7 +31,7 @@ cpdef generate_voxel_grid(
     cdef int number_of_aos = len(aos)
     cdef double[:, :, :] voxel_grid = npc.ndarray(shape=(voxel_count[0], voxel_count[1], voxel_count[2]), dtype=np.float64)
     cdef double[:, :] orbital_positions = npc.ndarray(shape=(number_of_aos, 3), dtype=np.float64)
-    cdef long[:,:] orbital_ijks = npc.ndarray(shape=(number_of_aos, 3), dtype=np.intp)
+    cdef int64_t[:,:] orbital_ijks = npc.ndarray(shape=(number_of_aos, 3), dtype=np.intp)
     cdef int max_length = 0, ao_index, i, j, k, l, len_ao
     cdef double[:] electron_position = npc.ndarray(shape=3)
     cdef double[:] electron_position_i = npc.ndarray(shape=3)
@@ -50,7 +51,7 @@ cpdef generate_voxel_grid(
     cdef double[:, :] orbital_exponents = npc.ndarray(shape=(number_of_aos, max_length), dtype=np.float64)
     cdef double[:, :] orbital_coefficients = npc.ndarray(shape=(number_of_aos, max_length), dtype=np.float64)
     cdef double[:, :] orbital_norms = npc.ndarray(shape=(number_of_aos, max_length), dtype=np.float64)
-    cdef long[:] shells_temp = npc.ndarray(shape=number_of_aos, dtype=np.intp)
+    cdef int64_t[:] shells_temp = npc.ndarray(shape=number_of_aos, dtype=np.int64)
     cdef int skip_shells = 0, shell_index = 0
     cdef int number_of_shells = 0
     orbital_exponents[:,:] = 0
@@ -87,7 +88,7 @@ cpdef generate_voxel_grid(
         else:
             skip_shells -= 1
 
-    cdef long[:] shells = npc.ndarray(shape=number_of_shells, dtype=np.intp)
+    cdef int64_t[:] shells = npc.ndarray(shape=number_of_shells, dtype=np.int64)
     shells = shells_temp[:number_of_shells]
 
 
