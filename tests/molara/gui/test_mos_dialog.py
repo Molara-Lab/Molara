@@ -51,6 +51,7 @@ class WorkaroundTestMOsDialog:
 
     def run_tests(self) -> None:
         """Run the tests."""
+        # unrestricted case
         self._test_spin_selection()
         self._test_select_a_different_orbital()
         self._test_wire_mesh()
@@ -59,6 +60,17 @@ class WorkaroundTestMOsDialog:
         self._test_population()
 
         self._test_close()
+
+        # restricted case
+        self._test_restricted_case()
+
+    def _test_restricted_case(self) -> None:
+        """Test the restricted case."""
+        testargs = ["molara", "examples/molden/h2o.molden"]
+        with mock.patch.object(sys, "argv", testargs):
+            self.main_window.show_init_xyz()
+        number_of_orbitals_for_h2o = 124
+        assert self.mo_dialog.number_of_orbitals == number_of_orbitals_for_h2o
 
     def _test_spin_selection(self) -> None:
         """Test the spin selection checkboxes."""
