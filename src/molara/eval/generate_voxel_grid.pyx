@@ -106,6 +106,7 @@ cpdef generate_voxel_grid(
                     electron_position_k[l] = scaled_direction
                     electron_position[l] = ((electron_position_i[l] + electron_position_j[l] + electron_position_k[l]))
                     electron_position[l] = (electron_position[l] + origin[l]) * ANGSTROM_TO_BOHR
+
                 voxel_grid[i, j, k] = calculate_mo_cartesian(
                     electron_position,
                     orbital_positions,

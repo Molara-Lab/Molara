@@ -200,7 +200,6 @@ class BasisFunction:
         self.position = position
         self.ijk = ijk
         self.exponents = exponents
-        self.coefficients = coefficients.copy()
         self.norms = np.zeros(len(coefficients))
 
         if normalization_mode == "orca":

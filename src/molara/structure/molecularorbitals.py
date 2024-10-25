@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from molara.data.constants import ANGSTROM_TO_BOHR
-from molara.eval.aos import calculate_aos
+from molara.eval.mos import calculate_mo_cartesian
 
 if TYPE_CHECKING:
     from molara.structure.basisset import BasisFunction
@@ -94,13 +94,15 @@ class MolecularOrbitals:
             msg = f"The spherical_order {spherical_order} is not supported."
             raise ValueError(msg)
 
-    def get_mo_value(  # noqa: C901
+    def get_mo_value(
         self,
         index: int,
         aos: list[BasisFunction],
         electron_position: np.ndarray,
     ) -> float:
         """Calculate the value of one mo for a given electron position. Cartesian only!.
+
+        It is a slow method and should be used only for testing purposes. It wraps the cython function.
 
         :param index: index of the mo
         :param aos: list of all the aos
@@ -112,44 +114,61 @@ class MolecularOrbitals:
         d = 2
         f = 3
         g = 4
-        mo = 0
-        mo_coefficients = self.coefficients[index]
-        i = 0
-        ao_values = np.zeros(15)
-        while i < len(mo_coefficients):
-            shell = sum(aos[i].ijk)
-            calculate_aos(
-                np.array(electron_position, dtype=np.float64) * ANGSTROM_TO_BOHR,
-                np.array(aos[i].position, dtype=np.float64) * ANGSTROM_TO_BOHR,
-                np.array(aos[i].exponents, dtype=np.float64),
-                np.array(aos[i].coefficients, dtype=np.float64),
-                np.array(aos[i].norms, dtype=np.float64),
-                shell,
-                ao_values,
-            )
-            if shell == s:
-                mo += mo_coefficients[i] * ao_values[0]
-                i += 1
-            elif shell == p:
-                for j in range(3):
-                    mo += mo_coefficients[i] * ao_values[j]
-                    i += 1
-            elif shell == d:
-                for j in range(6):
-                    mo += mo_coefficients[i] * ao_values[j]
-                    i += 1
-            elif shell == f:
-                for j in range(10):
-                    mo += mo_coefficients[i] * ao_values[j]
-                    i += 1
-            elif shell == g:
-                for j in range(15):
-                    mo += mo_coefficients[i] * ao_values[j]
-                    i += 1
+
+        max_length = 0
+        for ao in aos:
+            len_ao = len(ao.exponents)
+            max_length = max(len_ao, max_length)
+
+        basis_set_exponents = np.zeros((len(aos), max_length), dtype=np.float64)
+        basis_set_coefficients = np.zeros((len(aos), max_length), dtype=np.float64)
+        basis_set_norms = np.zeros((len(aos), max_length), dtype=np.float64)
+        basis_set_ijk = np.zeros((len(aos), 3), dtype=np.int64)
+        basis_set_position = np.zeros((len(aos), 3), dtype=np.float64)
+
+        skip_shells = 0
+        shells = []
+
+        for ao_index, ao in enumerate(aos):
+            basis_set_exponents[ao_index, : len(ao.exponents)] = ao.exponents
+            basis_set_coefficients[ao_index, : len(ao.coefficients)] = ao.coefficients
+            basis_set_norms[ao_index, : len(ao.norms)] = ao.norms
+            basis_set_ijk[ao_index, :] = ao.ijk
+            basis_set_position[ao_index, :] = ao.position * ANGSTROM_TO_BOHR
+            if skip_shells == 0:
+                if sum(ao.ijk) == s:
+                    shells.append(s)
+                elif sum(ao.ijk) == p:
+                    shells.append(p)
+                    skip_shells = 2
+                elif sum(ao.ijk) == d:
+                    shells.append(d)
+                    skip_shells = 5
+                elif sum(ao.ijk) == f:
+                    shells.append(f)
+                    skip_shells = 9
+                elif sum(ao.ijk) == g:
+                    shells.append(g)
+                    skip_shells = 14
             else:
-                msg = f"The shell {shell} type is not supported."
-                raise ValueError(msg)
-        return mo
+                skip_shells -= 1
+
+        shells = np.array(shells, dtype=np.int64)
+
+        mo_coefficients = np.array(self.coefficients[:, index], dtype=np.float64)
+        aos_values = np.zeros(len(mo_coefficients), dtype=np.float64)
+        electron_position = np.array(electron_position, dtype=np.float64) * ANGSTROM_TO_BOHR
+
+        return calculate_mo_cartesian(
+            electron_position,
+            basis_set_position,
+            basis_set_coefficients,
+            basis_set_exponents,
+            basis_set_norms,
+            shells,
+            mo_coefficients,
+            aos_values,
+        )
 
     def construct_transformation_matrices(self) -> None:  # noqa: PLR0915
         """Construct the transformation matrices for the spherical to cartesian transformation."""
