@@ -153,7 +153,7 @@ class MolecularOrbitals:
             else:
                 skip_shells -= 1
 
-        shells = np.array(shells, dtype=np.int64)
+        new_shells = np.array(shells, dtype=np.int64)
 
         mo_coefficients = np.array(self.coefficients[:, index], dtype=np.float64)
         aos_values = np.zeros(len(mo_coefficients), dtype=np.float64)
@@ -165,7 +165,7 @@ class MolecularOrbitals:
             basis_set_coefficients,
             basis_set_exponents,
             basis_set_norms,
-            shells,
+            new_shells,
             mo_coefficients,
             aos_values,
         )
