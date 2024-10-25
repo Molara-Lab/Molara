@@ -69,7 +69,9 @@ class WorkaroundTestMOsDialog:
         testargs = ["molara", "examples/molden/h2o.molden"]
         with mock.patch.object(sys, "argv", testargs):
             self.main_window.show_init_xyz()
-        number_of_orbitals_for_h2o = 124
+        self.main_window.show_mo_dialog()
+        self.mo_dialog = self.main_window.mo_dialog
+        number_of_orbitals_for_h2o = 43
         assert self.mo_dialog.number_of_orbitals == number_of_orbitals_for_h2o
 
     def _test_spin_selection(self) -> None:
