@@ -30,7 +30,7 @@ cpdef generate_voxel_grid(
     cdef int number_of_aos = len(aos)
     cdef double[:, :, :] voxel_grid = npc.ndarray(shape=(voxel_count[0], voxel_count[1], voxel_count[2]), dtype=np.float64)
     cdef double[:, :] orbital_positions = npc.ndarray(shape=(number_of_aos, 3), dtype=np.float64)
-    cdef long[:,:] orbital_ijks = npc.ndarray(shape=(number_of_aos, 3), dtype=np.int64)
+    cdef long[:,:] orbital_ijks = npc.ndarray(shape=(number_of_aos, 3), dtype=np.intp)
     cdef int max_length = 0, ao_index, i, j, k, l, len_ao
     cdef double[:] aos_values = npc.ndarray(shape=15) # only up to g orbitals!
     cdef double[:] electron_position = npc.ndarray(shape=3)
