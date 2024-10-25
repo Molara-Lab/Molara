@@ -642,4 +642,4 @@ class TestAtomicOrbitals(TestCase):
             compare_vals.append(aos_vals)
         compare_vals = np.array(compare_vals)
         test_vals = compare_vals - reference
-        assert(test_vals.all() == 0.0)
+        assert test_vals.all() == 0.0
