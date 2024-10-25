@@ -24,7 +24,7 @@ class TestMolecularOrbitals(TestCase):
         self.aos = molecule.basis_set
 
     def test_mo_evaluation(self) -> None:
-        """Test Camera setup."""
+        """Test the calculation of the MO for a given electron position."""
         val = self.mos.get_mo_value(1, self.aos, np.array([0.10154165, 0.465418564, -1.498185465]))
         # Generated after comparing the mos with the mos of multiwfn.
         reference = 0.009741653204777932

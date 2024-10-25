@@ -25,7 +25,7 @@ class TestAtomicOrbitals(TestCase):
         self.aos = molecule.basis_set
 
     def test_ao_evaluation(self) -> None:
-        """Test Camera setup."""
+        """Test the calculation of the AO for a given electron position."""
         electron_coords = np.array([0.10154165, 0.465418564, -1.498185465])
         # get the all the different basis functions
         # Generated after comparing the mos with the mos of multiwfn.
