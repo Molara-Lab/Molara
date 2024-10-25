@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-import sys
-from unittest import TestCase, mock
+from unittest import TestCase
 
 import numpy as np
-from PySide6.QtGui import QSurfaceFormat
-from PySide6.QtWidgets import QApplication
+
 
 from molara.eval.aos import calculate_aos
-from molara.gui.main_window import MainWindow
-from molara.structure.molecule import Molecule
+from molara.structure.io.importer import GeneralImporter
+
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -21,21 +19,12 @@ class TestAtomicOrbitals(TestCase):
 
     def setUp(self) -> None:
         """Initialize the program."""
-        _format = QSurfaceFormat()
-        _format.setVersion(3, 3)
-        _format.setSamples(4)
-        _format.setProfile(QSurfaceFormat.CoreProfile)  # type: ignore[attr-defined]
-        QSurfaceFormat.setDefaultFormat(_format)
-        self.app = QApplication([]) if QApplication.instance() is None else QApplication.instance()
-        self.main_window = MainWindow()
-        self.main_window.show()
-        testargs = ["molara", "examples/molden/SPDFG_orbitals.molden"]
-        with mock.patch.object(sys, "argv", testargs):
-            self.main_window.show_init_xyz()
-
-        if isinstance(self.main_window.structure_widget.structures[0], Molecule):
-            self.mos = self.main_window.structure_widget.structures[0].mos
-            self.aos = self.main_window.structure_widget.structures[0].basis_set
+        path = "examples/molden/SPDFG_orbitals.molden"
+        importer = GeneralImporter(path)
+        molecule = importer.load().mols[0]
+        molecule.center_coordinates()
+        self.mos = molecule.mos
+        self.aos = molecule.basis_set
 
     def test_ao_evaluation(self) -> None:
         """Test Camera setup."""
