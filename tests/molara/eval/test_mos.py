@@ -6,7 +6,6 @@ from unittest import TestCase
 
 import numpy as np
 
-from molara.structure.molecules import Molecules
 from molara.structure.io.importer import GeneralImporter
 
 __copyright__ = "Copyright 2024, Molara"
