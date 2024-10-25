@@ -16,7 +16,6 @@ class TestMolecularOrbitals(TestCase):
 
     def setUp(self) -> None:
         """Initialize the program."""
-        pass
 
     def test_mo_evaluation(self) -> None:
         """Test the calculation of the MO for a given electron position."""
@@ -30,7 +29,7 @@ class TestMolecularOrbitals(TestCase):
         # Generated after comparing the mos with the mos of multiwfn.
         reference = 0.009741653204777932
         assert val == reference
-        
+
         path = "examples/molden/SPDFG_orbitals.molden"
         importer = GeneralImporter(path)
         molecule = importer.load().mols[0]
