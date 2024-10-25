@@ -4,7 +4,7 @@ cpdef double calculate_mo_cartesian(
         double[:,:],
         double[:,:],
         double[:,:],
-        long[:,:],
+        long[:],
         double[:],
         double[:],
 ) nogil
