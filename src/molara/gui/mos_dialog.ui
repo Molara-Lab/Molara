@@ -152,7 +152,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>calculated Electroncount:</string>
+     <string>Calculated Electroncount:</string>
     </property>
    </widget>
    <widget class="QLabel" name="exactCountLabel">

@@ -134,7 +134,7 @@ class Ui_MOs_dialog(object):
         self.betaCheckBox.setText(QCoreApplication.translate("MOs_dialog", u"Beta", None))
         self.restrictedLabel.setText(QCoreApplication.translate("MOs_dialog", u"Restricted", None))
         self.label_2.setText(QCoreApplication.translate("MOs_dialog", u"Exact Electroncount:", None))
-        self.label_8.setText(QCoreApplication.translate("MOs_dialog", u"calculated Electroncount:", None))
+        self.label_8.setText(QCoreApplication.translate("MOs_dialog", u"Calculated Electroncount:", None))
         self.exactCountLabel.setText("")
         self.normalizationButton.setText(QCoreApplication.translate("MOs_dialog", u"Check Normalization", None))
         self.calculatedCountLabel.setText("")
