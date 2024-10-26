@@ -43,7 +43,7 @@ def marching_cubes(
                         [i + 1, j + 1, k],
                         [i + 1, j + 1, k + 1],
                     ],
-                    dtype=np.uint32,
+                    dtype=np.int32,
                 )
                 voxel_values = np.zeros(8)
                 for corner_index in range(8):
