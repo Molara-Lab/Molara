@@ -102,6 +102,7 @@ class Crystal(Structure):
         for atomic_number_i, position_i in zip(
             self.atomic_nums_unitcell,
             self.coords_unitcell,
+            strict=True,
         ):
             self.atomic_nums_supercell = np.append(
                 self.atomic_nums_supercell,
