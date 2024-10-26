@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING
 from numpy import deg2rad
 
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
+
+    from molara.gui.main_window import MainWindow
 
 
 class WorkaroundTestBuilderDialog:

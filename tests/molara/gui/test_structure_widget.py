@@ -7,17 +7,19 @@ from typing import TYPE_CHECKING
 from unittest import mock
 
 import numpy as np
-from molara.Gui.structure_widget import BUILDER, MEASUREMENT
-from molara.Structure.crystal import Crystal
-from molara.Structure.crystals import Crystals
-from molara.util.testing import assert_vectors_equal
 from numpy.testing import assert_array_equal
 from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QMouseEvent
 
+from molara.gui.structure_widget import BUILDER, MEASUREMENT
+from molara.structure.crystal import Crystal
+from molara.structure.crystals import Crystals
+from molara.util.testing import assert_vectors_equal
+
 if TYPE_CHECKING:
-    from molara.Gui.main_window import MainWindow
     from pytestqt.qtbot import QtBot
+
+    from molara.gui.main_window import MainWindow
 
 
 class WorkaroundTestStructureWidget:

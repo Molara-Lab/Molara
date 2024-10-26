@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=65", "cython", "oldest-supported-numpy", "wheel"]
+requires = ["setuptools>=65", "cython", "numpy>=2.0.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -31,7 +31,7 @@ dependencies = [
     "PyOpenGL>=3.1.6",
     "PySide6>=6.3.0", # tests fail below
     "matplotlib>=3.6.2", # see https://github.com/matplotlib/matplotlib/pull/24158
-    "numpy~=1.22",
+    "numpy>=1.22",
     "pyrr>=0.10.3",
     "scipy>=1.7.0",
 ]
@@ -80,11 +80,11 @@ dev = [
     "molara[doc]",
 ]
 strict = [
-    "PySide6==6.6.2",
-    "numpy==1.26.2",
+    "PySide6==6.7.3",
+    "numpy==2.1.1",
     "pyrr==0.10.3",
-    "scipy==1.11.4",
-    "cython==0.29.24",
+    "scipy==1.14.1",
+    "cython==3.0.11",
 ]
 compchem = [
     "cclib>=1.7",
@@ -96,6 +96,9 @@ crystal = [
 
 [project.scripts]
 molara = "molara.__main__:main"
+
+[tool.coverage.run]
+source = ["src/*"]
 
 [tool.ruff]
 exclude = ["ui_*",]
