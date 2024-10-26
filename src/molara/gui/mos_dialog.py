@@ -259,14 +259,18 @@ class MOsDialog(QDialog):
 
     def toggle_box(self) -> None:
         """Toggle the cube."""
+        self.parent().structure_widget.makeCurrent()
         self.display_box = not self.display_box
         if not self.display_box:
             self.remove_box()
+            self.ui.toggleDisplayBoxButton.setText("Display Box")
             return
+        self.ui.toggleDisplayBoxButton.setText("Hide Box")
         self.draw_box()
 
     def remove_box(self) -> None:
         """Remove the box."""
+        self.parent().structure_widget.makeCurrent()
         if self.box_spheres != -1:
             self.parent().structure_widget.renderer.remove_sphere(self.box_spheres)
             self.box_spheres = -1
@@ -277,6 +281,7 @@ class MOsDialog(QDialog):
 
     def draw_box(self) -> None:
         """Draw the box."""
+        self.parent().structure_widget.makeCurrent()
         self.remove_box()
         self.scale_box()
         corners = self.calculate_corners_of_cube()
