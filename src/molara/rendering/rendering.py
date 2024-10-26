@@ -269,6 +269,41 @@ class Renderer:
         sphere = self.spheres[i_sphere]
         self.remove_object(sphere)
 
+    @staticmethod
+    def update_vao(
+        vao_dict: dict,
+        vertices: np.ndarray,
+        indices: np.ndarray,
+        model_matrices: np.ndarray,
+        colors: np.ndarray,
+    ) -> None:
+        """Update the vertex attribute object.
+
+        :param vao_dict: Vertex attribute object.
+        :type vao_dict: dict
+        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
+        :type vertices: numpy.array of numpy.float32
+        :param indices: Gives the connectivity of the vertices.
+        :type indices: numpy.array of numpy.uint32
+        :param model_matrices: Each matrix gives the transformation from object space to world.
+        :type model_matrices: numpy.array of numpy.float32
+        :param colors: Colors of the object.
+        :type colors: numpy.array of numpy.float32
+        :return:
+        """
+        if vao_dict["vao"] != 0:
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+            for buffer in vao_dict["buffers"]:
+                glDeleteBuffers(1, int(buffer))
+            glDeleteVertexArrays(1, int(vao_dict["vao"]))
+        vao_dict["vao"], vao_dict["buffers"] = setup_vao(
+            vertices,
+            indices,
+            model_matrices,
+            colors,
+        )
+
     def update_atoms_vao(
         self,
         vertices: np.ndarray,
@@ -288,20 +323,32 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :return:
         """
-        if self.atoms_vao["vao"] != 0:
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in self.atoms_vao["buffers"]:
-                glDeleteBuffers(1, int(buffer))
-            glDeleteVertexArrays(1, int(self.atoms_vao["vao"]))
-        self.atoms_vao["vao"], self.atoms_vao["buffers"] = setup_vao(
-            vertices,
-            indices,
-            model_matrices,
-            colors,
-        )
+        Renderer.update_vao(self.atoms_vao, vertices, indices, model_matrices, colors)
         self.atoms_vao["n_atoms"] = len(model_matrices)
         self.atoms_vao["n_vertices"] = len(vertices)
+
+    def update_bonds_vao(
+        self,
+        vertices: np.ndarray,
+        indices: np.ndarray,
+        model_matrices: np.ndarray,
+        colors: np.ndarray,
+    ) -> None:
+        """Update the vertex attribute object for the bonds.
+
+        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
+        :type vertices: numpy.array of numpy.float32
+        :param indices: Gives the connectivity of the vertices.
+        :type indices: numpy.array of numpy.uint32
+        :param model_matrices: Each matrix gives the transformation from object space to world.
+        :type model_matrices: numpy.array of numpy.float32
+        :param colors: Colors of the bonds.
+        :type colors: numpy.array of numpy.float32
+        :return:
+        """
+        Renderer.update_vao(self.bonds_vao, vertices, indices, model_matrices, colors)
+        self.bonds_vao["n_bonds"] = len(model_matrices)
+        self.bonds_vao["n_vertices"] = len(vertices)
 
     def draw_numbers(
         self,
@@ -326,40 +373,6 @@ class Renderer:
 
         vao, buffers = setup_vao_numbers(digits, positions_3d)
         self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
-
-    def update_bonds_vao(
-        self,
-        vertices: np.ndarray,
-        indices: np.ndarray,
-        model_matrices: np.ndarray,
-        colors: np.ndarray,
-    ) -> None:
-        """Update the vertex attribute object for the bonds.
-
-        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
-        :type vertices: numpy.array of numpy.float32
-        :param indices: Gives the connectivity of the vertices.
-        :type indices: numpy.array of numpy.uint32
-        :param model_matrices: Each matrix gives the transformation from object space to world.
-        :type model_matrices: numpy.array of numpy.float32
-        :param colors: Colors of the bonds.
-        :type colors: numpy.array of numpy.float32
-        :return:
-        """
-        if self.bonds_vao["vao"] != 0:
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in self.bonds_vao["buffers"]:
-                glDeleteBuffers(1, int(buffer))
-            glDeleteVertexArrays(1, int(self.bonds_vao["vao"]))
-        self.bonds_vao["vao"], self.bonds_vao["buffers"] = setup_vao(
-            vertices,
-            indices,
-            model_matrices,
-            colors,
-        )
-        self.bonds_vao["n_bonds"] = len(model_matrices)
-        self.bonds_vao["n_vertices"] = len(vertices)
 
     def draw_scene(
         self,
