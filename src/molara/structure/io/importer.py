@@ -20,6 +20,7 @@ from molara.structure.io.importer_crystal import (
 from molara.structure.molecularorbitals import MolecularOrbitals
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
+from molara.util.exceptions import FileFormatError, FileImporterError
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -36,14 +37,6 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 bohr_to_angstrom = 5.29177210903e-1
-
-
-class FileImporterError(Exception):
-    """Base class for errors occurring when loading molecules from file."""
-
-
-class FileFormatError(FileImporterError):
-    """Raised when the file format is wrong or unsupported."""
 
 
 class MoleculesImporter(ABC):

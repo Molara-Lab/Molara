@@ -17,14 +17,6 @@ if TYPE_CHECKING:
 __copyright__ = "Copyright 2024, Molara"
 
 
-class FileExporterError(Exception):
-    """Base class for errors occurring when loading molecules from file."""
-
-
-class FileFormatError(FileExporterError):
-    """Raised when the file format is wrong or unsupported."""
-
-
 class StructureExporter(ABC):
     """Base class for structure exporters."""
 
