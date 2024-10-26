@@ -276,7 +276,7 @@ class StructureWidget(QOpenGLWidget):
 
         :param event: mouse event (such as left click, right click...)
         """
-        if event.position().x() not in range(self.width()) or event.position().y() not in range(self.height()):
+        if not 0 < event.position().x() < self.width() or not 0 < event.position().y() < self.height():
             return
 
         if event.button() == Qt.MouseButton.LeftButton:
