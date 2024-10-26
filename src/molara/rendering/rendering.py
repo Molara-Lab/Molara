@@ -26,6 +26,7 @@ from OpenGL.GL import (
     glDeleteBuffers,
     glDeleteVertexArrays,
     glDrawArrays,
+    glDrawArraysInstanced,
     glDrawElementsInstanced,
     glEnable,
     glGetUniformLocation,
@@ -60,6 +61,8 @@ class Renderer:
         self.cylinders: list[dict] = []
         self.number_vao: list[dict] = []
         self.shaders: list[GLuint] = [0]
+        self.polygons: list[dict] = []
+        self.wire_mesh_orbitals = False
 
     def set_shaders(self, shaders: list[GLuint]) -> None:
         """Set the shader program for the opengl widget.
@@ -111,6 +114,71 @@ class Renderer:
             obj_list.append(obj)
 
         return i_obj
+
+    def draw_polygon(
+        self,
+        vertices: np.ndarray,
+        colors: np.ndarray,
+    ) -> int:
+        """Draw one polygon.
+
+        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
+        :param colors: Colors of the vertices.
+        :return: Returns the index of the polygon in the list of polygons.
+        """
+        n_instances = 1
+        model_matrices = np.array([np.identity(4, dtype=np.float32)]).reshape((1, 4, 4))
+        polygon = {
+            "vao": 0,
+            "n_instances": n_instances,
+            "n_vertices": len(vertices) // 6,
+            "buffers": [],
+        }
+        polygon["vao"], polygon["buffers"] = setup_vao(
+            vertices,
+            None,
+            model_matrices,
+            colors,
+        )
+
+        # get index of new polygon instances in list
+        i_polygon = -1
+        if len(self.polygons) != 0:
+            for i, check_polygon in enumerate(self.polygons):
+                if check_polygon["vao"] == 0:
+                    i_polygon = i
+                    self.polygons[i_polygon] = polygon
+                    break
+            if i_polygon == -1:
+                i_polygon = len(self.polygons)
+                self.polygons.append(polygon)
+        else:
+            i_polygon = 0
+            self.polygons.append(polygon)
+        return i_polygon
+
+    def remove_polygon(self, i_polygon: int) -> None:
+        """Remove a polygon from the list of polygon.
+
+        :param i_polygon: Index of the polygon to remove.
+        :return:
+        """
+        if i_polygon >= len(self.polygons):
+            return
+
+        polygon = self.polygons[i_polygon]
+        if polygon["vao"] != 0:
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+            for buffer in polygon["buffers"]:
+                glDeleteBuffers(1, buffer)
+            glDeleteVertexArrays(1, polygon["vao"])
+        self.polygons[i_polygon] = {
+            "vao": 0,
+            "n_instances": 0,
+            "n_vertices": 0,
+            "buffers": [],
+        } 
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -385,7 +453,6 @@ class Renderer:
         :type bonds: bool
         :return:
         """
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glUseProgram(self.shaders[0])
         light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
@@ -423,6 +490,21 @@ class Renderer:
         # Draw spheres
         for sphere in self.spheres:
             _draw(sphere, "n_instances")
+
+        # Draw polygons
+        if self.wire_mesh_orbitals:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+        for polygon in self.polygons:
+            if polygon["vao"] != 0:
+                glBindVertexArray(polygon["vao"])
+                glDrawArraysInstanced(
+                    GL_TRIANGLES,
+                    0,
+                    polygon["n_vertices"],
+                    polygon["n_instances"],
+                )
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         # Draw cylinders
         for cylinder in self.cylinders:

@@ -13,7 +13,7 @@ import numpy as np
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
-from molara.structure.io.exceptions import FileFormatError
+from molara.util.exceptions import FileFormatError
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -150,7 +150,7 @@ class PoscarImporter(Importer):
         atomic_numbers = [element_symbol_to_atomic_number(symb) for symb in species]
 
         atomic_numbers_extended = []
-        for num, an in zip(numbers, atomic_numbers):
+        for num, an in zip(numbers, atomic_numbers, strict=True):
             atomic_numbers_extended.extend(num * [an])
 
         scale_unitcell_to_volume = scale < 0

@@ -28,37 +28,36 @@ fact2 = [
 ]
 
 
-class Basisset:
-    """Class for either a STO or GTO basisset for each atom in the same order as in molecule.
+class BasisSet:
+    """Class for either an STO or GTO basis set for each atom, in the same order as in the molecule.
 
-    GTOs are gaussian type orbitals, STOs are slater type orbitals.
+    GTOs are Gaussian-type orbitals; STOs are Slater-type orbitals.
     """
 
     def __init__(self, basis_type: str = "None") -> None:
         """Initialize the Basisset class.
 
-        :param basis_type: str.
+        :param basis_type: Can be either GTO or STO. This will be worked on in the future, currently only GTOs.
         :return:
         """
         self.basis_type: str = basis_type
-        self.orbitals: dict = {}
-        self.orbitals_list: list = []
+        self.basis_functions: dict = {}
 
-        # self.generate_ijk()
-
-    def generate_orbitals(  # noqa: C901
+    def generate_basis_functions(  # noqa: C901
         self,
         shells: list,
         exponents: list,
         coefficients: list,
         position: np.ndarray,
+        normalization_mode: str = "none",
     ) -> None:
-        """Generate the orbitals for the basisset and normalizes the primitive functions.
+        """Generate the basis functions for the basis set and normalizes the primitive functions if needed.
 
-        :param shells: list of shells
-        :param exponents: list of exponents
-        :param coefficients: list of coefficients
-        :param position: list of positions
+        :param shells: list of shells (can be s, p, d, f, or g)
+        :param exponents: list of exponents of the primitive Gauss functions
+        :param coefficients: list of the contraction coefficients of the primitive Gauss functions
+        :param position: list of the centers of the primitive Gauss functions
+        :param normalization_mode: mode for normalization of the basis functions some programs prenormalize
         :return:
         """
         i = 0
@@ -120,62 +119,66 @@ class Basisset:
             exponents[i] = np.array(exponents[i])
             ijks = np.array(ijks, dtype=int)
             if shell == "s":
-                self.orbitals[f"s{si}"] = Orbital(
+                self.basis_functions[f"s{si}"] = BasisFunction(
                     ijks[0],
                     exponents[i],
                     coefficients[i],
                     position,
+                    normalization_mode,
                 )
                 si += 1
                 i += 1
             elif shell == "p":
                 for j, orb in enumerate(orbs[1]):
-                    self.orbitals[f"{orb}{pi}"] = Orbital(
+                    self.basis_functions[f"{orb}{pi}"] = BasisFunction(
                         ijks[j],
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 pi += 1
                 i += 1
             elif shell == "d":
                 for j, orb in enumerate(orbs[2]):
-                    self.orbitals[f"{orb}{di}"] = Orbital(
+                    self.basis_functions[f"{orb}{di}"] = BasisFunction(
                         ijks[j],
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 di += 1
                 i += 1
             elif shell == "f":
                 for j, orb in enumerate(orbs[3]):
-                    self.orbitals[f"{orb}{fi}"] = Orbital(
+                    self.basis_functions[f"{orb}{fi}"] = BasisFunction(
                         ijks[j],
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 fi += 1
                 i += 1
             elif shell == "g":
                 for j, orb in enumerate(orbs[4]):
-                    self.orbitals[f"{orb}{gi}"] = Orbital(
+                    self.basis_functions[f"{orb}{gi}"] = BasisFunction(
                         ijks[j],
                         exponents[i],
                         coefficients[i],
                         position,
+                        normalization_mode,
                     )
                 gi += 1
                 i += 1
             else:
                 msg = f"The shell {shell} type is not supported."
                 raise TypeError(msg)
-            self.orbitals_list = list(self.orbitals.values())
 
 
-class Orbital:
-    """Class to store either an STO or GTO."""
+class BasisFunction:
+    """Class to store a GTO."""
 
     def __init__(
         self,
@@ -183,25 +186,142 @@ class Orbital:
         exponents: np.ndarray,
         coefficients: np.ndarray,
         position: np.ndarray,
+        normalization_mode: str,
     ) -> None:
-        """Initialize the orbital class.
+        """Initialize the BasisFunction class.
 
         :param ijk: list of ijk values
         :param exponents: list of exponents
         :param coefficients: list of coefficients
         :param position: position of the orbital
+        :param normalization_mode: mode for normalization of the basis functions some programs prenormalize
         :return:
         """
+        self.position = position
         self.ijk = ijk
         self.exponents = exponents
-        self.norms = calculate_normalization_primitive_gtos(ijk, exponents)
+        self.norms = np.zeros(len(coefficients))
+
+        if normalization_mode == "orca":
+            self.norms[:] = 1.0
+        elif normalization_mode == "molpro":
+            self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
+        elif normalization_mode == "none":
+            # maybe create warning class and print a warning here
+            self.norms[:] = calculate_normalization_primitive_gtos(ijk, exponents)
+
         self.coefficients = coefficients * calculate_normalization_contracted_gtos(
             ijk,
             exponents,
             coefficients,
             self.norms,
         )
-        self.position = position
+
+
+def hermite_coefs(  # noqa: PLR0913
+    i: int,
+    j: int,
+    t: int,
+    qx: float,
+    a: float,
+    b: float,
+) -> float:
+    """Recursive definition of Hermite Gaussian coefficients.
+
+    Returns a float.
+    :param i: orbital angular momentum number on Gaussian 'a'
+    :param j: orbital angular momentum number on Gaussian 'b'
+    :param t: number nodes in Hermite (depends on type of integral,
+                e.g. always zero for overlap integrals)
+    :param qx: distance between origins of Gaussian 'a' and 'b'
+    :param a: orbital exponent on Gaussian 'a' (e.g. alpha in the text)
+    :param b: orbital exponent on Gaussian 'b' (e.g. beta in the text)
+    """
+    p = a + b
+    q = a * b / p
+    if (t < 0) or (t > (i + j)):
+        return 0.0  # out of bounds for t
+    if i == j == t == 0:
+        # base case
+        return np.exp(-q * qx * qx)  # K_AB
+
+    if j == 0:
+        # decrement index i
+        return (
+            (1 / (2 * p)) * hermite_coefs(i - 1, j, t - 1, qx, a, b)
+            - (q * qx / a) * hermite_coefs(i - 1, j, t, qx, a, b)
+            + (t + 1) * hermite_coefs(i - 1, j, t + 1, qx, a, b)
+        )
+
+    # decrement index j
+    return (
+        (1 / (2 * p)) * hermite_coefs(i, j - 1, t - 1, qx, a, b)
+        + (q * qx / b) * hermite_coefs(i, j - 1, t, qx, a, b)
+        + (t + 1) * hermite_coefs(i, j - 1, t + 1, qx, a, b)
+    )
+
+
+def primitive_overlap(  # noqa: PLR0913
+    a: float,
+    lmn1: np.ndarray,
+    a_xyz: np.ndarray,
+    b: float,
+    lmn2: np.ndarray,
+    b_xyz: np.ndarray,
+) -> float:
+    """Evaluate overlap integral between two Gaussians.
+
+    Returns a float.
+    :param a: orbital exponent on Gaussian 'a' (e.g. alpha in the text)
+    :param b: orbital exponent on Gaussian 'b' (e.g. beta in the text)
+    :param lmn1: int tuple containing orbital angular momentum (e.g. (1,0,0))
+          for Gaussian 'a'
+    :param lmn2: int tuple containing orbital angular momentum for Gaussian 'b'
+    :param a_xyz: list containing origin of Gaussian 'a', e.g. [1.0, 2.0, 0.0]
+    :param b_xyz: list containing origin of Gaussian 'b'
+    """
+    l1, m1, n1 = lmn1  # shell angular momentum on Gaussian 'a'
+    l2, m2, n2 = lmn2  # shell angular momentum on Gaussian 'b'
+
+    s1 = hermite_coefs(l1, l2, 0, a_xyz[0] - b_xyz[0], a, b)  # X
+    s2 = hermite_coefs(m1, m2, 0, a_xyz[1] - b_xyz[1], a, b)  # Y
+    s3 = hermite_coefs(n1, n2, 0, a_xyz[2] - b_xyz[2], a, b)  # Z
+    return s1 * s2 * s3 * np.power(np.pi / (a + b), 1.5)
+
+
+def contracted_overlap(
+    a: BasisFunction,
+    b: BasisFunction,
+    a_xyz: np.ndarray,
+    b_xyz: np.ndarray,
+) -> float:
+    """Evaluate overlap between two contracted Gaussians.
+
+    Returns a float.
+    :param a: contracted Gaussian 'a', BasisFunction object
+    :param b: contracted Gaussian 'b', BasisFunction object
+    :param a_xyz: list containing origin of contracted Gaussian 'a' in atomic units
+    :param b_xyz: list containing origin of contracted Gaussian 'b' in atomic units
+    :return: overlap between contracted Gaussians 'a' and 'b'
+    """
+    s = 0.0
+    for ia, ca in enumerate(a.coefficients):
+        for ib, cb in enumerate(b.coefficients):
+            s += (
+                a.norms[ia]
+                * b.norms[ib]
+                * ca
+                * cb
+                * primitive_overlap(
+                    a.exponents[ia],
+                    a.ijk,
+                    a_xyz,
+                    b.exponents[ib],
+                    b.ijk,
+                    b_xyz,
+                )
+            )
+    return s
 
 
 def calculate_normalization_primitive_gtos(
