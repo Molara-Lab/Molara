@@ -383,6 +383,7 @@ class MOsDialog(QDialog):
 
     def remove_orbitals(self) -> None:
         """Remove the drawn orbitals."""
+        self.parent().structure_widget.makeCurrent()
         for orb in self.drawn_orbitals:
             if orb != -1:
                 self.parent().structure_widget.renderer.remove_polygon(orb)
