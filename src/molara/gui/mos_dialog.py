@@ -152,6 +152,7 @@ class MOsDialog(QDialog):
 
     def toggle_wire_mesh(self) -> None:
         """Display the orbitals in the wire mesh mode."""
+        self.parent().structure_widget.makeCurrent()
         self.parent().structure_widget.renderer.wire_mesh_orbitals = not (
             self.parent().structure_widget.renderer.wire_mesh_orbitals
         )
@@ -323,6 +324,7 @@ class MOsDialog(QDialog):
 
     def visualize_orbital(self) -> None:
         """Visualize the orbital."""
+        self.parent().structure_widget.makeCurrent()
         assert self.mos is not None
         self.voxel_size = np.array(
             [
