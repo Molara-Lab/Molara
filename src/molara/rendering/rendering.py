@@ -178,7 +178,7 @@ class Renderer:
             "n_instances": 0,
             "n_vertices": 0,
             "buffers": [],
-        } 
+        }
 
     def draw_cylinders(  # noqa: PLR0913
         self,
