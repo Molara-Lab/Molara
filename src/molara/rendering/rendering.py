@@ -403,51 +403,33 @@ class Renderer:
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        # Draw atoms
-        if self.atoms_vao["vao"] != 0:
-            glBindVertexArray(self.atoms_vao["vao"])
+        def _draw(obj: dict, n_instances_key: str = "n_instances") -> None:
+            if obj["vao"] == 0:
+                return
+            glBindVertexArray(obj["vao"])
             glDrawElementsInstanced(
                 GL_TRIANGLES,
-                self.atoms_vao["n_vertices"],
+                obj["n_vertices"],
                 GL_UNSIGNED_INT,
                 None,
-                self.atoms_vao["n_atoms"],
+                obj[n_instances_key],
             )
 
+        # Draw atoms
+        _draw(self.atoms_vao, "n_atoms")
+
         # Draw bonds
-        if self.bonds_vao["vao"] != 0 and bonds:
-            glBindVertexArray(self.bonds_vao["vao"])
-            glDrawElementsInstanced(
-                GL_TRIANGLES,
-                self.bonds_vao["n_vertices"],
-                GL_UNSIGNED_INT,
-                None,
-                self.bonds_vao["n_bonds"],
-            )
+        if bonds:
+            _draw(self.bonds_vao, "n_bonds")
 
         # Draw spheres
         for sphere in self.spheres:
-            if sphere["vao"] != 0:
-                glBindVertexArray(sphere["vao"])
-                glDrawElementsInstanced(
-                    GL_TRIANGLES,
-                    sphere["n_vertices"],
-                    GL_UNSIGNED_INT,
-                    None,
-                    sphere["n_instances"],
-                )
+            _draw(sphere, "n_instances")
 
         # Draw cylinders
         for cylinder in self.cylinders:
-            if cylinder["vao"] != 0:
-                glBindVertexArray(cylinder["vao"])
-                glDrawElementsInstanced(
-                    GL_TRIANGLES,
-                    cylinder["n_vertices"],
-                    GL_UNSIGNED_INT,
-                    None,
-                    cylinder["n_instances"],
-                )
+            _draw(cylinder, "n_instances")
+
         glBindVertexArray(0)
 
     def display_numbers(self, camera: Camera, scale_factor: float) -> None:
