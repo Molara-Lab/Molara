@@ -68,6 +68,50 @@ class Renderer:
         """
         self.shaders = shaders
 
+    @staticmethod
+    def draw_object(
+        n_instances: int,
+        mesh: dict,
+        model_matrices: np.ndarray,
+        colors: np.ndarray,
+    ) -> dict:
+        """Draws the object."""
+        obj = {
+            "vao": 0,
+            "n_instances": n_instances,
+            "n_vertices": len(mesh.vertices),
+            "buffers": [],
+        }
+        obj["vao"], obj["buffers"] = setup_vao(
+            mesh.vertices,
+            mesh.indices,
+            model_matrices,
+            colors,
+        )
+        return obj
+
+    def add_object_to_list(self, obj_list: list[dict], obj: dict) -> int:
+        """Add an object to the list of objects."""
+        # get index of new cylinder instances in list
+        i_obj = -1
+
+        if len(obj_list) == 0:
+            i_obj = 0
+            obj_list.append(obj)
+            return i_obj
+
+        for i, check_obj in enumerate(obj_list):
+            if check_obj["vao"] == 0:
+                i_obj = i
+                obj_list[i_obj] = obj
+                break
+
+        if i_obj == -1:
+            i_obj = len(obj_list)
+            obj_list.append(obj)
+
+        return i_obj
+
     def draw_cylinders(  # noqa: PLR0913
         self,
         positions: np.ndarray,
@@ -112,38 +156,9 @@ class Renderer:
             )
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
-        cylinder = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(cylinder_mesh.vertices),
-            "buffers": [],
-        }
-        cylinder["vao"], cylinder["buffers"] = setup_vao(
-            cylinder_mesh.vertices,
-            cylinder_mesh.indices,
-            model_matrices,
-            colors,
-        )
+        cylinder = Renderer.draw_object(n_instances, cylinder_mesh, model_matrices, colors)
 
-        # get index of new cylinder instances in list
-        i_cylinder = -1
-
-        if len(self.cylinders) == 0:
-            i_cylinder = 0
-            self.cylinders.append(cylinder)
-            return i_cylinder
-
-        for i, check_cylinder in enumerate(self.cylinders):
-            if check_cylinder["vao"] == 0:
-                i_cylinder = i
-                self.cylinders[i_cylinder] = cylinder
-                break
-
-        if i_cylinder == -1:
-            i_cylinder = len(self.cylinders)
-            self.cylinders.append(cylinder)
-
-        return i_cylinder
+        return self.add_object_to_list(self.cylinders, cylinder)
 
     def draw_cylinders_from_to(
         self,
@@ -206,33 +221,9 @@ class Renderer:
                 model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
                 model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
 
-        sphere = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(sphere_mesh.vertices),
-            "buffers": [],
-        }
-        sphere["vao"], sphere["buffers"] = setup_vao(
-            sphere_mesh.vertices,
-            sphere_mesh.indices,
-            model_matrices,  # type: ignore[reportPossiblyUnboundVariable]
-            colors,
-        )
+        sphere = Renderer.draw_object(n_instances, sphere_mesh, model_matrices, colors)
 
-        # get index of new sphere instances in list
-        i_sphere = -1
-        if len(self.spheres) != 0:
-            for i, check_sphere in enumerate(self.spheres):
-                if check_sphere["vao"] == 0:
-                    i_sphere = i
-                    self.spheres[i_sphere] = sphere
-            if i_sphere == -1:
-                i_sphere = len(self.spheres)
-                self.spheres.append(sphere)
-        else:
-            i_sphere = 0
-            self.spheres.append(sphere)
-        return i_sphere
+        return self.add_object_to_list(self.spheres, sphere)
 
     def remove_cylinder(self, i_cylinder: int) -> None:
         """Remove a cylinder from the list of cylinders.
