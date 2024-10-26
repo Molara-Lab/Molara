@@ -197,6 +197,6 @@ class TestCrystal(TestCase):
                 ],
                 dtype=np.float32,
             )
-            - self.crystal.center
+            - self.crystal.center_of_mass
         )
         assert_array_equal(positions, positions_comparison)

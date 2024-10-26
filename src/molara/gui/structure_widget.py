@@ -216,6 +216,7 @@ class StructureWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
+        self.makeCurrent()
         self.renderer.draw_scene(self.camera, self.bonds)
         if self.show_atom_indices:
             self.update_atom_number_labels()

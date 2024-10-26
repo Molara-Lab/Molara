@@ -19,7 +19,7 @@ class TestMos(TestCase):
         importer = GeneralImporter("tests/input_files/molden/h2_cas.molden")
         molecules = importer.load()
         self.mos = molecules.mols[0].mos
-        self.aos = molecules.mols[0].aos
+        self.aos = molecules.mols[0].basis_set
 
     def test_mos(self) -> None:
         """Test if the mos are correct.

@@ -287,7 +287,7 @@ class Crystal(Structure):
                 ],
                 dtype=np.float32,
             )
-            - self.center
+            - self.center_of_mass
         )
 
     @staticmethod
