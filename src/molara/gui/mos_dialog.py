@@ -325,6 +325,7 @@ class MOsDialog(QDialog):
 
     def visualize_orbital(self) -> None:
         """Visualize the orbital."""
+        t00 = time.time()
         self.parent().structure_widget.makeCurrent()
         assert self.mos is not None
         self.voxel_size = np.array(
@@ -348,9 +349,8 @@ class MOsDialog(QDialog):
                 int(size[1] / self.voxel_size[1, 1]) + 1,
                 int(size[2] / self.voxel_size[2, 2]) + 1,
             ],
-            dtype=np.int32,
+            dtype=np.int64,
         )
-        self.mos.calculate_cut_offs(self.aos)
         shells_cut_off = self.mos.cut_off_distances_shells[:, self.selected_orbital]
         t0 = time.time()
         print(shells_cut_off)
@@ -367,37 +367,47 @@ class MOsDialog(QDialog):
             shells_cut_off,
         ))
         t1 = time.time()
-        shells_cut_off[:] = 100
-        print(shells_cut_off)
-        voxel_grid_ = np.array(generate_voxel_grid(
-            np.array(origin, dtype=np.float64),
-            direction,
-            np.array(
-                [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
-                dtype=np.float64,
-            ),
-            voxel_number,
-            self.aos,
-            mo_coefficients,
-            shells_cut_off,
-        ))
+        # shells_cut_off[:] = 100
+        # print(shells_cut_off)
+        # voxel_grid_ = np.array(generate_voxel_grid(
+        #     np.array(origin, dtype=np.float64),
+        #     direction,
+        #     np.array(
+        #         [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
+        #         dtype=np.float64,
+        #     ),
+        #     voxel_number,
+        #     self.aos,
+        #     mo_coefficients,
+        #     shells_cut_off,
+        # ))
         t2 = time.time()
+        print(f"Time for setup: {t0 - t00}")
         print(f"Time for voxel grid generation: {t1 - t0}")
         print(f"Time for voxel grid generation without cut: {t2 - t1}")
-        diff = np.abs(voxel_grid - voxel_grid_)
-        print(f"Max difference: {np.max(diff)}")
-        vertices1, vertices2 = marching_cubes(
+        # diff = np.abs(voxel_grid - voxel_grid_)
+        # print(f"Max difference: {np.max(diff)}")
+
+        # 24 because each voxel can have up to 12 vertices and 12 normals
+        # times 6 because each vertex has 3 coordinates and each normal has 3 coordinates
+        max_vertices = 24 * (voxel_number[0] - 1) * (voxel_number[1] - 1) * (voxel_number[2] - 1) * 6
+        vertices1 = np.zeros(max_vertices, dtype=np.float32)
+        vertices2 = np.zeros(max_vertices, dtype=np.float32)
+
+        _ = marching_cubes(
             voxel_grid,
             iso,
             origin,
-            self.voxel_size,
+            np.array([self.voxel_size[0,0], self.voxel_size[1,1], self.voxel_size[2,2]], dtype=np.float64),
             voxel_number,
+            vertices1,
+            vertices2,
         )
         t3 = time.time()
         print(f"Time for marching cubes: {t3 - t2}")
 
         self.remove_orbitals()
-
+        t4 = time.time()
         orb1 = self.parent().structure_widget.renderer.draw_polygon(
             vertices1,
             np.array([[1, 0, 0]], dtype=np.float32),
@@ -406,6 +416,8 @@ class MOsDialog(QDialog):
             vertices2,
             np.array([[0, 0, 1]], dtype=np.float32),
         )
+        t5 = time.time()
+        print(f"Time for drawing orbitals: {t5 - t4}")
         self.drawn_orbitals = [orb1, orb2]
         self.parent().structure_widget.update()
 

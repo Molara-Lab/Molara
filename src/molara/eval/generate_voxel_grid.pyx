@@ -17,7 +17,7 @@ cpdef generate_voxel_grid(
         double[:] origin,
         double[:, :] direction,
         double[:] voxel_size,
-        int[:] voxel_count,
+        int64_t[:] voxel_count,
         aos,
         mo_coeff,
         cut_off_distances,

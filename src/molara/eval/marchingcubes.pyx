@@ -2,20 +2,19 @@
 
 from __future__ import annotations
 
-from cython.cimports.molara.eval.aos import calculate_aos
-from cython import boundscheck, exceptval
-cimport numpy as npc
 import numpy as np
 from libc.stdint cimport int64_t
 from libc.math cimport sqrt
 
-def marching_cubes(
-    grid: np.ndarray,
-    isovalue: float,
-    origin: np.ndarray,
-    voxel_size: np.ndarray,
-    voxel_number: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray]:
+cpdef int marching_cubes(
+    double[:, :, :] grid,
+    double isovalue,
+    double[:] origin,
+    double[:] voxel_size,
+    int64_t[:] voxel_number,
+    float[:] vertices_1,
+    float[:] vertices_2,
+):
     """Calculate the isosurface for a given voxel grid.
 
     :param grid: 3D numpy array containing the values of the voxels
@@ -23,13 +22,39 @@ def marching_cubes(
     :param origin: origin of the voxel grids (position of the 0, 0, 0 entry)
     :param voxel_size: size of the voxels in each direction
     :param voxel_number: number of voxels in each direction
+    :param vertices_1: vertices of the isosurface of the one phase to be returned
+    :param vertices_2: vertices of the isosurface of the other phase to be returned
     :return: vertices and indices of the isosurface
     """
+    cdef int64_t x_voxels, y_voxels, z_voxels, max_vertices, corner_index, phase, prefactor, ei, vertices_count_1
+    cdef int64_t vertices_count_2, c11, c12, c21, c22, c31, c32
+    cdef int i, j, k, edge_index, count
+    cdef double[:] voxel_values
+    cdef float[:] p11, p12, p21, p22, p31, p32, vertex1, vertex2, vertex3, n1, n2, n3
+    cdef float v11, v12, v21, v22, v31, v32, t1, t2, t3
+    cdef int64_t[:, :] edges_1_2, voxel_indices
+
     x_voxels = voxel_number[0]
     y_voxels = voxel_number[1]
     z_voxels = voxel_number[2]
 
-    verts: list = [[], []]
+    p11 = np.zeros(3, dtype=np.float32)
+    p12 = np.zeros(3, dtype=np.float32)
+    p21 = np.zeros(3, dtype=np.float32)
+    p22 = np.zeros(3, dtype=np.float32)
+    p31 = np.zeros(3, dtype=np.float32)
+    p32 = np.zeros(3, dtype=np.float32)
+
+    vertex1 = np.zeros(3, dtype=np.float32)
+    vertex2 = np.zeros(3, dtype=np.float32)
+    vertex3 = np.zeros(3, dtype=np.float32)
+    n1 = np.zeros(3, dtype=np.float32)
+    n2 = np.zeros(3, dtype=np.float32)
+    n3 = np.zeros(3, dtype=np.float32)
+
+    vertices_count_1 = 0
+    vertices_count_2 = 0
+
     for i in range(x_voxels - 1):
         for j in range(y_voxels - 1):
             for k in range(z_voxels - 1):
@@ -45,9 +70,9 @@ def marching_cubes(
                         [i + 1, j + 1, k],
                         [i + 1, j + 1, k + 1],
                     ],
-                    dtype=np.int32,
+                    dtype=np.int64,
                 )
-                voxel_values = np.zeros(8)
+                voxel_values = np.zeros(8, dtype=np.float64)
                 for corner_index in range(8):
                     voxel_values[corner_index] = grid[
                         voxel_indices[corner_index, 0],
@@ -66,15 +91,14 @@ def marching_cubes(
                         c22 = edge_vertex_indices[edges_1_2[phase][ei * 3 + 1], 1]
                         c31 = edge_vertex_indices[edges_1_2[phase][ei * 3 + 2], 0]
                         c32 = edge_vertex_indices[edges_1_2[phase][ei * 3 + 2], 1]
-                        vs = np.array(
-                            [voxel_size[0, 0], voxel_size[1, 1], voxel_size[2, 2]],
-                        )
-                        p11 = origin + vs * voxel_indices[c11, :]
-                        p12 = origin + vs * voxel_indices[c12, :]
-                        p21 = origin + vs * voxel_indices[c21, :]
-                        p22 = origin + vs * voxel_indices[c22, :]
-                        p31 = origin + vs * voxel_indices[c31, :]
-                        p32 = origin + vs * voxel_indices[c32, :]
+
+                        for count in range(3):
+                            p11[count] = origin[count] + voxel_size[count] * voxel_indices[c11, count]
+                            p12[count] = origin[count] + voxel_size[count] * voxel_indices[c12, count]
+                            p21[count] = origin[count] + voxel_size[count] * voxel_indices[c21, count]
+                            p22[count] = origin[count] + voxel_size[count] * voxel_indices[c22, count]
+                            p31[count] = origin[count] + voxel_size[count] * voxel_indices[c31, count]
+                            p32[count] = origin[count] + voxel_size[count] * voxel_indices[c32, count]
 
                         v11 = voxel_values[c11]
                         v12 = voxel_values[c12]
@@ -99,47 +123,73 @@ def marching_cubes(
                             v32,
                         )
 
-                        vertex1 = list(p11 + t1 * (p12 - p11))
-                        vertex2 = list(p21 + t2 * (p22 - p21))
-                        vertex3 = list(p31 + t3 * (p32 - p31))
-
-                        n1 = list(
-                            -prefactor
-                            * calculate_normal_vertex(
+                        # Get normals
+                        n1 = calculate_normal_vertex(
                                 grid,
                                 voxel_indices[c11, :],
                                 voxel_indices[c12, :],
                                 t1,
-                            ),
-                        )
-                        n2 = list(
-                            -prefactor
-                            * calculate_normal_vertex(
+                            )
+                        n2 = calculate_normal_vertex(
                                 grid,
                                 voxel_indices[c21, :],
                                 voxel_indices[c22, :],
                                 t2,
-                            ),
-                        )
-                        n3 = list(
-                            -prefactor
-                            * calculate_normal_vertex(
+                            )
+                        n3 = calculate_normal_vertex(
                                 grid,
                                 voxel_indices[c31, :],
                                 voxel_indices[c32, :],
                                 t3,
-                            ),
-                        )
-                        verts[phase] += vertex1 + n1 + vertex2 + n2 + vertex3 + n3
+                            )
 
-    return np.array(verts[0], dtype=np.float32), np.array(verts[1], dtype=np.float32)
+                        # Get vertices
+                        for count in range(3):
+                            vertex1[count] = p11[count] + t1 * (p12[count] - p11[count])
+                            vertex2[count] = p21[count] + t2 * (p22[count] - p21[count])
+                            vertex3[count] = p31[count] + t3 * (p32[count] - p31[count])
+                            n1[count] = -prefactor * n1[count]
+                            n2[count] = -prefactor * n2[count]
+                            n3[count] = -prefactor * n3[count]
+
+                        if phase == 0:
+                            vertices_1[vertices_count_1:vertices_count_1 + 3] = vertex1
+                            vertices_count_1 += 3
+                            vertices_1[vertices_count_1:vertices_count_1 + 3] = n1
+                            vertices_count_1 += 3
+                            vertices_1[vertices_count_1:vertices_count_1 + 3] = vertex2
+                            vertices_count_1 += 3
+                            vertices_1[vertices_count_1:vertices_count_1 + 3] = n2
+                            vertices_count_1 += 3
+                            vertices_1[vertices_count_1:vertices_count_1 + 3] = vertex3
+                            vertices_count_1 += 3
+                            vertices_1[vertices_count_1:vertices_count_1 + 3] = n3
+                            vertices_count_1 += 3
+                        else:
+                            vertices_2[vertices_count_2:vertices_count_2 + 3] = vertex1
+                            vertices_count_2 += 3
+                            vertices_2[vertices_count_2:vertices_count_2 + 3] = n1
+                            vertices_count_2 += 3
+                            vertices_2[vertices_count_2:vertices_count_2 + 3] = vertex2
+                            vertices_count_2 += 3
+                            vertices_2[vertices_count_2:vertices_count_2 + 3] = n2
+                            vertices_count_2 += 3
+                            vertices_2[vertices_count_2:vertices_count_2 + 3] = vertex3
+                            vertices_count_2 += 3
+                            vertices_2[vertices_count_2:vertices_count_2 + 3] = n3
+                            vertices_count_2 += 3
+
+    vertices_1 = vertices_1[:vertices_count_1]
+    vertices_2 = vertices_2[:vertices_count_2]
+
+    return 0
 
 
-def calculate_interpolation_value(
-    iso: float,
-    v1: float,
-    v2: float,
-) -> float:
+cpdef inline double calculate_interpolation_value(
+    double iso,
+    float v1,
+    float v2,
+):
     """Calculate the interpolation factor between two corner points.
 
     :param iso: isovalue
@@ -149,20 +199,27 @@ def calculate_interpolation_value(
     return (iso - v1) / (v2 - v1)
 
 
-def calculate_normal_corner(
-    grid: np.ndarray,
-    corner_index: np.ndarray,
-) -> np.ndarray:
+cpdef inline float[:] calculate_normal_corner(
+    double[:, :, :]grid,
+    int64_t[:] corner_index,
+):
     """Calculate the normal of a corner of a voxel.
 
     :param grid: 3D numpy array containing the values of the voxels
     :param corner_index: index of the corner
     :return: normal of the corner
     """
+    cdef int64_t x, y, z, max_x, max_y, max_z, x_minus, x_plus, y_minus, y_plus, z_minus, z_plus
+    cdef float[:] result = np.zeros(3, dtype=np.float32)
+    cdef float dx, dy, dz, norm_of_result
+
+
     x = corner_index[0]
     y = corner_index[1]
     z = corner_index[2]
-    max_x, max_y, max_z = grid.shape
+    max_x = grid.shape[0]
+    max_y = grid.shape[1]
+    max_z = grid.shape[2]
     x_minus = max(x - 1, 0)
     x_plus = min(x + 1, max_x - 1)
     y_minus = max(y - 1, 0)
@@ -172,15 +229,19 @@ def calculate_normal_corner(
     dx = grid[x_plus, y, z] - grid[x_minus, y, z]
     dy = grid[x, y_plus, z] - grid[x, y_minus, z]
     dz = grid[x, y, z_plus] - grid[x, y, z_minus]
-    return np.array([dx, dy, dz]) / np.linalg.norm(np.array([dx, dy, dz]))
+    norm_of_result = sqrt(dx * dx + dy * dy + dz * dz)
+    result[0] = dx * norm_of_result
+    result[1] = dy * norm_of_result
+    result[2] = dz * norm_of_result
+    return result
 
 
-def calculate_normal_vertex(
-    grid: np.ndarray,
-    corner_index_a: np.ndarray,
-    corner_index_b: np.ndarray,
-    t1: float,
-) -> np.ndarray:
+cpdef float[:] calculate_normal_vertex(
+    double[:, :, :] grid,
+    int64_t[:] corner_index_a,
+    int64_t[:] corner_index_b,
+    double t1,
+):
     """Calculate the normal of a vertex. And means it to smooth shade.
 
     :param grid: 3D numpy array containing the values of the voxels
@@ -189,10 +250,20 @@ def calculate_normal_vertex(
     :param t1: interpolation factor
     :return: normal of the vertex
     """
+    cdef float[:] n1, n2
+    cdef float[:] n = np.zeros(3, dtype=np.float32)
+    cdef float norm_of_n
+
     n1 = calculate_normal_corner(grid, corner_index_a)
     n2 = calculate_normal_corner(grid, corner_index_b)
-    n = n1 + t1 * (n2 - n1)
-    return n / np.linalg.norm(n)
+    n[0] = n1[0] + t1 * (n2[0] - n1[0])
+    n[1] = n1[1] + t1 * (n2[1] - n1[1])
+    n[2] = n1[2] + t1 * (n2[2] - n1[2])
+    norm_of_n = sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2])
+    n[0] /= norm_of_n
+    n[1] /= norm_of_n
+    n[2] /= norm_of_n
+    return n
 
 
 cpdef int64_t[:,:] get_edges(
