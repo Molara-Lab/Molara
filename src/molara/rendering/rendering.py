@@ -225,6 +225,24 @@ class Renderer:
 
         return self.add_object_to_list(self.spheres, sphere)
 
+    def remove_object(self, obj: dict) -> None:
+        """Remove an object from the list of objects.
+
+        :param obj: Object to remove.
+        :type obj: dict
+        :return:
+        """
+        if obj["vao"] != 0:
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+            for buffer in obj["buffers"]:
+                glDeleteBuffers(1, [buffer])
+            glDeleteVertexArrays(1, [obj["vao"]])
+        obj["vao"] = 0
+        obj["n_instances"] = 0
+        obj["n_vertices"] = 0
+        obj["buffers"] = []
+
     def remove_cylinder(self, i_cylinder: int) -> None:
         """Remove a cylinder from the list of cylinders.
 
@@ -236,18 +254,7 @@ class Renderer:
             return
 
         cylinder = self.cylinders[i_cylinder]
-        if cylinder["vao"] != 0:
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in cylinder["buffers"]:
-                glDeleteBuffers(1, [buffer])
-            glDeleteVertexArrays(1, [cylinder["vao"]])
-        self.cylinders[i_cylinder] = {
-            "vao": 0,
-            "n_instances": 0,
-            "n_vertices": 0,
-            "buffers": [],
-        }
+        self.remove_object(cylinder)
 
     def remove_sphere(self, i_sphere: int) -> None:
         """Remove a sphere from the list of spheres.
@@ -256,20 +263,11 @@ class Renderer:
         :type i_sphere: int
         :return:
         """
-        if i_sphere < len(self.spheres):
-            sphere = self.spheres[i_sphere]
-            if sphere["vao"] != 0:
-                glBindBuffer(GL_ARRAY_BUFFER, 0)
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-                for buffer in sphere["buffers"]:
-                    glDeleteBuffers(1, [buffer])
-                glDeleteVertexArrays(1, [sphere["vao"]])
-            self.spheres[i_sphere] = {
-                "vao": 0,
-                "n_instances": 0,
-                "n_vertices": 0,
-                "buffers": [],
-            }
+        if i_sphere >= len(self.spheres):
+            return
+
+        sphere = self.spheres[i_sphere]
+        self.remove_object(sphere)
 
     def update_atoms_vao(
         self,
