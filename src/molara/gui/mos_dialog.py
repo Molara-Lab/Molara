@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import Qt
+import time as time
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QCloseEvent
@@ -337,6 +338,7 @@ class MOsDialog(QDialog):
 
         iso = self.ui.isoValueSpinBox.value()
         mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
+        shells_cut_off = self.mos.cut_off_distances_shells[:, self.selected_orbital]
         origin = self.origin
         direction = self.direction
         size = self.size
@@ -348,8 +350,11 @@ class MOsDialog(QDialog):
             ],
             dtype=np.int32,
         )
-
-        voxel_grid = generate_voxel_grid(
+        self.mos.calculate_cut_offs(self.aos)
+        shells_cut_off = self.mos.cut_off_distances_shells[:, self.selected_orbital]
+        t0 = time.time()
+        print(shells_cut_off)
+        voxel_grid = np.array(generate_voxel_grid(
             np.array(origin, dtype=np.float64),
             direction,
             np.array(
@@ -359,7 +364,28 @@ class MOsDialog(QDialog):
             voxel_number,
             self.aos,
             mo_coefficients,
-        )
+            shells_cut_off,
+        ))
+        t1 = time.time()
+        shells_cut_off[:] = 100
+        print(shells_cut_off)
+        voxel_grid_ = np.array(generate_voxel_grid(
+            np.array(origin, dtype=np.float64),
+            direction,
+            np.array(
+                [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
+                dtype=np.float64,
+            ),
+            voxel_number,
+            self.aos,
+            mo_coefficients,
+            shells_cut_off,
+        ))
+        t2 = time.time()
+        print(f"Time for voxel grid generation: {t1 - t0}")
+        print(f"Time for voxel grid generation without cut: {t2 - t1}")
+        diff = np.abs(voxel_grid - voxel_grid_)
+        print(f"Max difference: {np.max(diff)}")
         vertices1, vertices2 = marching_cubes(
             voxel_grid,
             iso,
@@ -367,6 +393,8 @@ class MOsDialog(QDialog):
             self.voxel_size,
             voxel_number,
         )
+        t3 = time.time()
+        print(f"Time for marching cubes: {t3 - t2}")
 
         self.remove_orbitals()
 

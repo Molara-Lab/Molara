@@ -3,8 +3,12 @@
 cimport numpy as npc
 import numpy as np
 from cython.cimports.molara.eval.mos import calculate_mo_cartesian
+from cython import boundscheck, exceptval
+
 from molara.data.constants import ANGSTROM_TO_BOHR
 from libc.stdint cimport int64_t
+
+cdef double ANGSTROM_TO_BOHR_ = ANGSTROM_TO_BOHR
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -16,6 +20,7 @@ cpdef generate_voxel_grid(
         int[:] voxel_count,
         aos,
         mo_coeff,
+        cut_off_distances,
 ):
     """
     Generates a 3D array of values. The voxel grid is defined by the origin, direction, voxel size and voxel count.
@@ -54,6 +59,9 @@ cpdef generate_voxel_grid(
     cdef int64_t[:] shells_temp = npc.ndarray(shape=number_of_aos, dtype=np.int64)
     cdef int skip_shells = 0, shell_index = 0
     cdef int number_of_shells = 0
+    cdef double t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10
+
+    # Prepare the data
     orbital_exponents[:,:] = 0
     orbital_coefficients[:,:] = 0
     orbital_norms[:,:] = 0
@@ -91,21 +99,68 @@ cpdef generate_voxel_grid(
     cdef int64_t[:] shells = npc.ndarray(shape=number_of_shells, dtype=np.int64)
     shells = shells_temp[:number_of_shells]
 
+    # Calculate the grid
+    voxel_grid_loops(
+        electron_position,
+        voxel_grid,
+        direction,
+        voxel_size,
+        voxel_count_i,
+        voxel_count_j,
+        voxel_count_k,
+        origin,
+        orbital_positions,
+        orbital_coefficients,
+        orbital_exponents,
+        orbital_norms,
+        shells,
+        mo_coeff,
+        aos_values,
+        cut_off_distances,
+    )
+    return voxel_grid
+
+@exceptval(check=False)
+@boundscheck(False)
+cdef inline int voxel_grid_loops(
+        double[:] electron_position,
+        double[:, :, :] voxel_grid,
+        double[:, :] direction,
+        double[:] voxel_size,
+        int voxel_count_i,
+        int voxel_count_j,
+        int voxel_count_k,
+        double[:] origin,
+        double[:,:] orbital_positions,
+        double[:,:] orbital_coefficients,
+        double[:,:] orbital_exponents,
+        double[:,:] orbital_norms,
+        int64_t[:] shells,
+        double[:] mo_coeff,
+        double[:] aos_values,
+        double[:] cut_off_distances) nogil:
+
+    cdef int i, j, k
+    cdef double[3] electron_position_i, electron_position_j, electron_position_k
 
     for i in range(voxel_count_i):
-        for l in range(3):
-            scaled_direction = direction[0,l] * voxel_size[0] * i
-            electron_position_i[l] = scaled_direction
+        electron_position_i[0] = direction[0,0] * voxel_size[0] * i
+        electron_position_i[1] = direction[0,1] * voxel_size[0] * i
+        electron_position_i[2] = direction[0,2] * voxel_size[0] * i
         for j in range(voxel_count_j):
-            for l in range(3):
-                scaled_direction = direction[1, l] * voxel_size[1] * j
-                electron_position_j[l] = scaled_direction
+            electron_position_j[0] = direction[1,0] * voxel_size[1] * j
+            electron_position_j[1] = direction[1,1] * voxel_size[1] * j
+            electron_position_j[2] = direction[1,2] * voxel_size[1] * j
             for k in range(voxel_count_k):
-                for l in range(3):
-                    scaled_direction = direction[2, l] * voxel_size[2] * k
-                    electron_position_k[l] = scaled_direction
-                    electron_position[l] = ((electron_position_i[l] + electron_position_j[l] + electron_position_k[l]))
-                    electron_position[l] = (electron_position[l] + origin[l]) * ANGSTROM_TO_BOHR
+                electron_position_k[0] = direction[2,0] * voxel_size[2] * k
+                electron_position_k[1] = direction[2,1] * voxel_size[2] * k
+                electron_position_k[2] = direction[2,2] * voxel_size[2] * k
+                electron_position[0] = (electron_position_i[0] + electron_position_j[0] + electron_position_k[0])
+                electron_position[1] = (electron_position_i[1] + electron_position_j[1] + electron_position_k[1])
+                electron_position[2] = (electron_position_i[2] + electron_position_j[2] + electron_position_k[2])
+                electron_position[0] = (electron_position[0] + origin[0]) * ANGSTROM_TO_BOHR_
+                electron_position[1] = (electron_position[1] + origin[1]) * ANGSTROM_TO_BOHR_
+                electron_position[2] = (electron_position[2] + origin[2]) * ANGSTROM_TO_BOHR_
 
                 voxel_grid[i, j, k] = calculate_mo_cartesian(
                     electron_position,
@@ -116,6 +171,9 @@ cpdef generate_voxel_grid(
                     shells,
                     mo_coeff,
                     aos_values,
+                    cut_off_distances,
                 )
 
-    return voxel_grid
+    return 0
+
+

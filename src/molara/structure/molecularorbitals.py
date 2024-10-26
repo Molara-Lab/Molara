@@ -5,9 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+import time as time
 
 from molara.data.constants import ANGSTROM_TO_BOHR
 from molara.eval.mos import calculate_mo_cartesian
+import matplotlib.pyplot as plt
 
 if TYPE_CHECKING:
     from molara.structure.basisset import BasisFunction
@@ -62,6 +64,7 @@ class MolecularOrbitals:
         self.coefficients: np.ndarray = np.array([])
         self.coefficients_spherical: np.ndarray = np.array([])
         self.coefficients_display: np.ndarray = np.array([])
+        self.cut_off_distances_shells: np.ndarray = np.array([])
 
         # Construct transformation matrices for spherical to cartesian transformation
         self.t_sc_d: np.ndarray = np.array([])
@@ -69,6 +72,69 @@ class MolecularOrbitals:
         self.t_sc_g: np.ndarray = np.array([])
         self.transformation_matrix_spherical_cartesian: np.ndarray = np.array([])
         self.construct_transformation_matrices()
+
+    def calculate_cut_offs(self, basis_functions: list[BasisFunction], threshold: float = 0.001) -> None:
+        """Calculate the cut-offs for the molecular orbitals."""
+        basis_function_labels = [item for row in self.basis_functions for item in row]
+        x_vals = np.linspace(0, 40, 50)
+        calculation_keys = ["s", "pz", "dyz", "fxyz", "gzzxy"]
+        cut_off_distances = []
+        cut_off_vals = []
+        hit = False
+        max_vals = []
+        x_index = []
+        t0 = time.time()
+        number_of_mos = len(self.coefficients[0])
+        for mo_index in range(number_of_mos):
+            number_of_shells = 0
+            test = []
+            mo_coeff_basis_function = 0
+            for i in range(len(basis_functions)):
+                mo_coeff_basis_function_temp = abs(self.coefficients[i, mo_index])
+                if mo_coeff_basis_function_temp > mo_coeff_basis_function:
+                    mo_coeff_basis_function = mo_coeff_basis_function_temp
+                for key in calculation_keys:
+                    hit = False
+                    if key in basis_function_labels[i]:
+                        hit = True
+                        break
+                if hit:
+                    number_of_shells += 1
+                    test.append(basis_function_labels[i])
+                    y_vals = []
+                    for x in x_vals:
+                        val = 0
+                        for j in range(len(basis_functions[i].coefficients)):
+                            val += (basis_functions[i].coefficients[j] * basis_functions[i].norms[j] *
+                                    np.exp(-basis_functions[i].exponents[j] * x))
+                        val *= x ** sum(basis_functions[i].ijk)
+                        y_vals.append(val)
+                    y_vals = abs(np.array(y_vals) * mo_coeff_basis_function)
+                    max_y = max(y_vals)
+                    max_index = y_vals.argmax()
+                    for ao_val_index in range(max_index, len(y_vals)):
+                        if y_vals[ao_val_index] < threshold:
+                            cut_off_distances.append(x_vals[ao_val_index])
+                            cut_off_vals.append(y_vals[ao_val_index])
+                            break
+                    else:
+                        cut_off_distances.append(x_vals[-1])
+                        cut_off_vals.append(y_vals[-1])
+                    if mo_coeff_basis_function == 0.0:
+                        cut_off_distances[-1] = 0.0
+                        cut_off_vals[-1] = 0.0
+                    max_vals.append(max_y)
+                    x_index.append(y_vals.argmax())
+                    mo_coeff_basis_function = 0
+
+        cut_off_vals = np.array(cut_off_vals).reshape((number_of_mos, number_of_shells)).T
+        cut_off_distances = np.array(cut_off_distances).reshape((number_of_mos, number_of_shells)).T
+        # for mo_index in range(number_of_mos):
+        #     print(mo_index, '###########')
+        #     for i in range(len(test)):
+        #         print(test[i], cut_off_vals[i, mo_index], cut_off_distances[i, mo_index])
+        print(time.time() - t0)
+        self.cut_off_distances_shells = np.array(cut_off_distances)
 
     def set_mo_coefficients(
         self,
@@ -82,6 +148,7 @@ class MolecularOrbitals:
         coefficients are assumed to be in cartesian order
         """
         self.coefficients_display = mo_coefficients
+        print(spherical_order)
         if spherical_order == "none":
             self.coefficients = self.coefficients_display
         elif spherical_order == "molden":
@@ -90,6 +157,7 @@ class MolecularOrbitals:
             self.coefficients = self.spherical_to_cartesian_transformation(
                 mo_coefficients,
             )
+            print(self.coefficients.shape, self.coefficients_spherical.shape)
         else:
             msg = f"The spherical_order {spherical_order} is not supported."
             raise ValueError(msg)

@@ -143,6 +143,7 @@ modules = [
     "src/molara/eval/aos.pxd",
     "src/molara/eval/mos.pyx",
     "src/molara/eval/mos.pxd",
+    "src/molara/eval/generate_voxel_grid.pyx",
     "src/molara/rendering/cylinder.pyx",
     "src/molara/rendering/sphere.pyx",
     "src/molara/rendering/matrices.pyx",
