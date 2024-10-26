@@ -71,7 +71,7 @@ class Renderer:
     @staticmethod
     def draw_object(
         n_instances: int,
-        mesh: dict,
+        mesh: Cylinder,
         model_matrices: np.ndarray,
         colors: np.ndarray,
     ) -> dict:
