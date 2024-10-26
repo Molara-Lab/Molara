@@ -7,5 +7,9 @@ class FileImporterError(Exception):
     """base class for errors occurring when loading molecules from file."""
 
 
-class FileFormatError(FileImporterError):
+class FileExporterError(Exception):
+    """Base class for errors occurring when loading molecules from file."""
+
+
+class FileFormatError(ValueError):
     """raised when the file format is wrong or unsupported."""
