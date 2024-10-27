@@ -53,6 +53,7 @@ class Structure:
         self.drawer = Drawer(self.atoms, self.bonded_pairs, self.draw_bonds)
         self.n_at = len(self.atoms)
         self.center_of_mass = self.calculate_center_of_mass()
+        self.coordinate_shift = np.zeros(3) # keeps track of coord. shifts (e.g., by recentering)
         self.geometric_center = np.mean(self.coords, axis=0)
 
     def __copy__(self: Structure) -> Structure:
@@ -88,6 +89,7 @@ class Structure:
     def center_coordinates(self: Structure) -> None:
         """Centers the structure around the center of mass."""
         self.center_of_mass = self.calculate_center_of_mass()
+        self.coordinate_shift += self.center_of_mass # change to geometric center if needed
         self.geometric_center = np.mean(self.coords, axis=0)
         for _i, atom in enumerate(self.atoms):
             position = atom.position - self.center_of_mass
