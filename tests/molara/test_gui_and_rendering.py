@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from gui.test_builder import WorkaroundTestBuilderDialog
+from gui.test_cusotmizer_dialog import WorkaroundTestCustomizerDialog
 from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
@@ -48,6 +49,12 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
         main_window_tests.window,
     )
     workaround_test_mos_dialog.run_tests()
+
+    workaround_test_customizer_dialog = WorkaroundTestCustomizerDialog(
+        qtbot,
+        main_window_tests.window,
+    )
+    workaround_test_customizer_dialog.run_tests()
 
     main_window_tests.tearDown()
 
