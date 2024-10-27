@@ -74,20 +74,23 @@ class Renderer:
     @staticmethod
     def draw_object(
         n_instances: int,
-        mesh: Cylinder,
+        mesh: Cylinder | Sphere | np.ndarray,
         model_matrices: np.ndarray,
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
+        indexed = True  # whether vertices are stored as indices (True) or explicitly (False).
+        if isinstance(mesh, np.ndarray):
+            indexed = False
         obj = {
             "vao": 0,
             "n_instances": n_instances,
-            "n_vertices": len(mesh.vertices),
+            "n_vertices": len(mesh.vertices) if indexed else len(mesh.vertices) // 6,
             "buffers": [],
         }
         obj["vao"], obj["buffers"] = setup_vao(
-            mesh.vertices,
-            mesh.indices,
+            mesh.vertices if indexed else mesh,
+            mesh.indices if indexed else None,
             model_matrices,
             colors,
         )
@@ -128,34 +131,8 @@ class Renderer:
         """
         n_instances = 1
         model_matrices = np.array([np.identity(4, dtype=np.float32)]).reshape((1, 4, 4))
-        polygon = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(vertices) // 6,
-            "buffers": [],
-        }
-        polygon["vao"], polygon["buffers"] = setup_vao(
-            vertices,
-            None,
-            model_matrices,
-            colors,
-        )
-
-        # get index of new polygon instances in list
-        i_polygon = -1
-        if len(self.polygons) != 0:
-            for i, check_polygon in enumerate(self.polygons):
-                if check_polygon["vao"] == 0:
-                    i_polygon = i
-                    self.polygons[i_polygon] = polygon
-                    break
-            if i_polygon == -1:
-                i_polygon = len(self.polygons)
-                self.polygons.append(polygon)
-        else:
-            i_polygon = 0
-            self.polygons.append(polygon)
-        return i_polygon
+        polygon = Renderer.draw_object(n_instances, vertices, model_matrices, colors)
+        return self.add_object_to_list(self.polygons, polygon)
 
     def remove_polygon(self, i_polygon: int) -> None:
         """Remove a polygon from the list of polygon.
