@@ -19,6 +19,7 @@ from molara.eval.generate_voxel_grid import generate_voxel_grid
 from molara.eval.marchingcubes import marching_cubes
 from molara.eval.populationanalysis import PopulationAnalysis
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
+from molara.data.constants import ANGSTROM_TO_BOHR
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -339,7 +340,18 @@ class MOsDialog(QDialog):
 
         iso = self.ui.isoValueSpinBox.value()
         mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
-        shells_cut_off = self.mos.cut_off_distances_shells[:, self.selected_orbital]
+        t01 = time.time()
+        max_distance = np.max(self.size * ANGSTROM_TO_BOHR)
+        max_number = int(max_distance * 5)
+        threshold = 10 ** self.ui.cutoffSpinBox.value()
+        shells_cut_off = self.mos.calculate_cut_offs(self.aos,
+                                                     self.selected_orbital,
+                                                     threshold=threshold,
+                                                     max_distance=max_distance,
+                                                     max_points_number=max_number,
+                                                     )
+        temp = np.zeros_like(shells_cut_off)
+        t02 = time.time()
         origin = self.origin
         direction = self.direction
         size = self.size
@@ -351,9 +363,24 @@ class MOsDialog(QDialog):
             ],
             dtype=np.int64,
         )
-        shells_cut_off = self.mos.cut_off_distances_shells[:, self.selected_orbital]
         t0 = time.time()
-        print(shells_cut_off)
+        temp[:] = 100
+        voxel_grid_ = np.array(generate_voxel_grid(
+            np.array(origin, dtype=np.float64),
+            direction,
+            np.array(
+                [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
+                dtype=np.float64,
+            ),
+            voxel_number,
+            self.aos,
+            mo_coefficients,
+            temp,
+        ))
+
+        t1 = time.time()
+
+        # print(shells_cut_off)
         voxel_grid = np.array(generate_voxel_grid(
             np.array(origin, dtype=np.float64),
             direction,
@@ -366,27 +393,15 @@ class MOsDialog(QDialog):
             mo_coefficients,
             shells_cut_off,
         ))
-        t1 = time.time()
-        # shells_cut_off[:] = 100
-        # print(shells_cut_off)
-        # voxel_grid_ = np.array(generate_voxel_grid(
-        #     np.array(origin, dtype=np.float64),
-        #     direction,
-        #     np.array(
-        #         [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
-        #         dtype=np.float64,
-        #     ),
-        #     voxel_number,
-        #     self.aos,
-        #     mo_coefficients,
-        #     shells_cut_off,
-        # ))
+
         t2 = time.time()
         print(f"Time for setup: {t0 - t00}")
-        print(f"Time for voxel grid generation: {t1 - t0}")
-        print(f"Time for voxel grid generation without cut: {t2 - t1}")
-        # diff = np.abs(voxel_grid - voxel_grid_)
-        # print(f"Max difference: {np.max(diff)}")
+        print(f"Time for cutoff calculation: {t02 - t01}")
+        print(f"Time for voxel grid generation: {t2 - t1}")
+        print(f"Time for voxel grid generation without cut: {t1 - t0}")
+        diff = (voxel_grid - voxel_grid_)
+        abs_diff = np.abs(diff)
+        print(f"Max difference: {np.max(diff)}")
 
         # 24 because each voxel can have up to 12 vertices and 12 normals
         # times 6 because each vertex has 3 coordinates and each normal has 3 coordinates
@@ -418,6 +433,7 @@ class MOsDialog(QDialog):
         )
         t5 = time.time()
         print(f"Time for drawing orbitals: {t5 - t4}")
+        print(f"Total time: {t5 - t00}")
         self.drawn_orbitals = [orb1, orb2]
         self.parent().structure_widget.update()
 

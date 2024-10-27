@@ -73,68 +73,65 @@ class MolecularOrbitals:
         self.transformation_matrix_spherical_cartesian: np.ndarray = np.array([])
         self.construct_transformation_matrices()
 
-    def calculate_cut_offs(self, basis_functions: list[BasisFunction], threshold: float = 0.001) -> None:
+    def calculate_cut_offs(self, basis_functions: list[BasisFunction], orbital: int,
+                           threshold: float = 0.001, max_distance: float = 40.0,
+                           max_points_number: int = 200) -> np.ndarray:
         """Calculate the cut-offs for the molecular orbitals."""
         basis_function_labels = [item for row in self.basis_functions for item in row]
-        x_vals = np.linspace(0, 40, 50)
+        print(max_distance, max_points_number, threshold)
+        x_vals = np.linspace(0, max_distance, max_points_number)
         calculation_keys = ["s", "pz", "dyz", "fxyz", "gzzxy"]
         cut_off_distances = []
         cut_off_vals = []
         hit = False
         max_vals = []
         x_index = []
-        t0 = time.time()
-        number_of_mos = len(self.coefficients[0])
-        for mo_index in range(number_of_mos):
-            number_of_shells = 0
-            test = []
-            mo_coeff_basis_function = 0
-            for i in range(len(basis_functions)):
-                mo_coeff_basis_function_temp = abs(self.coefficients[i, mo_index])
-                if mo_coeff_basis_function_temp > mo_coeff_basis_function:
-                    mo_coeff_basis_function = mo_coeff_basis_function_temp
-                for key in calculation_keys:
-                    hit = False
-                    if key in basis_function_labels[i]:
-                        hit = True
+        number_of_shells = 0
+        test = []
+        mo_coeff_basis_function = 0
+        for i in range(len(basis_functions)):
+            mo_coeff_basis_function_temp = abs(self.coefficients[i, orbital])
+            if mo_coeff_basis_function_temp > mo_coeff_basis_function:
+                mo_coeff_basis_function = mo_coeff_basis_function_temp
+            for key in calculation_keys:
+                hit = False
+                if key in basis_function_labels[i]:
+                    hit = True
+                    break
+            if hit:
+                number_of_shells += 1
+                test.append(basis_function_labels[i])
+                y_vals = []
+                for x in x_vals:
+                    val = 0
+                    for j in range(len(basis_functions[i].coefficients)):
+                        val += (basis_functions[i].coefficients[j] * basis_functions[i].norms[j] *
+                                np.exp(-basis_functions[i].exponents[j] * x))
+                    val *= x ** sum(basis_functions[i].ijk)
+                    y_vals.append(val)
+                y_vals = abs(np.array(y_vals) * mo_coeff_basis_function)
+                max_y = max(y_vals)
+                max_index = y_vals.argmax()
+                for ao_val_index in range(max_index, len(y_vals)):
+                    if y_vals[ao_val_index] < threshold:
+                        cut_off_distances.append(x_vals[ao_val_index])
+                        cut_off_vals.append(y_vals[ao_val_index])
                         break
-                if hit:
-                    number_of_shells += 1
-                    test.append(basis_function_labels[i])
-                    y_vals = []
-                    for x in x_vals:
-                        val = 0
-                        for j in range(len(basis_functions[i].coefficients)):
-                            val += (basis_functions[i].coefficients[j] * basis_functions[i].norms[j] *
-                                    np.exp(-basis_functions[i].exponents[j] * x))
-                        val *= x ** sum(basis_functions[i].ijk)
-                        y_vals.append(val)
-                    y_vals = abs(np.array(y_vals) * mo_coeff_basis_function)
-                    max_y = max(y_vals)
-                    max_index = y_vals.argmax()
-                    for ao_val_index in range(max_index, len(y_vals)):
-                        if y_vals[ao_val_index] < threshold:
-                            cut_off_distances.append(x_vals[ao_val_index])
-                            cut_off_vals.append(y_vals[ao_val_index])
-                            break
-                    else:
-                        cut_off_distances.append(x_vals[-1])
-                        cut_off_vals.append(y_vals[-1])
-                    if mo_coeff_basis_function == 0.0:
-                        cut_off_distances[-1] = 0.0
-                        cut_off_vals[-1] = 0.0
-                    max_vals.append(max_y)
-                    x_index.append(y_vals.argmax())
-                    mo_coeff_basis_function = 0
+                else:
+                    cut_off_distances.append(1.e300)
+                    cut_off_vals.append(0)
+                if mo_coeff_basis_function == 0.0:
+                    cut_off_distances[-1] = 0.0
+                    cut_off_vals[-1] = 0.0
+                max_vals.append(max_y)
+                x_index.append(y_vals.argmax())
+                mo_coeff_basis_function = 0
 
-        cut_off_vals = np.array(cut_off_vals).reshape((number_of_mos, number_of_shells)).T
-        cut_off_distances = np.array(cut_off_distances).reshape((number_of_mos, number_of_shells)).T
-        # for mo_index in range(number_of_mos):
-        #     print(mo_index, '###########')
-        #     for i in range(len(test)):
-        #         print(test[i], cut_off_vals[i, mo_index], cut_off_distances[i, mo_index])
-        print(time.time() - t0)
+        # for i in range(len(test)):
+        #     print(test[i], cut_off_vals[i], cut_off_distances[i])
+        # print(time.time() - t0)
         self.cut_off_distances_shells = np.array(cut_off_distances)
+        return np.array(cut_off_distances, dtype=np.float64)
 
     def set_mo_coefficients(
         self,
