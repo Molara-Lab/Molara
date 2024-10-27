@@ -80,11 +80,11 @@ class Renderer:
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
-        if mesh is not None:
+        if isinstance(mesh, (Cylinder | Sphere)):
             vertices = mesh.vertices
             indices = mesh.indices
             n_vertices = len(vertices)
-        elif vertices is not None:
+        elif isinstance(vertices, np.ndarray):
             indices = None
             n_vertices = len(vertices) // 6
         else:
