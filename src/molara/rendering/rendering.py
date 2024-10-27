@@ -88,7 +88,8 @@ class Renderer:
             indices = None
             n_vertices = len(vertices) // 6
         else:
-            raise ValueError
+            msg = "Either mesh or vertices must be given."
+            raise TypeError(msg)
 
         obj = {
             "vao": 0,
