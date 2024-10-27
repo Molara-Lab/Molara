@@ -80,15 +80,16 @@ class Renderer:
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
-        indexed = False  # whether vertices are stored as indices (True) or explicitly (False).
-        if mesh is not None:
-            indexed = True
-            n_vertices = len(mesh.vertices)
-        elif vertices is not None:
-            indexed = False
+        if isinstance(mesh, (Cylinder | Sphere)):
+            vertices = mesh.vertices
+            indices = mesh.indices
+            n_vertices = len(vertices)
+        elif isinstance(vertices, np.ndarray):
+            indices = None
             n_vertices = len(vertices) // 6
         else:
-            raise ValueError
+            msg = "Either mesh or vertices must be given."
+            raise TypeError(msg)
 
         obj = {
             "vao": 0,
@@ -97,8 +98,8 @@ class Renderer:
             "buffers": [],
         }
         obj["vao"], obj["buffers"] = setup_vao(
-            mesh.vertices if indexed else vertices,
-            mesh.indices if indexed else None,
+            vertices,
+            indices,
             model_matrices,
             colors,
         )
