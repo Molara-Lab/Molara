@@ -80,14 +80,11 @@ class Renderer:
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
-        indexed = False  # whether vertices are stored as indices (True) or explicitly (False).
         if mesh is not None:
-            indexed = True
             vertices = mesh.vertices
             indices = mesh.indices
             n_vertices = len(vertices)
         elif vertices is not None:
-            indexed = False
             indices = None
             n_vertices = len(vertices) // 6
         else:
