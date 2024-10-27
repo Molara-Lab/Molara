@@ -79,14 +79,17 @@ class Renderer:
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
-        indexed = True  # whether vertices are stored as indices (True) or explicitly (False).
         if isinstance(mesh, np.ndarray):
             indexed = False
+            n_vertices = len(mesh.vertices)
+        else:
+            indexed = True  # whether vertices are stored as indices (True) or explicitly (False).
+            n_vertices = len(mesh) // 6
 
         obj = {
             "vao": 0,
             "n_instances": n_instances,
-            "n_vertices": len(mesh.vertices) if indexed else len(mesh) // 6,
+            "n_vertices": n_vertices,
             "buffers": [],
         }
         obj["vao"], obj["buffers"] = setup_vao(
