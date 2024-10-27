@@ -139,7 +139,7 @@ class MolecularOrbitals:
                     y_vals.append(val)
 
                 # The atomic orbital is multiplied with the largest molecular orbital coefficient of the shell
-                y_vals = abs(np.array(y_vals) * mo_coeff_basis_function)
+                y_vals = np.abs(np.array(y_vals) * mo_coeff_basis_function)
                 max_index = np.array(y_vals).argmax()
 
                 # The cutoff distance is determined by the first point below the threshold after crossing the maximum
