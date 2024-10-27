@@ -74,17 +74,20 @@ class Renderer:
     @staticmethod
     def draw_object(
         n_instances: int,
-        mesh: Cylinder | Sphere | np.ndarray,
+        mesh: Cylinder | Sphere | None,
+        vertices: np.ndarray | None,
         model_matrices: np.ndarray,
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
-        if isinstance(mesh, np.ndarray):
+        if mesh is not None:
             indexed = False
             n_vertices = len(mesh.vertices)
-        else:
+        elif vertices is not None:
             indexed = True  # whether vertices are stored as indices (True) or explicitly (False).
-            n_vertices = len(mesh) // 6
+            n_vertices = len(vertices) // 6
+        else:
+            raise ValueError
 
         obj = {
             "vao": 0,
@@ -135,7 +138,7 @@ class Renderer:
         """
         n_instances = 1
         model_matrices = np.array([np.identity(4, dtype=np.float32)]).reshape((1, 4, 4))
-        polygon = Renderer.draw_object(n_instances, vertices, model_matrices, colors)
+        polygon = Renderer.draw_object(n_instances, None, vertices, model_matrices, colors)
         return self.add_object_to_list(self.polygons, polygon)
 
     def remove_polygon(self, i_polygon: int) -> None:
@@ -205,7 +208,7 @@ class Renderer:
             )
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
-        cylinder = Renderer.draw_object(n_instances, cylinder_mesh, model_matrices, colors)
+        cylinder = Renderer.draw_object(n_instances, cylinder_mesh, None, model_matrices, colors)
 
         return self.add_object_to_list(self.cylinders, cylinder)
 
@@ -268,7 +271,7 @@ class Renderer:
             model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
 
-        sphere = Renderer.draw_object(n_instances, sphere_mesh, model_matrices, colors)
+        sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors)
 
         return self.add_object_to_list(self.spheres, sphere)
 
