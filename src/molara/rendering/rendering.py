@@ -80,11 +80,12 @@ class Renderer:
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
+        indexed = False  # whether vertices are stored as indices (True) or explicitly (False).
         if mesh is not None:
-            indexed = False
+            indexed = True
             n_vertices = len(mesh.vertices)
         elif vertices is not None:
-            indexed = True  # whether vertices are stored as indices (True) or explicitly (False).
+            indexed = False
             n_vertices = len(vertices) // 6
         else:
             raise ValueError
@@ -96,7 +97,7 @@ class Renderer:
             "buffers": [],
         }
         obj["vao"], obj["buffers"] = setup_vao(
-            mesh.vertices if indexed else mesh,
+            mesh.vertices if indexed else vertices,
             mesh.indices if indexed else None,
             model_matrices,
             colors,
