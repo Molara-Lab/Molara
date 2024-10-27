@@ -342,7 +342,7 @@ class MOsDialog(QDialog):
         mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
 
         # Calculate the cutoffs for the shells
-        max_distance = np.max(self.size * ANGSTROM_TO_BOHR)
+        max_distance = np.linalg.norm(self.size * ANGSTROM_TO_BOHR)
         max_number = int(max_distance * 5)
         threshold = 10 ** self.ui.cutoffSpinBox.value()
 
