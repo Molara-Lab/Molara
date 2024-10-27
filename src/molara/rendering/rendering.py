@@ -81,7 +81,7 @@ class Renderer:
     ) -> dict:
         """Draws the object."""
         if isinstance(mesh, (Cylinder | Sphere)):
-            vertices = mesh.vertices
+            vertices = np.array(mesh.vertices)
             indices = mesh.indices
             n_vertices = len(vertices)
         elif isinstance(vertices, np.ndarray):
