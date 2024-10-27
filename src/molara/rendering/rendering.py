@@ -74,20 +74,32 @@ class Renderer:
     @staticmethod
     def draw_object(
         n_instances: int,
-        mesh: Cylinder,
+        mesh: Cylinder | Sphere | None,
+        vertices: np.ndarray | None,
         model_matrices: np.ndarray,
         colors: np.ndarray,
     ) -> dict:
         """Draws the object."""
+        if isinstance(mesh, (Cylinder | Sphere)):
+            vertices = np.array(mesh.vertices)
+            indices = mesh.indices
+            n_vertices = len(vertices)
+        elif isinstance(vertices, np.ndarray):
+            indices = None
+            n_vertices = len(vertices) // 6
+        else:
+            msg = "Either mesh or vertices must be given."
+            raise TypeError(msg)
+
         obj = {
             "vao": 0,
             "n_instances": n_instances,
-            "n_vertices": len(mesh.vertices),
+            "n_vertices": n_vertices,
             "buffers": [],
         }
         obj["vao"], obj["buffers"] = setup_vao(
-            mesh.vertices,
-            mesh.indices,
+            vertices,
+            indices,
             model_matrices,
             colors,
         )
@@ -128,34 +140,8 @@ class Renderer:
         """
         n_instances = 1
         model_matrices = np.array([np.identity(4, dtype=np.float32)]).reshape((1, 4, 4))
-        polygon = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(vertices) // 6,
-            "buffers": [],
-        }
-        polygon["vao"], polygon["buffers"] = setup_vao(
-            vertices,
-            None,
-            model_matrices,
-            colors,
-        )
-
-        # get index of new polygon instances in list
-        i_polygon = -1
-        if len(self.polygons) != 0:
-            for i, check_polygon in enumerate(self.polygons):
-                if check_polygon["vao"] == 0:
-                    i_polygon = i
-                    self.polygons[i_polygon] = polygon
-                    break
-            if i_polygon == -1:
-                i_polygon = len(self.polygons)
-                self.polygons.append(polygon)
-        else:
-            i_polygon = 0
-            self.polygons.append(polygon)
-        return i_polygon
+        polygon = Renderer.draw_object(n_instances, None, vertices, model_matrices, colors)
+        return self.add_object_to_list(self.polygons, polygon)
 
     def remove_polygon(self, i_polygon: int) -> None:
         """Remove a polygon from the list of polygon.
@@ -224,7 +210,7 @@ class Renderer:
             )
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
-        cylinder = Renderer.draw_object(n_instances, cylinder_mesh, model_matrices, colors)
+        cylinder = Renderer.draw_object(n_instances, cylinder_mesh, None, model_matrices, colors)
 
         return self.add_object_to_list(self.cylinders, cylinder)
 
@@ -287,7 +273,7 @@ class Renderer:
             model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
 
-        sphere = Renderer.draw_object(n_instances, sphere_mesh, model_matrices, colors)
+        sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors)
 
         return self.add_object_to_list(self.spheres, sphere)
 
