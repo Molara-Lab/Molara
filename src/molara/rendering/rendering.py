@@ -71,6 +71,62 @@ class Renderer:
         """
         self.shaders = shaders
 
+    @staticmethod
+    def draw_object(
+        n_instances: int,
+        mesh: Cylinder | Sphere | None,
+        vertices: np.ndarray | None,
+        model_matrices: np.ndarray,
+        colors: np.ndarray,
+    ) -> dict:
+        """Draws the object."""
+        if isinstance(mesh, (Cylinder | Sphere)):
+            vertices = np.array(mesh.vertices)
+            indices = mesh.indices
+            n_vertices = len(vertices)
+        elif isinstance(vertices, np.ndarray):
+            indices = None
+            n_vertices = len(vertices) // 6
+        else:
+            msg = "Either mesh or vertices must be given."
+            raise TypeError(msg)
+
+        obj = {
+            "vao": 0,
+            "n_instances": n_instances,
+            "n_vertices": n_vertices,
+            "buffers": [],
+        }
+        obj["vao"], obj["buffers"] = setup_vao(
+            vertices,
+            indices,
+            model_matrices,
+            colors,
+        )
+        return obj
+
+    def add_object_to_list(self, obj_list: list[dict], obj: dict) -> int:
+        """Add an object to the list of objects."""
+        # get index of new cylinder instances in list
+        i_obj = -1
+
+        if len(obj_list) == 0:
+            i_obj = 0
+            obj_list.append(obj)
+            return i_obj
+
+        for i, check_obj in enumerate(obj_list):
+            if check_obj["vao"] == 0:
+                i_obj = i
+                obj_list[i_obj] = obj
+                break
+
+        if i_obj == -1:
+            i_obj = len(obj_list)
+            obj_list.append(obj)
+
+        return i_obj
+
     def draw_polygon(
         self,
         vertices: np.ndarray,
@@ -84,34 +140,8 @@ class Renderer:
         """
         n_instances = 1
         model_matrices = np.array([np.identity(4, dtype=np.float32)]).reshape((1, 4, 4))
-        polygon = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(vertices) // 6,
-            "buffers": [],
-        }
-        polygon["vao"], polygon["buffers"] = setup_vao(
-            vertices,
-            None,
-            model_matrices,
-            colors,
-        )
-
-        # get index of new polygon instances in list
-        i_polygon = -1
-        if len(self.polygons) != 0:
-            for i, check_polygon in enumerate(self.polygons):
-                if check_polygon["vao"] == 0:
-                    i_polygon = i
-                    self.polygons[i_polygon] = polygon
-                    break
-            if i_polygon == -1:
-                i_polygon = len(self.polygons)
-                self.polygons.append(polygon)
-        else:
-            i_polygon = 0
-            self.polygons.append(polygon)
-        return i_polygon
+        polygon = Renderer.draw_object(n_instances, None, vertices, model_matrices, colors)
+        return self.add_object_to_list(self.polygons, polygon)
 
     def remove_polygon(self, i_polygon: int) -> None:
         """Remove a polygon from the list of polygon.
@@ -180,38 +210,9 @@ class Renderer:
             )
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
-        cylinder = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(cylinder_mesh.vertices),
-            "buffers": [],
-        }
-        cylinder["vao"], cylinder["buffers"] = setup_vao(
-            cylinder_mesh.vertices,
-            cylinder_mesh.indices,
-            model_matrices,
-            colors,
-        )
+        cylinder = Renderer.draw_object(n_instances, cylinder_mesh, None, model_matrices, colors)
 
-        # get index of new cylinder instances in list
-        i_cylinder = -1
-
-        if len(self.cylinders) == 0:
-            i_cylinder = 0
-            self.cylinders.append(cylinder)
-            return i_cylinder
-
-        for i, check_cylinder in enumerate(self.cylinders):
-            if check_cylinder["vao"] == 0:
-                i_cylinder = i
-                self.cylinders[i_cylinder] = cylinder
-                break
-
-        if i_cylinder == -1:
-            i_cylinder = len(self.cylinders)
-            self.cylinders.append(cylinder)
-
-        return i_cylinder
+        return self.add_object_to_list(self.cylinders, cylinder)
 
     def draw_cylinders_from_to(
         self,
@@ -267,41 +268,32 @@ class Renderer:
         """
         n_instances = len(positions)
         sphere_mesh = Sphere(subdivisions)
-        if n_instances == 1:
-            model_matrices = calculate_sphere_model_matrix(positions[0], radii[0])
-        else:
-            for i in range(n_instances):
-                model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
-                model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
+        model_matrices = np.array([])
+        for i in range(n_instances):
+            model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
+            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
 
-        sphere = {
-            "vao": 0,
-            "n_instances": n_instances,
-            "n_vertices": len(sphere_mesh.vertices),
-            "buffers": [],
-        }
-        sphere["vao"], sphere["buffers"] = setup_vao(
-            sphere_mesh.vertices,
-            sphere_mesh.indices,
-            model_matrices,  # type: ignore[reportPossiblyUnboundVariable]
-            colors,
-        )
+        sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors)
 
-        # get index of new sphere instances in list
-        i_sphere = -1
-        if len(self.spheres) != 0:
-            for i, check_sphere in enumerate(self.spheres):
-                if check_sphere["vao"] == 0:
-                    i_sphere = i
-                    self.spheres[i_sphere] = sphere
-                    break
-            if i_sphere == -1:
-                i_sphere = len(self.spheres)
-                self.spheres.append(sphere)
-        else:
-            i_sphere = 0
-            self.spheres.append(sphere)
-        return i_sphere
+        return self.add_object_to_list(self.spheres, sphere)
+
+    def remove_object(self, obj: dict) -> None:
+        """Remove an object from the list of objects.
+
+        :param obj: Object to remove.
+        :type obj: dict
+        :return:
+        """
+        if obj["vao"] != 0:
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+            for buffer in obj["buffers"]:
+                glDeleteBuffers(1, [buffer])
+            glDeleteVertexArrays(1, [obj["vao"]])
+        obj["vao"] = 0
+        obj["n_instances"] = 0
+        obj["n_vertices"] = 0
+        obj["buffers"] = []
 
     def remove_cylinder(self, i_cylinder: int) -> None:
         """Remove a cylinder from the list of cylinders.
@@ -314,18 +306,7 @@ class Renderer:
             return
 
         cylinder = self.cylinders[i_cylinder]
-        if cylinder["vao"] != 0:
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in cylinder["buffers"]:
-                glDeleteBuffers(1, [buffer])
-            glDeleteVertexArrays(1, [cylinder["vao"]])
-        self.cylinders[i_cylinder] = {
-            "vao": 0,
-            "n_instances": 0,
-            "n_vertices": 0,
-            "buffers": [],
-        }
+        self.remove_object(cylinder)
 
     def remove_sphere(self, i_sphere: int) -> None:
         """Remove a sphere from the list of spheres.
@@ -334,20 +315,46 @@ class Renderer:
         :type i_sphere: int
         :return:
         """
-        if i_sphere < len(self.spheres):
-            sphere = self.spheres[i_sphere]
-            if sphere["vao"] != 0:
-                glBindBuffer(GL_ARRAY_BUFFER, 0)
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-                for buffer in sphere["buffers"]:
-                    glDeleteBuffers(1, [buffer])
-                glDeleteVertexArrays(1, [sphere["vao"]])
-            self.spheres[i_sphere] = {
-                "vao": 0,
-                "n_instances": 0,
-                "n_vertices": 0,
-                "buffers": [],
-            }
+        if i_sphere >= len(self.spheres):
+            return
+
+        sphere = self.spheres[i_sphere]
+        self.remove_object(sphere)
+
+    @staticmethod
+    def update_vao(
+        vao_dict: dict,
+        vertices: np.ndarray,
+        indices: np.ndarray,
+        model_matrices: np.ndarray,
+        colors: np.ndarray,
+    ) -> None:
+        """Update the vertex attribute object.
+
+        :param vao_dict: Vertex attribute object.
+        :type vao_dict: dict
+        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
+        :type vertices: numpy.array of numpy.float32
+        :param indices: Gives the connectivity of the vertices.
+        :type indices: numpy.array of numpy.uint32
+        :param model_matrices: Each matrix gives the transformation from object space to world.
+        :type model_matrices: numpy.array of numpy.float32
+        :param colors: Colors of the object.
+        :type colors: numpy.array of numpy.float32
+        :return:
+        """
+        if vao_dict["vao"] != 0:
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+            for buffer in vao_dict["buffers"]:
+                glDeleteBuffers(1, int(buffer))
+            glDeleteVertexArrays(1, int(vao_dict["vao"]))
+        vao_dict["vao"], vao_dict["buffers"] = setup_vao(
+            vertices,
+            indices,
+            model_matrices,
+            colors,
+        )
 
     def update_atoms_vao(
         self,
@@ -368,20 +375,32 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :return:
         """
-        if self.atoms_vao["vao"] != 0:
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in self.atoms_vao["buffers"]:
-                glDeleteBuffers(1, int(buffer))
-            glDeleteVertexArrays(1, int(self.atoms_vao["vao"]))
-        self.atoms_vao["vao"], self.atoms_vao["buffers"] = setup_vao(
-            vertices,
-            indices,
-            model_matrices,
-            colors,
-        )
+        Renderer.update_vao(self.atoms_vao, vertices, indices, model_matrices, colors)
         self.atoms_vao["n_atoms"] = len(model_matrices)
         self.atoms_vao["n_vertices"] = len(vertices)
+
+    def update_bonds_vao(
+        self,
+        vertices: np.ndarray,
+        indices: np.ndarray,
+        model_matrices: np.ndarray,
+        colors: np.ndarray,
+    ) -> None:
+        """Update the vertex attribute object for the bonds.
+
+        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
+        :type vertices: numpy.array of numpy.float32
+        :param indices: Gives the connectivity of the vertices.
+        :type indices: numpy.array of numpy.uint32
+        :param model_matrices: Each matrix gives the transformation from object space to world.
+        :type model_matrices: numpy.array of numpy.float32
+        :param colors: Colors of the bonds.
+        :type colors: numpy.array of numpy.float32
+        :return:
+        """
+        Renderer.update_vao(self.bonds_vao, vertices, indices, model_matrices, colors)
+        self.bonds_vao["n_bonds"] = len(model_matrices)
+        self.bonds_vao["n_vertices"] = len(vertices)
 
     def draw_numbers(
         self,
@@ -406,40 +425,6 @@ class Renderer:
 
         vao, buffers = setup_vao_numbers(digits, positions_3d)
         self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
-
-    def update_bonds_vao(
-        self,
-        vertices: np.ndarray,
-        indices: np.ndarray,
-        model_matrices: np.ndarray,
-        colors: np.ndarray,
-    ) -> None:
-        """Update the vertex attribute object for the bonds.
-
-        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
-        :type vertices: numpy.array of numpy.float32
-        :param indices: Gives the connectivity of the vertices.
-        :type indices: numpy.array of numpy.uint32
-        :param model_matrices: Each matrix gives the transformation from object space to world.
-        :type model_matrices: numpy.array of numpy.float32
-        :param colors: Colors of the bonds.
-        :type colors: numpy.array of numpy.float32
-        :return:
-        """
-        if self.bonds_vao["vao"] != 0:
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in self.bonds_vao["buffers"]:
-                glDeleteBuffers(1, int(buffer))
-            glDeleteVertexArrays(1, int(self.bonds_vao["vao"]))
-        self.bonds_vao["vao"], self.bonds_vao["buffers"] = setup_vao(
-            vertices,
-            indices,
-            model_matrices,
-            colors,
-        )
-        self.bonds_vao["n_bonds"] = len(model_matrices)
-        self.bonds_vao["n_vertices"] = len(vertices)
 
     def draw_scene(
         self,
@@ -469,39 +454,28 @@ class Renderer:
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        # Draw atoms
-        if self.atoms_vao["vao"] != 0:
-            glBindVertexArray(self.atoms_vao["vao"])
+        def _draw(obj: dict, n_instances_key: str = "n_instances") -> None:
+            if obj["vao"] == 0:
+                return
+            glBindVertexArray(obj["vao"])
             glDrawElementsInstanced(
                 GL_TRIANGLES,
-                self.atoms_vao["n_vertices"],
+                obj["n_vertices"],
                 GL_UNSIGNED_INT,
                 None,
-                self.atoms_vao["n_atoms"],
+                obj[n_instances_key],
             )
 
+        # Draw atoms
+        _draw(self.atoms_vao, "n_atoms")
+
         # Draw bonds
-        if self.bonds_vao["vao"] != 0 and bonds:
-            glBindVertexArray(self.bonds_vao["vao"])
-            glDrawElementsInstanced(
-                GL_TRIANGLES,
-                self.bonds_vao["n_vertices"],
-                GL_UNSIGNED_INT,
-                None,
-                self.bonds_vao["n_bonds"],
-            )
+        if bonds:
+            _draw(self.bonds_vao, "n_bonds")
 
         # Draw spheres
         for sphere in self.spheres:
-            if sphere["vao"] != 0:
-                glBindVertexArray(sphere["vao"])
-                glDrawElementsInstanced(
-                    GL_TRIANGLES,
-                    sphere["n_vertices"],
-                    GL_UNSIGNED_INT,
-                    None,
-                    sphere["n_instances"],
-                )
+            _draw(sphere, "n_instances")
 
         # Draw polygons
         if self.wire_mesh_orbitals:
@@ -520,15 +494,8 @@ class Renderer:
 
         # Draw cylinders
         for cylinder in self.cylinders:
-            if cylinder["vao"] != 0:
-                glBindVertexArray(cylinder["vao"])
-                glDrawElementsInstanced(
-                    GL_TRIANGLES,
-                    cylinder["n_vertices"],
-                    GL_UNSIGNED_INT,
-                    None,
-                    cylinder["n_instances"],
-                )
+            _draw(cylinder, "n_instances")
+
         glBindVertexArray(0)
 
     def display_numbers(self, camera: Camera, scale_factor: float) -> None:
