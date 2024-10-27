@@ -82,10 +82,11 @@ class Renderer:
         indexed = True  # whether vertices are stored as indices (True) or explicitly (False).
         if isinstance(mesh, np.ndarray):
             indexed = False
+
         obj = {
             "vao": 0,
             "n_instances": n_instances,
-            "n_vertices": len(mesh.vertices) if indexed else len(mesh.vertices) // 6,
+            "n_vertices": len(mesh.vertices) if indexed else len(mesh) // 6,
             "buffers": [],
         }
         obj["vao"], obj["buffers"] = setup_vao(
