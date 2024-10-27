@@ -520,13 +520,14 @@ class MolecularOrbitals:
         # Only works if the number of MOS is correct, i.e. not for truncated molden files...
         number_of_spherical_basis_functions_mos, number_of_mos = mo_coefficients.shape
         number_of_spherical_basis_functions_transformation = self.transformation_matrix_spherical_cartesian.shape[0]
-        number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
         if number_of_spherical_basis_functions_transformation != number_of_spherical_basis_functions_mos:
             msg = (
                 "The number of spherical basis functions does not match between the transformation matrix and"
                 " MO coefficients."
             )
             raise ValueError(msg)
+
+        number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
 
         new_coefficients = np.zeros(
             (number_of_cartesian_basis_functions, number_of_mos),
