@@ -326,6 +326,7 @@ class MOsDialog(QDialog):
         """Visualize the orbital."""
         self.parent().structure_widget.makeCurrent()
         assert self.mos is not None
+        self.mos.write_mos_molden()
         self.voxel_size = np.array(
             [
                 [self.ui.voxelSizeSpinBox.value(), 0, 0],

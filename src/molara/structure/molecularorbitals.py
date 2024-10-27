@@ -170,6 +170,21 @@ class MolecularOrbitals:
             aos_values,
         )
 
+    def write_mos_molden(self):
+        """Print the molecular orbitals in molden format."""
+        with open("mos_sph_to_cart.molden_block", "w") as file:
+            file.write("[MO]\n")
+            for i in range(len(self.occupations)):
+                file.write(f" Sym= {self.labels[i]}\n")
+                file.write(f" Ene= {self.energies[i]}\n")
+                if self.spins[i] == 1:
+                    file.write(" Spin= Alpha\n")
+                else:
+                    file.write(" Spin= Beta\n")
+                file.write(f" Occup= {self.occupations[i]}\n")
+                for mo_index in range(len(self.coefficients[:, i])):
+                    file.write(f"{mo_index + 1:3} {self.coefficients[mo_index, i]:21.12f}\n")
+
     def construct_transformation_matrices(self) -> None:  # noqa: PLR0915
         """Construct the transformation matrices for the spherical to cartesian transformation."""
         dxx = 0
