@@ -22,13 +22,13 @@ cpdef int marching_cubes(
     :param origin: origin of the voxel grids (position of the 0, 0, 0 entry)
     :param voxel_size: size of the voxels in each direction
     :param voxel_number: number of voxels in each direction
-    :param vertices_1: vertices of the isosurface of the one phase to be returned
-    :param vertices_2: vertices of the isosurface of the other phase to be returned
+    :param vertices_1: vertices of the isosurface to be returned. The last entry is the number of vertices
+    :param vertices_2: vertices of the isosurface of the other phase to be returned. The number of vertices is saved
     :return: vertices and indices of the isosurface
     """
-    cdef int64_t x_voxels, y_voxels, z_voxels, max_vertices, corner_index, phase, prefactor, ei, vertices_count_1
+    cdef int64_t x_voxels, y_voxels, z_voxels, corner_index, phase, prefactor, ei, vertices_count_1
     cdef int64_t vertices_count_2, c11, c12, c21, c22, c31, c32
-    cdef int i, j, k, edge_index, count
+    cdef int i, j, k, count
     cdef double[:] voxel_values
     cdef float[:] p11, p12, p21, p22, p31, p32, vertex1, vertex2, vertex3, n1, n2, n3
     cdef float v11, v12, v21, v22, v31, v32, t1, t2, t3
@@ -179,8 +179,8 @@ cpdef int marching_cubes(
                             vertices_2[vertices_count_2:vertices_count_2 + 3] = n3
                             vertices_count_2 += 3
 
-    vertices_1 = vertices_1[:vertices_count_1]
-    vertices_2 = vertices_2[:vertices_count_2]
+    vertices_1[-1] = <float>vertices_count_1
+    vertices_2[-1] = <float>vertices_count_2
 
     return 0
 

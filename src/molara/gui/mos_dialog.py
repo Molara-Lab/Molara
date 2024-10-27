@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import Qt
-import time as time
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QCloseEvent
@@ -15,11 +14,11 @@ if TYPE_CHECKING:
 
 from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidgetItem
 
+from molara.data.constants import ANGSTROM_TO_BOHR
 from molara.eval.generate_voxel_grid import generate_voxel_grid
 from molara.eval.marchingcubes import marching_cubes
 from molara.eval.populationanalysis import PopulationAnalysis
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
-from molara.data.constants import ANGSTROM_TO_BOHR
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -326,8 +325,9 @@ class MOsDialog(QDialog):
 
     def visualize_orbital(self) -> None:
         """Visualize the orbital."""
-        t00 = time.time()
         self.parent().structure_widget.makeCurrent()
+
+        assert self.aos is not None
         assert self.mos is not None
         self.voxel_size = np.array(
             [
@@ -340,18 +340,20 @@ class MOsDialog(QDialog):
 
         iso = self.ui.isoValueSpinBox.value()
         mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
-        t01 = time.time()
+
+        # Calculate the cutoffs for the shells
         max_distance = np.max(self.size * ANGSTROM_TO_BOHR)
         max_number = int(max_distance * 5)
         threshold = 10 ** self.ui.cutoffSpinBox.value()
-        shells_cut_off = self.mos.calculate_cut_offs(self.aos,
-                                                     self.selected_orbital,
-                                                     threshold=threshold,
-                                                     max_distance=max_distance,
-                                                     max_points_number=max_number,
-                                                     )
-        temp = np.zeros_like(shells_cut_off)
-        t02 = time.time()
+
+        shells_cut_off = self.mos.calculate_cut_offs(
+            self.aos,
+            self.selected_orbital,
+            threshold=threshold,
+            max_distance=max_distance,
+            max_points_number=max_number,
+        )
+
         origin = self.origin
         direction = self.direction
         size = self.size
@@ -363,49 +365,25 @@ class MOsDialog(QDialog):
             ],
             dtype=np.int64,
         )
-        t0 = time.time()
-        temp[:] = 100
-        voxel_grid_ = np.array(generate_voxel_grid(
-            np.array(origin, dtype=np.float64),
-            direction,
-            np.array(
-                [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
-                dtype=np.float64,
+        voxel_grid = np.array(
+            generate_voxel_grid(
+                np.array(origin, dtype=np.float64),
+                direction,
+                np.array(
+                    [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
+                    dtype=np.float64,
+                ),
+                voxel_number,
+                self.aos,
+                mo_coefficients,
+                shells_cut_off,
             ),
-            voxel_number,
-            self.aos,
-            mo_coefficients,
-            temp,
-        ))
-
-        t1 = time.time()
-
-        # print(shells_cut_off)
-        voxel_grid = np.array(generate_voxel_grid(
-            np.array(origin, dtype=np.float64),
-            direction,
-            np.array(
-                [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
-                dtype=np.float64,
-            ),
-            voxel_number,
-            self.aos,
-            mo_coefficients,
-            shells_cut_off,
-        ))
-
-        t2 = time.time()
-        print(f"Time for setup: {t0 - t00}")
-        print(f"Time for cutoff calculation: {t02 - t01}")
-        print(f"Time for voxel grid generation: {t2 - t1}")
-        print(f"Time for voxel grid generation without cut: {t1 - t0}")
-        diff = (voxel_grid - voxel_grid_)
-        abs_diff = np.abs(diff)
-        print(f"Max difference: {np.max(diff)}")
+        )
 
         # 24 because each voxel can have up to 12 vertices and 12 normals
         # times 6 because each vertex has 3 coordinates and each normal has 3 coordinates
-        max_vertices = 24 * (voxel_number[0] - 1) * (voxel_number[1] - 1) * (voxel_number[2] - 1) * 6
+        # The +1 is to save the number of vertices in the marching cubes routine.
+        max_vertices = 24 * (voxel_number[0] - 1) * (voxel_number[1] - 1) * (voxel_number[2] - 1) * 6 + 1
         vertices1 = np.zeros(max_vertices, dtype=np.float32)
         vertices2 = np.zeros(max_vertices, dtype=np.float32)
 
@@ -413,16 +391,19 @@ class MOsDialog(QDialog):
             voxel_grid,
             iso,
             origin,
-            np.array([self.voxel_size[0,0], self.voxel_size[1,1], self.voxel_size[2,2]], dtype=np.float64),
+            np.array([self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]], dtype=np.float64),
             voxel_number,
             vertices1,
             vertices2,
         )
-        t3 = time.time()
-        print(f"Time for marching cubes: {t3 - t2}")
+
+        # Get the number of vertices from the last entry, to shrink the memory usage
+        number_of_vertices_entries_1 = int(vertices1[-1])
+        number_of_vertices_entries_2 = int(vertices2[-1])
+        vertices1 = vertices1[:number_of_vertices_entries_1]
+        vertices2 = vertices2[:number_of_vertices_entries_2]
 
         self.remove_orbitals()
-        t4 = time.time()
         orb1 = self.parent().structure_widget.renderer.draw_polygon(
             vertices1,
             np.array([[1, 0, 0]], dtype=np.float32),
@@ -431,9 +412,6 @@ class MOsDialog(QDialog):
             vertices2,
             np.array([[0, 0, 1]], dtype=np.float32),
         )
-        t5 = time.time()
-        print(f"Time for drawing orbitals: {t5 - t4}")
-        print(f"Total time: {t5 - t00}")
         self.drawn_orbitals = [orb1, orb2]
         self.parent().structure_widget.update()
 

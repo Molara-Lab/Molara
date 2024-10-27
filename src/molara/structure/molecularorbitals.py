@@ -5,11 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import time as time
 
 from molara.data.constants import ANGSTROM_TO_BOHR
 from molara.eval.mos import calculate_mo_cartesian
-import matplotlib.pyplot as plt
 
 if TYPE_CHECKING:
     from molara.structure.basisset import BasisFunction
@@ -73,64 +71,94 @@ class MolecularOrbitals:
         self.transformation_matrix_spherical_cartesian: np.ndarray = np.array([])
         self.construct_transformation_matrices()
 
-    def calculate_cut_offs(self, basis_functions: list[BasisFunction], orbital: int,
-                           threshold: float = 0.001, max_distance: float = 40.0,
-                           max_points_number: int = 200) -> np.ndarray:
-        """Calculate the cut-offs for the molecular orbitals."""
+    def calculate_cut_offs(
+        self,
+        basis_functions: list[BasisFunction],
+        orbital: int,
+        threshold: float = 0.001,
+        max_distance: float = 40.0,
+        max_points_number: int = 200,
+    ) -> np.ndarray:
+        """Calculate the cut-offs for the molecular orbitals.
+
+        A cutoff distance is calculated for each basis function of the molecular orbital. The cutoff distance is the
+        distance at which the value of the atomic orbital is below a certain threshold. The cutoff is determined by
+        the highest molecular orbital coefficient of the shell and the threshold parameter. The values distances are
+        calculated for a range of distances and the first distance below the threshold after the maximum of the atomic
+        orbital is used as the cutoff distance. If the threshold is never reached, the maximum distance (1.e300) is
+        used. The algorithm ensures that the cutoff distance is never underestimated.
+
+        :param basis_functions: list of BasisFunction: list of all basis functions of the molecule
+        :param orbital: int: index of the molecular orbital
+        :param threshold: float: threshold for the cutoff distance
+        :param max_distance: float: maximum distance for the cutoff distance calculation
+        :param max_points_number: int: number of sample points for the cutoff distance calculation
+        :return: array of cutoff distances for each shell of the molecular orbital
+        """
         basis_function_labels = [item for row in self.basis_functions for item in row]
-        print(max_distance, max_points_number, threshold)
         x_vals = np.linspace(0, max_distance, max_points_number)
         calculation_keys = ["s", "pz", "dyz", "fxyz", "gzzxy"]
         cut_off_distances = []
-        cut_off_vals = []
         hit = False
-        max_vals = []
-        x_index = []
-        number_of_shells = 0
-        test = []
         mo_coeff_basis_function = 0
+        maximum_distance = 1.0e300
+
+        # Loop over all basis functions
         for i in range(len(basis_functions)):
+            # The highest molecular orbital coefficient for each shell is determined for use in the calculation of the
+            # cutoffs
             mo_coeff_basis_function_temp = abs(self.coefficients[i, orbital])
-            if mo_coeff_basis_function_temp > mo_coeff_basis_function:
-                mo_coeff_basis_function = mo_coeff_basis_function_temp
+            mo_coeff_basis_function = max(mo_coeff_basis_function_temp, mo_coeff_basis_function)
+
+            # Only calculate the cutoffs for one shell, because all functions are evaluated at the same distance for
+            # each shell. The key is the most diffuse atomic orbital (see calculation_keys), in order to use the
+            # worst case scenario for the cutoffs.
             for key in calculation_keys:
                 hit = False
                 if key in basis_function_labels[i]:
                     hit = True
                     break
             if hit:
-                number_of_shells += 1
-                test.append(basis_function_labels[i])
                 y_vals = []
+
+                # The atomic orbitals are evaluated for different distances, assuming x direction only
                 for x in x_vals:
                     val = 0
+
+                    # The radial part of the atomic orbital is calculated
                     for j in range(len(basis_functions[i].coefficients)):
-                        val += (basis_functions[i].coefficients[j] * basis_functions[i].norms[j] *
-                                np.exp(-basis_functions[i].exponents[j] * x))
+                        val += (
+                            basis_functions[i].coefficients[j]
+                            * basis_functions[i].norms[j]
+                            * np.exp(-basis_functions[i].exponents[j] * x)
+                        )
+
+                    # The angular part of the atomic orbital is calculated using only the highest order x function
+                    # to make sure to never underestimate the value of the atomic orbital
                     val *= x ** sum(basis_functions[i].ijk)
                     y_vals.append(val)
+
+                # The atomic orbital is multiplied with the largest molecular orbital coefficient of the shell
                 y_vals = abs(np.array(y_vals) * mo_coeff_basis_function)
-                max_y = max(y_vals)
-                max_index = y_vals.argmax()
+                max_index = np.array(y_vals).argmax()
+
+                # The cutoff distance is determined by the first point below the threshold after crossing the maximum
+                # of the atomic orbital
                 for ao_val_index in range(max_index, len(y_vals)):
                     if y_vals[ao_val_index] < threshold:
                         cut_off_distances.append(x_vals[ao_val_index])
-                        cut_off_vals.append(y_vals[ao_val_index])
                         break
+
+                # If the threshold is never reached, the maximum distance (1.e300) is used
                 else:
-                    cut_off_distances.append(1.e300)
-                    cut_off_vals.append(0)
+                    cut_off_distances.append(maximum_distance)
+
+                # If the molecular orbital coefficients of the shell are zero, the cutoff distance is set to zero
                 if mo_coeff_basis_function == 0.0:
                     cut_off_distances[-1] = 0.0
-                    cut_off_vals[-1] = 0.0
-                max_vals.append(max_y)
-                x_index.append(y_vals.argmax())
+
                 mo_coeff_basis_function = 0
 
-        # for i in range(len(test)):
-        #     print(test[i], cut_off_vals[i], cut_off_distances[i])
-        # print(time.time() - t0)
-        self.cut_off_distances_shells = np.array(cut_off_distances)
         return np.array(cut_off_distances, dtype=np.float64)
 
     def set_mo_coefficients(
@@ -145,7 +173,6 @@ class MolecularOrbitals:
         coefficients are assumed to be in cartesian order
         """
         self.coefficients_display = mo_coefficients
-        print(spherical_order)
         if spherical_order == "none":
             self.coefficients = self.coefficients_display
         elif spherical_order == "molden":
@@ -154,7 +181,6 @@ class MolecularOrbitals:
             self.coefficients = self.spherical_to_cartesian_transformation(
                 mo_coefficients,
             )
-            print(self.coefficients.shape, self.coefficients_spherical.shape)
         else:
             msg = f"The spherical_order {spherical_order} is not supported."
             raise ValueError(msg)
@@ -219,6 +245,8 @@ class MolecularOrbitals:
                 skip_shells -= 1
 
         new_shells = np.array(shells, dtype=np.int64)
+        cut_off_distances = np.zeros_like(new_shells, dtype=np.float64)
+        cut_off_distances[:] = 100.0
 
         mo_coefficients = np.array(self.coefficients[:, index], dtype=np.float64)
         aos_values = np.zeros(len(mo_coefficients), dtype=np.float64)
@@ -233,6 +261,7 @@ class MolecularOrbitals:
             new_shells,
             mo_coefficients,
             aos_values,
+            cut_off_distances,
         )
 
     def construct_transformation_matrices(self) -> None:  # noqa: PLR0915

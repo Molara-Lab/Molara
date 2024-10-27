@@ -163,4 +163,3 @@ class Ui_MOs_dialog(object):
         self.label_9.setText(QCoreApplication.translate("MOs_dialog", u"Distance Cutoff:", None))
         self.label_10.setText(QCoreApplication.translate("MOs_dialog", u"10 ^", None))
     # retranslateUi
-

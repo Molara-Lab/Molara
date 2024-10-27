@@ -37,12 +37,8 @@ cpdef generate_voxel_grid(
     cdef double[:, :, :] voxel_grid = npc.ndarray(shape=(voxel_count[0], voxel_count[1], voxel_count[2]), dtype=np.float64)
     cdef double[:, :] orbital_positions = npc.ndarray(shape=(number_of_aos, 3), dtype=np.float64)
     cdef int64_t[:,:] orbital_ijks = npc.ndarray(shape=(number_of_aos, 3), dtype=np.intp)
-    cdef int max_length = 0, ao_index, i, j, k, l, len_ao
+    cdef int max_length = 0, ao_index, len_ao
     cdef double[:] electron_position = npc.ndarray(shape=3)
-    cdef double[:] electron_position_i = npc.ndarray(shape=3)
-    cdef double[:] electron_position_j = npc.ndarray(shape=3)
-    cdef double[:] electron_position_k = npc.ndarray(shape=3)
-    cdef double scaled_direction
     cdef int voxel_count_i = voxel_count[0], voxel_count_j = voxel_count[1], voxel_count_k = voxel_count[2]
 
 
@@ -59,7 +55,6 @@ cpdef generate_voxel_grid(
     cdef int64_t[:] shells_temp = npc.ndarray(shape=number_of_aos, dtype=np.int64)
     cdef int skip_shells = 0, shell_index = 0
     cdef int number_of_shells = 0
-    cdef double t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10
 
     # Prepare the data
     orbital_exponents[:,:] = 0
@@ -175,5 +170,3 @@ cdef inline int voxel_grid_loops(
                 )
 
     return 0
-
-
