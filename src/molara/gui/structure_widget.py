@@ -216,6 +216,7 @@ class StructureWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
+        self.makeCurrent()
         self.renderer.draw_scene(self.camera, self.bonds)
         if self.show_atom_indices:
             self.update_atom_number_labels()
@@ -276,7 +277,7 @@ class StructureWidget(QOpenGLWidget):
 
         :param event: mouse event (such as left click, right click...)
         """
-        if event.position().x() not in range(self.width()) or event.position().y() not in range(self.height()):
+        if not 0 < event.position().x() < self.width() or not 0 < event.position().y() < self.height():
             return
 
         if event.button() == Qt.MouseButton.LeftButton:

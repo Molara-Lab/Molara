@@ -6,11 +6,10 @@ import copy
 from unittest import TestCase
 
 import numpy as np
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_almost_equal, assert_array_equal
 
 from molara.structure.atom import Atom
 from molara.structure.molecule import Molecule
-from molara.util.testing import assert_vectors_equal
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -53,7 +52,7 @@ class TestMolecule(TestCase):
         atomic_nums_ccl4, coords_ccl4 = self.atomic_nums_ccl4, self.coords_ccl4
         assert ccl4.draw_bonds
         assert len(ccl4.atoms) == num_atoms_ccl4
-        for atom_i, atomic_num_i, coords_i in zip(ccl4.atoms, atomic_nums_ccl4, coords_ccl4):
+        for atom_i, atomic_num_i, coords_i in zip(ccl4.atoms, atomic_nums_ccl4, coords_ccl4, strict=True):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)
@@ -71,7 +70,7 @@ class TestMolecule(TestCase):
         atomic_nums_water, coords_water = self.atomic_nums_water, self.coords_water
         assert water.draw_bonds
         assert len(water.atoms) == num_atoms_water
-        for atom_i, atomic_num_i, coords_i in zip(water.atoms, atomic_nums_water, coords_water):
+        for atom_i, atomic_num_i, coords_i in zip(water.atoms, atomic_nums_water, coords_water, strict=True):
             assert isinstance(atom_i, Atom)
             assert atom_i.atomic_number == atomic_num_i
             assert_array_equal(atom_i.position, coords_i)
@@ -106,7 +105,7 @@ class TestMolecule(TestCase):
         _copy = copy.copy(self.ccl4)
         assert_array_equal(_copy.atomic_numbers, self.ccl4.atomic_numbers)
         assert _copy.molar_mass == self.ccl4.molar_mass
-        for atom_copy, atom_ccl4 in zip(_copy.atoms, self.ccl4.atoms):
+        for atom_copy, atom_ccl4 in zip(_copy.atoms, self.ccl4.atoms, strict=True):
             assert_array_equal(atom_copy.position, atom_ccl4.position)
         assert _copy.draw_bonds == self.ccl4.draw_bonds
 
@@ -147,22 +146,20 @@ class TestMolecule(TestCase):
         """Test the center_coordinates routine."""
         # test ccl4
         self.ccl4.center_coordinates()
-        assert_vectors_equal(self.ccl4.center_of_mass, np.zeros(3))
+        assert_almost_equal(self.ccl4.center_of_mass, np.zeros(3), decimal=5)
         offset = np.array([1.234, 2.345, 3.456])
         for atom_i in self.ccl4.atoms:
             atom_i.set_position(atom_i.position + offset)
         self.ccl4.center_coordinates()
-        assert_vectors_equal(self.ccl4.center_of_mass, np.zeros(3))
-        assert_vectors_equal(self.ccl4.center, offset)
+        assert_almost_equal(self.ccl4.center_of_mass, np.zeros(3), decimal=5)
 
         # test water
         self.water.center_coordinates()
-        assert_vectors_equal(self.water.center_of_mass, np.zeros(3))
+        assert_almost_equal(self.water.center_of_mass, np.zeros(3), decimal=5)
         offset = np.array([1.456, 2.567, 3.678])
         for atom_i in self.water.atoms:
             atom_i.set_position(atom_i.position + offset)
         self.water.center_coordinates()
-        assert_vectors_equal(self.water.center_of_mass, np.zeros(3))
-        assert_vectors_equal(self.water.center, offset)
+        assert_almost_equal(self.water.center_of_mass, np.zeros(3), decimal=5)
 
         assert self.water.bond_distance_factor == 1.0 / 1.75

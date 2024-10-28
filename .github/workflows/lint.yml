@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.12"]
+        python-version: ["3.10", "3.12"]
     steps:
     - uses: actions/checkout@v4
 
@@ -16,9 +16,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        enable-cache: true
+
     - name: Install dependencies
       run: |
-        pip install uv
         uv pip install ruff mypy pyright cython-lint --upgrade --system
         uv pip install types-requests --system
         uv pip install -e . --system
@@ -32,8 +36,7 @@ jobs:
     - name: mypy
       run: |
         mypy --version
-        rm -rf .mypy_cache
-        mypy . #  ${{ github.event.repository.name }}
+        mypy .
 
     - name: pyright
       run: |
