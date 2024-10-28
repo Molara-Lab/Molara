@@ -86,6 +86,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionMeasure"/>
+    <addaction name="actionDisplay_MOs"/>
     <addaction name="actionBuilder"/>
    </widget>
    <addaction name="menuFile"/>
@@ -222,6 +223,11 @@
   <action name="actionToggle_Axes">
    <property name="text">
     <string>Show Axes</string>
+   </property>
+  </action>
+  <action name="actionDisplay_MOs">
+   <property name="text">
+    <string>Display MOs</string>
    </property>
   </action>
  </widget>
