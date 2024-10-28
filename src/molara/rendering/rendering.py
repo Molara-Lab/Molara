@@ -153,18 +153,7 @@ class Renderer:
             return
 
         polygon = self.polygons[i_polygon]
-        if polygon["vao"] != 0:
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            for buffer in polygon["buffers"]:
-                glDeleteBuffers(1, buffer)
-            glDeleteVertexArrays(1, polygon["vao"])
-        self.polygons[i_polygon] = {
-            "vao": 0,
-            "n_instances": 0,
-            "n_vertices": 0,
-            "buffers": [],
-        }
+        self.remove_object(polygon)
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -307,6 +296,7 @@ class Renderer:
 
         cylinder = self.cylinders[i_cylinder]
         self.remove_object(cylinder)
+        print(self.cylinders)
 
     def remove_sphere(self, i_sphere: int) -> None:
         """Remove a sphere from the list of spheres.
