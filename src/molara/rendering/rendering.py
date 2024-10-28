@@ -296,7 +296,6 @@ class Renderer:
 
         cylinder = self.cylinders[i_cylinder]
         self.remove_object(cylinder)
-        print(self.cylinders)
 
     def remove_sphere(self, i_sphere: int) -> None:
         """Remove a sphere from the list of spheres.
@@ -467,10 +466,13 @@ class Renderer:
         for sphere in self.spheres:
             _draw(sphere, "n_instances")
 
+        # Draw cylinders
+        for cylinder in self.cylinders:
+            _draw(cylinder, "n_instances")
+
         # Draw polygons
         if self.wire_mesh_orbitals:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
         for polygon in self.polygons:
             if polygon["vao"] != 0:
                 glBindVertexArray(polygon["vao"])
@@ -481,10 +483,6 @@ class Renderer:
                     polygon["n_instances"],
                 )
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-
-        # Draw cylinders
-        for cylinder in self.cylinders:
-            _draw(cylinder, "n_instances")
 
         glBindVertexArray(0)
 
