@@ -271,7 +271,7 @@ class Renderer:
         model_matrices = np.array([])
         for i in range(n_instances):
             model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
-            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))  # type: ignore[reportPossiblyUnboundVariable]
+            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
         sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors)
 
