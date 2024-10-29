@@ -113,30 +113,22 @@ class MolecularOrbitals:
             # Only calculate the cutoffs for one shell, because all functions are evaluated at the same distance for
             # each shell. The key is the most diffuse atomic orbital (see calculation_keys), in order to use the
             # worst case scenario for the cutoffs.
-            for key in calculation_keys:
-                hit = False
-                if key in basis_function_labels[i]:
-                    hit = True
-                    break
-            if hit:
+            if any(key in basis_function_labels[i] for key in calculation_keys):
                 y_vals = []
 
                 # The atomic orbitals are evaluated for different distances, assuming x direction only
                 for x in x_vals:
-                    val = 0
 
                     # The radial part of the atomic orbital is calculated
-                    for j in range(len(basis_functions[i].coefficients)):
-                        val += (
-                            basis_functions[i].coefficients[j]
-                            * basis_functions[i].norms[j]
-                            * np.exp(-basis_functions[i].exponents[j] * x)
-                        )
+                    coeffs = basis_functions[i].coefficients
+                    norms = basis_functions[i].norms
+                    exponents = basis_functions[i].exponents
+                    radial = np.sum(coeffs * norms * np.exp(-exponents * x))
 
                     # The angular part of the atomic orbital is calculated using only the highest order x function
                     # to make sure to never underestimate the value of the atomic orbital
-                    val *= x ** sum(basis_functions[i].ijk)
-                    y_vals.append(val)
+                    complete_val = radial * x ** sum(basis_functions[i].ijk)
+                    y_vals.append(complete_val)
 
                 # The atomic orbital is multiplied with the largest molecular orbital coefficient of the shell
                 y_vals = np.abs(np.array(y_vals) * mo_coeff_basis_function)
