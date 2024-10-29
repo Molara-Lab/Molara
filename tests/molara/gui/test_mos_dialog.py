@@ -119,7 +119,7 @@ class WorkaroundTestMOsDialog:
         """Test the scale box size method and the corner calculation."""
         size = 2
 
-        corners = self.mo_dialog.calculate_corners_of_cube()
+        corners = self.mo_dialog.calculate_corners_of_box()
 
         assert not self.mo_dialog.display_box
         self.mo_dialog.toggle_box()
