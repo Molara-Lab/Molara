@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from gui.test_builder import WorkaroundTestBuilderDialog
-from gui.test_cusotmizer_dialog import WorkaroundTestCustomizerDialog
+from gui.test_customizer_dialog import WorkaroundTestCustomizerDialog
 from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog

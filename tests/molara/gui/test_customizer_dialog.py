@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestCustomizerDialog:
-    """Contains the tests for the MeasurementDialog class.
+    """Contains the tests for the CustomizerDialog class.
 
     It does not inherit from unittest.TestCase, because that does not work with pytest-qt.
     """
@@ -26,6 +26,11 @@ class WorkaroundTestCustomizerDialog:
         self.main_window.show_structure_customizer_dialog()
         self.customizer_dialog = main_window.structure_customizer_dialog
         self.molecule = self.main_window.structure_widget.structures[0]
+
+    def teardown(self) -> None:
+        """Clean up after tests."""
+        if self.customizer_dialog:
+            self.customizer_dialog.close()
 
     def run_tests(self) -> None:
         """Run the tests."""

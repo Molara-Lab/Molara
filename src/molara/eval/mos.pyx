@@ -3,7 +3,6 @@
 from cython.cimports.molara.eval.aos import calculate_aos
 from cython import boundscheck, exceptval
 from libc.stdint cimport int64_t
-from libc.math cimport sqrt
 
 cdef int number_of_basis_functions[5]
 
@@ -27,7 +26,7 @@ cpdef double calculate_mo_cartesian(
         double[:] cut_off_distances,
 ) nogil:
 
-    cdef double mo_value = 0.0, distance
+    cdef double mo_value = 0.0, distance_sq
     cdef int i, shell_index, shell_start, shell_end, shell
 
     number_of_shells = shells.shape[0]
@@ -36,11 +35,11 @@ cpdef double calculate_mo_cartesian(
     aos_values[:] = 0.0
     for shell_index in range(number_of_shells):
         shell = shells[shell_index]
-        distance = sqrt((electron_position[0] - orbital_position[shell_start, 0]) ** 2 +
+        distance_sq = ((electron_position[0] - orbital_position[shell_start, 0]) ** 2 +
                         (electron_position[1] - orbital_position[shell_start, 1]) ** 2 +
                         (electron_position[2] - orbital_position[shell_start, 2]) ** 2)
         shell_end = shell_start + number_of_basis_functions[shell]
-        if distance < cut_off_distances[shell_index]:
+        if distance_sq < cut_off_distances[shell_index] ** 2:
             _ = calculate_aos(
                 electron_position,
                 orbital_position[shell_start, :],

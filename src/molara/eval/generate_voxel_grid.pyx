@@ -3,7 +3,7 @@
 cimport numpy as npc
 import numpy as np
 from cython.cimports.molara.eval.mos import calculate_mo_cartesian
-from cython import boundscheck, exceptval
+from cython import boundscheck, exceptval, wraparound
 
 from molara.data.constants import ANGSTROM_TO_BOHR
 from libc.stdint cimport int64_t
@@ -94,12 +94,22 @@ cpdef generate_voxel_grid(
     cdef int64_t[:] shells = npc.ndarray(shape=number_of_shells, dtype=np.int64)
     shells = shells_temp[:number_of_shells]
 
+    cdef double[3] voxel_size_i = [direction[0, 0] * voxel_size[0],
+                                   direction[0, 1] * voxel_size[0],
+                                   direction[0, 2] * voxel_size[0]]
+    cdef double[3] voxel_size_j = [direction[1, 0] * voxel_size[1],
+                                      direction[1, 1] * voxel_size[1],
+                                      direction[1, 2] * voxel_size[1]]
+    cdef double[3] voxel_size_k = [direction[2, 0] * voxel_size[2],
+                                        direction[2, 1] * voxel_size[2],
+                                        direction[2, 2] * voxel_size[2]]
     # Calculate the grid
     voxel_grid_loops(
         electron_position,
         voxel_grid,
-        direction,
-        voxel_size,
+        voxel_size_i,
+        voxel_size_j,
+        voxel_size_k,
         voxel_count_i,
         voxel_count_j,
         voxel_count_k,
@@ -117,11 +127,13 @@ cpdef generate_voxel_grid(
 
 @exceptval(check=False)
 @boundscheck(False)
-cdef inline int voxel_grid_loops(
+@wraparound(False)
+cdef inline void voxel_grid_loops(
         double[:] electron_position,
         double[:, :, :] voxel_grid,
-        double[:, :] direction,
-        double[:] voxel_size,
+        double[:] voxel_size_i,
+        double[:] voxel_size_j,
+        double[:] voxel_size_k,
         int voxel_count_i,
         int voxel_count_j,
         int voxel_count_k,
@@ -139,17 +151,17 @@ cdef inline int voxel_grid_loops(
     cdef double[3] electron_position_i, electron_position_j, electron_position_k
 
     for i in range(voxel_count_i):
-        electron_position_i[0] = direction[0,0] * voxel_size[0] * i
-        electron_position_i[1] = direction[0,1] * voxel_size[0] * i
-        electron_position_i[2] = direction[0,2] * voxel_size[0] * i
+        electron_position_i[0] = voxel_size_i[0] * i
+        electron_position_i[1] = voxel_size_i[1] * i
+        electron_position_i[2] = voxel_size_i[2] * i
         for j in range(voxel_count_j):
-            electron_position_j[0] = direction[1,0] * voxel_size[1] * j
-            electron_position_j[1] = direction[1,1] * voxel_size[1] * j
-            electron_position_j[2] = direction[1,2] * voxel_size[1] * j
+            electron_position_j[0] = voxel_size_j[0] * j
+            electron_position_j[1] = voxel_size_j[1] * j
+            electron_position_j[2] = voxel_size_j[2] * j
             for k in range(voxel_count_k):
-                electron_position_k[0] = direction[2,0] * voxel_size[2] * k
-                electron_position_k[1] = direction[2,1] * voxel_size[2] * k
-                electron_position_k[2] = direction[2,2] * voxel_size[2] * k
+                electron_position_k[0] = voxel_size_k[0] * k
+                electron_position_k[1] = voxel_size_k[1] * k
+                electron_position_k[2] = voxel_size_k[2] * k
                 electron_position[0] = (electron_position_i[0] + electron_position_j[0] + electron_position_k[0])
                 electron_position[1] = (electron_position_i[1] + electron_position_j[1] + electron_position_k[1])
                 electron_position[2] = (electron_position_i[2] + electron_position_j[2] + electron_position_k[2])
@@ -168,5 +180,3 @@ cdef inline int voxel_grid_loops(
                     aos_values,
                     cut_off_distances,
                 )
-
-    return 0
