@@ -230,9 +230,9 @@ cpdef inline float[:] calculate_normal_corner(
     dy = grid[x, y_plus, z] - grid[x, y_minus, z]
     dz = grid[x, y, z_plus] - grid[x, y, z_minus]
     norm_of_result = sqrt(dx * dx + dy * dy + dz * dz)
-    result[0] = dx * norm_of_result
-    result[1] = dy * norm_of_result
-    result[2] = dz * norm_of_result
+    result[0] = dx / norm_of_result
+    result[1] = dy / norm_of_result
+    result[2] = dz / norm_of_result
     return result
 
 
