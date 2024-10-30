@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
@@ -331,7 +332,7 @@ class Camera:
         }
         if not file_name.endswith(".json"):
             file_name += ".json"
-        with open(file_name, "w") as file:
+        with Path(file_name).open("w") as file:
             json.dump(settings, file, indent=4)
 
     def import_settings(self, file_name: str) -> None:
@@ -342,7 +343,7 @@ class Camera:
         if not file_name.endswith(".json"):
             # Show warning
             return
-        with open(file_name) as file:
+        with Path(file_name).open() as file:
             data = json.load(file)
         self.orthographic_projection = data["orthographic_projection"]
         self.fov = data["fov"]
