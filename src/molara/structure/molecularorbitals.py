@@ -99,7 +99,6 @@ class MolecularOrbitals:
         x_vals = np.linspace(0, max_distance, max_points_number)
         calculation_keys = ["s", "pz", "dyz", "fxyz", "gzzxy"]
         cut_off_distances = []
-        hit = False
         mo_coeff_basis_function = 0
         maximum_distance = 1.0e300
 
