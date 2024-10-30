@@ -118,7 +118,6 @@ class MolecularOrbitals:
 
                 # The atomic orbitals are evaluated for different distances, assuming x direction only
                 for x in x_vals:
-
                     # The radial part of the atomic orbital is calculated
                     coeffs = basis_functions[i].coefficients
                     norms = basis_functions[i].norms
