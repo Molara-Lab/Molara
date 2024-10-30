@@ -20,7 +20,7 @@ file_path = ROOT / "src/molara/structure/"
 def fetch_periodic_table() -> dict[str, dict[str, str]]:
     """Fetch the periodic table data from pymatgen."""
     with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/materialsproject/pymatgen/master/pymatgen/core/periodic_table.json",
+        "https://raw.githubusercontent.com/materialsproject/pymatgen/refs/heads/master/src/pymatgen/core/periodic_table.json",
     ) as url:
         return json.load(url)
 
@@ -28,7 +28,7 @@ def fetch_periodic_table() -> dict[str, dict[str, str]]:
 def fetch_license() -> str:
     """Fetch the license text from the pymatgen repository."""
     with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/materialsproject/pymatgen/master/LICENSE",
+        "https://raw.githubusercontent.com/materialsproject/pymatgen/refs/heads/master/LICENSE",
     ) as url:
         return url.read().decode("utf-8")
 
