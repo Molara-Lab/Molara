@@ -47,7 +47,7 @@ class TestXyzExporter(unittest.TestCase):
         assert Path(self.filename).exists()
 
         # Assert that the output file has the expected content
-        with open(self.filename) as file:
+        with Path(self.filename).open() as file:
             num_atoms = int(file.readline().strip())
             assert num_atoms == self.atomic_numbers.size
         data = np.genfromtxt(
@@ -93,7 +93,7 @@ class TestGeneralExporter(unittest.TestCase):
         assert Path(self.filename_xyz).exists()
 
         # Assert that the output file has the expected content
-        with open(self.filename_xyz) as file:
+        with Path(self.filename_xyz).open() as file:
             num_atoms = int(file.readline().strip())
             assert num_atoms == self.atomic_numbers.size
         data = np.genfromtxt(

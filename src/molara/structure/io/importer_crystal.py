@@ -116,7 +116,7 @@ class PoscarImporter(Importer):
 
     def parse_poscar(self) -> Crystal:
         """Parse POSCAR file (self.path) and return Crystal object."""
-        with open(self.path) as file:
+        with self.path.open() as file:
             lines = [line.strip() for line in file]
         header_length = 8
         if not len(lines) > header_length:
