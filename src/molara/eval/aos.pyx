@@ -1,12 +1,13 @@
 """This module serves the calculation of atomic orbitals."""
 
 from cython.parallel import prange
-from cython import boundscheck
+from cython import boundscheck, exceptval, cdivision
 from libc.math cimport exp
 
 __copyright__ = "Copyright 2024, Molara"
-
+@exceptval(check=False)
 @boundscheck(False)
+@cdivision(True)
 cpdef int calculate_aos(
     double[:] electron_coords,
     double[:] atom_coords,

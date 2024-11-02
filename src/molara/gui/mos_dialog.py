@@ -74,6 +74,7 @@ class MOsDialog(QDialog):
         self.ui.normalizationButton.clicked.connect(self.run_population_analysis)
         self.ui.cutoffSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
         self.ui.voxelSizeSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
+        self.ui.isoValueSpinBox.valueChanged.connect(self.visualize_orbital)
 
         self.initial_box_scale = 2
         scale = self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
@@ -95,9 +96,9 @@ class MOsDialog(QDialog):
         """Call all the functions to initialize all the labels and buttons and so on."""
         assert self.mos is not None
         self.ui.orbTypeLabel.setText(self.mos.basis_type)
+        self.init_spin_labels()
         self.setup_orbital_selector()
         self.calculate_minimum_box_size()
-        self.init_spin_labels()
         self.fill_orbital_selector()
         self.calculate_new_box()
 
@@ -106,11 +107,14 @@ class MOsDialog(QDialog):
         assert self.mos is not None
         if -1 in self.mos.spins and 1 in self.mos.spins:
             self.ui.restrictedLabel.hide()
+            self.ui.alphaCheckBox.show()
+            self.ui.betaCheckBox.show()
             self.ui.alphaCheckBox.setChecked(True)
             self.ui.betaCheckBox.setChecked(False)
             self.display_spin = 1
         else:
             self.ui.restrictedLabel.setText("Restricted")
+            self.ui.restrictedLabel.show()
             self.ui.alphaCheckBox.hide()
             self.ui.betaCheckBox.hide()
             self.display_spin = 0
@@ -119,7 +123,6 @@ class MOsDialog(QDialog):
         """Select the spin with the checkboxes and update the displayed mos accordingly."""
         if self.ui.alphaCheckBox.isChecked():
             self.ui.betaCheckBox.setChecked(False)
-            return
         self.ui.alphaCheckBox.setChecked(True)
         self.display_spin = 1
         self.fill_orbital_selector()
@@ -130,7 +133,6 @@ class MOsDialog(QDialog):
         """Select the spin with the checkboxes and update the displayed mos accordingly."""
         if self.ui.betaCheckBox.isChecked():
             self.ui.alphaCheckBox.setChecked(False)
-            return
         self.ui.betaCheckBox.setChecked(True)
         self.display_spin = -1
         self.fill_orbital_selector()
@@ -423,7 +425,6 @@ class MOsDialog(QDialog):
             vertices1,
             vertices2,
         )
-
         # Get the number of vertices from the last entry, to shrink the memory usage
         number_of_vertices_entries_1 = int(vertices1[-1])
         number_of_vertices_entries_2 = int(vertices2[-1])
