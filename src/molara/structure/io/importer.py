@@ -84,7 +84,7 @@ class XyzImporter(MoleculesImporter):
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(self.path, encoding="utf-8") as file:
+        with self.path.open(encoding="utf-8") as file:
             lines = file.readlines()
 
         num_atoms = int(lines[0])
@@ -110,10 +110,7 @@ class CoordImporter(MoleculesImporter):
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with open(
-            self.path,
-            encoding=locale.getpreferredencoding(do_setlocale=False),
-        ) as file:
+        with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()  # To skip first row
 
         atomic_numbers = []
@@ -151,10 +148,7 @@ class MoldenImporter(MoleculesImporter):
         spherical_order = "none"
         normalization_mode = "none"
 
-        with open(
-            self.path,
-            encoding=locale.getpreferredencoding(do_setlocale=False),
-        ) as file:
+        with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             lines = file.readlines()
 
         while i < len(lines):

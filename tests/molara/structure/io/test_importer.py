@@ -9,6 +9,7 @@ test_structure_widget.py and test_main_window.py.
 from __future__ import annotations
 
 from importlib.util import find_spec
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 from unittest import TestCase, mock
 
@@ -110,7 +111,7 @@ class TestQmImporter(TestCase):
             return
         with NamedTemporaryFile(suffix=".txt") as file:
             filename = file.name
-        with open(filename, "w") as file:
+        with Path(filename).open("w") as file:
             file.write("Invalid content!")
         msg = "Not a QM output file."
         with pytest.raises(FileFormatError, match=msg):

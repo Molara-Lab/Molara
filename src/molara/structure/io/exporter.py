@@ -49,7 +49,7 @@ class XyzExporter(StructureExporter):
             for atom in structure.atoms
         ]
         try:
-            with open(self.path, "w") as file:
+            with self.path.open("w") as file:
                 file.write(rf"{len(structure.atoms)}" + "\n")
                 file.write("This xyz file was generated automatically by Molara!\n")
                 file.write("\n".join(lines))
