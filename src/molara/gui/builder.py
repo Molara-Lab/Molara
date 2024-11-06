@@ -276,7 +276,7 @@ class BuilderDialog(QDialog):
         if np.linalg.norm(self._orth(vec2, vec1)) == 0:
             vec2 = np.array([0, 1.0, 0])
         vec3 = np.cross(vec1, vec2)
-        vec3 = vec3 / np.linalg.norm(vec3)
+        vec3 /= np.linalg.norm(vec3)
         tmp = dist * np.sin(angle)
         coord = mol.atoms[at1_id].position + dist * np.cos(angle) * vec1
         coord += tmp * np.cos(dihedral) * vec2 + tmp * np.sin(dihedral) * vec3
