@@ -25,9 +25,9 @@ class Ui_Surface3D_dialog(object):
         Surface3D_dialog.resize(425, 317)
         Surface3D_dialog.setMinimumSize(QSize(425, 317))
         Surface3D_dialog.setMaximumSize(QSize(425, 317))
-        self.visualize_surface = QPushButton(Surface3D_dialog)
-        self.visualize_surface.setObjectName(u"visualize_surface")
-        self.visualize_surface.setGeometry(QRect(50, 60, 100, 32))
+        self.visualize_surfaceButton = QPushButton(Surface3D_dialog)
+        self.visualize_surfaceButton.setObjectName(u"visualize_surfaceButton")
+        self.visualize_surfaceButton.setGeometry(QRect(50, 60, 100, 32))
 
         self.retranslateUi(Surface3D_dialog)
 
@@ -36,6 +36,5 @@ class Ui_Surface3D_dialog(object):
 
     def retranslateUi(self, Surface3D_dialog):
         Surface3D_dialog.setWindowTitle(QCoreApplication.translate("Surface3D_dialog", u"3D Surface", None))
-        self.visualize_surface.setText(QCoreApplication.translate("Surface3D_dialog", u"PushButton", None))
+        self.visualize_surfaceButton.setText(QCoreApplication.translate("Surface3D_dialog", u"PushButton", None))
     # retranslateUi
-

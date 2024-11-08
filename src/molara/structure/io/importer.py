@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from molara.data.constants import ANGSTROM_TO_BOHR
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.io.importer_crystal import (
     PoscarImporter,
@@ -36,7 +37,7 @@ if TYPE_CHECKING:
 
 __copyright__ = "Copyright 2024, Molara"
 
-bohr_to_angstrom = 5.29177210903e-1
+BOHR_TO_ANGSTROM = 1 / ANGSTROM_TO_BOHR
 
 
 class MoleculesImporter(ABC):
@@ -370,6 +371,72 @@ class MoldenImporter(MoleculesImporter):
         return mo_coefficients, labels, energies, spins, occupations
 
 
+class CubeImporter(MoleculesImporter):
+    """Importer from *.molden files."""
+
+    def load(self) -> Molecules:
+        """Read the file in self.path and creates a Molecules object."""
+        molecules = Molecules()
+
+        with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
+            lines = file.readlines()
+
+        # Get number of atoms and position of the origin
+        atom_line = lines[2].split()
+        n_atoms = int(atom_line[0])
+        origin = np.array([float(x) * BOHR_TO_ANGSTROM for x in atom_line[1:4]], dtype=np.float64)
+        number_of_values = 1
+        dset_ids = True
+        if n_atoms > 0:
+            n_atoms = n_atoms
+            dset_ids = False
+            number_of_values = atom_line[4]
+        else:
+            n_atoms = -n_atoms
+        assert number_of_values == 1, "Only one value per grid point is supported"
+
+        # Get voxel info
+        number_of_voxels = np.zeros(3, dtype=np.int64)
+        size_of_voxels = np.zeros((3, 3))
+        for i in range(3):
+            line = lines[3 + i].split()
+            number_of_voxels[i] = int(line[0])
+            for j in range(3):
+                val = float(line[j + 1])
+                if val < 0:
+                    val = -val * ANGSTROM_TO_BOHR
+                size_of_voxels[i, j] = val * BOHR_TO_ANGSTROM
+
+        # Get atomic numbers and coordinates
+        atomic_numbers = []
+        coordinates = []
+        charges = []
+        for i in range(n_atoms):
+            line = lines[6 + i].split()
+            atomic_numbers.append(int(line[0]))
+            charges.append(float(line[1]))
+            coordinates.append([float(x) * BOHR_TO_ANGSTROM for x in line[2:5]])
+
+        # Get the voxel grid data
+        # Implement multiple values per voxel!
+        line_index = 7 + n_atoms
+        all_vals = []
+        while line_index < len(lines):
+            line = lines[line_index]
+            if line == "":
+                break
+            vals = [float(x) for x in line.split()]
+            all_vals += vals
+            line_index += 1
+        grid = np.array(all_vals).reshape(number_of_voxels)
+
+        molecule = Molecule(np.array(atomic_numbers), np.array(coordinates))
+        molecule.voxel_grid.set_grid(grid, origin, size_of_voxels)
+        molecules.add_molecule(molecule)
+
+        return molecules
+
+
 class QmImporter(MoleculesImporter):
     """importer for output files of various quantum chemistry programs."""
 
@@ -457,6 +524,7 @@ class GeneralImporter(MoleculesImporter):
         ".xml": VasprunImporter,
         ".molden": MoldenImporter,
         ".input": MoldenImporter,
+        ".cube": CubeImporter,
     }
 
     def __init__(

@@ -16,9 +16,9 @@ from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.mos_dialog import MOsDialog
 from molara.gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.gui.supercell_dialog import SupercellDialog
+from molara.gui.surface_3d_dialog import Surface3DDialog
 from molara.gui.trajectory_dialog import TrajectoryDialog
 from molara.gui.ui_form import Ui_MainWindow
-from molara.gui.surface_3d_dialog import Surface3DDialog
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
 from molara.structure.io.exporter import GeneralExporter
@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
             self.show_mo_dialog,
         )
         self.ui.actionDisplay_3D_Surface.triggered.connect(
-            self.surface_3d_dialog.show,
+            self.show_surface_3d_dialog,
         )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
@@ -123,6 +123,11 @@ class MainWindow(QMainWindow):
         if self.mo_dialog.check_if_mos():
             self.mo_dialog.show()
             self.mo_dialog.init_dialog()
+
+    def show_surface_3d_dialog(self) -> None:
+        """Check if cube file has been loaded and perform actions accordingly."""
+        self.surface_3d_dialog.show()
+        self.surface_3d_dialog.initialize_dialog()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""
