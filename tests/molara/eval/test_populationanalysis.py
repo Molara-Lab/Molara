@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from unittest import TestCase
 
+import pytest
+
 from molara.eval.populationanalysis import PopulationAnalysis
 from molara.structure.io.importer import GeneralImporter
 
@@ -23,8 +25,8 @@ class TestPopulationanalysis(TestCase):
         molecule = importer.load().mols[0]
         molecule.center_coordinates()
         pop_analysis = PopulationAnalysis(molecule)
-        assert pop_analysis.number_of_electrons == 10.0
-        assert pop_analysis.calculated_number_of_electrons == 9.999999999981455
+        assert pop_analysis.number_of_electrons == pytest.approx(10.0)
+        assert pop_analysis.calculated_number_of_electrons == pytest.approx(9.999999999981455)
 
     def test_cartesian(self) -> None:
         """Test cartesian MO analysis."""
@@ -33,5 +35,5 @@ class TestPopulationanalysis(TestCase):
         molecule = importer.load().mols[0]
         molecule.center_coordinates()
         pop_analysis = PopulationAnalysis(molecule)
-        assert pop_analysis.number_of_electrons == 42.0
-        assert pop_analysis.calculated_number_of_electrons == 41.999999999828034
+        assert pop_analysis.number_of_electrons == pytest.approx(42.0)
+        assert pop_analysis.calculated_number_of_electrons == pytest.approx(41.999999999828034)
