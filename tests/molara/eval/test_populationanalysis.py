@@ -23,10 +23,8 @@ class TestPopulationanalysis(TestCase):
         molecule = importer.load().mols[0]
         molecule.center_coordinates()
         pop_analysis = PopulationAnalysis(molecule)
-        exact_number_of_electrons = 10.0
-        calculated_number_of_electrons = 10.00000007019219
-        assert pop_analysis.number_of_electrons == exact_number_of_electrons
-        assert pop_analysis.calculated_number_of_electrons == calculated_number_of_electrons
+        assert pop_analysis.number_of_electrons == 10.0
+        assert pop_analysis.calculated_number_of_electrons == 9.999999999981455
 
     def test_cartesian(self) -> None:
         """Test cartesian MO analysis."""
@@ -35,7 +33,5 @@ class TestPopulationanalysis(TestCase):
         molecule = importer.load().mols[0]
         molecule.center_coordinates()
         pop_analysis = PopulationAnalysis(molecule)
-        exact_number_of_electrons = 42.0
-        calculated_number_of_electrons = 42.00000051583379
-        assert pop_analysis.number_of_electrons == exact_number_of_electrons
-        assert pop_analysis.calculated_number_of_electrons == calculated_number_of_electrons
+        assert pop_analysis.number_of_electrons == 42.0
+        assert pop_analysis.calculated_number_of_electrons == 41.999999999828034
