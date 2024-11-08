@@ -18,6 +18,7 @@ from molara.gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.gui.supercell_dialog import SupercellDialog
 from molara.gui.trajectory_dialog import TrajectoryDialog
 from molara.gui.ui_form import Ui_MainWindow
+from molara.gui.surface_3d_dialog import Surface3DDialog
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
 from molara.structure.io.exporter import GeneralExporter
@@ -57,7 +58,7 @@ class MainWindow(QMainWindow):
         self.supercell_dialog = SupercellDialog(self)
         self.structure_customizer_dialog = StructureCustomizerDialog(self)
         self.mo_dialog = MOsDialog(self)
-
+        self.surface_3d_dialog = Surface3DDialog(self)
         self.mols = Molecules()
 
         self.set_action_triggers()
@@ -106,6 +107,9 @@ class MainWindow(QMainWindow):
         )
         self.ui.actionDisplay_MOs.triggered.connect(
             self.show_mo_dialog,
+        )
+        self.ui.actionDisplay_3D_Surface.triggered.connect(
+            self.surface_3d_dialog.show,
         )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
