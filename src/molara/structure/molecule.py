@@ -36,10 +36,7 @@ class Molecule(Structure):
         if dummy:
             self.dummy = True
 
-        self.atomic_numbers = np.array(atomic_numbers)
-        self.atoms: list[Atom] = []
         self.mos = MolecularOrbitals()
-        self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.gen_energy_information(header)
         self.basis_set: list = []
