@@ -62,6 +62,7 @@ class MolecularOrbitals:
         self.coefficients: np.ndarray = np.array([])
         self.coefficients_spherical: np.ndarray = np.array([])
         self.coefficients_display: np.ndarray = np.array([])
+        self.cut_off_distances_shells: np.ndarray = np.array([])
 
         # Construct transformation matrices for spherical to cartesian transformation
         self.t_sc_d: np.ndarray = np.array([])
@@ -69,6 +70,86 @@ class MolecularOrbitals:
         self.t_sc_g: np.ndarray = np.array([])
         self.transformation_matrix_spherical_cartesian: np.ndarray = np.array([])
         self.construct_transformation_matrices()
+
+    def calculate_cut_offs(
+        self,
+        basis_functions: list[BasisFunction],
+        orbital: int,
+        threshold: float = 0.001,
+        max_distance: float = 40.0,
+        max_points_number: int = 200,
+    ) -> np.ndarray:
+        """Calculate the cut-offs for the molecular orbitals.
+
+        A cutoff distance is calculated for each basis function of the molecular orbital. The cutoff distance is the
+        distance at which the value of the atomic orbital is below a certain threshold. The cutoff is determined by
+        the highest molecular orbital coefficient of the shell and the threshold parameter. The values distances are
+        calculated for a range of distances and the first distance below the threshold after the maximum of the atomic
+        orbital is used as the cutoff distance. If the threshold is never reached, the maximum distance (1.e300) is
+        used. The algorithm ensures that the cutoff distance is never underestimated.
+
+        :param basis_functions: list of BasisFunction: list of all basis functions of the molecule
+        :param orbital: int: index of the molecular orbital
+        :param threshold: float: threshold for the cutoff distance
+        :param max_distance: float: maximum distance for the cutoff distance calculation
+        :param max_points_number: int: number of sample points for the cutoff distance calculation
+        :return: array of cutoff distances for each shell of the molecular orbital
+        """
+        basis_function_labels = [item for row in self.basis_functions for item in row]
+        x_vals = np.linspace(0, max_distance, max_points_number)
+        calculation_keys = ["s", "pz", "dyz", "fxyz", "gzzxy"]
+        cut_off_distances = []
+        mo_coeff_basis_function = 0
+        maximum_distance = 1.0e300
+
+        # Loop over all basis functions
+        for i in range(len(basis_functions)):
+            # The highest molecular orbital coefficient for each shell is determined for use in the calculation of the
+            # cutoffs
+            mo_coeff_basis_function_temp = abs(self.coefficients[i, orbital])
+            mo_coeff_basis_function = max(mo_coeff_basis_function_temp, mo_coeff_basis_function)
+
+            # Only calculate the cutoffs for one shell, because all functions are evaluated at the same distance for
+            # each shell. The key is the most diffuse atomic orbital (see calculation_keys), in order to use the
+            # worst case scenario for the cutoffs.
+            if any(key in basis_function_labels[i] for key in calculation_keys):
+                y_vals = []
+
+                # The atomic orbitals are evaluated for different distances, assuming x direction only
+                for x in x_vals:
+                    # The radial part of the atomic orbital is calculated
+                    coeffs = basis_functions[i].coefficients
+                    norms = basis_functions[i].norms
+                    exponents = basis_functions[i].exponents
+                    radial = np.sum(coeffs * norms * np.exp(-exponents * x))
+
+                    # The angular part of the atomic orbital is calculated using only the highest order x function
+                    # to make sure to never underestimate the value of the atomic orbital
+                    complete_val = radial * x ** sum(basis_functions[i].ijk)
+                    y_vals.append(complete_val)
+
+                # The atomic orbital is multiplied with the largest molecular orbital coefficient of the shell
+                y_vals = np.abs(np.array(y_vals) * mo_coeff_basis_function)
+                max_index = np.array(y_vals).argmax()
+
+                # The cutoff distance is determined by the first point below the threshold after crossing the maximum
+                # of the atomic orbital
+                for ao_val_index in range(max_index, len(y_vals)):
+                    if y_vals[ao_val_index] < threshold:
+                        cut_off_distances.append(x_vals[ao_val_index])
+                        break
+
+                # If the threshold is never reached, the maximum distance (1.e300) is used
+                else:
+                    cut_off_distances.append(maximum_distance)
+
+                # If the molecular orbital coefficients of the shell are zero, the cutoff distance is set to zero
+                if mo_coeff_basis_function == 0.0:
+                    cut_off_distances[-1] = 0.0
+
+                mo_coeff_basis_function = 0
+
+        return np.array(cut_off_distances, dtype=np.float64)
 
     def set_mo_coefficients(
         self,
@@ -154,6 +235,8 @@ class MolecularOrbitals:
                 skip_shells -= 1
 
         new_shells = np.array(shells, dtype=np.int64)
+        cut_off_distances = np.zeros_like(new_shells, dtype=np.float64)
+        cut_off_distances[:] = 100.0
 
         mo_coefficients = np.array(self.coefficients[:, index], dtype=np.float64)
         aos_values = np.zeros(len(mo_coefficients), dtype=np.float64)
@@ -168,6 +251,7 @@ class MolecularOrbitals:
             new_shells,
             mo_coefficients,
             aos_values,
+            cut_off_distances,
         )
 
     def construct_transformation_matrices(self) -> None:  # noqa: PLR0915
@@ -426,13 +510,14 @@ class MolecularOrbitals:
         # Only works if the number of MOS is correct, i.e. not for truncated molden files...
         number_of_spherical_basis_functions_mos, number_of_mos = mo_coefficients.shape
         number_of_spherical_basis_functions_transformation = self.transformation_matrix_spherical_cartesian.shape[0]
-        number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
         if number_of_spherical_basis_functions_transformation != number_of_spherical_basis_functions_mos:
             msg = (
                 "The number of spherical basis functions does not match between the transformation matrix and"
                 " MO coefficients."
             )
             raise ValueError(msg)
+
+        number_of_cartesian_basis_functions = self.transformation_matrix_spherical_cartesian.shape[1]
 
         new_coefficients = np.zeros(
             (number_of_cartesian_basis_functions, number_of_mos),

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import contextlib
 import sys
 from typing import TYPE_CHECKING
 from unittest import mock
 
 import numpy as np
+
+from molara.structure.molecularorbitals import MolecularOrbitals
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
@@ -58,11 +61,22 @@ class WorkaroundTestMOsDialog:
         self._test_box()
         self._test_visualization()
         self._test_population()
+        self._test_mo_initialization()
 
         self._test_close()
 
         # restricted case
         self._test_restricted_case()
+
+    def _test_mo_initialization(self) -> None:
+        """Test the initialization of the Molecularorbital class."""
+        mos_test = MolecularOrbitals(None, None, None, None, self.mo_dialog.aos)
+        mos_test.construct_transformation_matrices()
+        with contextlib.suppress(ValueError):
+            mos_test.set_mo_coefficients(np.array([1, 2, 3]), spherical_order="not_working")
+
+        with contextlib.suppress(ValueError):
+            mos_test.spherical_to_cartesian_transformation(np.array([1, 2, 3]))
 
     def _test_restricted_case(self) -> None:
         """Test the restricted case."""
@@ -105,7 +119,7 @@ class WorkaroundTestMOsDialog:
         """Test the scale box size method and the corner calculation."""
         size = 2
 
-        corners = self.mo_dialog.calculate_corners_of_cube()
+        corners = self.mo_dialog.calculate_corners_of_box()
 
         assert not self.mo_dialog.display_box
         self.mo_dialog.toggle_box()

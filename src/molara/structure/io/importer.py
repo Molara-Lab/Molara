@@ -224,7 +224,6 @@ class MoldenImporter(MoleculesImporter):
         )
         if spherical_order == "molden":
             molecules.mols[0].mos.basis_type = "Spherical"
-        molecules.mols[0].mos.calculate_transformation_matrix()
 
         return molecules
 
