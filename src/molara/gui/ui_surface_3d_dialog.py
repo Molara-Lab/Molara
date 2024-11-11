@@ -15,8 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QPushButton, QSizePolicy,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QDialog, QDoubleSpinBox, QPushButton,
+    QSizePolicy, QWidget)
 
 class Ui_Surface3D_dialog(object):
     def setupUi(self, Surface3D_dialog):
@@ -28,6 +28,13 @@ class Ui_Surface3D_dialog(object):
         self.visualize_surfaceButton = QPushButton(Surface3D_dialog)
         self.visualize_surfaceButton.setObjectName(u"visualize_surfaceButton")
         self.visualize_surfaceButton.setGeometry(QRect(50, 60, 100, 32))
+        self.isoSpinBox = QDoubleSpinBox(Surface3D_dialog)
+        self.isoSpinBox.setObjectName(u"isoSpinBox")
+        self.isoSpinBox.setGeometry(QRect(200, 70, 62, 22))
+        self.isoSpinBox.setDecimals(4)
+        self.isoSpinBox.setMaximum(1.000000000000000)
+        self.isoSpinBox.setSingleStep(0.005000000000000)
+        self.isoSpinBox.setValue(0.200000000000000)
 
         self.retranslateUi(Surface3D_dialog)
 
@@ -38,3 +45,4 @@ class Ui_Surface3D_dialog(object):
         Surface3D_dialog.setWindowTitle(QCoreApplication.translate("Surface3D_dialog", u"3D Surface", None))
         self.visualize_surfaceButton.setText(QCoreApplication.translate("Surface3D_dialog", u"PushButton", None))
     # retranslateUi
+

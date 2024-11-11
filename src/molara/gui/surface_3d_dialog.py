@@ -28,6 +28,7 @@ class Surface3DDialog(QDialog):
         self.ui = Ui_Surface3D_dialog()
         self.ui.setupUi(self)
         self.ui.visualize_surfaceButton.clicked.connect(self.visualize_surface)
+        self.ui.isoSpinBox.valueChanged.connect(self.visualize_surface)
 
     def initialize_dialog(self):
         """Initialize the dialog."""
@@ -55,7 +56,7 @@ class Surface3DDialog(QDialog):
         vertices1 = np.zeros(max_vertices, dtype=np.float32)
         vertices2 = np.zeros(max_vertices, dtype=np.float32)
 
-        iso = 0.05
+        iso = self.ui.isoSpinBox.value()
 
         _ = marching_cubes(
             self.molecule.voxel_grid.grid,

@@ -390,7 +390,10 @@ class CubeImporter(MoleculesImporter):
         if n_atoms > 0:
             n_atoms = n_atoms
             dset_ids = False
-            number_of_values = atom_line[4]
+            try:
+                number_of_values = atom_line[4]
+            except IndexError:
+                number_of_values = 1
         else:
             n_atoms = -n_atoms
         assert number_of_values == 1, "Only one value per grid point is supported"
@@ -420,6 +423,8 @@ class CubeImporter(MoleculesImporter):
         # Get the voxel grid data
         # Implement multiple values per voxel!
         line_index = 7 + n_atoms
+        if not dset_ids:
+            line_index -= 1
         all_vals = []
         while line_index < len(lines):
             line = lines[line_index]
