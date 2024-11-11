@@ -6,7 +6,7 @@ import numpy as np
 class VoxelGrid:
     """Class for voxel grid storage and manipulation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the voxel grid."""
         self.grid = np.array([])
         self.origin = np.array([])
@@ -14,7 +14,7 @@ class VoxelGrid:
         self.voxel_number = np.array([])
         self.is_initialized = False
 
-    def set_grid(self, grid: np.ndarray, origin: np.ndarray, voxel_size: np.ndarray):
+    def set_grid(self, grid: np.ndarray, origin: np.ndarray, voxel_size: np.ndarray) -> None:
         """Set the grid, origin, and voxel size."""
         self.grid = grid
         self.origin = origin

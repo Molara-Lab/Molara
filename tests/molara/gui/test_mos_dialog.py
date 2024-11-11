@@ -110,9 +110,9 @@ class WorkaroundTestMOsDialog:
 
     def _test_wire_mesh(self) -> None:
         """Test the wire mesh toggle button."""
-        assert not self.mo_dialog.parent().structure_widget.renderer.wire_mesh_orbitals
+        assert not self.mo_dialog.parent().structure_widget.renderer.wire_mesh_surfaces
         self.mo_dialog.toggle_wire_mesh()
-        assert self.mo_dialog.parent().structure_widget.renderer.wire_mesh_orbitals
+        assert self.mo_dialog.parent().structure_widget.renderer.wire_mesh_surfaces
         self.mo_dialog.toggle_wire_mesh()
 
     def _test_box(self) -> None:
@@ -141,7 +141,7 @@ class WorkaroundTestMOsDialog:
         self.mo_dialog.visualize_orbital()
         number_of_vertices = 768
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["n_vertices"] == number_of_vertices
-        self.mo_dialog.remove_orbitals()
+        self.mo_dialog.remove_surfaces()
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["vao"] == 0
 
     def _test_population(self) -> None:

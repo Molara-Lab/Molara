@@ -45,4 +45,3 @@ class Ui_Surface3D_dialog(object):
         Surface3D_dialog.setWindowTitle(QCoreApplication.translate("Surface3D_dialog", u"3D Surface", None))
         self.visualize_surfaceButton.setText(QCoreApplication.translate("Surface3D_dialog", u"PushButton", None))
     # retranslateUi
-

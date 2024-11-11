@@ -62,7 +62,7 @@ class Renderer:
         self.number_vao: list[dict] = []
         self.shaders: list[GLuint] = [0]
         self.polygons: list[dict] = []
-        self.wire_mesh_orbitals = False
+        self.wire_mesh_surfaces = False
 
     def set_shaders(self, shaders: list[GLuint]) -> None:
         """Set the shader program for the opengl widget.
@@ -471,7 +471,7 @@ class Renderer:
             _draw(cylinder, "n_instances")
 
         # Draw polygons
-        if self.wire_mesh_orbitals:
+        if self.wire_mesh_surfaces:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         for polygon in self.polygons:
             if polygon["vao"] != 0:

@@ -15,8 +15,7 @@ __copyright__ = "Copyright 2024, Molara"
 
 cpdef generate_voxel_grid(
         double[:] origin,
-        double[:, :] direction,
-        double[:] voxel_size,
+        double[:,:] voxel_size,
         int64_t[:] voxel_count,
         aos,
         mo_coeff,
@@ -26,7 +25,6 @@ cpdef generate_voxel_grid(
     Generates a 3D array of values. The voxel grid is defined by the origin, direction, voxel size and voxel count.
 
     :param origin: The origin of the voxel grid
-    :param direction: The direction of the voxel grid
     :param voxel_size: The size of each voxel
     :param voxel_count: The number of voxels in each direction
     :param aos: The atomic orbitals parameters
@@ -94,15 +92,16 @@ cpdef generate_voxel_grid(
     cdef int64_t[:] shells = npc.ndarray(shape=number_of_shells, dtype=np.int64)
     shells = shells_temp[:number_of_shells]
 
-    cdef double[3] voxel_size_i = [direction[0, 0] * voxel_size[0],
-                                   direction[0, 1] * voxel_size[0],
-                                   direction[0, 2] * voxel_size[0]]
-    cdef double[3] voxel_size_j = [direction[1, 0] * voxel_size[1],
-                                      direction[1, 1] * voxel_size[1],
-                                      direction[1, 2] * voxel_size[1]]
-    cdef double[3] voxel_size_k = [direction[2, 0] * voxel_size[2],
-                                        direction[2, 1] * voxel_size[2],
-                                        direction[2, 2] * voxel_size[2]]
+    cdef double[3] voxel_size_i = [voxel_size[0, 0],
+                                   voxel_size[0, 1],
+                                   voxel_size[0, 2]]
+    cdef double[3] voxel_size_j = [voxel_size[1, 0],
+                                   voxel_size[1, 1],
+                                   voxel_size[1, 2]]
+    cdef double[3] voxel_size_k = [voxel_size[2, 0],
+                                      voxel_size[2, 1],
+                                      voxel_size[2, 2]]
+
     # Calculate the grid
     voxel_grid_loops(
         electron_position,

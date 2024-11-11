@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.data.constants import ANGSTROM_TO_BOHR
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.io.importer_crystal import (
     PoscarImporter,
@@ -21,6 +20,7 @@ from molara.structure.io.importer_crystal import (
 from molara.structure.molecularorbitals import MolecularOrbitals
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
+from molara.util.constants import ANGSTROM_TO_BOHR
 from molara.util.exceptions import FileFormatError, FileImporterError
 
 if TYPE_CHECKING:
@@ -250,7 +250,7 @@ class MoldenImporter(MoleculesImporter):
             atomic_numbers.append(int(atom_info[2]))
             if not angstrom:
                 coordinates.append(
-                    [float(coord) * bohr_to_angstrom for coord in atom_info[3:6]],
+                    [float(coord) * BOHR_TO_ANGSTROM for coord in atom_info[3:6]],
                 )
             else:
                 coordinates.append([float(coord) for coord in atom_info[3:6]])
@@ -388,10 +388,9 @@ class CubeImporter(MoleculesImporter):
         number_of_values = 1
         dset_ids = True
         if n_atoms > 0:
-            n_atoms = n_atoms
             dset_ids = False
             try:
-                number_of_values = atom_line[4]
+                number_of_values = int(atom_line[4])
             except IndexError:
                 number_of_values = 1
         else:
@@ -427,10 +426,10 @@ class CubeImporter(MoleculesImporter):
             line_index -= 1
         all_vals = []
         while line_index < len(lines):
-            line = lines[line_index]
-            if line == "":
+            line_ = lines[line_index]
+            if line_ == "":
                 break
-            vals = [float(x) for x in line.split()]
+            vals = [float(x) for x in line_.split()]
             all_vals += vals
             line_index += 1
         grid = np.array(all_vals).reshape(number_of_voxels)
