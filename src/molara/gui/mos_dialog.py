@@ -14,11 +14,11 @@ if TYPE_CHECKING:
 
 from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidgetItem
 
-from molara.data.constants import ANGSTROM_TO_BOHR
 from molara.eval.generate_voxel_grid import generate_voxel_grid
 from molara.eval.marchingcubes import marching_cubes
 from molara.eval.populationanalysis import PopulationAnalysis
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
+from molara.util.constants import ANGSTROM_TO_BOHR
 
 __copyright__ = "Copyright 2024, Molara"
 
