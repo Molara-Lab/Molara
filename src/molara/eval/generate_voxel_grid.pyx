@@ -5,7 +5,7 @@ import numpy as np
 from cython.cimports.molara.eval.mos import calculate_mo_cartesian
 from cython import boundscheck, exceptval, wraparound
 
-from molara.data.constants import ANGSTROM_TO_BOHR
+from molara.util.constants import ANGSTROM_TO_BOHR
 from libc.stdint cimport int64_t
 
 cdef double ANGSTROM_TO_BOHR_ = ANGSTROM_TO_BOHR

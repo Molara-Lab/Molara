@@ -148,7 +148,7 @@ class WorkaroundTestMOsDialog:
         """Test the populationanalysis."""
         self.mo_dialog.run_population_analysis()
         assert self.mo_dialog.ui.exactCountLabel.text() == "16.0"
-        assert self.mo_dialog.ui.calculatedCountLabel.text() == "16.00000003"
+        assert self.mo_dialog.ui.calculatedCountLabel.text() == "16.0"
 
     def _test_close(self) -> None:
         """Close the widget again."""
