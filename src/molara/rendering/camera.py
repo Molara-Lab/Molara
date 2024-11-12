@@ -26,7 +26,7 @@ class Camera:
         self.width = width
         self.height = height
         self.near = 0.1
-        self.far = 100.0
+        self.far = 720.0
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
