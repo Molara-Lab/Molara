@@ -118,7 +118,7 @@ class TestCamera(TestCase):
             fov,
             width / height,
             0.1,
-            100,
+            720,
             dtype=np.float32,
         )
 
@@ -132,7 +132,7 @@ class TestCamera(TestCase):
             -h,
             h,
             0.1,
-            100,
+            720,
             dtype=np.float32,
         )
 
@@ -158,7 +158,7 @@ class TestCamera(TestCase):
             -h,
             h,
             0.1,
-            100,
+            720,
             dtype=np.float32,
         )
         # in orthographic projection, the projection matrix must be updated when camera.update() is called.
