@@ -26,6 +26,8 @@ class VirtualRenderingWindow(QWidget):
         :param filename: the filename for the exported image
         :param custom_geometry: custom geometry (width, height) for the exported image
         """
+        self.structure_widget.grabFramebuffer().save(filename)
+
         # rendering part
         main_structure_widget = self.main_window.structure_widget
         virtual_structure_widget = self.structure_widget
