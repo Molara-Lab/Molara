@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
@@ -25,7 +26,7 @@ class Camera:
         self.width = width
         self.height = height
         self.near = 0.1
-        self.far = 100.0
+        self.far = 720.0
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
@@ -331,7 +332,7 @@ class Camera:
         }
         if not file_name.endswith(".json"):
             file_name += ".json"
-        with open(file_name, "w") as file:
+        with Path(file_name).open("w") as file:
             json.dump(settings, file, indent=4)
 
     def import_settings(self, file_name: str) -> None:
@@ -342,7 +343,7 @@ class Camera:
         if not file_name.endswith(".json"):
             # Show warning
             return
-        with open(file_name) as file:
+        with Path(file_name).open() as file:
             data = json.load(file)
         self.orthographic_projection = data["orthographic_projection"]
         self.fov = data["fov"]

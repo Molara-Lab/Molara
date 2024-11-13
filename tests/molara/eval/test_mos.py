@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest import TestCase
 
 import numpy as np
+import pytest
 
 from molara.structure.io.importer import GeneralImporter
 
@@ -27,8 +28,7 @@ class TestMolecularOrbitals(TestCase):
         self.aos = molecule.basis_set
         val = self.mos.get_mo_value(1, self.aos, np.array([0.10154165, 0.465418564, -1.498185465]))
         # Generated after comparing the mos with the mos of multiwfn.
-        reference = 0.009741653204777932
-        assert val == reference
+        assert val == pytest.approx(0.00974164994263317)
 
         path = "examples/molden/SPDFG_orbitals.molden"
         importer = GeneralImporter(path)
@@ -38,5 +38,4 @@ class TestMolecularOrbitals(TestCase):
         self.aos = molecule.basis_set
         val = self.mos.get_mo_value(20, self.aos, np.array([0.10154165, 0.465418564, -1.498185465]))
         # Generated after comparing the mos with the mos of multiwfn.
-        reference = 0.00041210939470218426
-        assert val == reference
+        assert val == pytest.approx(0.0004121088849306509)

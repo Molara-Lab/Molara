@@ -18,6 +18,7 @@ from molara.eval.generate_voxel_grid import generate_voxel_grid
 from molara.eval.marchingcubes import marching_cubes
 from molara.eval.populationanalysis import PopulationAnalysis
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
+from molara.util.constants import ANGSTROM_TO_BOHR
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -53,17 +54,27 @@ class MOsDialog(QDialog):
         self.number_of_orbitals = 0
         # 0 for restricted, 1 for alpha, -1 for beta
         self.display_spin = 0
+        self.voxel_grid_parameters_changed = True
+        self.voxel_grid: np.ndarray = np.array([])
+        # parameters for the box size to be drawn:
+        self.box_positions: np.ndarray = np.array([])
+        self.box_radii: np.ndarray = np.array([])
+        self.box_colors: np.ndarray = np.array([])
+        self.box_corners: np.ndarray = np.array([])
 
         self.ui = Ui_MOs_dialog()
         self.ui.setupUi(self)
         self.ui.displayMos.clicked.connect(self.visualize_orbital)
         self.ui.orbitalSelector.cellClicked.connect(self.select_row)
         self.ui.toggleDisplayBoxButton.clicked.connect(self.toggle_box)
-        self.ui.cubeBoxSizeSpinBox.valueChanged.connect(self.draw_box)
+        self.ui.cubeBoxSizeSpinBox.valueChanged.connect(self.calculate_new_box)
         self.ui.checkBoxWireMesh.clicked.connect(self.toggle_wire_mesh)
         self.ui.alphaCheckBox.clicked.connect(self.select_spin_alpha)
         self.ui.betaCheckBox.clicked.connect(self.select_spin_beta)
         self.ui.normalizationButton.clicked.connect(self.run_population_analysis)
+        self.ui.cutoffSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
+        self.ui.voxelSizeSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
+        self.ui.isoValueSpinBox.valueChanged.connect(self.visualize_orbital)
 
         self.initial_box_scale = 2
         scale = self.ui.cubeBoxSizeSpinBox.value() + self.initial_box_scale
@@ -77,25 +88,33 @@ class MOsDialog(QDialog):
             dtype=np.float64,
         )
 
+    def set_recalculate_voxel_grid(self) -> None:
+        """Set the flag to recalculate the voxel grid, when drawing an orbital for the next time."""
+        self.voxel_grid_parameters_changed = True
+
     def init_dialog(self) -> None:
         """Call all the functions to initialize all the labels and buttons and so on."""
         assert self.mos is not None
         self.ui.orbTypeLabel.setText(self.mos.basis_type)
+        self.init_spin_labels()
         self.setup_orbital_selector()
         self.calculate_minimum_box_size()
-        self.init_spin_labels()
         self.fill_orbital_selector()
+        self.calculate_new_box()
 
     def init_spin_labels(self) -> None:
         """Initialize the labels for alpha, beta spins or a restricted calculation."""
         assert self.mos is not None
         if -1 in self.mos.spins and 1 in self.mos.spins:
             self.ui.restrictedLabel.hide()
+            self.ui.alphaCheckBox.show()
+            self.ui.betaCheckBox.show()
             self.ui.alphaCheckBox.setChecked(True)
             self.ui.betaCheckBox.setChecked(False)
             self.display_spin = 1
         else:
             self.ui.restrictedLabel.setText("Restricted")
+            self.ui.restrictedLabel.show()
             self.ui.alphaCheckBox.hide()
             self.ui.betaCheckBox.hide()
             self.display_spin = 0
@@ -104,21 +123,21 @@ class MOsDialog(QDialog):
         """Select the spin with the checkboxes and update the displayed mos accordingly."""
         if self.ui.alphaCheckBox.isChecked():
             self.ui.betaCheckBox.setChecked(False)
-        if not self.ui.alphaCheckBox.isChecked():
-            self.ui.alphaCheckBox.setChecked(True)
+        self.ui.alphaCheckBox.setChecked(True)
         self.display_spin = 1
         self.fill_orbital_selector()
         self.select_row()
+        self.set_recalculate_voxel_grid()
 
     def select_spin_beta(self) -> None:
         """Select the spin with the checkboxes and update the displayed mos accordingly."""
         if self.ui.betaCheckBox.isChecked():
             self.ui.alphaCheckBox.setChecked(False)
-        if not self.ui.betaCheckBox.isChecked():
-            self.ui.betaCheckBox.setChecked(True)
+        self.ui.betaCheckBox.setChecked(True)
         self.display_spin = -1
         self.fill_orbital_selector()
         self.select_row()
+        self.set_recalculate_voxel_grid()
 
     def select_row(self) -> None:
         """When a cell is selected, select the whole row."""
@@ -131,6 +150,8 @@ class MOsDialog(QDialog):
         if self.display_spin == -1:
             self.old_orbital = self.ui.orbitalSelector.currentRow()
             self.selected_orbital = self.old_orbital + self.number_of_alpha_orbitals
+
+        self.set_recalculate_voxel_grid()
 
     def setup_orbital_selector(self) -> None:
         """Set up the orbital selector."""
@@ -243,7 +264,7 @@ class MOsDialog(QDialog):
         self.atoms = self.parent().structure_widget.structures[0].atoms
         return True
 
-    def calculate_corners_of_cube(self) -> np.ndarray:
+    def calculate_corners_of_box(self) -> np.ndarray:
         """Calculate the corners of the cube."""
         origin = self.origin
         direction = self.direction
@@ -280,44 +301,49 @@ class MOsDialog(QDialog):
             self.box_cylinders = -1
         self.parent().structure_widget.update()
 
-    def draw_box(self) -> None:
+    def calculate_new_box(self) -> None:
         """Draw the box."""
         self.parent().structure_widget.makeCurrent()
         self.remove_box()
         self.scale_box()
-        corners = self.calculate_corners_of_cube()
-        positions = np.array(
+        self.box_corners = self.calculate_corners_of_box()
+        self.box_positions = np.array(
             [
-                [corners[0], corners[1]],
-                [corners[0], corners[2]],
-                [corners[3], corners[1]],
-                [corners[3], corners[2]],
-                [corners[4], corners[5]],
-                [corners[4], corners[6]],
-                [corners[7], corners[5]],
-                [corners[7], corners[6]],
-                [corners[0], corners[4]],
-                [corners[1], corners[5]],
-                [corners[2], corners[6]],
-                [corners[3], corners[7]],
+                [self.box_corners[0], self.box_corners[1]],
+                [self.box_corners[0], self.box_corners[2]],
+                [self.box_corners[3], self.box_corners[1]],
+                [self.box_corners[3], self.box_corners[2]],
+                [self.box_corners[4], self.box_corners[5]],
+                [self.box_corners[4], self.box_corners[6]],
+                [self.box_corners[7], self.box_corners[5]],
+                [self.box_corners[7], self.box_corners[6]],
+                [self.box_corners[0], self.box_corners[4]],
+                [self.box_corners[1], self.box_corners[5]],
+                [self.box_corners[2], self.box_corners[6]],
+                [self.box_corners[3], self.box_corners[7]],
             ],
             dtype=np.float32,
         )
         radius = 0.01
-        colors = np.array([0, 0, 0] * 12, dtype=np.float32)
-        radii = np.array([radius] * 12, dtype=np.float32)
-        if not self.display_box:
-            return
+        self.box_colors = np.array([0, 0, 0] * 12, dtype=np.float32)
+        self.box_radii = np.array([radius] * 12, dtype=np.float32)
+
+        self.set_recalculate_voxel_grid()
+        if self.display_box:
+            self.draw_box()
+
+    def draw_box(self) -> None:
+        """Draw the box to see where the mos will be calculated."""
         self.box_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
-            positions,
-            radii,
-            colors,
+            self.box_positions,
+            self.box_radii,
+            self.box_colors,
             10,
         )
         self.box_spheres = self.parent().structure_widget.renderer.draw_spheres(
-            np.array(corners, dtype=np.float32),
-            radii,
-            colors,
+            np.array(self.box_corners, dtype=np.float32),
+            self.box_radii,
+            self.box_colors,
             10,
         )
         self.parent().structure_widget.update()
@@ -325,6 +351,8 @@ class MOsDialog(QDialog):
     def visualize_orbital(self) -> None:
         """Visualize the orbital."""
         self.parent().structure_widget.makeCurrent()
+
+        assert self.aos is not None
         assert self.mos is not None
         self.voxel_size = np.array(
             [
@@ -337,6 +365,7 @@ class MOsDialog(QDialog):
 
         iso = self.ui.isoValueSpinBox.value()
         mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
+
         origin = self.origin
         direction = self.direction
         size = self.size
@@ -346,30 +375,63 @@ class MOsDialog(QDialog):
                 int(size[1] / self.voxel_size[1, 1]) + 1,
                 int(size[2] / self.voxel_size[2, 2]) + 1,
             ],
-            dtype=np.int32,
+            dtype=np.int64,
         )
 
-        voxel_grid = generate_voxel_grid(
-            np.array(origin, dtype=np.float64),
-            direction,
-            np.array(
-                [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
-                dtype=np.float64,
-            ),
-            voxel_number,
-            self.aos,
-            mo_coefficients,
-        )
-        vertices1, vertices2 = marching_cubes(
-            voxel_grid,
+        # Check if the parameters needed to generate the voxel grid have changed
+        if self.voxel_grid_parameters_changed:
+            self.voxel_grid_parameters_changed = False
+
+            # Calculate the cutoffs for the shells
+            max_distance = np.linalg.norm(self.size * ANGSTROM_TO_BOHR)
+            max_number = int(max_distance * 5)
+            threshold = 10 ** self.ui.cutoffSpinBox.value()
+            shells_cut_off = self.mos.calculate_cut_offs(
+                self.aos,
+                self.selected_orbital,
+                threshold=threshold,
+                max_distance=max_distance,
+                max_points_number=max_number,
+            )
+
+            self.voxel_grid = np.array(
+                generate_voxel_grid(
+                    np.array(origin, dtype=np.float64),
+                    direction,
+                    np.array(
+                        [self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]],
+                        dtype=np.float64,
+                    ),
+                    voxel_number,
+                    self.aos,
+                    mo_coefficients,
+                    shells_cut_off,
+                ),
+            )
+
+        # 24 because each voxel can have up to 12 vertices and 12 normals
+        # times 6 because each vertex has 3 coordinates and each normal has 3 coordinates
+        # The +1 is to save the number of vertices in the marching cubes routine.
+        max_vertices = 24 * (voxel_number[0] - 1) * (voxel_number[1] - 1) * (voxel_number[2] - 1) * 6 + 1
+        vertices1 = np.zeros(max_vertices, dtype=np.float32)
+        vertices2 = np.zeros(max_vertices, dtype=np.float32)
+
+        _ = marching_cubes(
+            self.voxel_grid,
             iso,
             origin,
-            self.voxel_size,
+            np.array([self.voxel_size[0, 0], self.voxel_size[1, 1], self.voxel_size[2, 2]], dtype=np.float64),
             voxel_number,
+            vertices1,
+            vertices2,
         )
+        # Get the number of vertices from the last entry, to shrink the memory usage
+        number_of_vertices_entries_1 = int(vertices1[-1])
+        number_of_vertices_entries_2 = int(vertices2[-1])
+        vertices1 = vertices1[:number_of_vertices_entries_1]
+        vertices2 = vertices2[:number_of_vertices_entries_2]
 
         self.remove_orbitals()
-
         orb1 = self.parent().structure_widget.renderer.draw_polygon(
             vertices1,
             np.array([[1, 0, 0]], dtype=np.float32),

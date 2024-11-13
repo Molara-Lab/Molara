@@ -9,4 +9,5 @@ cpdef double calculate_mo_cartesian(
         int64_t[:],
         double[:],
         double[:],
+        double[:],
 ) nogil

@@ -15,10 +15,10 @@ if TYPE_CHECKING:
 
 __copyright__ = "Copyright 2024, Molara"
 
-with open(Path(__file__).absolute().parent / "periodic_table.json", encoding="utf-8") as ptable_json:
+with Path(__file__).absolute().parent.joinpath("periodic_table.json").open(encoding="utf-8") as ptable_json:
     _pt_data = json.load(ptable_json)
 
-with open(Path(__file__).absolute().parent / "atom_colors.json", encoding="utf-8") as atom_colors_json:
+with Path(__file__).absolute().parent.joinpath("atom_colors.json").open(encoding="utf-8") as atom_colors_json:
     _atom_colors = json.load(atom_colors_json)
 
 

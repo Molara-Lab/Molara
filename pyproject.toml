@@ -80,8 +80,8 @@ dev = [
     "molara[doc]",
 ]
 strict = [
-    "PySide6==6.7.3",
-    "numpy==2.1.1",
+    "PySide6==6.8.0.2",
+    "numpy==2.1.2",
     "pyrr==0.10.3",
     "scipy==1.14.1",
     "cython==3.0.11",
@@ -113,8 +113,6 @@ lint.ignore = [
   "FBT001", # Boolean-typed positional argument in function definition
   "FBT002", # Boolean default positional argument in function definition
   "INP001", # File {name} is part or an implicit namespace package. Add an `__init__.py`.
-  "PTH100", # `os.path.abspath()` should be replaced by `Path.resolve()`
-  "PTH123", # `open()` should be replaced by `Path.open()`
   "S101",   # Use of assert detected
   ]
 
@@ -144,6 +142,8 @@ modules = [
     "src/molara/eval/aos.pxd",
     "src/molara/eval/mos.pyx",
     "src/molara/eval/mos.pxd",
+    "src/molara/eval/generate_voxel_grid.pyx",
+    "src/molara/eval/marchingcubes.pyx",
     "src/molara/rendering/cylinder.pyx",
     "src/molara/rendering/sphere.pyx",
     "src/molara/rendering/matrices.pyx",

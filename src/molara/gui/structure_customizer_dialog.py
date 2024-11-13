@@ -110,7 +110,7 @@ class StructureCustomizerDialog(QDialog):
         if not save_name:
             save_name = self.ui.loadSelect.currentText()
         settings_file = f"{self.home_path}/settings/structure/{save_name}.json"
-        with open(settings_file) as f:
+        with Path(settings_file).open() as f:
             settings = json.load(f)
         self.load_settings_dict(settings)
         if self.parent().structure_widget.structures:
@@ -161,7 +161,7 @@ class StructureCustomizerDialog(QDialog):
         else:
             settings = self.create_settings_dict()
             settings_file = f"{self.home_path}/settings/structure/{save_name}.json"
-            with open(settings_file, "w") as f:
+            with Path(settings_file).open("w") as f:
                 json.dump(settings, f)
         self.update_settings_box()
 
