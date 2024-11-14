@@ -74,7 +74,15 @@ class ExportImageDialog(QDialog):
     def accept(self) -> None:
         """Export the image and close the dialog."""
         # gather export specifics
+        # width, height = int(self.ui.widthSpinBox.value()), int(self.ui.heightSpinBox.value())
+        # virtual_rendering_window = VirtualRenderingWindow(self.main_window)
+        # virtual_rendering_window.export_image(self.ui.filenameInput.text(), custom_geometry=(width, height))
+        # del virtual_rendering_window
         width, height = int(self.ui.widthSpinBox.value()), int(self.ui.heightSpinBox.value())
-        virtual_rendering_window = VirtualRenderingWindow(self.main_window)
-        virtual_rendering_window.export_image(self.ui.filenameInput.text(), custom_geometry=(width, height))
-        del virtual_rendering_window
+        # self.main_window.resize(600, 200)
+        # self.main_window.
+        structure_widget = self.main_window.structure_widget
+        old_width, old_height = structure_widget.width(), structure_widget.height()
+        self.main_window.structure_widget.resize(width, height)
+        self.main_window.structure_widget.grabFramebuffer().save("this_is_a_test_image.png")
+        self.main_window.structure_widget.resize(old_width, old_height)
