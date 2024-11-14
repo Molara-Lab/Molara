@@ -8,7 +8,6 @@ from pathlib import Path
 from PySide6.QtWidgets import QDialog, QFileDialog, QMainWindow
 
 from molara.gui.ui_export_image_dialog import Ui_Dialog
-from molara.gui.virtual_rendering_window import VirtualRenderingWindow
 
 
 class ExportImageDialog(QDialog):
