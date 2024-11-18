@@ -91,7 +91,7 @@ class WorkaroundTestExportImageDialog:
         assert not Path(filename).exists()
 
     def _test_export_image_transparent(self) -> None:
-        """Test exporting an image."""
+        """Test exporting an image with a transparent background."""
         filename = f"tmpfile_{time.time():1.0f}.png"
         ui = self.export_image_dialog.ui
         ui.filenameInput.setText(filename)
