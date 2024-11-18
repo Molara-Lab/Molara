@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>425</width>
-    <height>317</height>
+    <height>411</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -70,7 +70,7 @@
      <x>10</x>
      <y>70</y>
      <width>191</width>
-     <height>240</height>
+     <height>331</height>
     </rect>
    </property>
   </widget>
@@ -435,6 +435,58 @@
      <string>10 ^</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="label_11">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>330</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Color +</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_12">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>370</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Color -</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="colorPlusButton">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>320</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Select</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="colorMinusButton">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>360</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Select</string>
+   </property>
   </widget>
  </widget>
  <resources/>

@@ -23,7 +23,7 @@ class Ui_MOs_dialog(object):
     def setupUi(self, MOs_dialog):
         if not MOs_dialog.objectName():
             MOs_dialog.setObjectName(u"MOs_dialog")
-        MOs_dialog.resize(425, 317)
+        MOs_dialog.resize(425, 411)
         MOs_dialog.setMinimumSize(QSize(425, 317))
         self.label = QLabel(MOs_dialog)
         self.label.setObjectName(u"label")
@@ -37,7 +37,7 @@ class Ui_MOs_dialog(object):
         self.label_3.setGeometry(QRect(10, 50, 91, 16))
         self.orbitalSelector = QTableWidget(MOs_dialog)
         self.orbitalSelector.setObjectName(u"orbitalSelector")
-        self.orbitalSelector.setGeometry(QRect(10, 70, 191, 240))
+        self.orbitalSelector.setGeometry(QRect(10, 70, 191, 331))
         self.label_7 = QLabel(MOs_dialog)
         self.label_7.setObjectName(u"label_7")
         self.label_7.setGeometry(QRect(10, 30, 91, 16))
@@ -134,6 +134,18 @@ class Ui_MOs_dialog(object):
         self.label_10 = QLabel(self.frame_2)
         self.label_10.setObjectName(u"label_10")
         self.label_10.setGeometry(QRect(110, 100, 27, 16))
+        self.label_11 = QLabel(MOs_dialog)
+        self.label_11.setObjectName(u"label_11")
+        self.label_11.setGeometry(QRect(220, 330, 58, 16))
+        self.label_12 = QLabel(MOs_dialog)
+        self.label_12.setObjectName(u"label_12")
+        self.label_12.setGeometry(QRect(220, 370, 58, 16))
+        self.colorPlusButton = QPushButton(MOs_dialog)
+        self.colorPlusButton.setObjectName(u"colorPlusButton")
+        self.colorPlusButton.setGeometry(QRect(300, 320, 100, 32))
+        self.colorMinusButton = QPushButton(MOs_dialog)
+        self.colorMinusButton.setObjectName(u"colorMinusButton")
+        self.colorMinusButton.setGeometry(QRect(300, 360, 100, 32))
 
         self.retranslateUi(MOs_dialog)
 
@@ -162,4 +174,8 @@ class Ui_MOs_dialog(object):
         self.displayMos.setText(QCoreApplication.translate("MOs_dialog", u"Display Orbital", None))
         self.label_9.setText(QCoreApplication.translate("MOs_dialog", u"Distance Cutoff:", None))
         self.label_10.setText(QCoreApplication.translate("MOs_dialog", u"10 ^", None))
+        self.label_11.setText(QCoreApplication.translate("MOs_dialog", u"Color +", None))
+        self.label_12.setText(QCoreApplication.translate("MOs_dialog", u"Color -", None))
+        self.colorPlusButton.setText(QCoreApplication.translate("MOs_dialog", u"Select", None))
+        self.colorMinusButton.setText(QCoreApplication.translate("MOs_dialog", u"Select", None))
     # retranslateUi

@@ -82,6 +82,27 @@ class MOsDialog(Surface3DDialog):
         self.ui.cutoffSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
         self.ui.voxelSizeSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
         self.ui.isoValueSpinBox.valueChanged.connect(self.change_iso_value)
+        self.ui.colorPlusButton.clicked.connect(self.change_color_surface_1)
+        self.ui.colorMinusButton.clicked.connect(self.change_color_surface_2)
+
+    def update_color_buttons(self) -> None:
+        """Update the color buttons."""
+        self.ui.colorPlusButton.setStyleSheet(
+            f"background-color: rgb({self.color_surface_1[0]}, {self.color_surface_1[1]}, {self.color_surface_1[2]})",
+        )
+        self.ui.colorMinusButton.setStyleSheet(
+            f"background-color: rgb({self.color_surface_2[0]}, {self.color_surface_2[1]}, {self.color_surface_2[2]})",
+        )
+
+    def change_color_surface_1(self) -> None:
+        """Change the color of the first surface."""
+        super().change_color_surface_1()
+        self.update_color_buttons()
+
+    def change_color_surface_2(self) -> None:
+        """Change the color of the second surface."""
+        super().change_color_surface_2()
+        self.update_color_buttons()
 
     def set_recalculate_voxel_grid(self) -> None:
         """Set the flag to recalculate the voxel grid, when drawing an orbital for the next time."""
@@ -106,6 +127,7 @@ class MOsDialog(Surface3DDialog):
         self.init_spin_labels()
         self.setup_orbital_selector()
         self.fill_orbital_selector()
+        self.update_color_buttons()
 
         # Set the box size and draw the box
         self.calculate_minimum_box_size()

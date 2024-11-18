@@ -10,7 +10,8 @@ if TYPE_CHECKING:
     from PySide6.QtGui import QCloseEvent
 
     from molara.structure.molecule import Molecule
-from PySide6.QtWidgets import QDialog, QMainWindow
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QColorDialog, QDialog, QMainWindow
 
 from molara.eval.marchingcubes import marching_cubes
 from molara.eval.voxel_grid import VoxelGrid
@@ -26,8 +27,29 @@ class Surface3DDialog(QDialog):
         self.voxel_grid: VoxelGrid = VoxelGrid()
         self.iso_value = 0.0
         self.drawn_surfaces = [-1, -1]
-        self.color_surface_1 = np.array([1, 0, 0], dtype=np.float32)
-        self.color_surface_2 = np.array([0, 0, 1], dtype=np.float32)
+
+        # Color initialization
+        self.color_surface_1 = np.array([255, 0, 0])
+        self.color_surface_2 = np.array([0, 0, 255])
+        self.color_surface_1_dialog = QColorDialog(
+            QColor(self.color_surface_1[0], self.color_surface_1[1], self.color_surface_1[2]),
+        )
+        self.color_surface_2_dialog = QColorDialog(
+            QColor(self.color_surface_2[0], self.color_surface_2[1], self.color_surface_2[2]),
+        )
+
+    def change_color_surface_1(self) -> None:
+        """Change the color of the first surface."""
+        self.color_surface_1_dialog.show()
+        color = self.color_surface_1_dialog.getColor()
+        self.color_surface_1 = np.array([color.red(), color.green(), color.blue()])
+
+    def change_color_surface_2(self) -> None:
+        """Change the color of the second surface."""
+        self.color_surface_2_dialog.show()
+        color = self.color_surface_2_dialog.getColor()
+        self.color_surface_2_dialog.setCurrentColor(color)
+        self.color_surface_2 = np.array([color.red(), color.green(), color.blue()])
 
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
         """Close the dialog."""
@@ -68,13 +90,13 @@ class Surface3DDialog(QDialog):
         self.remove_surfaces()
         surface_1 = self.parent().structure_widget.renderer.draw_polygon(
             vertices_1,
-            np.array([self.color_surface_1], dtype=np.float32),
+            np.array([self.color_surface_1 / 255], dtype=np.float32),
         )
         self.drawn_surfaces = [surface_1]
         if vertices_2 is not None:
             surface_2 = self.parent().structure_widget.renderer.draw_polygon(
                 vertices_2,
-                np.array([self.color_surface_2], dtype=np.float32),
+                np.array([self.color_surface_2 / 255], dtype=np.float32),
             )
             self.drawn_surfaces.append(surface_2)
         self.parent().structure_widget.update()
