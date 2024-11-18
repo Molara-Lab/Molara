@@ -35,6 +35,7 @@ class WorkaroundTestExportImageDialog:
         self._test_change_width()
         self._test_change_height()
         self._test_export_image()
+        self._test_export_image_transparent()
 
     def _test_init(self) -> None:
         """Test the initialization of the ExportImageDialog class."""
