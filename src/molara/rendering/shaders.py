@@ -94,8 +94,9 @@ void main()
     vec3 camera_fragment_direction = normalize(camera_position - v_fragment_position);
     vec3 halfway = normalize(light_fragment_direction + camera_fragment_direction);
 
-
-    float diff = max(dot(normal, light_dir), 0.0) * 0.66667 + 0.33334;
+    // not exactly 0.33334 to ensure that pixels of atoms or any other object are never completely white
+    // This is used for the transparent background
+    float diff = max(dot(normal, light_dir), 0.0) * 0.66667 + 0.33;
 
     float spec = pow(max(dot(normal, halfway), 0.0), 25);
 
