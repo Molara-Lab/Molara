@@ -98,11 +98,13 @@ class MOsDialog(Surface3DDialog):
         """Change the color of the first surface."""
         super().change_color_surface_1()
         self.update_color_buttons()
+        self.display_surfaces()
 
     def change_color_surface_2(self) -> None:
         """Change the color of the second surface."""
         super().change_color_surface_2()
         self.update_color_buttons()
+        self.display_surfaces()
 
     def set_recalculate_voxel_grid(self) -> None:
         """Set the flag to recalculate the voxel grid, when drawing an orbital for the next time."""
@@ -112,9 +114,9 @@ class MOsDialog(Surface3DDialog):
         """Call all the functions to initialize all the labels and buttons and so on."""
         # Check if a structure with MOs is loaded
         if not self.parent().structure_widget.structures:
-            pass
+            return
         if self.parent().structure_widget.structures[0].mos.coefficients.size == 0:
-            pass
+            return
         # Set all molecule related variables
         self.set_molecule(self.parent().structure_widget.structures[0])
         assert self.molecule is not None

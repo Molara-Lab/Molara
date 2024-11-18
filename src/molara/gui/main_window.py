@@ -124,7 +124,6 @@ class MainWindow(QMainWindow):
 
     def show_surface_3d_dialog(self) -> None:
         """Check if cube file has been loaded and perform actions accordingly."""
-        self.surface_3d_dialog.show()
         self.surface_3d_dialog.initialize_dialog()
 
     def show_structure_customizer_dialog(self) -> None:

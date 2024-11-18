@@ -28,19 +28,68 @@ class CubeFileDialog(Surface3DDialog):
             parent,
         )
         self.molecule: None | Molecule = None
+        self.show_surfaces = False
+
         self.ui = Ui_Surface3D_dialog()
         self.ui.setupUi(self)
-        self.ui.visualize_surfaceButton.clicked.connect(self.visualize_surfaces)
+        self.ui.visualize_surfaceButton.clicked.connect(self.toggle_surfaces)
         self.ui.isoSpinBox.valueChanged.connect(self.change_iso_value)
+        self.ui.colorPlusButton.clicked.connect(self.change_color_surface_1)
+        self.ui.colorMinusButton.clicked.connect(self.change_color_surface_2)
+        self.ui.checkBoxWireMesh.clicked.connect(self.toggle_wire_mesh)
+
+    def update_color_buttons(self) -> None:
+        """Update the color buttons."""
+        self.ui.colorPlusButton.setStyleSheet(
+            f"background-color: rgb({self.color_surface_1[0]}, {self.color_surface_1[1]}, {self.color_surface_1[2]})",
+        )
+        self.ui.colorMinusButton.setStyleSheet(
+            f"background-color: rgb({self.color_surface_2[0]}, {self.color_surface_2[1]}, {self.color_surface_2[2]})",
+        )
+
+    def change_color_surface_1(self) -> None:
+        """Change the color of the first surface."""
+        super().change_color_surface_1()
+        self.update_color_buttons()
+        if self.show_surfaces:
+            self.display_surfaces()
+
+    def change_color_surface_2(self) -> None:
+        """Change the color of the second surface."""
+        super().change_color_surface_2()
+        self.update_color_buttons()
+        if self.show_surfaces:
+            self.display_surfaces()
+
+    def toggle_wire_mesh(self) -> None:
+        """Display the orbitals in the wire mesh mode."""
+        self.parent().structure_widget.makeCurrent()
+        self.parent().structure_widget.renderer.wire_mesh_surfaces = not (
+            self.parent().structure_widget.renderer.wire_mesh_surfaces
+        )
+        self.parent().structure_widget.update()
 
     def change_iso_value(self) -> None:
         """Change the iso value."""
         self.set_iso_value(self.ui.isoSpinBox.value())
-        self.visualize_surfaces()
+        if self.show_surfaces:
+            self.visualize_surfaces()
+
+    def toggle_surfaces(self) -> None:
+        """Toggle the surfaces."""
+        self.show_surfaces = not self.show_surfaces
+        if self.show_surfaces:
+            self.display_surfaces()
+        else:
+            self.remove_surfaces()
 
     def initialize_dialog(self) -> None:
         """Initialize the dialog."""
+        if not self.parent().structure_widget.structures[0].voxel_grid.is_initialized:
+            return
         self.set_molecule(self.parent().structure_widget.structures[0])
         assert self.molecule is not None
         self.set_voxel_grid(self.molecule.voxel_grid)
         self.set_iso_value(self.ui.isoSpinBox.value())
+        self.update_color_buttons()
+        self.show()

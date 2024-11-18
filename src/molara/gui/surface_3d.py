@@ -27,6 +27,8 @@ class Surface3DDialog(QDialog):
         self.voxel_grid: VoxelGrid = VoxelGrid()
         self.iso_value = 0.0
         self.drawn_surfaces = [-1, -1]
+        self.vertices_1: np.ndarray = np.array([])
+        self.vertices_2: np.ndarray = np.array([])
 
         # Color initialization
         self.color_surface_1 = np.array([255, 0, 0])
@@ -44,11 +46,14 @@ class Surface3DDialog(QDialog):
         color = self.color_surface_1_dialog.getColor()
         self.color_surface_1 = np.array([color.red(), color.green(), color.blue()])
 
+    def vertices_are_initialized(self) -> bool:
+        """Check if the vertices are initialized."""
+        return self.vertices_1.shape[0] != 0 or self.vertices_2.shape[0] != 0
+
     def change_color_surface_2(self) -> None:
         """Change the color of the second surface."""
         self.color_surface_2_dialog.show()
         color = self.color_surface_2_dialog.getColor()
-        self.color_surface_2_dialog.setCurrentColor(color)
         self.color_surface_2 = np.array([color.red(), color.green(), color.blue()])
 
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
@@ -84,21 +89,28 @@ class Surface3DDialog(QDialog):
             if surface != -1:
                 self.parent().structure_widget.renderer.remove_polygon(surface)
         self.drawn_surfaces = [-1, -1]
+        self.parent().structure_widget.update()
 
-    def draw_surfaces(self, vertices_1: np.ndarray, vertices_2: np.ndarray | None = None) -> None:
+    def display_surfaces(self) -> None:
+        """Display the surfaces."""
+        if self.vertices_are_initialized():
+            self.draw_surfaces()
+        else:
+            self.visualize_surfaces()
+
+    def draw_surfaces(self) -> None:
         """Draw the surfaces."""
         self.remove_surfaces()
         surface_1 = self.parent().structure_widget.renderer.draw_polygon(
-            vertices_1,
+            self.vertices_1,
             np.array([self.color_surface_1 / 255], dtype=np.float32),
         )
         self.drawn_surfaces = [surface_1]
-        if vertices_2 is not None:
-            surface_2 = self.parent().structure_widget.renderer.draw_polygon(
-                vertices_2,
-                np.array([self.color_surface_2 / 255], dtype=np.float32),
-            )
-            self.drawn_surfaces.append(surface_2)
+        surface_2 = self.parent().structure_widget.renderer.draw_polygon(
+            self.vertices_2,
+            np.array([self.color_surface_2 / 255], dtype=np.float32),
+        )
+        self.drawn_surfaces.append(surface_2)
         self.parent().structure_widget.update()
 
     def toggle_wire_mesh(self) -> None:
@@ -140,7 +152,7 @@ class Surface3DDialog(QDialog):
         # Get the number of vertices from the last entry, to shrink the memory usage
         number_of_vertices_entries_1 = int(vertices1[-1])
         number_of_vertices_entries_2 = int(vertices2[-1])
-        vertices1 = vertices1[:number_of_vertices_entries_1]
-        vertices2 = vertices2[:number_of_vertices_entries_2]
+        self.vertices_1 = vertices1[:number_of_vertices_entries_1]
+        self.vertices_2 = vertices2[:number_of_vertices_entries_2]
 
-        self.draw_surfaces(vertices1, vertices2)
+        self.draw_surfaces()
