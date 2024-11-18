@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestMOsDialog:
-    """Contains the tests for the MeasurementDialog class.
+    """Contains the tests for the MOsDialog class.
 
     It does not inherit from unittest.TestCase, because that does not work with pytest-qt.
     """
