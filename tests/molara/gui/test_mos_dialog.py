@@ -62,6 +62,8 @@ class WorkaroundTestMOsDialog:
         self._test_visualization()
         self._test_population()
         self._test_mo_initialization()
+        self._test_change_iso_value()
+        self._test_colors()
 
         self._test_close()
 
@@ -153,3 +155,19 @@ class WorkaroundTestMOsDialog:
     def _test_close(self) -> None:
         """Close the widget again."""
         self.mo_dialog.close()
+
+    def _test_change_iso_value(self) -> None:
+        """Test the change of the iso value."""
+        iso1 = 0.123
+        self.mo_dialog.ui.isoValueSpinBox.setValue(iso1)
+        self.mo_dialog.change_iso_value()
+        assert self.mo_dialog.iso_value == iso1
+        iso1 /= 10
+        self.mo_dialog.ui.isoValueSpinBox.setValue(iso1)
+        self.mo_dialog.change_iso_value()
+        assert self.mo_dialog.iso_value == iso1
+
+    def _test_colors(self) -> None:
+        """Test the color selection."""
+        self.mo_dialog.change_color_surface_1()
+        self.mo_dialog.change_color_surface_2()

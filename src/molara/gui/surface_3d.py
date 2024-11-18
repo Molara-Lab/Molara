@@ -33,17 +33,28 @@ class Surface3DDialog(QDialog):
         # Color initialization
         self.color_surface_1 = np.array([255, 0, 0])
         self.color_surface_2 = np.array([0, 0, 255])
-        self.color_surface_1_dialog = QColorDialog(
+        self.color_surface_1_dialog = QColorDialog()
+        self.color_surface_2_dialog = QColorDialog()
+        self.color_surface_1_dialog.accepted.connect(self.change_color_surface_1)
+        self.color_surface_2_dialog.accepted.connect(self.change_color_surface_2)
+
+    def show_color_dialog_1(self) -> None:
+        """Show the color dialog for the first surface."""
+        self.color_surface_1_dialog.setCurrentColor(
             QColor(self.color_surface_1[0], self.color_surface_1[1], self.color_surface_1[2]),
         )
-        self.color_surface_2_dialog = QColorDialog(
+        self.color_surface_1_dialog.show()
+
+    def show_color_dialog_2(self) -> None:
+        """Show the color dialog for the second surface."""
+        self.color_surface_2_dialog.setCurrentColor(
             QColor(self.color_surface_2[0], self.color_surface_2[1], self.color_surface_2[2]),
         )
+        self.color_surface_2_dialog.show()
 
     def change_color_surface_1(self) -> None:
         """Change the color of the first surface."""
-        self.color_surface_1_dialog.show()
-        color = self.color_surface_1_dialog.getColor()
+        color = self.color_surface_1_dialog.currentColor()
         self.color_surface_1 = np.array([color.red(), color.green(), color.blue()])
 
     def vertices_are_initialized(self) -> bool:
@@ -52,9 +63,9 @@ class Surface3DDialog(QDialog):
 
     def change_color_surface_2(self) -> None:
         """Change the color of the second surface."""
-        self.color_surface_2_dialog.show()
-        color = self.color_surface_2_dialog.getColor()
+        color = self.color_surface_2_dialog.currentColor()
         self.color_surface_2 = np.array([color.red(), color.green(), color.blue()])
+        self.color_surface_2_dialog.close()
 
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
         """Close the dialog."""

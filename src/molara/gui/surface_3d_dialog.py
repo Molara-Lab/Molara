@@ -34,8 +34,8 @@ class CubeFileDialog(Surface3DDialog):
         self.ui.setupUi(self)
         self.ui.visualize_surfaceButton.clicked.connect(self.toggle_surfaces)
         self.ui.isoSpinBox.valueChanged.connect(self.change_iso_value)
-        self.ui.colorPlusButton.clicked.connect(self.change_color_surface_1)
-        self.ui.colorMinusButton.clicked.connect(self.change_color_surface_2)
+        self.ui.colorPlusButton.clicked.connect(self.show_color_dialog_1)
+        self.ui.colorMinusButton.clicked.connect(self.show_color_dialog_2)
         self.ui.checkBoxWireMesh.clicked.connect(self.toggle_wire_mesh)
 
     def update_color_buttons(self) -> None:
