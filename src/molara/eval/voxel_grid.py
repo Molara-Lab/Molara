@@ -1,13 +1,37 @@
-"""Module for voxel grid storage and manipulation."""
+"""Module for voxel grid storage and manipulation.
 
+This module provides functionality for handling three-dimensional voxel grids,
+which are essential for representing molecular orbital data and electron density
+distributions in space. The VoxelGrid class serves as the primary interface for
+storing and manipulating these volumetric data structures.
+
+Example Usage:
+    grid = VoxelGrid()
+    grid.set_grid(data_array, origin_coords, voxel_dimensions)
+"""
 import numpy as np
 
 
 class VoxelGrid:
-    """Class for voxel grid storage and manipulation."""
+    """Class for voxel grid storage and manipulation.
+
+    Attributes:
+        grid (np.ndarray): The 3D array containing voxel data values
+        origin (np.ndarray): The coordinates of the grid's origin point
+        voxel_size (np.ndarray): The dimensions of each voxel
+        voxel_number (np.ndarray): The number of voxels along each axis
+        is_initialized (bool): Flag indicating if the grid has been properly set up
+    """
 
     def __init__(self) -> None:
-        """Initialize the voxel grid."""
+        """Initialise the voxel grid with empty arrays.
+
+        Initialises:
+            - grid as empty 3D array
+            - origin as empty 1D array of length 3
+            - voxel_size as empty 1D array of length 3
+            - voxel_number as empty 1D array of length 3
+        """
         self.grid = np.array([])
         self.origin = np.array([])
         self.voxel_size = np.array([])

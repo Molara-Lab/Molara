@@ -433,10 +433,11 @@ class Renderer:
     ) -> None:
         """Draws the scene.
 
+        When bonds are drawn, the bonds are drawn. Otherwise, only the atoms are drawn. When wire mesh surfaces are
+        enabled, the surfaces are drawn as wire mesh.
+
         :param camera: Camera object.
-        :type camera: Camera
         :param bonds: If True, bonds are drawn.
-        :type bonds: bool
         :return:
         """
         if not self.anti_aliasing:

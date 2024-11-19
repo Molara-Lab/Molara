@@ -22,10 +22,10 @@ cpdef generate_voxel_grid(
         cut_off_distances,
 ):
     """
-    Generates a 3D array of values. The voxel grid is defined by the origin, direction, voxel size and voxel count.
+    Generates a 3D array of values. The voxel grid is defined by the origin, voxel size and voxel count.
 
     :param origin: The origin of the voxel grid
-    :param voxel_size: The size of each voxel
+    :param voxel_size: A 2D array (3x3) defining the size of voxels in each direction
     :param voxel_count: The number of voxels in each direction
     :param aos: The atomic orbitals parameters
     :param mo_coeff: The molecular orbital coefficients
@@ -93,14 +93,14 @@ cpdef generate_voxel_grid(
     shells = shells_temp[:number_of_shells]
 
     cdef double[3] voxel_size_i = [voxel_size[0, 0],
-                                   voxel_size[0, 1],
-                                   voxel_size[0, 2]]
+                                  voxel_size[0, 1],
+                                  voxel_size[0, 2]]
     cdef double[3] voxel_size_j = [voxel_size[1, 0],
-                                   voxel_size[1, 1],
-                                   voxel_size[1, 2]]
+                                  voxel_size[1, 1],
+                                  voxel_size[1, 2]]
     cdef double[3] voxel_size_k = [voxel_size[2, 0],
-                                      voxel_size[2, 1],
-                                      voxel_size[2, 2]]
+                                  voxel_size[2, 1],
+                                  voxel_size[2, 2]]
 
     # Calculate the grid
     voxel_grid_loops(
