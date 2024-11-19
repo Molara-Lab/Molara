@@ -16,6 +16,7 @@ from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.mos_dialog import MOsDialog
 from molara.gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.gui.supercell_dialog import SupercellDialog
+from molara.gui.surface_3d_dialog import CubeFileDialog
 from molara.gui.trajectory_dialog import TrajectoryDialog
 from molara.gui.ui_form import Ui_MainWindow
 from molara.structure.crystal import Crystal
@@ -57,7 +58,7 @@ class MainWindow(QMainWindow):
         self.supercell_dialog = SupercellDialog(self)
         self.structure_customizer_dialog = StructureCustomizerDialog(self)
         self.mo_dialog = MOsDialog(self)
-
+        self.surface_3d_dialog = CubeFileDialog(self)
         self.mols = Molecules()
 
         self.set_action_triggers()
@@ -107,6 +108,9 @@ class MainWindow(QMainWindow):
         self.ui.actionDisplay_MOs.triggered.connect(
             self.show_mo_dialog,
         )
+        self.ui.actionDisplay_3D_Surface.triggered.connect(
+            self.show_surface_3d_dialog,
+        )
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
@@ -116,9 +120,11 @@ class MainWindow(QMainWindow):
 
     def show_mo_dialog(self) -> None:
         """Check if molecular orbitals have been loaded and perform actions accordingly."""
-        if self.mo_dialog.check_if_mos():
-            self.mo_dialog.show()
-            self.mo_dialog.init_dialog()
+        self.mo_dialog.initialize_dialog()
+
+    def show_surface_3d_dialog(self) -> None:
+        """Check if cube file has been loaded and perform actions accordingly."""
+        self.surface_3d_dialog.initialize_dialog()
 
     def show_structure_customizer_dialog(self) -> None:
         """Show the structure customizer dialog."""
