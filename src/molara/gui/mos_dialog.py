@@ -117,6 +117,7 @@ class MOsDialog(Surface3DDialog):
 
         # Isoline parameters
         self.isolines_are_visible = False
+        self.isoline_radius = 0.006
         self.isoline_drawn_lines = [-1, -1]
         self.isoline_voxel_grid = VoxelGrid2D()
         self.isoline_grid_parameters_changed = True
@@ -705,9 +706,9 @@ class MOsDialog(Surface3DDialog):
         """Draw the isolines."""
         self.parent().structure_widget.makeCurrent()
         self.remove_isolines()
-        radii_1 = np.array([0.003] * self.isolines_1.shape[0], dtype=np.float32)
+        radii_1 = np.array([self.isoline_radius] * self.isolines_1.shape[0], dtype=np.float32)
         colors_1 = np.array(list(self.color_surface_1 / 255) * self.isolines_1.shape[0], dtype=np.float32)
-        radii_2 = np.array([0.003] * self.isolines_2.shape[0], dtype=np.float32)
+        radii_2 = np.array([self.isoline_radius] * self.isolines_2.shape[0], dtype=np.float32)
         colors_2 = np.array(list(self.color_surface_2 / 255) * self.isolines_2.shape[0], dtype=np.float32)
         self.isoline_drawn_lines[0] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
             self.isolines_1,
