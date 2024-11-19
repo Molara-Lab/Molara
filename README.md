@@ -18,6 +18,7 @@ Molara is an open-source program for the 3-dimensional visualization of molecule
 3. Tools for creating custom molecular and crystal structures
 4. Animation of trajectories
 5. Display of molecular orbitals from molden files (currently Orca, Molpro, and Terachem)
+6. Display of densities from cube files
 
 New features will follow soon!
 
