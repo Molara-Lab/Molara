@@ -14,10 +14,13 @@ if TYPE_CHECKING:
     from molara.structure.basisset import BasisFunction
     from molara.structure.molecularorbitals import MolecularOrbitals
 
+
 from PySide6.QtWidgets import QHeaderView, QMainWindow, QTableWidgetItem
 
 from molara.eval.generate_voxel_grid import generate_voxel_grid
+from molara.eval.marchingsquares import marching_squares
 from molara.eval.populationanalysis import PopulationAnalysis
+from molara.eval.voxel_grid import VoxelGrid2D
 from molara.gui.surface_3d import Surface3DDialog
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
 from molara.util.constants import ANGSTROM_TO_BOHR
@@ -68,6 +71,11 @@ class MOsDialog(Surface3DDialog):
         # 0 for restricted, 1 for alpha, -1 for beta
         self.display_spin = 0
 
+        # Isoline parameters
+        self.drawn_lines = [-1, -1]
+        self.isoline_voxel_grid = VoxelGrid2D()
+        self.isoline_grid_parameters_changed = True
+
         # Ui connections
         self.ui = Ui_MOs_dialog()
         self.ui.setupUi(self)
@@ -84,6 +92,11 @@ class MOsDialog(Surface3DDialog):
         self.ui.isoValueSpinBox.valueChanged.connect(self.change_iso_value)
         self.ui.colorPlusButton.clicked.connect(self.show_color_dialog_1)
         self.ui.colorMinusButton.clicked.connect(self.show_color_dialog_2)
+
+        # isoline ui connections
+        self.ui.displayIsolinesButton.clicked.connect(self.visualize_isolines)
+        self.ui.numberLinesSpinBox.valueChanged.connect(self.change_number_of_lines)
+        self.ui.isolineVoxelSizeSpinBox.valueChanged.connect(self.set_recalculate_isoline_grid)
 
     def update_color_buttons(self) -> None:
         """Update the color buttons."""
@@ -188,6 +201,7 @@ class MOsDialog(Surface3DDialog):
             self.selected_orbital = self.old_orbital + self.number_of_alpha_orbitals
 
         self.set_recalculate_voxel_grid()
+        self.set_recalculate_isoline_grid()
 
     def setup_orbital_selector(self) -> None:
         """Set up the orbital selector."""
@@ -392,18 +406,7 @@ class MOsDialog(Surface3DDialog):
         )
         self.voxel_grid.voxel_size = direction * voxel_size
 
-        # Calculate the cutoffs for the shells
-        max_distance = np.linalg.norm(self.size * ANGSTROM_TO_BOHR)
-        max_number = int(max_distance * 5)
-        threshold = 10 ** self.ui.cutoffSpinBox.value()
-
-        shells_cut_off = self.mos.calculate_cut_offs(
-            self.aos,
-            self.selected_orbital,
-            threshold=threshold,
-            max_distance=max_distance,
-            max_points_number=max_number,
-        )
+        shells_cut_off = self.calculate_cutoffs()
 
         self.voxel_grid.grid = np.array(
             generate_voxel_grid(
@@ -414,6 +417,23 @@ class MOsDialog(Surface3DDialog):
                 mo_coefficients,
                 shells_cut_off,
             ),
+        )
+
+    def calculate_cutoffs(self) -> np.ndarray:
+        """Calculate the cutoffs for the shells."""
+        assert self.aos is not None
+        assert self.mos is not None
+        # Calculate the cutoffs for the shells
+        max_distance = np.linalg.norm(self.size * ANGSTROM_TO_BOHR)
+        max_number = int(max_distance * 5)
+        threshold = 10 ** self.ui.cutoffSpinBox.value()
+
+        return self.mos.calculate_cut_offs(
+            self.aos,
+            self.selected_orbital,
+            threshold=threshold,
+            max_distance=max_distance,
+            max_points_number=max_number,
         )
 
     def change_iso_value(self) -> None:
@@ -436,3 +456,120 @@ class MOsDialog(Surface3DDialog):
         population = PopulationAnalysis(self.parent().structure_widget.structures[0])
         self.ui.exactCountLabel.setText(str(round(population.number_of_electrons, 6)))
         self.ui.calculatedCountLabel.setText(str(round(population.calculated_number_of_electrons, 6)))
+
+    def set_recalculate_isoline_grid(self) -> None:
+        """Set a flag to recalculate the isoline grid."""
+        self.isoline_grid_parameters_changed = True
+
+    def change_number_of_lines(self) -> None:
+        """Change the number of lines, does not recalculate the grid if needed."""
+        if not self.isoline_grid_parameters_changed:
+            self.visualize_isolines()
+
+    def remove_isolines(self) -> None:
+        """Remove the isolines."""
+        self.parent().structure_widget.makeCurrent()
+        for line in self.drawn_lines:
+            if line != -1:
+                self.parent().structure_widget.renderer.remove_cylinder(line)
+        self.drawn_lines = [-1, -1]
+        self.parent().structure_widget.update()
+
+    def calculate_isoline_voxelgrid(self) -> None:
+        """Calculate the 2D voxel grid for the isolines."""
+        assert self.aos is not None
+        assert self.mos is not None
+
+        direction = np.array([[0, 1, 0], [0, 0, 1], [0, 0, 0]], dtype=np.float64)
+        origin = np.array([0, -2, -2], dtype=np.float64)
+        size = np.array([4, 4], dtype=np.float64)
+
+        voxel_size = direction * self.ui.isolineVoxelSizeSpinBox.value()
+
+        mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
+
+        voxel_number = np.array(
+            [
+                int(size[0] / self.ui.isolineVoxelSizeSpinBox.value()) + 1,
+                int(size[1] / self.ui.isolineVoxelSizeSpinBox.value()) + 1,
+                1,
+            ],
+            dtype=np.int64,
+        )
+
+        # Calculate the cutoffs for the shells
+        shells_cut_off = self.calculate_cutoffs()
+
+        grid = np.array(
+            generate_voxel_grid(
+                origin,
+                voxel_size,
+                voxel_number,
+                self.aos,
+                mo_coefficients,
+                shells_cut_off,
+            ),
+        )[:, :, 0]
+        self.isoline_voxel_grid.set_grid(grid, origin, voxel_size[:2])
+
+    def visualize_isolines(self) -> None:
+        """Calculate the voxel grid."""
+        assert self.aos is not None
+        assert self.mos is not None
+        self.remove_isolines()
+
+        number_of_iso_values = self.ui.numberLinesSpinBox.value()
+
+        if self.isoline_grid_parameters_changed:
+            self.calculate_isoline_voxelgrid()
+            self.isoline_grid_parameters_changed = False
+
+        grid = self.isoline_voxel_grid.grid
+        origin = self.isoline_voxel_grid.origin
+        voxel_size = self.isoline_voxel_grid.voxel_size
+        voxel_number = self.isoline_voxel_grid.voxel_number
+
+        log_grid_max = np.log(np.max(np.abs(grid)))
+        log_grid_min = np.log(max(np.min(np.abs(grid)), 5e-3))
+        iso_values = np.exp(np.linspace(log_grid_min, log_grid_max, number_of_iso_values))
+
+        total_lines_1 = np.empty((0, 2, 3))
+        total_lines_2 = np.empty((0, 2, 3))
+        for iso in iso_values:
+            lines_1 = np.zeros(((voxel_number[0] - 1) * (voxel_number[1] - 1) * 4 + 1, 3), dtype=np.float32)
+            lines_2 = np.zeros(((voxel_number[0] - 1) * (voxel_number[1] - 1) * 4 + 1, 3), dtype=np.float32)
+            _ = marching_squares(grid, iso, origin, voxel_size, voxel_number, lines_1, lines_2)
+            number_of_lines_entries_1 = int(lines_1[-1, -1])
+            number_of_lines_entries_2 = int(lines_2[-1, -1])
+
+            if number_of_lines_entries_1 != 0:
+                lines_1 = lines_1[:number_of_lines_entries_1]
+                total_lines_1 = np.concatenate(
+                    [total_lines_1, lines_1.reshape((number_of_lines_entries_1 // 2, 2, 3))],
+                    axis=0,
+                )
+            if number_of_lines_entries_2 != 0:
+                lines_2 = lines_2[:number_of_lines_entries_2]
+                total_lines_2 = np.concatenate(
+                    [total_lines_2, lines_2.reshape((number_of_lines_entries_2 // 2, 2, 3))],
+                    axis=0,
+                )
+
+        radii_1 = np.array([0.003] * total_lines_1.shape[0], dtype=np.float32)
+        colors_1 = np.array([1, 0, 0] * total_lines_1.shape[0], dtype=np.float32)
+        radii_2 = np.array([0.003] * total_lines_2.shape[0], dtype=np.float32)
+        colors_2 = np.array([0, 0, 1] * total_lines_2.shape[0], dtype=np.float32)
+        self.drawn_lines[0] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            total_lines_1,
+            radii_1,
+            colors_1,
+            10,
+        )
+        self.drawn_lines[1] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            total_lines_2,
+            radii_2,
+            colors_2,
+            10,
+        )
+
+        self.parent().structure_widget.update()

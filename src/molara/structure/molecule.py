@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from molara.eval.voxel_grid import VoxelGrid
+from molara.eval.voxel_grid import VoxelGrid3D
 from molara.structure.molecularorbitals import MolecularOrbitals
 from molara.structure.structure import Structure
 
@@ -37,7 +37,7 @@ class Molecule(Structure):
         self.subdivisions = 20
         self.gen_energy_information(header)
         self.basis_set: list = []
-        self.voxel_grid = VoxelGrid()
+        self.voxel_grid = VoxelGrid3D()
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
     def update_basis_set(self) -> None:

@@ -88,7 +88,6 @@
     <addaction name="actionMeasure"/>
     <addaction name="actionDisplay_MOs"/>
     <addaction name="actionDisplay_3D_Surface"/>
-    <addaction name="actionDisplay_Isolines"/>
     <addaction name="actionBuilder"/>
    </widget>
    <addaction name="menuFile"/>
@@ -247,7 +246,7 @@
   <customwidget>
    <class>StructureWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">molara/Gui/structure_widget</header>
+   <header location="global">molara/gui/structure_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

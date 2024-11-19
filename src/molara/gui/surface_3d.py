@@ -14,7 +14,7 @@ from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QColorDialog, QDialog, QMainWindow
 
 from molara.eval.marchingcubes import marching_cubes
-from molara.eval.voxel_grid import VoxelGrid
+from molara.eval.voxel_grid import VoxelGrid3D
 
 
 class Surface3DDialog(QDialog):
@@ -24,7 +24,7 @@ class Surface3DDialog(QDialog):
         """Initialize the class."""
         super().__init__(parent)
         self.molecule: None | Molecule = None
-        self.voxel_grid: VoxelGrid = VoxelGrid()
+        self.voxel_grid: VoxelGrid3D = VoxelGrid3D()
         self.iso_value = 0.0
         self.drawn_surfaces = [-1, -1]
         self.vertices_1: np.ndarray = np.array([])
@@ -89,7 +89,7 @@ class Surface3DDialog(QDialog):
         """Set the molecule."""
         self.molecule = molecule
 
-    def set_voxel_grid(self, voxel_grid: VoxelGrid) -> None:
+    def set_voxel_grid(self, voxel_grid: VoxelGrid3D) -> None:
         """Set the voxel grid."""
         self.voxel_grid = voxel_grid
 

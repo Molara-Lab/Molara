@@ -145,7 +145,6 @@ class Ui_MainWindow(object):
         self.menuTools.addAction(self.actionMeasure)
         self.menuTools.addAction(self.actionDisplay_MOs)
         self.menuTools.addAction(self.actionDisplay_3D_Surface)
-        self.menuTools.addAction(self.actionDisplay_Isolines)
         self.menuTools.addAction(self.actionBuilder)
 
         self.retranslateUi(MainWindow)

@@ -47,14 +47,65 @@ class VoxelGrid:
         :param origin: 1D array of length 3 representing the origin of the grid
         :param voxel_size: 3D array of length representing the voxel size for each cartesian direction
         """
+        self.grid = grid
+        self.origin = origin
+        self.voxel_size = voxel_size
+        self.voxel_number = np.array(grid.shape)
+        self.is_initialized = True
+
+
+class VoxelGrid3D(VoxelGrid):
+    """Class for voxel grid storage and manipulation.
+
+    Attributes:
+        grid (np.ndarray): The 3D array containing voxel data values
+        origin (np.ndarray): The coordinates of the grid's origin point
+        voxel_size (np.ndarray): The dimensions of each voxel
+        voxel_number (np.ndarray): The number of voxels along each axis
+        is_initialized (bool): Flag indicating if the grid has been properly set up
+
+    """
+
+    def set_grid(self, grid: np.ndarray, origin: np.ndarray, voxel_size: np.ndarray) -> None:
+        """Set the grid, origin, and voxel size.
+
+        :param grid: 3D array representing the voxel grid
+        :param origin: 1D array of length 3 representing the origin of the grid
+        :param voxel_size: 3D array of length representing the voxel size for each cartesian direction
+        """
         number_of_cartesian_directions = 3
         assert grid.ndim == number_of_cartesian_directions
         assert origin.shape == (number_of_cartesian_directions,)
         assert voxel_size.shape == (number_of_cartesian_directions, number_of_cartesian_directions)
         assert np.any(voxel_size > 0)
 
-        self.grid = grid
-        self.origin = origin
-        self.voxel_size = voxel_size
-        self.voxel_number = np.array(grid.shape)
-        self.is_initialized = True
+        super().set_grid(grid, origin, voxel_size)
+
+
+class VoxelGrid2D(VoxelGrid):
+    """Class for voxel grid storage and manipulation.
+
+    Attributes:
+        grid (np.ndarray): The 3D array containing voxel data values
+        origin (np.ndarray): The coordinates of the grid's origin point
+        voxel_size (np.ndarray): The dimensions of each voxel
+        voxel_number (np.ndarray): The number of voxels along each axis
+        is_initialized (bool): Flag indicating if the grid has been properly set up
+
+    """
+
+    def set_grid(self, grid: np.ndarray, origin: np.ndarray, voxel_size: np.ndarray) -> None:
+        """Set the grid, origin, and voxel size.
+
+        :param grid: 3D array representing the voxel grid
+        :param origin: 1D array of length 3 representing the origin of the grid
+        :param voxel_size: 3D array of length representing the voxel size for each cartesian direction
+        """
+        number_of_cartesian_directions = 3
+        number_of_grid_dimensions = 2
+        assert grid.ndim == number_of_grid_dimensions
+        assert origin.shape == (number_of_cartesian_directions,)
+        assert voxel_size.shape == (number_of_grid_dimensions, number_of_cartesian_directions)
+        assert np.any(voxel_size > 0)
+
+        super().set_grid(grid, origin, voxel_size)
