@@ -35,6 +35,7 @@ class WorkaroundTestExportImageDialog:
         self._test_change_width()
         self._test_change_height()
         self._test_export_image()
+        self._test_export_image_transparent()
 
     def _test_init(self) -> None:
         """Test the initialization of the ExportImageDialog class."""
@@ -81,6 +82,20 @@ class WorkaroundTestExportImageDialog:
         filename = f"tmpfile_{time.time():1.0f}.png"
         ui = self.export_image_dialog.ui
         ui.filenameInput.setText(filename)
+        assert ui.filenameInput.text() == filename
+
+        assert not Path(filename).exists()
+        ui.buttonBox.accepted.emit()
+        assert Path(filename).exists()
+        Path(filename).unlink()
+        assert not Path(filename).exists()
+
+    def _test_export_image_transparent(self) -> None:
+        """Test exporting an image with a transparent background."""
+        filename = f"tmpfile_{time.time():1.0f}.png"
+        ui = self.export_image_dialog.ui
+        ui.filenameInput.setText(filename)
+        ui.transparentBackgroundCheckBox.setChecked(True)
         assert ui.filenameInput.text() == filename
 
         assert not Path(filename).exists()
