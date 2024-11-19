@@ -191,11 +191,14 @@ class Ui_MOs_dialog(object):
         self.isolineVoxelSizeSpinBox.setMaximum(0.500000000000000)
         self.isolineVoxelSizeSpinBox.setSingleStep(0.010000000000000)
         self.isolineVoxelSizeSpinBox.setValue(0.050000000000000)
+        self.displayIsolineBorderButton = QPushButton(self.isoLineFrame)
+        self.displayIsolineBorderButton.setObjectName(u"displayIsolineBorderButton")
+        self.displayIsolineBorderButton.setGeometry(QRect(10, 100, 140, 32))
         self.isoTab.addTab(self.isolineTab, "")
 
         self.retranslateUi(MOs_dialog)
 
-        self.isoTab.setCurrentIndex(0)
+        self.isoTab.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MOs_dialog)
@@ -231,5 +234,7 @@ class Ui_MOs_dialog(object):
         self.label_13.setText(QCoreApplication.translate("MOs_dialog", u"# of Lines:", None))
         self.displayIsolinesButton.setText(QCoreApplication.translate("MOs_dialog", u"Display Isolines", None))
         self.label_14.setText(QCoreApplication.translate("MOs_dialog", u"Voxel Size:", None))
+        self.displayIsolineBorderButton.setText(QCoreApplication.translate("MOs_dialog", u"Display Border", None))
         self.isoTab.setTabText(self.isoTab.indexOf(self.isolineTab), QCoreApplication.translate("MOs_dialog", u"Isolines", None))
     # retranslateUi
+

@@ -349,7 +349,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="isosurfaceTab">
     <attribute name="title">
@@ -628,6 +628,19 @@
       </property>
       <property name="value">
        <double>0.050000000000000</double>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="displayIsolineBorderButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>100</y>
+        <width>140</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Display Border</string>
       </property>
      </widget>
     </widget>

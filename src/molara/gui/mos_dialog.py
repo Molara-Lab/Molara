@@ -72,9 +72,18 @@ class MOsDialog(Surface3DDialog):
         self.display_spin = 0
 
         # Isoline parameters
-        self.drawn_lines = [-1, -1]
+        self.isoline_drawn_lines = [-1, -1]
         self.isoline_voxel_grid = VoxelGrid2D()
         self.isoline_grid_parameters_changed = True
+        self.isolines_1: np.ndarray = np.array([])
+        self.isolines_2: np.ndarray = np.array([])
+        self.isoline_origin: np.ndarray = np.array([])
+        self.isoline_size: np.ndarray = np.array([])
+        self.isoline_direction: np.ndarray = np.array([])
+        self.isoline_border_cylinders = -1
+        self.isoline_border_spheres = -1
+        self.isoline_border_points: np.ndarray = np.array([])
+        self.border_is_visible = False
 
         # Ui connections
         self.ui = Ui_MOs_dialog()
@@ -97,6 +106,7 @@ class MOsDialog(Surface3DDialog):
         self.ui.displayIsolinesButton.clicked.connect(self.visualize_isolines)
         self.ui.numberLinesSpinBox.valueChanged.connect(self.change_number_of_lines)
         self.ui.isolineVoxelSizeSpinBox.valueChanged.connect(self.set_recalculate_isoline_grid)
+        self.ui.displayIsolineBorderButton.clicked.connect(self.toggle_isoline_border)
 
     def update_color_buttons(self) -> None:
         """Update the color buttons."""
@@ -113,6 +123,8 @@ class MOsDialog(Surface3DDialog):
         self.update_color_buttons()
         if not self.voxel_grid_parameters_changed:
             self.display_surfaces()
+        if not self.isoline_grid_parameters_changed:
+            self.display_isolines()
 
     def change_color_surface_2(self) -> None:
         """Change the color of the second surface."""
@@ -120,6 +132,8 @@ class MOsDialog(Surface3DDialog):
         self.update_color_buttons()
         if not self.voxel_grid_parameters_changed:
             self.display_surfaces()
+        if not self.isoline_grid_parameters_changed:
+            self.display_isolines()
 
     def set_recalculate_voxel_grid(self) -> None:
         """Set the flag to recalculate the voxel grid, when drawing an orbital for the next time."""
@@ -288,6 +302,8 @@ class MOsDialog(Surface3DDialog):
         """Close the dialog."""
         super().closeEvent(event)
         self.remove_box()
+        self.remove_isolines()
+        self.remove_isoline_border()
 
     def calculate_corners_of_box(self) -> np.ndarray:
         """Calculate the corners of the cube."""
@@ -469,11 +485,72 @@ class MOsDialog(Surface3DDialog):
     def remove_isolines(self) -> None:
         """Remove the isolines."""
         self.parent().structure_widget.makeCurrent()
-        for line in self.drawn_lines:
+        for line in self.isoline_drawn_lines:
             if line != -1:
                 self.parent().structure_widget.renderer.remove_cylinder(line)
-        self.drawn_lines = [-1, -1]
+        self.isoline_drawn_lines = [-1, -1]
         self.parent().structure_widget.update()
+
+    def set_isoline_border_points(self) -> None:
+        """Set the points of the border that can be displayed as a guide to the eye."""
+        assert self.isoline_origin is not None
+        assert self.isoline_size is not None
+        assert self.isoline_direction is not None
+        self.isoline_border_points = np.array(
+            [
+                self.isoline_origin,
+                self.isoline_origin + self.isoline_size[0] * self.isoline_direction[0],
+                self.isoline_origin + self.isoline_size[1] * self.isoline_direction[1],
+                self.isoline_origin + self.isoline_size[0] * self.isoline_direction[0] + self.isoline_size[1] * self.isoline_direction[1],
+            ],
+            dtype=np.float32,
+        )
+
+    def display_isoline_border(self) -> None:
+        """Display the border of the isoline grid."""
+        self.set_isoline_border_points()
+        cylinder_end_points = np.array(
+            [
+                [self.isoline_border_points[0], self.isoline_border_points[1]],
+                [self.isoline_border_points[0], self.isoline_border_points[2]],
+                [self.isoline_border_points[1], self.isoline_border_points[3]],
+                [self.isoline_border_points[2], self.isoline_border_points[3]],
+            ],
+            dtype=np.float32,
+        )
+        self.isoline_border_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            cylinder_end_points,
+            np.array([0.01] * 4, dtype=np.float32),
+            np.array([0, 0, 0] * 4, dtype=np.float32),
+            10,
+        )
+        self.isoline_border_spheres = self.parent().structure_widget.renderer.draw_spheres(
+            self.isoline_border_points,
+            np.array([0.01] * 4, dtype=np.float32),
+            np.array([0, 0, 0] * 4, dtype=np.float32),
+            10,
+        )
+        self.parent().structure_widget.update()
+
+    def remove_isoline_border(self) -> None:
+        """Remove the border of the isoline grid."""
+        if self.isoline_border_cylinders != -1:
+            self.parent().structure_widget.renderer.remove_cylinder(self.isoline_border_cylinders)
+            self.isoline_border_cylinders = -1
+        if self.isoline_border_spheres != -1:
+            self.parent().structure_widget.renderer.remove_sphere(self.isoline_border_spheres)
+            self.isoline_border_spheres = -1
+        self.parent().structure_widget.update()
+
+    def toggle_isoline_border(self) -> None:
+        """Toggle the isoline grid border."""
+        self.border_is_visible = not self.border_is_visible
+        if self.border_is_visible:
+            self.display_isoline_border()
+            self.ui.displayIsolineBorderButton.setText("Hide Border")
+            return
+        self.remove_isoline_border()
+        self.ui.displayIsolineBorderButton.setText("Display Border")
 
     def calculate_isoline_voxelgrid(self) -> None:
         """Calculate the 2D voxel grid for the isolines."""
@@ -483,6 +560,10 @@ class MOsDialog(Surface3DDialog):
         direction = np.array([[0, 1, 0], [0, 0, 1], [0, 0, 0]], dtype=np.float64)
         origin = np.array([0, -2, -2], dtype=np.float64)
         size = np.array([4, 4], dtype=np.float64)
+
+        self.isoline_origin = origin
+        self.isoline_size = size
+        self.isoline_direction = direction
 
         voxel_size = direction * self.ui.isolineVoxelSizeSpinBox.value()
 
@@ -529,47 +610,66 @@ class MOsDialog(Surface3DDialog):
         voxel_size = self.isoline_voxel_grid.voxel_size
         voxel_number = self.isoline_voxel_grid.voxel_number
 
-        log_grid_max = np.log(np.max(np.abs(grid)))
-        log_grid_min = np.log(max(np.min(np.abs(grid)), 5e-3))
-        iso_values = np.exp(np.linspace(log_grid_min, log_grid_max, number_of_iso_values))
+        grid_sum = np.sum(np.abs(grid))
+        if grid_sum > 1.e-14:
+            log_grid_max = np.log(np.max(np.abs(grid)))
+            log_grid_min = np.log(max(np.min(np.abs(grid)), 5e-3))
+            iso_values = np.exp(np.linspace(log_grid_min, log_grid_max, number_of_iso_values))
 
-        total_lines_1 = np.empty((0, 2, 3))
-        total_lines_2 = np.empty((0, 2, 3))
-        for iso in iso_values:
-            lines_1 = np.zeros(((voxel_number[0] - 1) * (voxel_number[1] - 1) * 4 + 1, 3), dtype=np.float32)
-            lines_2 = np.zeros(((voxel_number[0] - 1) * (voxel_number[1] - 1) * 4 + 1, 3), dtype=np.float32)
-            _ = marching_squares(grid, iso, origin, voxel_size, voxel_number, lines_1, lines_2)
-            number_of_lines_entries_1 = int(lines_1[-1, -1])
-            number_of_lines_entries_2 = int(lines_2[-1, -1])
+            total_lines_1 = np.empty((0, 2, 3))
+            total_lines_2 = np.empty((0, 2, 3))
+            for iso in iso_values:
+                lines_1 = np.zeros(((voxel_number[0] - 1) * (voxel_number[1] - 1) * 4 + 1, 3), dtype=np.float32)
+                lines_2 = np.zeros(((voxel_number[0] - 1) * (voxel_number[1] - 1) * 4 + 1, 3), dtype=np.float32)
+                _ = marching_squares(grid, iso, origin, voxel_size, voxel_number, lines_1, lines_2)
+                number_of_lines_entries_1 = int(lines_1[-1, -1])
+                number_of_lines_entries_2 = int(lines_2[-1, -1])
 
-            if number_of_lines_entries_1 != 0:
-                lines_1 = lines_1[:number_of_lines_entries_1]
-                total_lines_1 = np.concatenate(
-                    [total_lines_1, lines_1.reshape((number_of_lines_entries_1 // 2, 2, 3))],
-                    axis=0,
-                )
-            if number_of_lines_entries_2 != 0:
-                lines_2 = lines_2[:number_of_lines_entries_2]
-                total_lines_2 = np.concatenate(
-                    [total_lines_2, lines_2.reshape((number_of_lines_entries_2 // 2, 2, 3))],
-                    axis=0,
-                )
+                if number_of_lines_entries_1 != 0:
+                    lines_1 = lines_1[:number_of_lines_entries_1]
+                    total_lines_1 = np.concatenate(
+                        [total_lines_1, lines_1.reshape((number_of_lines_entries_1 // 2, 2, 3))],
+                        axis=0,
+                    )
+                if number_of_lines_entries_2 != 0:
+                    lines_2 = lines_2[:number_of_lines_entries_2]
+                    total_lines_2 = np.concatenate(
+                        [total_lines_2, lines_2.reshape((number_of_lines_entries_2 // 2, 2, 3))],
+                        axis=0,
+                    )
+            self.isolines_1 = total_lines_1
+            self.isolines_2 = total_lines_2
+            self.draw_isolines()
 
-        radii_1 = np.array([0.003] * total_lines_1.shape[0], dtype=np.float32)
-        colors_1 = np.array([1, 0, 0] * total_lines_1.shape[0], dtype=np.float32)
-        radii_2 = np.array([0.003] * total_lines_2.shape[0], dtype=np.float32)
-        colors_2 = np.array([0, 0, 1] * total_lines_2.shape[0], dtype=np.float32)
-        self.drawn_lines[0] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
-            total_lines_1,
+    def draw_isolines(self) -> None:
+        """Draw the isolines."""
+        self.parent().structure_widget.makeCurrent()
+        self.remove_isolines()
+        radii_1 = np.array([0.003] * self.isolines_1.shape[0], dtype=np.float32)
+        colors_1 = np.array(list(self.color_surface_1 / 255) * self.isolines_1.shape[0], dtype=np.float32)
+        radii_2 = np.array([0.003] * self.isolines_2.shape[0], dtype=np.float32)
+        colors_2 = np.array(list(self.color_surface_2 / 255) * self.isolines_2.shape[0], dtype=np.float32)
+        self.isoline_drawn_lines[0] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            self.isolines_1,
             radii_1,
             colors_1,
             10,
         )
-        self.drawn_lines[1] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
-            total_lines_2,
+        self.isoline_drawn_lines[1] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            self.isolines_2,
             radii_2,
             colors_2,
             10,
         )
-
         self.parent().structure_widget.update()
+
+    def isolines_are_initialized(self) -> bool:
+        """Check if the isolines are initialized."""
+        return self.isolines_1.size != 0 or self.isolines_2.size != 0
+
+    def display_isolines(self) -> None:
+        """Display the isolines."""
+        if self.isolines_are_initialized():
+            self.draw_isolines()
+        else:
+            self.visualize_isolines()
