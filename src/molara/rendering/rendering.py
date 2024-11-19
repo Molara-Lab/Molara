@@ -15,6 +15,7 @@ from OpenGL.GL import (
     GL_FILL,
     GL_FRONT_AND_BACK,
     GL_LINE,
+    GL_MULTISAMPLE,
     GL_POINTS,
     GL_TRIANGLES,
     GL_UNSIGNED_INT,
@@ -25,6 +26,7 @@ from OpenGL.GL import (
     glClear,
     glDeleteBuffers,
     glDeleteVertexArrays,
+    glDisable,
     glDrawArrays,
     glDrawArraysInstanced,
     glDrawElementsInstanced,
@@ -63,6 +65,15 @@ class Renderer:
         self.shaders: list[GLuint] = [0]
         self.polygons: list[dict] = []
         self.wire_mesh_orbitals = False
+        self.anti_aliasing = True
+
+    def enable_antialiasing(self) -> None:
+        """Enable antialiasing."""
+        self.anti_aliasing = True
+
+    def disable_antialiasing(self) -> None:
+        """Disable antialiasing."""
+        self.anti_aliasing = False
 
     def set_shaders(self, shaders: list[GLuint]) -> None:
         """Set the shader program for the opengl widget.
@@ -415,7 +426,7 @@ class Renderer:
         vao, buffers = setup_vao_numbers(digits, positions_3d)
         self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
 
-    def draw_scene(
+    def draw_scene(  # noqa: C901
         self,
         camera: Camera,
         bonds: bool,
@@ -428,6 +439,8 @@ class Renderer:
         :type bonds: bool
         :return:
         """
+        if not self.anti_aliasing:
+            glDisable(GL_MULTISAMPLE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glUseProgram(self.shaders[0])
         light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
@@ -485,6 +498,8 @@ class Renderer:
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         glBindVertexArray(0)
+        if not self.anti_aliasing:
+            glEnable(GL_MULTISAMPLE)
 
     def display_numbers(self, camera: Camera, scale_factor: float) -> None:
         """Draws the lines."""
