@@ -88,6 +88,7 @@
     <addaction name="actionMeasure"/>
     <addaction name="actionDisplay_MOs"/>
     <addaction name="actionDisplay_3D_Surface"/>
+    <addaction name="actionDisplay_Isolines"/>
     <addaction name="actionBuilder"/>
    </widget>
    <addaction name="menuFile"/>
@@ -234,6 +235,11 @@
   <action name="actionDisplay_3D_Surface">
    <property name="text">
     <string>Display 3D Surface</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Isolines">
+   <property name="text">
+    <string>Display Isolines</string>
    </property>
   </action>
  </widget>

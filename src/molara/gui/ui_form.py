@@ -82,6 +82,8 @@ class Ui_MainWindow(object):
         self.actionDisplay_MOs.setObjectName(u"actionDisplay_MOs")
         self.actionDisplay_3D_Surface = QAction(MainWindow)
         self.actionDisplay_3D_Surface.setObjectName(u"actionDisplay_3D_Surface")
+        self.actionDisplay_Isolines = QAction(MainWindow)
+        self.actionDisplay_Isolines.setObjectName(u"actionDisplay_Isolines")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -143,6 +145,7 @@ class Ui_MainWindow(object):
         self.menuTools.addAction(self.actionMeasure)
         self.menuTools.addAction(self.actionDisplay_MOs)
         self.menuTools.addAction(self.actionDisplay_3D_Surface)
+        self.menuTools.addAction(self.actionDisplay_Isolines)
         self.menuTools.addAction(self.actionBuilder)
 
         self.retranslateUi(MainWindow)
@@ -180,6 +183,7 @@ class Ui_MainWindow(object):
         self.actionToggle_Axes.setText(QCoreApplication.translate("MainWindow", u"Show Axes", None))
         self.actionDisplay_MOs.setText(QCoreApplication.translate("MainWindow", u"Display MOs", None))
         self.actionDisplay_3D_Surface.setText(QCoreApplication.translate("MainWindow", u"Display 3D Surface", None))
+        self.actionDisplay_Isolines.setText(QCoreApplication.translate("MainWindow", u"Display Isolines", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
         self.menuExport.setTitle(QCoreApplication.translate("MainWindow", u"Export", None))
@@ -188,3 +192,4 @@ class Ui_MainWindow(object):
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
     # retranslateUi
+
