@@ -145,7 +145,6 @@ class TestCubeImporter(TestCase):
 
     def test_init(self) -> None:
         """Test the __init__ method."""
-        # test case that cclib is not installed
         assert isinstance(self.structure.mols[0], Molecule)
         number_of_atoms = 62
         assert len(self.structure.mols[0].atoms) == number_of_atoms
