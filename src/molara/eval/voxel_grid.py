@@ -9,6 +9,7 @@ Example Usage:
     grid = VoxelGrid()
     grid.set_grid(data_array, origin_coords, voxel_dimensions)
 """
+
 import numpy as np
 
 
@@ -21,6 +22,7 @@ class VoxelGrid:
         voxel_size (np.ndarray): The dimensions of each voxel
         voxel_number (np.ndarray): The number of voxels along each axis
         is_initialized (bool): Flag indicating if the grid has been properly set up
+
     """
 
     def __init__(self) -> None:
