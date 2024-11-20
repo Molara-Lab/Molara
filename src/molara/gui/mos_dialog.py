@@ -20,7 +20,6 @@ from PySide6.QtWidgets import QButtonGroup, QHeaderView, QMainWindow, QTableWidg
 
 from molara.eval.generate_voxel_grid import generate_voxel_grid
 from molara.eval.marchingsquares import marching_squares
-from molara.eval.populationanalysis import PopulationAnalysis
 from molara.eval.voxel_grid import VoxelGrid2D
 from molara.gui.surface_3d import Surface3DDialog
 from molara.gui.ui_mos_dialog import Ui_MOs_dialog
@@ -82,7 +81,6 @@ class MOsDialog(Surface3DDialog):
         self.ui.checkBoxWireMesh.clicked.connect(self.toggle_wire_mesh)
         self.ui.alphaCheckBox.clicked.connect(self.select_spin_alpha)
         self.ui.betaCheckBox.clicked.connect(self.select_spin_beta)
-        self.ui.normalizationButton.clicked.connect(self.run_population_analysis)
         self.ui.cutoffSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
         self.ui.voxelSizeSpinBox.valueChanged.connect(self.set_recalculate_voxel_grid)
         self.ui.isoValueSpinBox.valueChanged.connect(self.change_iso_value)
@@ -501,13 +499,6 @@ class MOsDialog(Surface3DDialog):
         self.voxel_grid_parameters_changed = False
         self.set_iso_value(self.ui.isoValueSpinBox.value())
         self.visualize_surfaces()
-
-    def run_population_analysis(self) -> None:
-        """Run the population analysis to check if the calculated number of electrons matches the exact one."""
-        # Use QThreadpool in the future :)
-        population = PopulationAnalysis(self.parent().structure_widget.structures[0])
-        self.ui.exactCountLabel.setText(str(round(population.number_of_electrons, 6)))
-        self.ui.calculatedCountLabel.setText(str(round(population.calculated_number_of_electrons, 6)))
 
     def set_recalculate_isoline_grid(self) -> None:
         """Set a flag to recalculate the isoline grid."""

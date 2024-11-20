@@ -60,7 +60,6 @@ class WorkaroundTestMOsDialog:
         self._test_wire_mesh()
         self._test_box()
         self._test_visualization()
-        self._test_population()
         self._test_mo_initialization()
         self._test_change_iso_value()
         self._test_colors()
@@ -145,12 +144,6 @@ class WorkaroundTestMOsDialog:
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["n_vertices"] == number_of_vertices
         self.mo_dialog.remove_surfaces()
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["vao"] == 0
-
-    def _test_population(self) -> None:
-        """Test the populationanalysis."""
-        self.mo_dialog.run_population_analysis()
-        assert self.mo_dialog.ui.exactCountLabel.text() == "16.0"
-        assert self.mo_dialog.ui.calculatedCountLabel.text() == "16.0"
 
     def _test_close(self) -> None:
         """Close the widget again."""
