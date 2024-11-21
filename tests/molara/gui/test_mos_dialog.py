@@ -139,11 +139,12 @@ class WorkaroundTestMOsDialog:
 
     def _test_visualization(self) -> None:
         """Test the visualization of the orbitals not their correctness."""
-        self.mo_dialog.visualize_orbital()
+        self.mo_dialog.toggle_surfaces()
         number_of_vertices = 768
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["n_vertices"] == number_of_vertices
         self.mo_dialog.remove_surfaces()
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["vao"] == 0
+        self.mo_dialog.toggle_surfaces()
 
     def _test_close(self) -> None:
         """Close the widget again."""

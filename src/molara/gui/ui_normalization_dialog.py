@@ -60,4 +60,3 @@ class Ui_normalization_dialog(object):
         self.normalizationButton.setText(QCoreApplication.translate("normalization_dialog", u"Check Normalization", None))
         self.calculatedCountLabel.setText("")
     # retranslateUi
-

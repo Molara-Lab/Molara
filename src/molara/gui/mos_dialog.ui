@@ -277,7 +277,7 @@
        <x>0</x>
        <y>0</y>
        <width>161</width>
-       <height>201</height>
+       <height>240</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -417,7 +417,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Voxel Size:</string>
+       <string>Resolution:</string>
       </property>
      </widget>
      <widget class="QDoubleSpinBox" name="voxelSizeSpinBox">
@@ -443,6 +443,19 @@
       </property>
       <property name="value">
        <double>0.200000000000000</double>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="recalculateOrbitalButton">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>200</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Recalculate Orbital</string>
       </property>
      </widget>
     </widget>
@@ -471,7 +484,7 @@
        <rect>
         <x>110</x>
         <y>10</y>
-        <width>42</width>
+        <width>45</width>
         <height>22</height>
        </rect>
       </property>
@@ -521,7 +534,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Voxel Size:</string>
+       <string>Resolution:</string>
       </property>
      </widget>
      <widget class="QDoubleSpinBox" name="isolineVoxelSizeSpinBox">
@@ -529,7 +542,7 @@
        <rect>
         <x>90</x>
         <y>40</y>
-        <width>62</width>
+        <width>65</width>
         <height>22</height>
        </rect>
       </property>
@@ -543,7 +556,7 @@
        <double>0.010000000000000</double>
       </property>
       <property name="value">
-       <double>0.050000000000000</double>
+       <double>0.100000000000000</double>
       </property>
      </widget>
      <widget class="QPushButton" name="displayIsolineBorderButton">
@@ -731,7 +744,7 @@
         <rect>
          <x>100</x>
          <y>70</y>
-         <width>50</width>
+         <width>53</width>
          <height>22</height>
         </rect>
        </property>
@@ -779,7 +792,7 @@
         <rect>
          <x>100</x>
          <y>90</y>
-         <width>50</width>
+         <width>53</width>
          <height>22</height>
         </rect>
        </property>
@@ -795,7 +808,7 @@
         <rect>
          <x>100</x>
          <y>50</y>
-         <width>50</width>
+         <width>53</width>
          <height>22</height>
         </rect>
        </property>
