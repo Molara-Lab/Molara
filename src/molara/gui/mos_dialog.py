@@ -82,7 +82,7 @@ class MOsDialog(Surface3DDialog):
         self.ui.alphaCheckBox.clicked.connect(self.select_spin_alpha)
         self.ui.betaCheckBox.clicked.connect(self.select_spin_beta)
         self.ui.cutoffSpinBox.valueChanged.connect(self.on_change_surface_voxel_parameters)
-        self.ui.voxelSizeSpinBox.valueChanged.connect(self.on_change_surface_voxel_parameters)
+        self.ui.resolutionSpinBox.valueChanged.connect(self.on_change_surface_voxel_parameters)
         self.ui.isoValueSpinBox.valueChanged.connect(self.change_iso_value)
         self.ui.colorPlusButton.clicked.connect(self.show_color_dialog_1)
         self.ui.colorMinusButton.clicked.connect(self.show_color_dialog_2)
@@ -109,7 +109,7 @@ class MOsDialog(Surface3DDialog):
         self.isoline_border_rot_trans_scale_group.buttonClicked.connect(self.change_isoline_border_transformation)
         self.ui.displayIsolinesButton.clicked.connect(self.toggle_isolines)
         self.ui.numberLinesSpinBox.valueChanged.connect(self.change_number_of_lines)
-        self.ui.isolineVoxelSizeSpinBox.valueChanged.connect(self.set_recalculate_isoline_grid)
+        self.ui.isolineResolutionSpinBox.valueChanged.connect(self.change_isoline_resolution)
         self.ui.displayIsolineBorderButton.clicked.connect(self.toggle_isoline_border)
         self.ui.resetButton.clicked.connect(self.reset_isoline_border)
         self.ui.displayAxesButton.clicked.connect(self.toggle_isoline_axes)
@@ -441,6 +441,19 @@ class MOsDialog(Surface3DDialog):
         )
         self.parent().structure_widget.update()
 
+    def voxel_size_value(self) -> float:
+        """Get the voxel size value from the resolution.
+
+        Using a minimal value of 0.05 and a maximal value of 0.35 for the voxel size, a resolution between 1 and 0 is
+        mapped to this range.
+        :return: scaled value for the voxel size"""
+        voxel_size_min = 0.05
+        voxel_size_max = 0.35
+        a = (voxel_size_min - voxel_size_max)
+        b = voxel_size_max
+
+        return a * self.ui.resolutionSpinBox.value() + b
+
     def calculate_voxelgrid(self) -> None:
         """Calculate the voxel grid."""
         assert self.aos is not None
@@ -448,9 +461,9 @@ class MOsDialog(Surface3DDialog):
 
         self.voxel_grid.voxel_size = np.array(
             [
-                [self.ui.voxelSizeSpinBox.value(), 0, 0],
-                [0, self.ui.voxelSizeSpinBox.value(), 0],
-                [0, 0, self.ui.voxelSizeSpinBox.value()],
+                [self.voxel_size_value(), 0, 0],
+                [0, self.voxel_size_value(), 0],
+                [0, 0, self.voxel_size_value()],
             ],
             dtype=np.float64,
         )
@@ -458,7 +471,7 @@ class MOsDialog(Surface3DDialog):
 
         self.voxel_grid.origin = self.origin
         direction = self.direction
-        voxel_size = self.ui.voxelSizeSpinBox.value()
+        voxel_size = self.voxel_size_value()
         self.voxel_grid.voxel_number = np.array(
             [
                 int(self.size[0] / voxel_size) + 1,
@@ -613,6 +626,24 @@ class MOsDialog(Surface3DDialog):
         self.remove_isoline_axes()
         self.ui.displayAxesButton.setText("Display Axes")
 
+    def change_isoline_resolution(self) -> None:
+        """Change the voxel size of the isoline grid."""
+        self.isoline_grid_parameters_changed = True
+        self.update_isolines(self.isolines_are_visible)
+
+    def isoline_voxel_size_value(self) -> float:
+        """Get the voxel size value from the resolution.
+
+        Using a minimal value of 0.03 and a maximal value of 0.43 for the voxel size, a resolution between 1 and 0 is
+        mapped to this range.
+        :return: scaled value for the voxel size"""
+        voxel_size_min = 0.03
+        voxel_size_max = 0.43
+        a = (voxel_size_min - voxel_size_max)
+        b = voxel_size_max
+
+        return a * self.ui.isolineResolutionSpinBox.value() + b
+
     def calculate_isoline_voxelgrid(self) -> None:
         """Calculate the 2D voxel grid for the isolines."""
         assert self.aos is not None
@@ -621,14 +652,14 @@ class MOsDialog(Surface3DDialog):
         origin = self.isoline_border_origin
         size = self.isoline_border_size * self.isoline_border_scale
 
-        voxel_size = self.isoline_border_direction * self.ui.isolineVoxelSizeSpinBox.value()
+        voxel_size = self.isoline_border_direction * self.isoline_voxel_size_value()
 
         mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
 
         voxel_number = np.array(
             [
-                int(size[0] / self.ui.isolineVoxelSizeSpinBox.value()) + 1,
-                int(size[1] / self.ui.isolineVoxelSizeSpinBox.value()) + 1,
+                int(size[0] / self.isoline_voxel_size_value()) + 1,
+                int(size[1] / self.isoline_voxel_size_value()) + 1,
                 1,
             ],
             dtype=np.int64,
