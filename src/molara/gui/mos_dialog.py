@@ -102,7 +102,7 @@ class MOsDialog(Surface3DDialog):
         self.isoline_border_rot_trans_scale_group.addButton(self.ui.translateCheckBox, id=3)
 
         # isoline ui connections
-        self.isoline_border_rot_trans_scale_group.buttonClicked.connect(self.reset_isoline_border_transformation_values)
+        self.isoline_border_rot_trans_scale_group.buttonClicked.connect(self.change_isoline_border_transformation)
         self.ui.displayIsolinesButton.clicked.connect(self.toggle_isolines)
         self.ui.numberLinesSpinBox.valueChanged.connect(self.change_number_of_lines)
         self.ui.isolineVoxelSizeSpinBox.valueChanged.connect(self.set_recalculate_isoline_grid)
@@ -123,7 +123,7 @@ class MOsDialog(Surface3DDialog):
         self.isolines_2: np.ndarray = np.array([])
         self.isoline_border_origin: np.ndarray = np.array([])
         self.isoline_border_size: np.ndarray = np.array([4, 4])
-        self.isoline_border_scale = 1
+        self.isoline_border_scale = [1, 1]
         self.isoline_border_direction = np.zeros((3, 3), dtype=np.float64)
         self.isoline_border_center = np.zeros(3, dtype=np.float64)
         self.isoline_border_cylinders = -1
@@ -131,9 +131,8 @@ class MOsDialog(Surface3DDialog):
         self.isoline_axes_cylinders = -1
         self.isoline_axes_spheres = -1
         self.isoline_axes_visible = False
-        self.isoline_red_value = 0
-        self.isoline_green_value = 0
-        self.isoline_blue_value = 0
+        self.isoline_rotation_values = [0, 0, 0]
+        self.isoline_translation_values = [0, 0, 0]
         self.isoline_border_points: np.ndarray = np.array([])
         self.isoline_border_normal: np.ndarray = np.array([])
         self.isoline_border_is_visible = False
@@ -196,6 +195,9 @@ class MOsDialog(Surface3DDialog):
         # Set the box size and draw the box
         self.calculate_minimum_box_size()
 
+        # isolines initialization
+        self.change_isoline_border_transformation()
+
         self.show()
 
     def init_spin_labels(self) -> None:
@@ -249,6 +251,7 @@ class MOsDialog(Surface3DDialog):
 
         self.set_recalculate_voxel_grid()
         self.set_recalculate_isoline_grid()
+        self.update_isoline_orientation(self.isolines_are_visible)
 
     def setup_orbital_selector(self) -> None:
         """Set up the orbital selector."""
@@ -503,9 +506,6 @@ class MOsDialog(Surface3DDialog):
     def set_recalculate_isoline_grid(self) -> None:
         """Set a flag to recalculate the isoline grid."""
         self.isoline_grid_parameters_changed = True
-        if self.isolines_are_visible:
-            self.remove_isolines()
-            self.display_isolines()
 
     def change_number_of_lines(self) -> None:
         """Change the number of lines, does not recalculate the grid if needed."""
@@ -527,14 +527,16 @@ class MOsDialog(Surface3DDialog):
         assert self.isoline_border_origin is not None
         assert self.isoline_border_size is not None
         assert self.isoline_border_direction is not None
+        size_direction_1 = self.isoline_border_size[0] * self.isoline_border_direction[0] * self.isoline_border_scale[0]
+        size_direction_2 = self.isoline_border_size[1] * self.isoline_border_direction[1] * self.isoline_border_scale[1]
         self.isoline_border_points = np.array(
             [
                 self.isoline_border_origin,
-                self.isoline_border_origin + self.isoline_border_size[0] * self.isoline_border_direction[0],
-                self.isoline_border_origin + self.isoline_border_size[1] * self.isoline_border_direction[1],
+                self.isoline_border_origin + size_direction_1,
+                self.isoline_border_origin + size_direction_2,
                 self.isoline_border_origin
-                + self.isoline_border_size[0] * self.isoline_border_direction[0]
-                + self.isoline_border_size[1] * self.isoline_border_direction[1],
+                + size_direction_1
+                + size_direction_2,
             ],
             dtype=np.float32,
         )
@@ -593,7 +595,7 @@ class MOsDialog(Surface3DDialog):
         assert self.mos is not None
 
         origin = self.isoline_border_origin
-        size = self.isoline_border_size
+        size = self.isoline_border_size * self.isoline_border_scale
 
         voxel_size = self.isoline_border_direction * self.ui.isolineVoxelSizeSpinBox.value()
 
@@ -647,6 +649,7 @@ class MOsDialog(Surface3DDialog):
         """Calculate the voxel grid."""
         assert self.aos is not None
         assert self.mos is not None
+        print("Visualize isolines")
         self.remove_isolines()
 
         number_of_iso_values = self.ui.numberLinesSpinBox.value()
@@ -663,8 +666,8 @@ class MOsDialog(Surface3DDialog):
         grid_sum = np.sum(np.abs(grid))
         zero_approx = 1.0e-14
         if grid_sum > zero_approx:
-            log_grid_max = np.log(np.max(np.abs(grid)))
-            log_grid_min = np.log(max(np.min(np.abs(grid)), 5e-3))
+            log_grid_max = 0.1 # np.log(np.max(np.abs(grid)))
+            log_grid_min = np.log(3e-3) # np.log(max(np.min(np.abs(grid)), 5e-3))
             iso_values = np.exp(np.linspace(log_grid_min, log_grid_max, number_of_iso_values))
 
             total_lines_1 = np.empty((0, 2, 3))
@@ -730,15 +733,64 @@ class MOsDialog(Surface3DDialog):
     def isoline_initialize_border(self) -> None:
         """Initialize the isoline border."""
         self.set_isoline_border_parameters_from_normal(np.array([1, 0, 0], dtype=np.float64))
+        self.update_isoline_border_origin()
 
     def reset_isoline_border_transformation_values(self) -> None:
         """Reset the isoline border transformation values."""
-        self.ui.redSpinBox.setValue(0)
-        self.ui.greenSpinBox.setValue(0)
-        self.ui.blueSpinBox.setValue(0)
-        self.isoline_red_value = 0
-        self.isoline_green_value = 0
-        self.isoline_blue_value = 0
+        self.isoline_rotation_values = [0, 0, 0]
+        self.isoline_translation_values = [0, 0, 0]
+        self.isoline_border_scale = [1, 1]
+        self.change_isoline_border_transformation()
+
+    def change_isoline_border_transformation(self) -> None:
+        """This function is called when the user changes the transformation mode of the isoline border."""
+        rotate = 2
+        translate = 3
+        scale = 1
+
+        self.ui.redSpinBox.setEnabled(True)
+        self.ui.greenSpinBox.setEnabled(True)
+        self.ui.blueSpinBox.setEnabled(True)
+        spin_boxes = [self.ui.redSpinBox, self.ui.greenSpinBox, self.ui.blueSpinBox]
+        if self.isoline_border_rot_trans_scale_group.checkedId() == rotate:
+            for i, spin_box in enumerate(spin_boxes):
+                # Set minimum and maximum values
+                spin_box.setMinimum(-180)
+                spin_box.setMaximum(180)
+                # Set the values of the spin boxes to the current values
+                spin_box.setValue(self.isoline_rotation_values[i])
+                # Set the increment of the spin boxes to 1
+                spin_box.setSingleStep(5)
+
+        elif self.isoline_border_rot_trans_scale_group.checkedId() == translate:
+            for i, spin_box in enumerate(spin_boxes):
+                # Set minimum and maximum values to largest possible to avoid conflicts when changing the mode
+                spin_box.setMinimum(-180)
+                spin_box.setMaximum(180)
+                # Set the values of the spin boxes to the current values
+                spin_box.setValue(self.isoline_translation_values[i])
+                # Set the increment of the spin boxes to 0.1
+                spin_box.setSingleStep(0.1)
+                # Set minimum and maximum values
+                spin_box.setMinimum(-100)
+                spin_box.setMaximum(100)
+
+        elif self.isoline_border_rot_trans_scale_group.checkedId() == scale:
+            # Disable the blue spin box
+            self.ui.blueSpinBox.setEnabled(False)
+            self.ui.blueSpinBox.setValue(0)
+            for i, spin_box in enumerate(spin_boxes[:2]):
+                # Set minimum and maximum values to largest possible to avoid conflicts when changing the mode
+                spin_box.setMinimum(-180)
+                spin_box.setMaximum(180)
+                # Set the values of the spin boxes to the current values
+                spin_box.setValue(self.isoline_border_scale[i])
+                # Set the increment of the spin boxes to 0.1
+                spin_box.setSingleStep(0.1)
+                # Set minimum and maximum values
+                spin_box.setMinimum(0.1)
+                spin_box.setMaximum(100)
+
 
     def reset_isoline_border(self) -> None:
         """Reset the isoline border."""
@@ -762,20 +814,8 @@ class MOsDialog(Surface3DDialog):
             self.set_isoline_border_parameters_from_normal(np.array([0, 0, 1], dtype=np.float64))
         else:
             return
+        self.update_isoline_orientation(were_visible)
 
-        if self.isoline_border_is_visible:
-            self.remove_isoline_border()
-            self.display_isoline_border()
-        else:
-            self.set_isoline_border_points()
-
-        if were_visible:
-            self.visualize_isolines()
-            self.set_isolines_visible()
-
-        if self.isoline_axes_visible:
-            self.remove_isoline_axes()
-            self.draw_isoline_axes()
 
     def transform_isoline_border_red(self) -> None:
         """Transform the isoline border with the red axis. This wraps different cases."""
@@ -783,7 +823,23 @@ class MOsDialog(Surface3DDialog):
         translate = 3
         scale = 1
         if self.isoline_border_rot_trans_scale_group.checkedId() == rotate:
-            self.rotate_isoline_border_red()
+            axis = self.isoline_border_direction[0]
+            value = self.isoline_rotation_values[0] - self.ui.redSpinBox.value()
+            print('value', value, self.isoline_rotation_values[0], self.ui.redSpinBox.value())
+            if value == 0:
+                return
+            self.set_recalculate_isoline_grid()
+            self.rotate_isoline_border(axis, value)
+            self.isoline_rotation_values[0] = self.ui.redSpinBox.value()
+            print('value', value, self.isoline_rotation_values[0], self.ui.redSpinBox.value())
+
+
+        if self.isoline_border_rot_trans_scale_group.checkedId() == scale:
+            if self.isoline_border_scale[0] == self.ui.redSpinBox.value():
+                return
+            self.set_recalculate_isoline_grid()
+            self.isoline_border_scale[0] = self.ui.redSpinBox.value()
+            self.update_isoline_orientation(self.isolines_are_visible)
 
     def transform_isoline_border_green(self) -> None:
         """Transform the isoline border with the red axis. This wraps different cases."""
@@ -791,7 +847,13 @@ class MOsDialog(Surface3DDialog):
         translate = 3
         scale = 1
         if self.isoline_border_rot_trans_scale_group.checkedId() == rotate:
-            self.rotate_isoline_border_green()
+            axis = self.isoline_border_direction[1]
+            value = self.isoline_rotation_values[1] - self.ui.greenSpinBox.value()
+            if value == 0:
+                return
+            self.set_recalculate_isoline_grid()
+            self.rotate_isoline_border(axis, value)
+            self.isoline_rotation_values[1] = self.ui.greenSpinBox.value()
 
     def transform_isoline_border_blue(self) -> None:
         """Transform the isoline border with the red axis. This wraps different cases."""
@@ -799,47 +861,22 @@ class MOsDialog(Surface3DDialog):
         translate = 3
         scale = 1
         if self.isoline_border_rot_trans_scale_group.checkedId() == rotate:
-            self.rotate_isoline_border_blue()
+            axis = self.isoline_border_direction[2]
+            value = self.isoline_rotation_values[2] - self.ui.blueSpinBox.value()
+            self.rotate_isoline_border(axis, value)
+            self.isoline_rotation_values[2] = self.ui.blueSpinBox.value()
 
-    def rotate_isoline_border_red(self) -> None:
-        """Rotate the isoline border around the red axis."""
-        axis = self.isoline_border_direction[0]
-        value = self.isoline_red_value - self.ui.redSpinBox.value()
-        self.transform_isoline_border(axis, value)
-        self.isoline_red_value = self.ui.redSpinBox.value()
-
-    def rotate_isoline_border_green(self) -> None:
-        """Rotate the isoline border around the red axis."""
-        axis = self.isoline_border_direction[1]
-        value = self.isoline_green_value - self.ui.greenSpinBox.value()
-        self.transform_isoline_border(axis, value)
-        self.isoline_green_value = self.ui.greenSpinBox.value()
-
-    def rotate_isoline_border_blue(self) -> None:
-        """Rotate the isoline border around the red axis."""
-        axis = self.isoline_border_direction[2]
-        value = self.isoline_blue_value - self.ui.blueSpinBox.value()
-        self.transform_isoline_border(axis, value)
-        self.isoline_blue_value = self.ui.blueSpinBox.value()
-
-    def transform_isoline_border(self, axis: np.ndarray, value: float) -> None:
-        """Transform the isoline border according to the selected checkboxes."""
-        were_visible = self.isolines_are_visible
-        self.remove_isolines()
-        self.set_recalculate_isoline_grid()
-        rotate = 2
-        translate = 3
-        scale = 1
-
-        if self.isoline_border_rot_trans_scale_group.checkedId() == rotate:
-            value = value * np.pi / 180
-            rotation_matrix = create_from_axis_rotation(axis, value)
-            self.isoline_border_direction = np.dot(self.isoline_border_direction, rotation_matrix)
-            self.isoline_border_origin = (
+    def update_isoline_border_origin(self) -> None:
+        """Update the isoline border origin."""
+        self.isoline_border_origin = (
                 self.isoline_border_center
-                - self.isoline_border_direction[0] * self.isoline_border_size[0] / 2
-                - self.isoline_border_direction[1] * self.isoline_border_size[1] / 2
-            )
+                - self.isoline_border_direction[0] * self.isoline_border_size[0] * self.isoline_border_scale[0] / 2
+                - self.isoline_border_direction[1] * self.isoline_border_size[1] * self.isoline_border_scale[1] / 2
+        )
+
+    def update_isoline_orientation(self, isolines_were_visible: bool) -> None:
+        """Scale the isoline border."""
+        self.update_isoline_border_origin()
 
         if self.isoline_border_is_visible:
             self.remove_isoline_border()
@@ -847,13 +884,24 @@ class MOsDialog(Surface3DDialog):
         else:
             self.set_isoline_border_points()
 
-        if were_visible:
-            self.visualize_isolines()
+        if isolines_were_visible:
+            self.display_isolines()
             self.set_isolines_visible()
 
         if self.isoline_axes_visible:
             self.remove_isoline_axes()
             self.draw_isoline_axes()
+
+
+    def rotate_isoline_border(self, axis: np.ndarray, value: float) -> None:
+        """Transform the isoline border according to the selected checkboxes."""
+        were_visible = self.isolines_are_visible
+        self.remove_isolines()
+
+        value = value * np.pi / 180
+        rotation_matrix = create_from_axis_rotation(axis, value)
+        self.isoline_border_direction = np.dot(self.isoline_border_direction, rotation_matrix)
+        self.update_isoline_orientation(were_visible)
 
     def set_isoline_border_parameters_from_normal(
         self,
@@ -877,12 +925,6 @@ class MOsDialog(Surface3DDialog):
         self.isoline_border_direction[1] = np.cross(normal, -self.isoline_border_direction[0])
         self.isoline_border_direction[1] /= np.linalg.norm(self.isoline_border_direction[1])
         self.isoline_border_direction[2] = normal
-
-        self.isoline_border_origin = (
-            self.isoline_border_center
-            - self.isoline_border_direction[0] * self.isoline_border_size[0] / 2
-            - self.isoline_border_direction[1] * self.isoline_border_size[1] / 2
-        )
 
     def toggle_isoline_axes(self) -> None:
         """Toggle the isoline axes."""
@@ -909,30 +951,30 @@ class MOsDialog(Surface3DDialog):
     def draw_isoline_axes(self) -> None:
         """Draw the isoline axes used for rotation and translation."""
         self.remove_isoline_axes()
-        axes_scale = 1 / 4
+        axes_scale = 1 / 2
         cylinder_end_points = np.array(
             [
                 [
-                    self.isoline_border_origin,
-                    self.isoline_border_origin + self.isoline_border_direction[0] * axes_scale,
+                    self.isoline_border_center,
+                    self.isoline_border_center + self.isoline_border_direction[0] * axes_scale,
                 ],
                 [
-                    self.isoline_border_origin,
-                    self.isoline_border_origin + self.isoline_border_direction[1] * axes_scale,
+                    self.isoline_border_center,
+                    self.isoline_border_center + self.isoline_border_direction[1] * axes_scale,
                 ],
                 [
-                    self.isoline_border_origin,
-                    self.isoline_border_origin + self.isoline_border_direction[2] * axes_scale,
+                    self.isoline_border_center,
+                    self.isoline_border_center + self.isoline_border_direction[2] * axes_scale,
                 ],
             ],
             dtype=np.float32,
         )
         sphere_positions = np.array(
             [
-                self.isoline_border_origin,
-                self.isoline_border_origin + self.isoline_border_direction[0] * axes_scale,
-                self.isoline_border_origin + self.isoline_border_direction[1] * axes_scale,
-                self.isoline_border_origin + self.isoline_border_direction[2] * axes_scale,
+                self.isoline_border_center,
+                self.isoline_border_center + self.isoline_border_direction[0] * axes_scale,
+                self.isoline_border_center + self.isoline_border_direction[1] * axes_scale,
+                self.isoline_border_center + self.isoline_border_direction[2] * axes_scale,
             ],
             dtype=np.float32,
         )
