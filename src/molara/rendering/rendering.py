@@ -15,6 +15,7 @@ from OpenGL.GL import (
     GL_FILL,
     GL_FRONT_AND_BACK,
     GL_LINE,
+    GL_MULTISAMPLE,
     GL_POINTS,
     GL_TRIANGLES,
     GL_UNSIGNED_INT,
@@ -25,6 +26,7 @@ from OpenGL.GL import (
     glClear,
     glDeleteBuffers,
     glDeleteVertexArrays,
+    glDisable,
     glDrawArrays,
     glDrawArraysInstanced,
     glDrawElementsInstanced,
@@ -62,7 +64,16 @@ class Renderer:
         self.number_vao: list[dict] = []
         self.shaders: list[GLuint] = [0]
         self.polygons: list[dict] = []
-        self.wire_mesh_orbitals = False
+        self.anti_aliasing = True
+        self.wire_mesh_surfaces = False
+
+    def enable_antialiasing(self) -> None:
+        """Enable antialiasing."""
+        self.anti_aliasing = True
+
+    def disable_antialiasing(self) -> None:
+        """Disable antialiasing."""
+        self.anti_aliasing = False
 
     def set_shaders(self, shaders: list[GLuint]) -> None:
         """Set the shader program for the opengl widget.
@@ -415,19 +426,22 @@ class Renderer:
         vao, buffers = setup_vao_numbers(digits, positions_3d)
         self.number_vao.append({"vao": vao, "n_instances": len(digits), "buffers": buffers})
 
-    def draw_scene(
+    def draw_scene(  # noqa: C901
         self,
         camera: Camera,
         bonds: bool,
     ) -> None:
         """Draws the scene.
 
+        When bonds are drawn, the bonds are drawn. Otherwise, only the atoms are drawn. When wire mesh surfaces are
+        enabled, the surfaces are drawn as wire mesh.
+
         :param camera: Camera object.
-        :type camera: Camera
         :param bonds: If True, bonds are drawn.
-        :type bonds: bool
         :return:
         """
+        if not self.anti_aliasing:
+            glDisable(GL_MULTISAMPLE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glUseProgram(self.shaders[0])
         light_direction_loc = glGetUniformLocation(self.shaders[0], "light_direction")
@@ -471,7 +485,7 @@ class Renderer:
             _draw(cylinder, "n_instances")
 
         # Draw polygons
-        if self.wire_mesh_orbitals:
+        if self.wire_mesh_surfaces:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         for polygon in self.polygons:
             if polygon["vao"] != 0:
@@ -485,6 +499,8 @@ class Renderer:
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         glBindVertexArray(0)
+        if not self.anti_aliasing:
+            glEnable(GL_MULTISAMPLE)
 
     def display_numbers(self, camera: Camera, scale_factor: float) -> None:
         """Draws the lines."""

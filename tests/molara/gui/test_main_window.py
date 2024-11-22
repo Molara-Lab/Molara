@@ -55,6 +55,8 @@ class WorkaroundTestMainWindow:
         self.test_export_image_dialog()
         self.test_show_builder_dialog()
         self.test_show_crystal_dialog()
+        self.test_show_3d_surface_dialog()
+        self.test_toggle_axes()
         self.test_show_init_xyz()
         self.test_load_molecules()
         self.test_show_measurement_dialog()
@@ -183,6 +185,19 @@ class WorkaroundTestMainWindow:
         assert self.window.crystal_dialog.isVisible()
         self.window.crystal_dialog.reject()
         assert not self.window.crystal_dialog.isVisible()
+
+    def test_show_3d_surface_dialog(self) -> None:
+        """Test the show_3d_surface_dialog method."""
+        assert not self.window.surface_3d_dialog.isVisible()
+
+    def test_toggle_axes(self) -> None:
+        """Test the toggle_axes method."""
+        window = self.window
+        assert window.structure_widget.axes == [-1, -1]
+        window.toggle_axes()
+        assert window.structure_widget.axes != [-1, -1]
+        window.toggle_axes()
+        assert window.structure_widget.axes == [-1, -1]
 
     def test_show_init_xyz(self) -> None:
         """Test the show_init_xyz method."""

@@ -17,6 +17,7 @@ import numpy as np
 import pytest
 
 from molara.structure.io.importer import (
+    CubeImporter,
     FileFormatError,
     GeneralImporter,
     MoldenImporter,
@@ -131,3 +132,19 @@ class TestGeneralImporter(TestCase):
         with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
             with pytest.raises(ImportError, match=msg):
                 GeneralImporter("tests/does/not/matter/if/path/exists/file.unknowntype")  # .load()
+
+
+class TestCubeImporter(TestCase):
+    """Test the CubeImporter class."""
+
+    def setUp(self) -> None:
+        """Set up the CubeImporter object."""
+        self.directory_input_files = "examples/cube"
+        self.importer = CubeImporter(f"{self.directory_input_files}/tetrabenzoporphyrin.cube")
+        self.structure = self.importer.load()
+
+    def test_init(self) -> None:
+        """Test the __init__ method."""
+        assert isinstance(self.structure.mols[0], Molecule)
+        number_of_atoms = 62
+        assert len(self.structure.mols[0].atoms) == number_of_atoms

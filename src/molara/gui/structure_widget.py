@@ -582,26 +582,3 @@ class StructureWidget(QOpenGLWidget):
     def clear_builder_selected_atoms(self) -> None:
         """Reset the selected spheres builder spheres."""
         self.builder_selected_spheres = [-1] * 3
-
-    def adopt_config(self, other_widget: StructureWidget, custom_geometry: tuple[int, int] | None = None) -> None:
-        """Adopt the configuration of another StructureWidget object.
-
-        :param other_widget: the other StructureWidget object
-        :param custom_geometry: custom geometry (width, height) for the widget
-        """
-        geometry = self.geometry()
-        if custom_geometry is None:
-            other_geometry = other_widget.geometry()
-            geometry.setWidth(other_geometry.width())
-            geometry.setHeight(other_geometry.height())
-        else:
-            geometry.setWidth(custom_geometry[0])
-            geometry.setHeight(custom_geometry[1])
-
-        self.setGeometry(geometry)
-        self.camera.adopt_config(other_widget.camera)
-        self.set_structure(other_widget.structures, reset_view=False)
-        # self.update()
-
-        if other_widget.box[0] != -1:
-            self.toggle_unit_cell_boundaries()

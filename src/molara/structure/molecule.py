@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import numpy as np
 
+from molara.eval.voxel_grid import VoxelGrid
 from molara.structure.molecularorbitals import MolecularOrbitals
 from molara.structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
-if TYPE_CHECKING:
-    from molara.structure.atom import Atom
 
 
 class Molecule(Structure):
@@ -36,13 +33,11 @@ class Molecule(Structure):
         if dummy:
             self.dummy = True
 
-        self.atomic_numbers = np.array(atomic_numbers)
-        self.atoms: list[Atom] = []
         self.mos = MolecularOrbitals()
-        self.vdw_rads: list[np.float32] = []
         self.subdivisions = 20
         self.gen_energy_information(header)
         self.basis_set: list = []
+        self.voxel_grid = VoxelGrid()
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
     def update_basis_set(self) -> None:

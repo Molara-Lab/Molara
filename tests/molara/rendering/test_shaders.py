@@ -45,4 +45,4 @@ class TestShaders(unittest.TestCase):
         assert vertex_src_hash == "650efcd6e07d8d24f014d9be78edb39016949260ce5776f3f98e50893d1d30e9"
         fragment_src_hash = hashlib.sha256(shaders.fragment_src_main.encode()).hexdigest()
 
-        assert fragment_src_hash == "ab6ad33c9678f8ca7b8a0be445cae2ad2f5c10ff7e08efc14aaa688e922b335e"
+        assert fragment_src_hash == "2a111c7611839cd2a20d2953c548170fcd4d31dbe69ec88e1ca6a29f7d0722bb"

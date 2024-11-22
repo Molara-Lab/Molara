@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class WorkaroundTestMOsDialog:
-    """Contains the tests for the MeasurementDialog class.
+    """Contains the tests for the MOsDialog class.
 
     It does not inherit from unittest.TestCase, because that does not work with pytest-qt.
     """
@@ -62,6 +62,8 @@ class WorkaroundTestMOsDialog:
         self._test_visualization()
         self._test_population()
         self._test_mo_initialization()
+        self._test_change_iso_value()
+        self._test_colors()
 
         self._test_close()
 
@@ -110,9 +112,9 @@ class WorkaroundTestMOsDialog:
 
     def _test_wire_mesh(self) -> None:
         """Test the wire mesh toggle button."""
-        assert not self.mo_dialog.parent().structure_widget.renderer.wire_mesh_orbitals
+        assert not self.mo_dialog.parent().structure_widget.renderer.wire_mesh_surfaces
         self.mo_dialog.toggle_wire_mesh()
-        assert self.mo_dialog.parent().structure_widget.renderer.wire_mesh_orbitals
+        assert self.mo_dialog.parent().structure_widget.renderer.wire_mesh_surfaces
         self.mo_dialog.toggle_wire_mesh()
 
     def _test_box(self) -> None:
@@ -141,7 +143,7 @@ class WorkaroundTestMOsDialog:
         self.mo_dialog.visualize_orbital()
         number_of_vertices = 768
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["n_vertices"] == number_of_vertices
-        self.mo_dialog.remove_orbitals()
+        self.mo_dialog.remove_surfaces()
         assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["vao"] == 0
 
     def _test_population(self) -> None:
@@ -153,3 +155,19 @@ class WorkaroundTestMOsDialog:
     def _test_close(self) -> None:
         """Close the widget again."""
         self.mo_dialog.close()
+
+    def _test_change_iso_value(self) -> None:
+        """Test the change of the iso value."""
+        iso1 = 0.123
+        self.mo_dialog.ui.isoValueSpinBox.setValue(iso1)
+        self.mo_dialog.change_iso_value()
+        assert self.mo_dialog.iso_value == iso1
+        iso1 /= 10
+        self.mo_dialog.ui.isoValueSpinBox.setValue(iso1)
+        self.mo_dialog.change_iso_value()
+        assert self.mo_dialog.iso_value == iso1
+
+    def _test_colors(self) -> None:
+        """Test the color selection."""
+        self.mo_dialog.change_color_surface_1()
+        self.mo_dialog.change_color_surface_2()
