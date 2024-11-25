@@ -56,8 +56,8 @@ class Renderer:
 
     def __init__(self) -> None:
         """Create a Renderer object."""
-        self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": []}
-        self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
+        self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": [], "wire_mesh": False}
+        self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": [], "wire_mesh": False}
         self.spheres: list[dict] = []
         self.aspect_ratio: float = 1.0
         self.cylinders: list[dict] = []
@@ -89,6 +89,7 @@ class Renderer:
         vertices: np.ndarray | None,
         model_matrices: np.ndarray,
         colors: np.ndarray,
+        wire_mesh: bool = False,
     ) -> dict:
         """Draws the object."""
         if isinstance(mesh, (Cylinder | Sphere)):
@@ -107,6 +108,7 @@ class Renderer:
             "n_instances": n_instances,
             "n_vertices": n_vertices,
             "buffers": [],
+            "wire_mesh": wire_mesh,
         }
         obj["vao"], obj["buffers"] = setup_vao(
             vertices,
@@ -252,6 +254,7 @@ class Renderer:
         radii: np.ndarray,
         colors: np.ndarray,
         subdivisions: int,
+        wire_mesh: bool = False,
     ) -> int:
         """Draws one or multiple spheres.
 
@@ -268,6 +271,7 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :param subdivisions: Number of subdivisions of the sphere.
         :type subdivisions: int
+        :param wire_mesh: If True, the sphere is drawn as wire mesh.
         :return: Returns the index of the sphere in the list of spheres.
         """
         n_instances = len(positions)
@@ -277,7 +281,7 @@ class Renderer:
             model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
-        sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors)
+        sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors, wire_mesh)
 
         return self.add_object_to_list(self.spheres, sphere)
 
@@ -464,6 +468,8 @@ class Renderer:
         def _draw(obj: dict, n_instances_key: str = "n_instances") -> None:
             if obj["vao"] == 0:
                 return
+            if obj["wire_mesh"]:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
             glBindVertexArray(obj["vao"])
             glDrawElementsInstanced(
                 GL_TRIANGLES,
@@ -472,6 +478,8 @@ class Renderer:
                 None,
                 obj[n_instances_key],
             )
+            if obj["wire_mesh"]:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         # Draw atoms
         _draw(self.atoms_vao, "n_atoms")

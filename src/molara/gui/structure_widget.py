@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 __copyright__ = "Copyright 2024, Molara"
 
-MEASUREMENT, BUILDER = 0, 1
+MEASUREMENT, BUILDER, ORBITALS = 0, 1, 2
 
 
 class StructureWidget(QOpenGLWidget):
@@ -63,10 +63,12 @@ class StructureWidget(QOpenGLWidget):
         self.camera = Camera(self.width(), self.height())
         self.cursor_in_widget = False
         self.measurement_selected_spheres: list = [-1] * 4
+        self.measurement_drawn_spheres: list = [-1] * 4
         self.builder_selected_spheres: list = [-1] * 3
+        self.builder_drawn_spheres: list = [-1] * 3
 
         self.old_sphere_colors: list = [np.ndarray] * 4
-        self.new_sphere_colors: list = [
+        self.highlighted_atoms_colors: list = [
             np.array([1, 0, 0], dtype=np.float32),
             np.array([0, 1, 0], dtype=np.float32),
             np.array([0, 0, 1], dtype=np.float32),
@@ -75,6 +77,7 @@ class StructureWidget(QOpenGLWidget):
         self.show_atom_indices = False
         self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1))
         self.number_scale = 1.0
+        self.highlighted_atoms: list = []
 
     @property
     def bonds(self) -> bool:
@@ -281,12 +284,15 @@ class StructureWidget(QOpenGLWidget):
             return
 
         if event.button() == Qt.MouseButton.LeftButton:
+            print(self.main_window.mo_dialog.isVisible(), self.main_window.mo_dialog.ui.selectAtomsCheckBox.isChecked())
             # first test if Shift key is pressed (for selecting atoms)
             if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
                 if self.main_window.measurement_dialog.isVisible():
                     self.update_selected_atoms(MEASUREMENT, event)
                 if self.main_window.builder_dialog.isVisible():
                     self.update_selected_atoms(BUILDER, event)
+                if self.main_window.mo_dialog.isVisible() and self.main_window.mo_dialog.ui.selectAtomsCheckBox.isChecked():
+                    self.update_selected_atoms(ORBITALS, event)
                 return
 
             self.rotate = True
@@ -490,29 +496,35 @@ class StructureWidget(QOpenGLWidget):
             self.structures[0].drawer.atom_scales[:, 0],  # type: ignore[call-overload]
         )
 
-    def exec_select_sphere(self, sphere_id: int, selected_spheres_list: list) -> None:
+    def exec_select_sphere(self, sphere_id: int, selected_spheres_list: list, drawn_spheres_list: list) -> None:
         """Select a sphere, change its color, update the selected spheres list.
 
         :param sphere_id: id of the sphere that shall be selected
         :param selected_spheres_list: list of selected spheres
+        :param drawn_spheres_list: list of the indices of the already drawn spheres
         """
         id_in_selection = selected_spheres_list.index(-1)
         selected_spheres_list[id_in_selection] = sphere_id
-        self.old_sphere_colors[id_in_selection] = self.structures[0].drawer.atom_colors[sphere_id].copy()
-        self.structures[0].drawer.atom_colors[sphere_id] = self.new_sphere_colors[id_in_selection].copy()
+        sphere_position = np.array([self.structures[0].atoms[sphere_id].position], dtype=np.float32)
+        sphere_color = np.array(self.highlighted_atoms_colors[id_in_selection], dtype=np.float32)
+        subdivisions = 25
+        radius = self.structures[0].drawer.atom_scales[sphere_id, 0] + 0.05
+        drawn_spheres_list[id_in_selection] = self.renderer.draw_spheres(sphere_position, np.array([radius], dtype=np.float32), sphere_color, subdivisions, wire_mesh=True)
 
-    def exec_unselect_sphere(self, sphere_id: int, selected_spheres_list: list) -> None:
+    def exec_unselect_sphere(self, sphere_id: int, selected_spheres_list: list, drawn_spheres_list: list) -> None:
         """Unselect a sphere, change its color, update the selected spheres list.
 
         :param sphere_id: id of the sphere that shall be unselected
         :param selected_spheres_list: list of selected spheres
+        :param drawn_spheres_list: list of the indices of the already drawn spheres
         """
         if sphere_id == -1:
             return
 
         id_in_selection = selected_spheres_list.index(sphere_id)
-        self.structures[0].drawer.atom_colors[sphere_id] = self.old_sphere_colors[id_in_selection].copy()
-        self.measurement_selected_spheres[id_in_selection] = -1
+        selected_spheres_list[id_in_selection] = -1
+        self.renderer.remove_sphere(drawn_spheres_list[id_in_selection])
+        drawn_spheres_list[id_in_selection] = -1
 
     def update_selected_atoms(self, purpose: int, event: QMouseEvent) -> None:
         """Update the selected atoms in the measurement or builder dialog.
@@ -526,21 +538,28 @@ class StructureWidget(QOpenGLWidget):
         self.makeCurrent()
         selected_sphere_id = self.identify_selected_sphere(event.position().x(), event.position().y())
 
-        selected_spheres_list = (
-            self.measurement_selected_spheres if purpose == MEASUREMENT else self.builder_selected_spheres
-        )
+        if purpose == ORBITALS:
+            selected_spheres_list = self.main_window.mo_dialog.isoline_selected_atoms
+            drawn_spheres_list = self.main_window.mo_dialog.isoline_drawn_spheres
+        else:
+            selected_spheres_list = (
+                self.measurement_selected_spheres if purpose == MEASUREMENT else self.builder_selected_spheres
+            )
+            drawn_spheres_list = (
+                self.measurement_drawn_spheres if purpose == MEASUREMENT else self.builder_drawn_spheres
+            )
 
         if selected_sphere_id != -1:
             if -1 in selected_spheres_list:
                 if selected_sphere_id in selected_spheres_list:
-                    self.exec_unselect_sphere(selected_sphere_id, selected_spheres_list)
+                    self.exec_unselect_sphere(selected_sphere_id, selected_spheres_list, drawn_spheres_list)
                 else:
-                    self.exec_select_sphere(selected_sphere_id, selected_spheres_list)
-            elif selected_sphere_id in self.measurement_selected_spheres:
-                self.exec_unselect_sphere(selected_sphere_id, selected_spheres_list)
+                    self.exec_select_sphere(selected_sphere_id, selected_spheres_list, drawn_spheres_list)
+            elif selected_sphere_id in selected_spheres_list:
+                self.exec_unselect_sphere(selected_sphere_id, selected_spheres_list, drawn_spheres_list)
         elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
-            for selected_sphere_i in self.measurement_selected_spheres:
-                self.exec_unselect_sphere(selected_sphere_i, selected_spheres_list)
+            for selected_sphere_i in selected_spheres_list:
+                self.exec_unselect_sphere(selected_sphere_i, selected_spheres_list, drawn_spheres_list)
 
         self.renderer.update_atoms_vao(
             self.structures[0].drawer.sphere.vertices,

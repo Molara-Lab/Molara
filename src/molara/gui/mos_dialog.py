@@ -139,6 +139,8 @@ class MOsDialog(Surface3DDialog):
         self.isoline_translation_values = [0, 0, 0]
         self.isoline_border_points: np.ndarray = np.array([])
         self.isoline_border_normal: np.ndarray = np.array([])
+        self.isoline_selected_atoms: list = [-1] * 3
+        self.isoline_drawn_spheres: list = [-1] * 3
         self.isoline_border_is_visible = False
 
         # isoline setup border
@@ -348,6 +350,9 @@ class MOsDialog(Surface3DDialog):
         self.remove_isolines()
         self.remove_isoline_border()
         self.remove_isoline_axes()
+
+        # select the x axis as default for the normal vector for the isoline borders
+        self.ui.xAxisCheckBox.setChecked(True)
 
     def calculate_corners_of_box(self) -> np.ndarray:
         """Calculate the corners of the cube."""
