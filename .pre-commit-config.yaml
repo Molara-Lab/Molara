@@ -8,7 +8,7 @@ ci:
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.4
+    rev: v0.8.0
     hooks:
       - id: ruff
         args: [--fix]
@@ -50,7 +50,7 @@ repos:
       - id: double-quote-cython-strings
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.42.0
+    rev: v0.43.0
     hooks:
       - id: markdownlint
         # MD013: line too long
