@@ -87,6 +87,7 @@ class MOsDialog(Surface3DDialog):
         self.ui.colorPlusButton.clicked.connect(self.show_color_dialog_1)
         self.ui.colorMinusButton.clicked.connect(self.show_color_dialog_2)
         self.ui.recalculateOrbitalButton.clicked.connect(self.recalculate_orbital)
+        self.ui.isoTab.currentChanged.connect(self.update_selected_atoms)
 
         self.surface_toggle_button = self.ui.displayMos
         self.surface_text = "Orbital"
@@ -97,8 +98,7 @@ class MOsDialog(Surface3DDialog):
         self.isoline_border_normal_group.addButton(self.ui.xAxisCheckBox, id=1)
         self.isoline_border_normal_group.addButton(self.ui.yAxisCheckBox, id=2)
         self.isoline_border_normal_group.addButton(self.ui.zAxisCheckBox, id=3)
-        self.isoline_border_normal_group.addButton(self.ui.customAxisCheckBox, id=4)
-        self.isoline_border_normal_group.addButton(self.ui.selectAtomsCheckBox, id=5)
+        self.isoline_border_normal_group.addButton(self.ui.selectAtomsCheckBox, id=4)
         self.isoline_border_rot_trans_scale_group = QButtonGroup()
         self.ui.scaleCheckBox.setChecked(True)
         self.isoline_border_rot_trans_scale_group.addButton(self.ui.scaleCheckBox, id=1)
@@ -106,6 +106,7 @@ class MOsDialog(Surface3DDialog):
         self.isoline_border_rot_trans_scale_group.addButton(self.ui.translateCheckBox, id=3)
 
         # isoline ui connections
+        self.isoline_border_normal_group.buttonClicked.connect(self.change_isoline_border_normal_selection)
         self.isoline_border_rot_trans_scale_group.buttonClicked.connect(self.change_isoline_border_transformation)
         self.ui.displayIsolinesButton.clicked.connect(self.toggle_isolines)
         self.ui.numberLinesSpinBox.valueChanged.connect(self.change_number_of_lines)
@@ -202,8 +203,11 @@ class MOsDialog(Surface3DDialog):
         # Set the box size and draw the box
         self.calculate_minimum_box_size()
 
-        # isolines initialization
+        # isolines initialization´
+        isoline_tab = 1
         self.change_isoline_border_transformation()
+        if self.ui.isoTab.currentIndex() == isoline_tab:
+            self.draw_isoline_selected_atoms()
 
         self.show()
 
@@ -353,6 +357,9 @@ class MOsDialog(Surface3DDialog):
 
         # select the x axis as default for the normal vector for the isoline borders
         self.ui.xAxisCheckBox.setChecked(True)
+        self.remove_isoline_selected_atoms()
+
+
 
     def calculate_corners_of_box(self) -> np.ndarray:
         """Calculate the corners of the cube."""
@@ -861,8 +868,7 @@ class MOsDialog(Surface3DDialog):
         x_axis = 1
         y_axis = 2
         z_axis = 3
-        custom_axis = 4
-        atoms_plane = 5
+        custom_atom_selection = 4
 
         if self.isoline_border_normal_group.checkedId() == x_axis:
             self.set_isoline_border_parameters_from_normal(np.array([1, 0, 0], dtype=np.float64))
@@ -870,9 +876,46 @@ class MOsDialog(Surface3DDialog):
             self.set_isoline_border_parameters_from_normal(np.array([0, 1, 0], dtype=np.float64))
         elif self.isoline_border_normal_group.checkedId() == z_axis:
             self.set_isoline_border_parameters_from_normal(np.array([0, 0, 1], dtype=np.float64))
+        elif self.isoline_border_normal_group.checkedId() == custom_atom_selection:
+            self.change_isoline_border_normal_selection()
+            if -1 not in self.isoline_selected_atoms:
+                self.set_isoline_border_parameters_from_atoms_plane()
         else:
             return
         self.update_isolines(were_visible)
+
+    def set_isoline_border_parameters_from_atoms_plane(self) -> None:
+        """Calculate the normal of the isoline border plane from the selected atoms and set the parameters."""
+        atom1 = self.parent().structure_widget.structures[0].atoms[self.isoline_selected_atoms[0]]
+        atom2 = self.parent().structure_widget.structures[0].atoms[self.isoline_selected_atoms[1]]
+        atom3 = self.parent().structure_widget.structures[0].atoms[self.isoline_selected_atoms[2]]
+        self.isoline_border_center = (atom1.position + atom2.position + atom3.position) / 3
+        normal = np.cross(atom2.position - atom1.position, atom3.position - atom1.position)
+
+        # check if selected atoms lie in the same line
+        if np.linalg.norm(normal) == 0:
+            normal = np.cross(atom2.position - atom1.position, np.array([0, 0, 1], dtype=np.float64))
+        if np.linalg.norm(normal) == 0:
+            normal = np.cross(atom2.position - atom1.position, np.array([0, 1, 0], dtype=np.float64))
+
+        normal /= np.linalg.norm(normal)
+        self.set_isoline_border_parameters_from_normal(normal)
+
+    def change_isoline_border_normal_selection(self) -> None:
+        """Check if the custom atom selection option is checked and set the border parameters accordingly."""
+
+        custom_atoms_selection = 4
+        if self.isoline_border_normal_group.checkedId() == custom_atoms_selection:
+            if -1 in self.isoline_selected_atoms:
+                self.set_isoline_reset_button_text("Select 3 Atoms")
+            else:
+                self.set_isoline_reset_button_text("Reset Plane")
+        else:
+            self.set_isoline_reset_button_text("Reset Plane")
+
+    def set_isoline_reset_button_text(self, text: str) -> None:
+        """Set the text of the reset button."""
+        self.ui.resetButton.setText(text)
 
     def transform_isoline_border_red(self) -> None:
         """Transform the isoline border with the red axis. This wraps different cases."""
@@ -995,6 +1038,30 @@ class MOsDialog(Surface3DDialog):
         rotation_matrix = create_from_axis_rotation(axis, value)
         self.isoline_border_direction = np.dot(self.isoline_border_direction, rotation_matrix)
         self.update_isolines(were_visible)
+
+    def remove_isoline_selected_atoms(self) -> None:
+        """Remove the visualization of the selected atoms."""
+        for sphere_index in self.isoline_drawn_spheres:
+            self.parent().structure_widget.renderer.remove_sphere(sphere_index)
+        self.isoline_drawn_spheres = [-1] * 3
+        self.parent().structure_widget.update()
+
+    def draw_isoline_selected_atoms(self) -> None:
+        """Draw the selected atoms."""
+        for i, atom_index in enumerate(self.isoline_selected_atoms):
+            if atom_index != -1:
+                self.isoline_drawn_spheres[i] = self.parent().structure_widget.draw_selected_atom(atom_index, i)
+        self.parent().structure_widget.update()
+
+    def update_selected_atoms(self) -> None:
+        """Switch to the orbital tab."""
+        orbital_tab = 0
+        isoline_tab = 1
+        if self.ui.isoTab.currentIndex() == orbital_tab:
+            self.remove_isoline_selected_atoms()
+
+        if self.ui.isoTab.currentIndex() == isoline_tab:
+            self.draw_isoline_selected_atoms()
 
     def set_isoline_border_parameters_from_normal(
         self,

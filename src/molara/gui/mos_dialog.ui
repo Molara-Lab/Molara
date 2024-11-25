@@ -600,24 +600,11 @@
         <string>Reset Plane</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="customAxisCheckBox">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>40</y>
-         <width>110</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Custom Axis</string>
-       </property>
-      </widget>
       <widget class="QCheckBox" name="selectAtomsCheckBox">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>60</y>
+         <y>50</y>
          <width>140</width>
          <height>20</height>
         </rect>
