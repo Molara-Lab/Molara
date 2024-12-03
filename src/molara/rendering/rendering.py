@@ -83,7 +83,7 @@ class Renderer:
         self.shaders = shaders
 
     @staticmethod
-    def draw_object(
+    def draw_object(  # noqa: PLR0913
         n_instances: int,
         mesh: Cylinder | Sphere | None,
         vertices: np.ndarray | None,

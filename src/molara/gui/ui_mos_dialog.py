@@ -302,4 +302,3 @@ class Ui_MOs_dialog(object):
         self.displayAxesButton.setText(QCoreApplication.translate("MOs_dialog", u"Display Axes", None))
         self.isoTab.setTabText(self.isoTab.indexOf(self.isolineTab), QCoreApplication.translate("MOs_dialog", u"Isolines", None))
     # retranslateUi
-

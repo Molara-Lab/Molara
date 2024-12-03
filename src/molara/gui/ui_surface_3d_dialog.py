@@ -69,4 +69,3 @@ class Ui_Surface3D_dialog(object):
         self.label.setText(QCoreApplication.translate("Surface3D_dialog", u"Isovalue:", None))
         self.checkBoxWireMesh.setText(QCoreApplication.translate("Surface3D_dialog", u"Wire Mesh", None))
     # retranslateUi
-

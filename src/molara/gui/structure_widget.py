@@ -292,7 +292,10 @@ class StructureWidget(QOpenGLWidget):
                     self.update_selected_atoms(MEASUREMENT, event)
                 if self.main_window.builder_dialog.isVisible():
                     self.update_selected_atoms(BUILDER, event)
-                if self.main_window.mo_dialog.isVisible() and self.main_window.mo_dialog.ui.isoTab.currentIndex() == iso_lines_tab:
+                if (
+                    self.main_window.mo_dialog.isVisible()
+                    and self.main_window.mo_dialog.ui.isoTab.currentIndex() == iso_lines_tab
+                ):
                     self.update_selected_atoms(ORBITALS, event)
                 return
 
@@ -509,14 +512,21 @@ class StructureWidget(QOpenGLWidget):
         drawn_spheres_list[id_in_selection] = self.draw_selected_atom(sphere_id, id_in_selection)
 
     def draw_selected_atom(self, atom_id: int, selected_id: int) -> int:
-        """Draws a mesh grid sphere at the location of the selected atom
+        """Draw a mesh grid sphere at the location of the selected atom.
 
-        :param atom_id: id of the atom that is selected"""
+        :param atom_id: id of the atom that is selected
+        """
         sphere_position = np.array([self.structures[0].atoms[atom_id].position], dtype=np.float32)
         sphere_color = np.array(self.highlighted_atoms_colors[selected_id], dtype=np.float32)
         subdivisions = 25
-        radius = self.structures[0].drawer.atom_scales[atom_id, 0] + 0.05
-        return self.renderer.draw_spheres(sphere_position, np.array([radius], dtype=np.float32), sphere_color, subdivisions, wire_mesh=True)
+        radius = self.structures[0].drawer.atom_scales[atom_id][0] + 0.05
+        return self.renderer.draw_spheres(
+            sphere_position,
+            np.array([radius], dtype=np.float32),
+            sphere_color,
+            subdivisions,
+            wire_mesh=True,
+        )
 
     def exec_unselect_sphere(self, sphere_id: int, selected_spheres_list: list, drawn_spheres_list: list) -> None:
         """Unselect a sphere, change its color, update the selected spheres list.

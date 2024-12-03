@@ -203,7 +203,7 @@ class MOsDialog(Surface3DDialog):
         # Set the box size and draw the box
         self.calculate_minimum_box_size()
 
-        # isolines initialization´
+        # isolines initialization
         isoline_tab = 1
         self.change_isoline_border_transformation()
         if self.ui.isoTab.currentIndex() == isoline_tab:
@@ -359,8 +359,6 @@ class MOsDialog(Surface3DDialog):
         self.ui.xAxisCheckBox.setChecked(True)
         self.remove_isoline_selected_atoms()
 
-
-
     def calculate_corners_of_box(self) -> np.ndarray:
         """Calculate the corners of the cube."""
         origin = self.origin
@@ -458,10 +456,11 @@ class MOsDialog(Surface3DDialog):
 
         Using a minimal value of 0.05 and a maximal value of 0.35 for the voxel size, a resolution between 1 and 0 is
         mapped to this range.
-        :return: scaled value for the voxel size"""
+        :return: scaled value for the voxel size
+        """
         voxel_size_min = 0.05
         voxel_size_max = 0.35
-        a = (voxel_size_min - voxel_size_max)
+        a = voxel_size_min - voxel_size_max
         b = voxel_size_max
 
         return a * self.ui.resolutionSpinBox.value() + b
@@ -648,10 +647,11 @@ class MOsDialog(Surface3DDialog):
 
         Using a minimal value of 0.03 and a maximal value of 0.43 for the voxel size, a resolution between 1 and 0 is
         mapped to this range.
-        :return: scaled value for the voxel size"""
+        :return: scaled value for the voxel size
+        """
         voxel_size_min = 0.03
         voxel_size_max = 0.43
-        a = (voxel_size_min - voxel_size_max)
+        a = voxel_size_min - voxel_size_max
         b = voxel_size_max
 
         return a * self.ui.isolineResolutionSpinBox.value() + b
@@ -903,7 +903,6 @@ class MOsDialog(Surface3DDialog):
 
     def change_isoline_border_normal_selection(self) -> None:
         """Check if the custom atom selection option is checked and set the border parameters accordingly."""
-
         custom_atoms_selection = 4
         if self.isoline_border_normal_group.checkedId() == custom_atoms_selection:
             if -1 in self.isoline_selected_atoms:
