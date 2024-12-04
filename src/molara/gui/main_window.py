@@ -131,10 +131,6 @@ class MainWindow(QMainWindow):
         """Check if molecular orbitals have been loaded and perform actions accordingly."""
         self.mo_dialog.initialize_dialog()
 
-    def show_isoline_dialog(self) -> None:
-        """Check if molecular orbitals have been loaded and perform actions accordingly."""
-        self.isoline_dialog.initialize_dialog()
-
     def show_surface_3d_dialog(self) -> None:
         """Check if cube file has been loaded and perform actions accordingly."""
         self.surface_3d_dialog.initialize_dialog()

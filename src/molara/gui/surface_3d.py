@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -125,6 +126,7 @@ class Surface3DDialog(QDialog):
         else:
             self.set_surfaces_hidden()
 
+    @abstractmethod
     def update_voxel_grid(self) -> None:
         """Update the voxel grid, to be implemented in the child classes."""
 
