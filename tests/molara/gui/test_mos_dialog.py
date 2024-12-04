@@ -74,6 +74,9 @@ class WorkaroundTestMOsDialog:
         self._test_isoline_border_drawing()
         self._test_change_isoline_resolution()
         self._test_toggle_isolines()
+        self._test_draw_isoline_border_axes()
+        self._test_update_selected_atoms()
+        self._test_isoline_transformation()
 
     def _test_mo_initialization(self) -> None:
         """Test the initialization of the Molecularorbital class."""
@@ -208,3 +211,109 @@ class WorkaroundTestMOsDialog:
         self.mo_dialog.toggle_isolines()
         assert self.mo_dialog.isolines_are_visible
         assert self.mo_dialog.ui.displayIsolinesButton.text() == "Hide Isolines"
+        self.mo_dialog.toggle_isolines()
+        assert not self.mo_dialog.isolines_are_visible
+        assert self.mo_dialog.ui.displayIsolinesButton.text() == "Display Isolines"
+
+    def _test_draw_isoline_border_axes(self) -> None:
+        """Draw isoline border axes."""
+        assert not self.mo_dialog.isoline_axes_visible
+        assert self.mo_dialog.ui.displayAxesButton.text() == "Display Axes"
+        self.mo_dialog.toggle_isoline_axes()
+        assert not self.mo_dialog.isoline_axes_visible
+        assert self.mo_dialog.ui.displayAxesButton.text() == "Display Axes"
+        self.mo_dialog.toggle_isoline_border()
+        self.mo_dialog.toggle_isoline_axes()
+        assert self.mo_dialog.isoline_axes_visible
+        assert self.mo_dialog.ui.displayAxesButton.text() == "Hide Axes"
+        self.mo_dialog.toggle_isoline_axes()
+        assert not self.mo_dialog.isoline_axes_visible
+        assert self.mo_dialog.ui.displayAxesButton.text() == "Display Axes"
+        assert self.mo_dialog.isoline_axes_cylinders == -1
+        assert self.mo_dialog.isoline_axes_spheres == -1
+
+    def _test_update_selected_atoms(self) -> None:
+        """Test the update_selected_atoms method."""
+        self.mo_dialog.update_selected_atoms()
+        self.mo_dialog.ui.isoTab.setCurrentIndex(1)
+        self.mo_dialog.update_selected_atoms()
+
+    def _test_isoline_transformation(self) -> None:  # noqa: PLR0915
+        """Test the isoline transformation."""
+        scale = 1
+        rot = 2
+        trans = 3
+
+        max_rot = 180
+        max_trans = 100
+        max_scale = 100
+        min_scale = 0.1
+        min_trans = -100
+
+        red_rot = 11
+        green_rot = -1.2
+        blue_rot = 130
+
+        # scaling
+        self.mo_dialog.ui.isoTab.setCurrentIndex(1)
+        assert self.mo_dialog.isoline_border_rot_trans_scale_group.checkedId() == scale
+        self.mo_dialog.ui.redSpinBox.setValue(1.1)
+        self.mo_dialog.ui.greenSpinBox.setValue(1.2)
+        self.mo_dialog.change_isoline_border_transformation()
+        assert self.mo_dialog.ui.redSpinBox.maximum() == max_scale
+        assert self.mo_dialog.ui.redSpinBox.minimum() == min_scale
+        assert self.mo_dialog.ui.greenSpinBox.maximum() == max_scale
+        assert self.mo_dialog.ui.greenSpinBox.minimum() == min_scale
+        assert not self.mo_dialog.ui.blueSpinBox.isEnabled()
+        self.mo_dialog.transform_isoline_border_red()
+        self.mo_dialog.transform_isoline_border_green()
+
+        # rotating
+        self.mo_dialog.ui.rotateCheckBox.setChecked(True)
+        assert self.mo_dialog.isoline_border_rot_trans_scale_group.checkedId() == rot
+        self.mo_dialog.change_isoline_border_transformation()
+        assert self.mo_dialog.ui.redSpinBox.value() == 0.0
+        assert self.mo_dialog.ui.greenSpinBox.value() == 0.0
+        assert self.mo_dialog.ui.blueSpinBox.value() == 0.0
+        self.mo_dialog.ui.redSpinBox.setValue(red_rot)
+        self.mo_dialog.ui.greenSpinBox.setValue(green_rot)
+        self.mo_dialog.ui.blueSpinBox.setValue(blue_rot)
+        self.mo_dialog.change_isoline_border_transformation()
+        assert self.mo_dialog.ui.redSpinBox.maximum() == max_rot
+        assert self.mo_dialog.ui.redSpinBox.minimum() == -max_rot
+        assert self.mo_dialog.ui.greenSpinBox.maximum() == max_rot
+        assert self.mo_dialog.ui.greenSpinBox.minimum() == -max_rot
+        assert self.mo_dialog.ui.blueSpinBox.maximum() == max_rot
+        assert self.mo_dialog.ui.blueSpinBox.minimum() == -max_rot
+        self.mo_dialog.transform_isoline_border_green()
+        self.mo_dialog.transform_isoline_border_red()
+        self.mo_dialog.transform_isoline_border_blue()
+
+        # translating
+        self.mo_dialog.ui.translateCheckBox.setChecked(True)
+        assert self.mo_dialog.isoline_border_rot_trans_scale_group.checkedId() == trans
+        self.mo_dialog.change_isoline_border_transformation()
+        assert self.mo_dialog.ui.redSpinBox.value() == 0.0
+        assert self.mo_dialog.ui.greenSpinBox.value() == 0.0
+        assert self.mo_dialog.ui.blueSpinBox.value() == 0.0
+        self.mo_dialog.ui.redSpinBox.setValue(0.5)
+        self.mo_dialog.ui.greenSpinBox.setValue(-1.2)
+        self.mo_dialog.ui.blueSpinBox.setValue(0.3)
+        self.mo_dialog.change_isoline_border_transformation()
+        assert self.mo_dialog.ui.redSpinBox.maximum() == max_trans
+        assert self.mo_dialog.ui.redSpinBox.minimum() == min_trans
+        assert self.mo_dialog.ui.greenSpinBox.maximum() == max_trans
+        assert self.mo_dialog.ui.greenSpinBox.minimum() == min_trans
+        assert self.mo_dialog.ui.blueSpinBox.maximum() == max_trans
+        assert self.mo_dialog.ui.blueSpinBox.minimum() == min_trans
+        self.mo_dialog.transform_isoline_border_green()
+        self.mo_dialog.transform_isoline_border_red()
+        self.mo_dialog.transform_isoline_border_blue()
+
+        # check if old values were saved
+        self.mo_dialog.ui.rotateCheckBox.setChecked(True)
+        assert self.mo_dialog.isoline_border_rot_trans_scale_group.checkedId() == rot
+        self.mo_dialog.change_isoline_border_transformation()
+        assert self.mo_dialog.ui.redSpinBox.value() == red_rot
+        assert self.mo_dialog.ui.greenSpinBox.value() == green_rot
+        assert self.mo_dialog.ui.blueSpinBox.value() == blue_rot
