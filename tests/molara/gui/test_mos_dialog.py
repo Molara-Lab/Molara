@@ -68,6 +68,12 @@ class WorkaroundTestMOsDialog:
 
         # restricted case
         self._test_restricted_case()
+        self._test_recalculate_orbital()
+
+        # test isolines
+        self._test_isoline_border_drawing()
+        self._test_change_isoline_resolution()
+        self._test_toggle_isolines()
 
     def _test_mo_initialization(self) -> None:
         """Test the initialization of the Molecularorbital class."""
@@ -165,3 +171,40 @@ class WorkaroundTestMOsDialog:
         """Test the color selection."""
         self.mo_dialog.change_color_surface_1()
         self.mo_dialog.change_color_surface_2()
+
+    def _test_recalculate_orbital(self) -> None:
+        """Test the recalculation of the orbital."""
+        self.mo_dialog.ui.orbitalSelector.setCurrentCell(5, 0)
+        self.mo_dialog.select_row()
+        assert self.mo_dialog.voxel_grid_parameters_changed
+        self.mo_dialog.recalculate_orbital()
+        assert not self.mo_dialog.voxel_grid_parameters_changed
+
+    def _test_isoline_border_drawing(self) -> None:
+        """Test the drawing of the isoline border."""
+        assert not self.mo_dialog.isoline_border_is_visible
+        assert self.mo_dialog.ui.displayIsolineBorderButton.text() == "Display Border"
+        self.mo_dialog.toggle_isoline_border()
+        assert self.mo_dialog.isoline_border_is_visible
+        assert self.mo_dialog.ui.displayIsolineBorderButton.text() == "Hide Border"
+        assert self.mo_dialog.isoline_border_cylinders != -1
+        assert self.mo_dialog.isoline_border_spheres != -1
+        self.mo_dialog.toggle_isoline_border()
+        assert not self.mo_dialog.isoline_border_is_visible
+        assert self.mo_dialog.ui.displayIsolineBorderButton.text() == "Display Border"
+        assert self.mo_dialog.isoline_border_cylinders == -1
+        assert self.mo_dialog.isoline_border_spheres == -1
+
+    def _test_change_isoline_resolution(self) -> None:
+        """Test changing the isoline resolution."""
+        self.mo_dialog.ui.isolineResolutionSpinBox.setValue(0.51)
+        self.mo_dialog.change_isoline_resolution()
+        assert self.mo_dialog.isoline_grid_parameters_changed
+
+    def _test_toggle_isolines(self) -> None:
+        """Enable and disable isolines."""
+        assert not self.mo_dialog.isolines_are_visible
+        assert self.mo_dialog.ui.displayIsolinesButton.text() == "Display Isolines"
+        self.mo_dialog.toggle_isolines()
+        assert self.mo_dialog.isolines_are_visible
+        assert self.mo_dialog.ui.displayIsolinesButton.text() == "Hide Isolines"
