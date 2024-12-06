@@ -10,6 +10,18 @@
     <height>414</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>384</width>
+    <height>414</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>384</width>
+    <height>414</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Orbitals</string>
   </property>
@@ -21,6 +33,18 @@
      <width>211</width>
      <height>291</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>211</width>
+     <height>291</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>211</width>
+     <height>291</height>
+    </size>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -145,6 +169,18 @@
      <height>120</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>211</width>
+     <height>120</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>211</width>
+     <height>120</height>
+    </size>
+   </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
    </property>
@@ -172,6 +208,21 @@
       <width>65</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>65</width>
+      <height>22</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>65</width>
+      <height>22</height>
+     </size>
+    </property>
+    <property name="locale">
+     <locale language="English" country="UnitedStates"/>
     </property>
     <property name="decimals">
      <number>2</number>
@@ -264,6 +315,18 @@
      <height>410</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>171</width>
+     <height>410</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>171</width>
+     <height>410</height>
+    </size>
+   </property>
    <property name="currentIndex">
     <number>0</number>
    </property>
@@ -279,6 +342,18 @@
        <width>161</width>
        <height>240</height>
       </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>161</width>
+       <height>240</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>161</width>
+       <height>240</height>
+      </size>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -307,6 +382,21 @@
         <width>65</width>
         <height>22</height>
        </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
       </property>
       <property name="decimals">
        <number>1</number>
@@ -378,6 +468,21 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
+      </property>
       <property name="decimals">
        <number>4</number>
       </property>
@@ -429,6 +534,21 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
+      </property>
       <property name="decimals">
        <number>2</number>
       </property>
@@ -473,6 +593,18 @@
        <height>380</height>
       </rect>
      </property>
+     <property name="minimumSize">
+      <size>
+       <width>161</width>
+       <height>380</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>161</width>
+       <height>380</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -487,6 +619,18 @@
         <width>45</width>
         <height>22</height>
        </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>45</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>45</width>
+        <height>22</height>
+       </size>
       </property>
       <property name="minimum">
        <number>3</number>
@@ -546,6 +690,21 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>65</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
+      </property>
       <property name="minimum">
        <double>0.000000000000000</double>
       </property>
@@ -580,6 +739,18 @@
         <width>161</width>
         <height>111</height>
        </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>161</width>
+        <height>111</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>161</width>
+        <height>111</height>
+       </size>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -675,6 +846,18 @@
         <height>140</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>161</width>
+        <height>140</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>161</width>
+        <height>140</height>
+       </size>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -735,6 +918,21 @@
          <height>22</height>
         </rect>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>53</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>53</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="locale">
+        <locale language="English" country="UnitedStates"/>
+       </property>
        <property name="minimum">
         <double>-180.000000000000000</double>
        </property>
@@ -783,6 +981,21 @@
          <height>22</height>
         </rect>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>53</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>53</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="locale">
+        <locale language="English" country="UnitedStates"/>
+       </property>
        <property name="minimum">
         <double>-180.000000000000000</double>
        </property>
@@ -798,6 +1011,21 @@
          <width>53</width>
          <height>22</height>
         </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>53</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>53</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="locale">
+        <locale language="English" country="UnitedStates"/>
        </property>
        <property name="minimum">
         <double>-180.000000000000000</double>

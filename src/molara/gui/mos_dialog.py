@@ -1041,7 +1041,8 @@ class MOsDialog(Surface3DDialog):
     def remove_isoline_selected_atoms(self) -> None:
         """Remove the visualization of the selected atoms."""
         for sphere_index in self.isoline_drawn_spheres:
-            self.parent().structure_widget.renderer.remove_sphere(sphere_index)
+            if sphere_index != -1:
+                self.parent().structure_widget.renderer.remove_sphere(sphere_index)
         self.isoline_drawn_spheres = [-1] * 3
         self.parent().structure_widget.update()
 
