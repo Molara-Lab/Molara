@@ -969,7 +969,7 @@ class MOsDialog(Surface3DDialog):
             self.isoline_translation_values[0] = self.ui.redSpinBox.value()
 
     def transform_isoline_border_green(self) -> None:
-        """Transform the isoline border with the red axis. This wraps different cases."""
+        """Transform the isoline border with the green axis. This wraps different cases."""
         rotate = 2
         translate = 3
         scale = 1
@@ -1000,7 +1000,7 @@ class MOsDialog(Surface3DDialog):
             self.isoline_translation_values[1] = self.ui.greenSpinBox.value()
 
     def transform_isoline_border_blue(self) -> None:
-        """Transform the isoline border with the red axis. This wraps different cases."""
+        """Transform the isoline border with the blue axis. This wraps different cases."""
         # No scale, because it is disabled for the blue axis
         rotate = 2
         translate = 3
@@ -1096,8 +1096,7 @@ class MOsDialog(Surface3DDialog):
         y_axis = np.array([0, 1, 0], dtype=np.float64)
         z_axis = np.array([0, 0, 1], dtype=np.float64)
 
-        zero_approx = 1.0e-14
-        if np.linalg.norm(normal) - 1 > zero_approx:
+        if np.abs(np.linalg.norm(normal) - 1) > np.finfo(float).eps:
             msg = "The normal must be normalized!"
             raise ValueError(msg)
 

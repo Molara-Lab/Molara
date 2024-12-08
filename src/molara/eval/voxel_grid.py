@@ -71,7 +71,7 @@ class VoxelGrid3D(VoxelGrid):
 
         :param grid: 3D array representing the voxel grid (i_voxel_number, j_voxel_number, k_voxel_number)
         :param origin: 1D array of length 3 representing the origin of the grid
-        :param voxel_size: 2D array of length representing the voxel size for each cartesian direction
+        :param voxel_size: 2D array of length representing the voxel size for each cartesian direction shape = (3,3)
         """
         number_of_cartesian_directions = 3
         if grid.ndim != number_of_cartesian_directions:
@@ -83,7 +83,7 @@ class VoxelGrid3D(VoxelGrid):
         if voxel_size.shape != (number_of_cartesian_directions, number_of_cartesian_directions):
             msg = "The voxel size must have three dimensions"
             raise ValueError(msg)
-        if not np.any(voxel_size > 0):
+        if not np.all(voxel_size >= 0):
             msg = "The voxel size must be positive"
             raise ValueError(msg)
         super().set_grid(grid, origin, voxel_size)
@@ -106,7 +106,7 @@ class VoxelGrid2D(VoxelGrid):
 
         :param grid: 2D array representing the voxel grid (i_voxel_number, j_voxel_number)
         :param origin: 1D array of length 3 representing the origin of the grid
-        :param voxel_size: 2D array of length representing the voxel size for each cartesian direction
+        :param voxel_size: 2D array of length representing the voxel size for the two cartesian directions shape = (2,3)
         """
         number_of_cartesian_directions = 3
         number_of_grid_dimensions = 2
@@ -119,7 +119,7 @@ class VoxelGrid2D(VoxelGrid):
         if voxel_size.shape != (number_of_grid_dimensions, number_of_cartesian_directions):
             msg = "The voxel size must have three dimensions"
             raise ValueError(msg)
-        if not np.any(voxel_size > 0):
+        if not np.all(voxel_size >= 0):
             msg = "The voxel size must be positive"
             raise ValueError(msg)
 
