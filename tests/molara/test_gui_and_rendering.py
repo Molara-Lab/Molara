@@ -13,6 +13,7 @@ from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
 from gui.test_mos_dialog import WorkaroundTestMOsDialog
+from gui.test_normalization_dialog import WorkaroundTestNormalizationDialog
 from gui.test_structure_widget import WorkaroundTestStructureWidget
 from rendering.test_buffers import WorkaroundTestBuffers
 from rendering.test_rendering import WorkaroundTestRenderer
@@ -50,6 +51,12 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
         main_window_tests.window,
     )
     workaround_test_mos_dialog.run_tests()
+
+    workaround_test_normalization_dialog = WorkaroundTestNormalizationDialog(
+        qtbot,
+        main_window_tests.window,
+    )
+    workaround_test_normalization_dialog.run_tests()
 
     workaround_test_cube_file_dialog = WorkaroundTestCubeFileDialog(
         qtbot,

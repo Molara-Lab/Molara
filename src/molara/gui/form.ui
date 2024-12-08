@@ -86,6 +86,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionMeasure"/>
+    <addaction name="actionCheck_Normalization"/>
     <addaction name="actionDisplay_MOs"/>
     <addaction name="actionDisplay_3D_Surface"/>
     <addaction name="actionBuilder"/>
@@ -236,12 +237,22 @@
     <string>Display 3D Surface</string>
    </property>
   </action>
+  <action name="actionDisplay_Isolines">
+   <property name="text">
+    <string>Display Isolines</string>
+   </property>
+  </action>
+  <action name="actionCheck_Normalization">
+   <property name="text">
+    <string>Check Normalization</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>StructureWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">molara/Gui/structure_widget</header>
+   <header location="global">molara/gui/structure_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

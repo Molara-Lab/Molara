@@ -14,6 +14,7 @@ from molara.gui.crystal_dialog import CrystalDialog
 from molara.gui.export_image_dialog import ExportImageDialog
 from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.mos_dialog import MOsDialog
+from molara.gui.normalization_dialog import NormalizationDialog
 from molara.gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.gui.supercell_dialog import SupercellDialog
 from molara.gui.surface_3d_dialog import CubeFileDialog
@@ -57,6 +58,7 @@ class MainWindow(QMainWindow):
         self.builder_dialog = BuilderDialog(self)
         self.supercell_dialog = SupercellDialog(self)
         self.structure_customizer_dialog = StructureCustomizerDialog(self)
+        self.normalization_dialog = NormalizationDialog(self)
         self.mo_dialog = MOsDialog(self)
         self.surface_3d_dialog = CubeFileDialog(self)
         self.mols = Molecules()
@@ -98,25 +100,23 @@ class MainWindow(QMainWindow):
         self.ui.actionOpen_Structure_Customizer.triggered.connect(
             self.show_structure_customizer_dialog,
         )
+
         # tools
-        self.ui.actionBuilder.triggered.connect(
-            self.show_builder_dialog,
-        )
-        self.ui.actionMeasure.triggered.connect(
-            self.show_measurement_dialog,
-        )
-        self.ui.actionDisplay_MOs.triggered.connect(
-            self.show_mo_dialog,
-        )
-        self.ui.actionDisplay_3D_Surface.triggered.connect(
-            self.show_surface_3d_dialog,
-        )
+        self.ui.actionBuilder.triggered.connect(self.show_builder_dialog)
+        self.ui.actionMeasure.triggered.connect(self.show_measurement_dialog)
+        self.ui.actionDisplay_MOs.triggered.connect(self.show_mo_dialog)
+        self.ui.actionDisplay_3D_Surface.triggered.connect(self.show_surface_3d_dialog)
+        self.ui.actionCheck_Normalization.triggered.connect(self.show_normalization_dialog)
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
         self.update_action_texts()
+
+    def show_normalization_dialog(self) -> None:
+        """Show the normalization dialog."""
+        self.normalization_dialog.initialize_dialog()
 
     def show_mo_dialog(self) -> None:
         """Check if molecular orbitals have been loaded and perform actions accordingly."""

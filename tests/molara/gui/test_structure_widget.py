@@ -128,45 +128,32 @@ class WorkaroundTestStructureWidget:
         structure_widget.update_selected_atoms(MEASUREMENT, event)
 
         measurement_selected_spheres = structure_widget.measurement_selected_spheres
+        measurement_drawn_spheres = structure_widget.measurement_drawn_spheres
         structure_widget.unselect_all_atoms()
         for sphere_id in measurement_selected_spheres:
             assert sphere_id == -1
         id1, id2, id3, id4 = 2, 1, 0, 3
-        structure_widget.exec_select_sphere(id1, measurement_selected_spheres)
+        structure_widget.exec_select_sphere(id1, measurement_selected_spheres, measurement_drawn_spheres)
         assert measurement_selected_spheres[0] == id1
-        assert_vectors_equal(
-            structure_widget.structures[0].drawer.atom_colors[id1],
-            structure_widget.new_sphere_colors[0],
-        )
-        structure_widget.exec_select_sphere(id2, measurement_selected_spheres)
+
+        structure_widget.exec_select_sphere(id2, measurement_selected_spheres, measurement_drawn_spheres)
         assert measurement_selected_spheres[1] == id2
-        assert_vectors_equal(
-            structure_widget.structures[0].drawer.atom_colors[id2],
-            structure_widget.new_sphere_colors[1],
-        )
-        structure_widget.exec_select_sphere(id3, measurement_selected_spheres)
+
+        structure_widget.exec_select_sphere(id3, measurement_selected_spheres, measurement_drawn_spheres)
         assert measurement_selected_spheres[2] == id3
-        assert_vectors_equal(
-            structure_widget.structures[0].drawer.atom_colors[id3],
-            structure_widget.new_sphere_colors[2],
-        )
-        structure_widget.exec_select_sphere(id4, measurement_selected_spheres)
-        assert measurement_selected_spheres[3] == id4
-        assert_vectors_equal(
-            structure_widget.structures[0].drawer.atom_colors[id4],
-            structure_widget.new_sphere_colors[3],
-        )
+
+        structure_widget.exec_select_sphere(id4, measurement_selected_spheres, measurement_drawn_spheres)
 
         assert_array_equal(measurement_selected_spheres, [id1, id2, id3, id4])
-        structure_widget.exec_unselect_sphere(-1, measurement_selected_spheres)
+        structure_widget.exec_unselect_sphere(-1, measurement_selected_spheres, measurement_drawn_spheres)
         assert_array_equal(measurement_selected_spheres, [id1, id2, id3, id4])
-        structure_widget.exec_unselect_sphere(id2, measurement_selected_spheres)
+        structure_widget.exec_unselect_sphere(id2, measurement_selected_spheres, measurement_drawn_spheres)
         assert_array_equal(measurement_selected_spheres, [id1, -1, id3, id4])
-        structure_widget.exec_unselect_sphere(id1, measurement_selected_spheres)
+        structure_widget.exec_unselect_sphere(id1, measurement_selected_spheres, measurement_drawn_spheres)
         assert_array_equal(measurement_selected_spheres, [-1, -1, id3, id4])
-        structure_widget.exec_unselect_sphere(id3, measurement_selected_spheres)
+        structure_widget.exec_unselect_sphere(id3, measurement_selected_spheres, measurement_drawn_spheres)
         assert_array_equal(measurement_selected_spheres, [-1, -1, -1, id4])
-        structure_widget.exec_unselect_sphere(id4, measurement_selected_spheres)
+        structure_widget.exec_unselect_sphere(id4, measurement_selected_spheres, measurement_drawn_spheres)
         assert_array_equal(measurement_selected_spheres, [-1, -1, -1, -1])
 
         # Test builder select sphere

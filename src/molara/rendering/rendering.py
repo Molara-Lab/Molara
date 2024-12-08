@@ -56,8 +56,8 @@ class Renderer:
 
     def __init__(self) -> None:
         """Create a Renderer object."""
-        self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": []}
-        self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": []}
+        self.atoms_vao: dict = {"vao": 0, "n_atoms": 0, "n_vertices": 0, "buffers": [], "wire_mesh": False}
+        self.bonds_vao: dict = {"vao": 0, "n_bonds": 0, "n_vertices": 0, "buffers": [], "wire_mesh": False}
         self.spheres: list[dict] = []
         self.aspect_ratio: float = 1.0
         self.cylinders: list[dict] = []
@@ -83,12 +83,13 @@ class Renderer:
         self.shaders = shaders
 
     @staticmethod
-    def draw_object(
+    def draw_object(  # noqa: PLR0913
         n_instances: int,
         mesh: Cylinder | Sphere | None,
         vertices: np.ndarray | None,
         model_matrices: np.ndarray,
         colors: np.ndarray,
+        wire_mesh: bool = False,
     ) -> dict:
         """Draws the object."""
         if isinstance(mesh, (Cylinder | Sphere)):
@@ -107,6 +108,7 @@ class Renderer:
             "n_instances": n_instances,
             "n_vertices": n_vertices,
             "buffers": [],
+            "wire_mesh": wire_mesh,
         }
         obj["vao"], obj["buffers"] = setup_vao(
             vertices,
@@ -232,11 +234,14 @@ class Renderer:
         _directions: list[list[floating]] = []
         _lengths: list[floating] = []
         _positions_middle: list[list[list[floating]]] = []
-        for pos12 in positions:
-            pos1, pos2 = pos12
-            _directions.append((pos2 - pos1).tolist())
-            _lengths.append(np.linalg.norm(pos2 - pos1))
-            _positions_middle.append((0.5 * (pos1 + pos2)).tolist())
+
+        pos1, pos2 = positions[:, 0], positions[:, 1]
+        lengths = np.linalg.norm(pos2 - pos1, axis=1)
+        valid = lengths > np.finfo(np.float32).eps
+        _directions = (pos2 - pos1)[valid].tolist()
+        _lengths = lengths[valid].tolist()
+        _positions_middle = (0.5 * (pos1 + pos2))[valid].tolist()
+
         positions_middle = np.array(_positions_middle)
         lengths = np.array(_lengths)
         directions = np.array(_directions) / lengths[:, None]
@@ -248,6 +253,7 @@ class Renderer:
         radii: np.ndarray,
         colors: np.ndarray,
         subdivisions: int,
+        wire_mesh: bool = False,
     ) -> int:
         """Draws one or multiple spheres.
 
@@ -264,6 +270,7 @@ class Renderer:
         :type colors: numpy.array of numpy.float32
         :param subdivisions: Number of subdivisions of the sphere.
         :type subdivisions: int
+        :param wire_mesh: If True, the sphere is drawn as wire mesh.
         :return: Returns the index of the sphere in the list of spheres.
         """
         n_instances = len(positions)
@@ -273,7 +280,7 @@ class Renderer:
             model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
             model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
 
-        sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors)
+        sphere = Renderer.draw_object(n_instances, sphere_mesh, None, model_matrices, colors, wire_mesh)
 
         return self.add_object_to_list(self.spheres, sphere)
 
@@ -460,6 +467,8 @@ class Renderer:
         def _draw(obj: dict, n_instances_key: str = "n_instances") -> None:
             if obj["vao"] == 0:
                 return
+            if obj["wire_mesh"]:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
             glBindVertexArray(obj["vao"])
             glDrawElementsInstanced(
                 GL_TRIANGLES,
@@ -468,6 +477,8 @@ class Renderer:
                 None,
                 obj[n_instances_key],
             )
+            if obj["wire_mesh"]:
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         # Draw atoms
         _draw(self.atoms_vao, "n_atoms")

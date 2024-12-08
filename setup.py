@@ -24,6 +24,7 @@ extensions = [
     "src/molara/eval/mos.pxd",
     "src/molara/eval/generate_voxel_grid.pyx",
     "src/molara/eval/marchingcubes.pyx",
+    "src/molara/eval/marchingsquares.pyx",
 ]
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -11,10 +12,10 @@ if TYPE_CHECKING:
 
     from molara.structure.molecule import Molecule
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QColorDialog, QDialog, QMainWindow
+from PySide6.QtWidgets import QColorDialog, QDialog, QMainWindow, QPushButton
 
 from molara.eval.marchingcubes import marching_cubes
-from molara.eval.voxel_grid import VoxelGrid
+from molara.eval.voxel_grid import VoxelGrid3D
 
 
 class Surface3DDialog(QDialog):
@@ -24,11 +25,16 @@ class Surface3DDialog(QDialog):
         """Initialize the class."""
         super().__init__(parent)
         self.molecule: None | Molecule = None
-        self.voxel_grid: VoxelGrid = VoxelGrid()
+        self.voxel_grid: VoxelGrid3D = VoxelGrid3D()
         self.iso_value = 0.0
         self.drawn_surfaces = [-1, -1]
         self.vertices_1: np.ndarray = np.array([])
         self.vertices_2: np.ndarray = np.array([])
+        self.surfaces_are_visible = False
+        self.surface_toggle_button: QPushButton = QPushButton()
+        self.surface_text = "surface"
+        self.action_text = ""
+        self.voxel_grid_changed = False
 
         # Color initialization
         self.color_surface_1 = np.array([255, 0, 0])
@@ -59,7 +65,7 @@ class Surface3DDialog(QDialog):
 
     def vertices_are_initialized(self) -> bool:
         """Check if the vertices are initialized."""
-        return self.vertices_1.shape[0] != 0 or self.vertices_2.shape[0] != 0
+        return (self.vertices_1.shape[0] != 0 or self.vertices_2.shape[0] != 0) and not self.voxel_grid_changed
 
     def change_color_surface_2(self) -> None:
         """Change the color of the second surface."""
@@ -89,9 +95,46 @@ class Surface3DDialog(QDialog):
         """Set the molecule."""
         self.molecule = molecule
 
-    def set_voxel_grid(self, voxel_grid: VoxelGrid) -> None:
+    def set_voxel_grid(self, voxel_grid: VoxelGrid3D) -> None:
         """Set the voxel grid."""
         self.voxel_grid = voxel_grid
+
+    def set_surfaces_hidden(self) -> None:
+        """Set the isolines to hidden."""
+        self.surfaces_are_visible = False
+        self.remove_surfaces()
+        if self.action_text == "":
+            self.surface_toggle_button.setText(f"Show {self.surface_text}")
+        else:
+            self.surface_toggle_button.setText(f"{self.action_text} {self.surface_text}")
+
+    def set_surfaces_visible(self) -> None:
+        """Set the isolines to visible."""
+        self.surfaces_are_visible = True
+        self.update_voxel_grid()
+        self.display_surfaces()
+        if self.action_text == "":
+            self.surface_toggle_button.setText(f"Hide {self.surface_text}")
+        else:
+            self.surface_toggle_button.setText(f"{self.action_text} {self.surface_text}")
+
+    def toggle_surfaces(self) -> None:
+        """Toggle the display of the isolines."""
+        self.surfaces_are_visible = not self.surfaces_are_visible
+        if self.surfaces_are_visible:
+            self.set_surfaces_visible()
+        else:
+            self.set_surfaces_hidden()
+
+    @abstractmethod
+    def update_voxel_grid(self) -> None:
+        """Update the voxel grid, to be implemented in the child classes."""
+
+    def update_surfaces(self) -> None:
+        """Update the surfaces."""
+        if self.surfaces_are_visible:
+            self.update_voxel_grid()
+            self.display_surfaces()
 
     def remove_surfaces(self) -> None:
         """Remove the surfaces."""
@@ -108,6 +151,7 @@ class Surface3DDialog(QDialog):
             self.draw_surfaces()
         else:
             self.visualize_surfaces()
+            self.voxel_grid_changed = False
 
     def draw_surfaces(self) -> None:
         """Draw the surfaces."""
