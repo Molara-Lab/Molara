@@ -154,8 +154,6 @@ cpdef inline void get_edges(
     :param edges_result: edges of the isosurface to be returned
     :param isovalue: value of the isosurface
     :param voxel_values: values of the voxels
-    :param phase: phase of the orbital
-    :return: vertices and indices of the isosurface
     """
     cdef int64_t line_table_index_1 = 0
     cdef int64_t line_table_index_2 = 0

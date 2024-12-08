@@ -234,15 +234,14 @@ class Renderer:
         _directions: list[list[floating]] = []
         _lengths: list[floating] = []
         _positions_middle: list[list[list[floating]]] = []
-        zero_approx = 1e-6
-        for pos12 in positions:
-            pos1, pos2 = pos12
-            _length = np.linalg.norm(pos2 - pos1)
-            if _length < zero_approx:
-                continue
-            _directions.append((pos2 - pos1).tolist())
-            _lengths.append(_length)
-            _positions_middle.append((0.5 * (pos1 + pos2)).tolist())
+
+        pos1, pos2 = positions[:, 0], positions[:, 1]
+        lengths = np.linalg.norm(pos2 - pos1, axis=1)
+        valid = lengths > np.finfo(np.float32).eps
+        _directions = (pos2 - pos1)[valid].tolist()
+        _lengths = lengths[valid].tolist()
+        _positions_middle = (0.5 * (pos1 + pos2))[valid].tolist()
+
         positions_middle = np.array(_positions_middle)
         lengths = np.array(_lengths)
         directions = np.array(_directions) / lengths[:, None]

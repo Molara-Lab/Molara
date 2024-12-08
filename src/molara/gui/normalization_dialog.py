@@ -31,7 +31,6 @@ class NormalizationDialog(QDialog):
 
     def initialize_dialog(self) -> None:
         """Initialize the dialog."""
-        """Call all the functions to initialize all the labels and buttons and so on."""
         # Check if a structure with MOs is loaded
         if not self.parent().structure_widget.structures:
             return

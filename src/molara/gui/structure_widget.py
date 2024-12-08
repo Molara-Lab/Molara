@@ -511,14 +511,15 @@ class StructureWidget(QOpenGLWidget):
         selected_spheres_list[id_in_selection] = sphere_id
         drawn_spheres_list[id_in_selection] = self.draw_selected_atom(sphere_id, id_in_selection)
 
-    def draw_selected_atom(self, atom_id: int, selected_id: int) -> int:
+    def draw_selected_atom(self, atom_id: int, selected_id: int, subdivisions: int = 20) -> int:
         """Draw a mesh grid sphere at the location of the selected atom.
 
-        :param atom_id: id of the atom that is selected
+        :param atom_id: index of the atom that is selected
+        :param selected_id: index of the selected atom in the list of selected atoms
+        :param subdivisions: number of subdivisions of the sphere (i.e. the 3d resolution of the sphere mesh grid)
         """
         sphere_position = np.array([self.structures[0].atoms[atom_id].position], dtype=np.float32)
         sphere_color = np.array(self.highlighted_atoms_colors[selected_id], dtype=np.float32)
-        subdivisions = 25
         radius = self.structures[0].drawer.atom_scales[atom_id][0] + 0.05
         return self.renderer.draw_spheres(
             sphere_position,

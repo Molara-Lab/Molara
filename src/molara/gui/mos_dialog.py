@@ -187,7 +187,10 @@ class MOsDialog(Surface3DDialog):
             return
         # Set all molecule related variables
         self.set_molecule(self.parent().structure_widget.structures[0])
-        assert self.molecule is not None
+        if self.molecule is None:
+            msg = "No molecule loaded"
+            raise ValueError(msg)
+
         self.mos = self.molecule.mos
         self.aos = self.molecule.basis_set
         self.atoms = self.molecule.atoms
@@ -213,7 +216,9 @@ class MOsDialog(Surface3DDialog):
 
     def init_spin_labels(self) -> None:
         """Initialize the labels for alpha, beta spins or a restricted calculation."""
-        assert self.mos is not None
+        if self.mos is None:
+            msg = "No molecular orbitals loaded"
+            raise ValueError(msg)
         if -1 in self.mos.spins and 1 in self.mos.spins:
             self.ui.restrictedLabel.hide()
             self.ui.alphaCheckBox.show()
@@ -286,7 +291,9 @@ class MOsDialog(Surface3DDialog):
 
     def fill_orbital_selector(self) -> None:
         """Fill the orbital selector."""
-        assert self.mos is not None
+        if self.mos is None:
+            msg = "No molecular orbitals loaded"
+            raise ValueError(msg)
         number_of_orbitals = 0
         max_number_of_orbitals = 0
         start = 0
@@ -451,15 +458,15 @@ class MOsDialog(Surface3DDialog):
         )
         self.parent().structure_widget.update()
 
-    def voxel_size_value(self) -> float:
+    def voxel_size_value(self, voxel_size_min: float = 0.05, voxel_size_max: float = 0.35) -> float:
         """Get the voxel size value from the resolution.
 
         Using a minimal value of 0.05 and a maximal value of 0.35 for the voxel size, a resolution between 1 and 0 is
         mapped to this range.
+        :param voxel_size_min: minimal value for the voxel size
+        :param voxel_size_max: maximal value for the voxel size
         :return: scaled value for the voxel size
         """
-        voxel_size_min = 0.05
-        voxel_size_max = 0.35
         a = voxel_size_min - voxel_size_max
         b = voxel_size_max
 
@@ -467,17 +474,14 @@ class MOsDialog(Surface3DDialog):
 
     def calculate_voxelgrid(self) -> None:
         """Calculate the voxel grid."""
-        assert self.aos is not None
-        assert self.mos is not None
+        if self.aos is None:
+            msg = "No basis functions loaded"
+            raise ValueError(msg)
+        if self.mos is None:
+            msg = "No molecular orbitals loaded"
+            raise ValueError(msg)
 
-        self.voxel_grid.voxel_size = np.array(
-            [
-                [self.voxel_size_value(), 0, 0],
-                [0, self.voxel_size_value(), 0],
-                [0, 0, self.voxel_size_value()],
-            ],
-            dtype=np.float64,
-        )
+        self.voxel_grid.voxel_size = np.eye(3, dtype=np.float64) * self.voxel_size_value()
         mo_coefficients = self.mos.coefficients[:, self.selected_orbital]
 
         self.voxel_grid.origin = self.origin
@@ -510,8 +514,12 @@ class MOsDialog(Surface3DDialog):
 
     def calculate_cutoffs(self) -> np.ndarray:
         """Calculate the cutoffs for the shells."""
-        assert self.aos is not None
-        assert self.mos is not None
+        if self.aos is None:
+            msg = "No basis functions loaded"
+            raise ValueError(msg)
+        if self.mos is None:
+            msg = "No molecular orbitals loaded"
+            raise ValueError(msg)
         # Calculate the cutoffs for the shells
         max_distance = np.linalg.norm(self.size * ANGSTROM_TO_BOHR)
         max_number = int(max_distance * 5)
@@ -574,9 +582,16 @@ class MOsDialog(Surface3DDialog):
 
     def set_isoline_border_points(self) -> None:
         """Set the points of the border that can be displayed as a guide to the eye."""
-        assert self.isoline_border_origin is not None
-        assert self.isoline_border_size is not None
-        assert self.isoline_border_direction is not None
+        if self.isoline_border_origin is None:
+            msg = "No origin for the isoline border set"
+            raise ValueError(msg)
+        if self.isoline_border_size is None:
+            msg = "No size for the isoline border set"
+            raise ValueError(msg)
+        if self.isoline_border_direction is None:
+            msg = "No direction for the isoline border set"
+            raise ValueError(msg)
+
         size_direction_1 = self.isoline_border_size[0] * self.isoline_border_direction[0] * self.isoline_border_scale[0]
         size_direction_2 = self.isoline_border_size[1] * self.isoline_border_direction[1] * self.isoline_border_scale[1]
         self.isoline_border_points = np.array(
@@ -642,15 +657,13 @@ class MOsDialog(Surface3DDialog):
         self.isoline_grid_parameters_changed = True
         self.update_isolines(self.isolines_are_visible)
 
-    def isoline_voxel_size_value(self) -> float:
+    def isoline_voxel_size_value(self, voxel_size_min: float = 0.03, voxel_size_max: float = 0.43) -> float:
         """Get the voxel size value from the resolution.
 
         Using a minimal value of 0.03 and a maximal value of 0.43 for the voxel size, a resolution between 1 and 0 is
         mapped to this range.
         :return: scaled value for the voxel size
         """
-        voxel_size_min = 0.03
-        voxel_size_max = 0.43
         a = voxel_size_min - voxel_size_max
         b = voxel_size_max
 
@@ -658,8 +671,12 @@ class MOsDialog(Surface3DDialog):
 
     def calculate_isoline_voxelgrid(self) -> None:
         """Calculate the 2D voxel grid for the isolines."""
-        assert self.aos is not None
-        assert self.mos is not None
+        if self.aos is None:
+            msg = "No basis functions loaded"
+            raise ValueError(msg)
+        if self.mos is None:
+            msg = "No molecular orbitals loaded"
+            raise ValueError(msg)
 
         origin = self.isoline_border_origin
         size = self.isoline_border_size * self.isoline_border_scale
@@ -714,8 +731,13 @@ class MOsDialog(Surface3DDialog):
 
     def visualize_isolines(self) -> None:
         """Calculate the voxel grid."""
-        assert self.aos is not None
-        assert self.mos is not None
+        if self.aos is None:
+            msg = "No basis functions loaded"
+            raise ValueError(msg)
+        if self.mos is None:
+            msg = "No molecular orbitals loaded"
+            raise ValueError(msg)
+
         self.remove_isolines()
 
         number_of_iso_values = self.ui.numberLinesSpinBox.value()
@@ -730,8 +752,7 @@ class MOsDialog(Surface3DDialog):
         voxel_number = self.isoline_voxel_grid.voxel_number
 
         grid_sum = np.sum(np.abs(grid))
-        zero_approx = 1.0e-14
-        if grid_sum > zero_approx:
+        if grid_sum > np.finfo(float).eps:
             log_grid_max = 0.1  # np.log(np.max(np.abs(grid)))
             log_grid_min = np.log(3e-3)  # np.log(max(np.min(np.abs(grid)), 5e-3))
             iso_values = np.exp(np.linspace(log_grid_min, log_grid_max, number_of_iso_values))
@@ -1033,7 +1054,7 @@ class MOsDialog(Surface3DDialog):
         were_visible = self.isolines_are_visible
         self.remove_isolines()
 
-        value = value * np.pi / 180
+        value *= np.pi / 180
         rotation_matrix = create_from_axis_rotation(axis, value)
         self.isoline_border_direction = np.dot(self.isoline_border_direction, rotation_matrix)
         self.update_isolines(were_visible)
@@ -1076,7 +1097,9 @@ class MOsDialog(Surface3DDialog):
         z_axis = np.array([0, 0, 1], dtype=np.float64)
 
         zero_approx = 1.0e-14
-        assert np.linalg.norm(normal) - 1 < zero_approx
+        if np.linalg.norm(normal) - 1 > zero_approx:
+            msg = "The normal must be normalized!"
+            raise ValueError(msg)
 
         temp_axis = y_axis if np.dot(normal, y_axis) != 1 else z_axis
 
@@ -1114,33 +1137,18 @@ class MOsDialog(Surface3DDialog):
         axes_scale = 1 / 2
         cylinder_end_points = np.array(
             [
-                [
-                    self.isoline_border_center,
-                    self.isoline_border_center + self.isoline_border_direction[0] * axes_scale,
-                ],
-                [
-                    self.isoline_border_center,
-                    self.isoline_border_center + self.isoline_border_direction[1] * axes_scale,
-                ],
-                [
-                    self.isoline_border_center,
-                    self.isoline_border_center + self.isoline_border_direction[2] * axes_scale,
-                ],
+                [self.isoline_border_center, self.isoline_border_center + direction]
+                for direction in (self.isoline_border_direction * axes_scale)
             ],
             dtype=np.float32,
         )
-        sphere_positions = np.array(
-            [
-                self.isoline_border_center,
-                self.isoline_border_center + self.isoline_border_direction[0] * axes_scale,
-                self.isoline_border_center + self.isoline_border_direction[1] * axes_scale,
-                self.isoline_border_center + self.isoline_border_direction[2] * axes_scale,
-            ],
-            dtype=np.float32,
+        sphere_positions = self.isoline_border_center + np.vstack(
+            (np.zeros(3), self.isoline_border_direction * axes_scale),
         )
-        radii = np.array([0.025] * 4, dtype=np.float32)
-        cylinder_colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
-        sphere_colors = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        radii = np.full(4, 0.025, dtype=np.float32)
+        colors = np.eye(3, dtype=np.float32)
+        cylinder_colors = colors[:3]
+        sphere_colors = np.vstack(([np.zeros(3)], colors))
         self.parent().structure_widget.makeCurrent()
         self.isoline_axes_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
             cylinder_end_points,
@@ -1149,7 +1157,7 @@ class MOsDialog(Surface3DDialog):
             10,
         )
         self.isoline_axes_spheres = self.parent().structure_widget.renderer.draw_spheres(
-            sphere_positions,
+            np.array(sphere_positions, dtype=np.float32),
             radii,
             sphere_colors,
             10,
