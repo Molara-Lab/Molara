@@ -100,22 +100,13 @@ class MainWindow(QMainWindow):
         self.ui.actionOpen_Structure_Customizer.triggered.connect(
             self.show_structure_customizer_dialog,
         )
+
         # tools
-        self.ui.actionBuilder.triggered.connect(
-            self.show_builder_dialog,
-        )
-        self.ui.actionMeasure.triggered.connect(
-            self.show_measurement_dialog,
-        )
-        self.ui.actionDisplay_MOs.triggered.connect(
-            self.show_mo_dialog,
-        )
-        self.ui.actionDisplay_3D_Surface.triggered.connect(
-            self.show_surface_3d_dialog,
-        )
-        self.ui.actionCheck_Normalization.triggered.connect(
-            self.show_normalization_dialog,
-        )
+        self.ui.actionBuilder.triggered.connect(self.show_builder_dialog)
+        self.ui.actionMeasure.triggered.connect(self.show_measurement_dialog)
+        self.ui.actionDisplay_MOs.triggered.connect(self.show_mo_dialog)
+        self.ui.actionDisplay_3D_Surface.triggered.connect(self.show_surface_3d_dialog)
+        self.ui.actionCheck_Normalization.triggered.connect(self.show_normalization_dialog)
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
