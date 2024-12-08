@@ -77,6 +77,7 @@ class WorkaroundTestMOsDialog:
         self._test_draw_isoline_border_axes()
         self._test_update_selected_atoms()
         self._test_isoline_transformation()
+        self._test_reset_plane()
 
     def _test_mo_initialization(self) -> None:
         """Test the initialization of the Molecularorbital class."""
@@ -317,3 +318,17 @@ class WorkaroundTestMOsDialog:
         assert self.mo_dialog.ui.redSpinBox.value() == red_rot
         assert self.mo_dialog.ui.greenSpinBox.value() == green_rot
         assert self.mo_dialog.ui.blueSpinBox.value() == blue_rot
+
+    def _test_reset_plane(self) -> None:
+        """Test the reset plane method."""
+        self.mo_dialog.ui.xAxisCheckBox.setChecked(True)
+        self.mo_dialog.reset_isoline_border()
+        self.mo_dialog.ui.yAxisCheckBox.setChecked(True)
+        self.mo_dialog.reset_isoline_border()
+        self.mo_dialog.ui.zAxisCheckBox.setChecked(True)
+        self.mo_dialog.reset_isoline_border()
+        self.mo_dialog.ui.selectAtomsCheckBox.setChecked(True)
+        self.mo_dialog.isoline_selected_atoms = [0, 1, 2]
+        self.mo_dialog.reset_isoline_border()
+        self.mo_dialog.ui.xAxisCheckBox.setChecked(True)
+        self.mo_dialog.reset_isoline_border()
