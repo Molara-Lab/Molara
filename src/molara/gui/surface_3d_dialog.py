@@ -9,8 +9,8 @@ if TYPE_CHECKING:
 
     from molara.structure.molecule import Molecule
 
-from molara.gui.surface_3d import Surface3DDialog
 from molara.gui.layouts.ui_surface_3d_dialog import Ui_Surface3D_dialog
+from molara.gui.surface_3d import Surface3DDialog
 
 __copyright__ = "Copyright 2024, Molara"
 
