@@ -121,7 +121,10 @@ class BuilderDialog(QDialog):
         self.structure_widget.builder_drawn_spheres = drawn_spheres
         for i, atom_index in enumerate(self.structure_widget.builder_selected_spheres):
             if atom_index != -1:
-                self.structure_widget.builder_drawn_spheres[i] = self.parent().structure_widget.draw_selected_atom(atom_index, i)
+                self.structure_widget.builder_drawn_spheres[i] = self.parent().structure_widget.draw_selected_atom(
+                    atom_index,
+                    i,
+                )
         self.parent().structure_widget.update()
 
     def remove_selected_atoms(self) -> None:
