@@ -69,6 +69,7 @@ class BuilderDialog(QDialog):
 
         self.disable_slot: bool = False
         self.colliding_idx: int | None = None
+        self.err: bool = False
 
         self._initialize_table()
 
@@ -81,7 +82,7 @@ class BuilderDialog(QDialog):
         for col, width in enumerate(column_widths):
             self.ui.tableWidget.setColumnWidth(col, width)
 
-        text_data = ["Element", "At. 1", "Distance[A]", "At. 2", "Angle[°]", "At. 3", "Dihedral[°]"]
+        text_data = ["Element", "At. 1", "Distance / Å", "At. 2", "Angle / °", "At. 3", "Dihedral / °"]
         for column, text in enumerate(text_data):
             self.ui.tableWidget.setHorizontalHeaderItem(column, QTableWidgetItem(text))
 
@@ -94,17 +95,30 @@ class BuilderDialog(QDialog):
         self.exec_add_atom(num_atoms, params, atom_ids)
 
     def exec_add_atom(self, count_atoms: int, params: tuple, atom_ids: list) -> None:
-        """Execute the addition of an atom."""
+        """Execute the addition of an atom.
+
+        :param count_atoms: number of atoms that have been added so far
+        :param params: parameters that are needed to add the atom
+        :param atom_ids: atom ids of the selected atoms
+        """
         self.add_atom(count_atoms, params, atom_ids)
         mol = self.main_window.mols.mols[0]
 
         if not self.err and self.colliding_idx is None:
-            self.ui.ErrorMessageBrowser.setText("")
+            self.ui.error_messageLabel.setText("")
             self.structure_widget.set_structure([mol])
             self.structure_widget.update()
             self.z_matrix.append({"parameter": params, "atom_ids": atom_ids})
             self._set_z_matrix_row(mol.n_at, mol.n_at - 1)
-            self.structure_widget.clear_builder_selected_atoms()
+            self.remove_selected_spheres()
+
+    def remove_selected_spheres(self) -> None:
+        """Remove selected spheres from the structure widget."""
+        for sphere_index in self.structure_widget.builder_selected_spheres:
+            if sphere_index != -1:
+                self.parent().structure_widget.renderer.remove_sphere(sphere_index)
+        self.structure_widget.builder_drawn_spheres = [-1] * 3
+        self.parent().structure_widget.update()
 
     def delete_atom(self) -> None:
         """Delete an atom from the z-matrix visualization table and z_matrix itself."""
@@ -118,7 +132,7 @@ class BuilderDialog(QDialog):
             return
 
         error_msg = f"Atom {index+1} will be deleted."
-        self.ui.ErrorMessageBrowser.setText(error_msg)
+        self.ui.error_messageLabel.setText(error_msg)
         self._delete_zmat_row(index, mol.n_at)
         self._delete_table_row(index)
 
@@ -150,7 +164,7 @@ class BuilderDialog(QDialog):
 
         if params[0] is None:
             error_msg = "Incorrect input type."
-            self.ui.ErrorMessageBrowser.setText(error_msg)
+            self.ui.error_messageLabel.setText(error_msg)
             self._set_z_matrix_row(self.main_window.mols.mols[0].n_at, row)
             return
 
@@ -231,7 +245,7 @@ class BuilderDialog(QDialog):
         self.colliding_idx = mol.compute_collision(pos) if count_atoms >= 3 else None  # noqa: PLR2004
         if self.colliding_idx is not None:
             error_msg = f"The atom would collide with atom {self.colliding_idx+1}."
-            self.ui.ErrorMessageBrowser.setText(error_msg)
+            self.ui.error_messageLabel.setText(error_msg)
             return
 
         mol.toggle_bonds() if count_atoms == 1 else None
@@ -244,6 +258,7 @@ class BuilderDialog(QDialog):
         :param params: parameters that are passed for the atom
         :param atom_ids: atom ids of the selected atoms
         """
+        # add first atom
         if count_atoms == 0:
             return np.zeros([1, 3])
 
@@ -304,7 +319,7 @@ class BuilderDialog(QDialog):
         for arg in args:
             vals_above_threshold = arg > threshold
             if not (vals_above_threshold):
-                self.ui.ErrorMessageBrowser.setText(error_msg)
+                self.ui.error_messageLabel.setText(error_msg)
                 self.err = True
                 break
 
@@ -320,7 +335,7 @@ class BuilderDialog(QDialog):
         for idx in selected_atoms:
             if idx == -1:
                 all_selected = False
-                self.ui.ErrorMessageBrowser.setText(error_msg)
+                self.ui.error_messageLabel.setText(error_msg)
                 self.err = True
                 break
 
@@ -335,7 +350,7 @@ class BuilderDialog(QDialog):
         is_element = True
         if atomic_num == 0:
             is_element = False
-            self.ui.ErrorMessageBrowser.setText(error_msg)
+            self.ui.error_messageLabel.setText(error_msg)
             self.err = True
 
         return is_element
@@ -386,6 +401,7 @@ class BuilderDialog(QDialog):
         """Return the parameter from the input boxes.
 
         :param num_atoms: Current number of atoms of the molecule.
+        :return: All parameters needed to place the next atom.
         """
         element: str = self.ui.Box_0Element.text().capitalize()
         dist: float = float(self.ui.Box_1BondDistance.text())
@@ -449,13 +465,13 @@ class BuilderDialog(QDialog):
         """
         if idx == -1:
             error_msg = "No Atom was chosen to be deleted."
-            self.ui.ErrorMessageBrowser.setText(error_msg)
+            self.ui.error_messageLabel.setText(error_msg)
             return False
 
         for entry in self.z_matrix:
             if idx in entry["atom_ids"]:
                 error_msg = f"Cannot be deleted. Atom {idx+1} depends on this atom."
-                self.ui.ErrorMessageBrowser.setText(error_msg)
+                self.ui.error_messageLabel.setText(error_msg)
                 return False
 
         return True

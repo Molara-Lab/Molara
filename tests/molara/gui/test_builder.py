@@ -54,13 +54,13 @@ class WorkaroundTestBuilderDialog:
 
         builder_dialog.exec_add_atom(2, ("O", 1.2, 0), [1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6]
-        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "Parameter values are not valid."
+        assert builder_dialog.ui.error_messageLabel.text() == "Parameter values are not valid."
         builder_dialog.exec_add_atom(2, ("O", 1.2, angle120), [1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8]
 
         builder_dialog.exec_add_atom(3, ("Mg", 1.2, 0, 0), [2, 1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8]
-        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "Parameter values are not valid."
+        assert builder_dialog.ui.error_messageLabel.text() == "Parameter values are not valid."
         builder_dialog.exec_add_atom(3, ("Mg", 1.2, angle120, 0.0), [2, 1, 0])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8, 12]
 
@@ -71,7 +71,7 @@ class WorkaroundTestBuilderDialog:
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8, 12, 9, 5]
 
         builder_dialog.exec_add_atom(6, ("H", 1.2, angle120, 0.0), [5, 4, 3])  # type: ignore[arg-type]
-        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "The atom would collide with atom 1."
+        assert builder_dialog.ui.error_messageLabel.text() == "The atom would collide with atom 1."
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8, 12, 9, 5]
         builder_dialog.exec_add_atom(6, ("H", 1.2, angle120, 30.0), [5, 4, 3])  # type: ignore[arg-type]
         assert self.main_window.mols.get_current_mol().atomic_numbers.tolist() == [1, 6, 8, 12, 9, 5, 1]
@@ -94,21 +94,21 @@ class WorkaroundTestBuilderDialog:
         """Test the deletion of an atom."""
         builder_dialog = self.builder_dialog
         builder_dialog.delete_atom()
-        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == "No Atom was chosen to be deleted."
+        assert builder_dialog.ui.error_messageLabel.text() == "No Atom was chosen to be deleted."
 
     def _test_check_selected_atoms(self) -> None:
         """Test the check of selected atoms."""
         builder_dialog = self.builder_dialog
         builder_dialog.err = False
-        builder_dialog.ui.ErrorMessageBrowser.clear()
+        builder_dialog.ui.error_messageLabel.clear()
 
         assert builder_dialog._check_selected_atoms(17, 100, 611)  # noqa: SLF001
         assert not builder_dialog.err
-        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == ""
+        assert builder_dialog.ui.error_messageLabel.text() == ""
 
         error_message = "Not enough atoms selected."
         assert not builder_dialog._check_selected_atoms(-1, -1, 611)  # noqa: SLF001
         assert builder_dialog.err
-        assert builder_dialog.ui.ErrorMessageBrowser.toPlainText() == error_message
+        assert builder_dialog.ui.error_messageLabel.text() == error_message
         builder_dialog.err = False
-        builder_dialog.ui.ErrorMessageBrowser.clear()
+        builder_dialog.ui.error_messageLabel.clear()
