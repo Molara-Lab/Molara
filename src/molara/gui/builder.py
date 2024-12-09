@@ -106,18 +106,31 @@ class BuilderDialog(QDialog):
 
         if not self.err and self.colliding_idx is None:
             self.ui.error_messageLabel.setText("")
-            self.structure_widget.set_structure([mol])
+            self.structure_widget.set_structure([mol], reset_view=False)
             self.structure_widget.update()
             self.z_matrix.append({"parameter": params, "atom_ids": atom_ids})
             self._set_z_matrix_row(mol.n_at, mol.n_at - 1)
-            self.remove_selected_spheres()
+            self.update_selected_atoms()
 
-    def remove_selected_spheres(self) -> None:
+    def update_selected_atoms(self) -> None:
+        """When an atom is added or removed, the selected atoms need to be updated."""
+        selected_atoms = self.structure_widget.builder_selected_spheres
+        drawn_spheres = self.structure_widget.builder_drawn_spheres
+        self.remove_selected_atoms()
+        self.structure_widget.builder_selected_spheres = selected_atoms
+        self.structure_widget.builder_drawn_spheres = drawn_spheres
+        for i, atom_index in enumerate(self.structure_widget.builder_selected_spheres):
+            if atom_index != -1:
+                self.structure_widget.builder_drawn_spheres[i] = self.parent().structure_widget.draw_selected_atom(atom_index, i)
+        self.parent().structure_widget.update()
+
+    def remove_selected_atoms(self) -> None:
         """Remove selected spheres from the structure widget."""
-        for sphere_index in self.structure_widget.builder_selected_spheres:
+        for sphere_index in self.structure_widget.builder_drawn_spheres:
             if sphere_index != -1:
                 self.parent().structure_widget.renderer.remove_sphere(sphere_index)
         self.structure_widget.builder_drawn_spheres = [-1] * 3
+        self.structure_widget.builder_selected_spheres = [-1] * 3
         self.parent().structure_widget.update()
 
     def delete_atom(self) -> None:
@@ -144,10 +157,14 @@ class BuilderDialog(QDialog):
         self.structure_widget.delete_structure()
 
         if mol.n_at > 0:
-            self.structure_widget.set_structure([mol])
+            self.structure_widget.set_structure([mol], reset_view=False)
         else:
             self.main_window.mols.remove_molecule(0)
             self.structure_widget.update()
+        if index in self.structure_widget.builder_selected_spheres:
+            self.remove_selected_atoms()
+        else:
+            self.update_selected_atoms()
 
     @toggle_slot
     def adapt_z_matrix(self, item: QTableWidgetItem) -> None:
@@ -192,7 +209,8 @@ class BuilderDialog(QDialog):
                 break
 
         self.structure_widget.delete_structure()
-        self.structure_widget.set_structure([mol])
+        self.update_selected_atoms()
+        self.structure_widget.set_structure([mol], reset_view=False)
         self._update_z_matrix(mol.n_at)
 
     def _orth(self, vec: np.ndarray, unitvec: np.ndarray) -> np.ndarray:
