@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
 )
 
-from molara.gui.ui_structure_customizer import Ui_structure_customizer
+from molara.gui.layouts.ui_structure_customizer import Ui_structure_customizer
 from molara.rendering.atom_labels import init_atom_number
 
 if TYPE_CHECKING:

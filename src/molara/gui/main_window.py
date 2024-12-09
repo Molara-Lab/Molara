@@ -12,6 +12,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.gui.builder import BuilderDialog
 from molara.gui.crystal_dialog import CrystalDialog
 from molara.gui.export_image_dialog import ExportImageDialog
+from molara.gui.layouts.ui_form import Ui_MainWindow
 from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.mos_dialog import MOsDialog
 from molara.gui.normalization_dialog import NormalizationDialog
@@ -19,7 +20,6 @@ from molara.gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.gui.supercell_dialog import SupercellDialog
 from molara.gui.surface_3d_dialog import CubeFileDialog
 from molara.gui.trajectory_dialog import TrajectoryDialog
-from molara.gui.ui_form import Ui_MainWindow
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
 from molara.structure.io.exporter import GeneralExporter
