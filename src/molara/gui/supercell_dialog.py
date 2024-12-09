@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QDialog, QMainWindow
 
-from molara.gui.ui_supercell_dialog import Ui_Dialog
+from molara.gui.layouts.ui_supercell_dialog import Ui_Dialog
 from molara.structure.crystal import Crystal
 
 if TYPE_CHECKING:

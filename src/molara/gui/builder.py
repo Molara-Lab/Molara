@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
 
-from molara.gui.ui_builder import Ui_builder
+from molara.gui.layouts.ui_builder import Ui_builder
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules

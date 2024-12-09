@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtWidgets import QDialog, QMainWindow
 
 from molara.eval.populationanalysis import PopulationAnalysis
-from molara.gui.ui_normalization_dialog import Ui_normalization_dialog
+from molara.gui.layouts.ui_normalization_dialog import Ui_normalization_dialog
 
 if TYPE_CHECKING:
     from PySide6.QtCore import QEvent

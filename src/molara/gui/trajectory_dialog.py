@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from molara.gui.ui_trajectory import Ui_traj_dialog
+from molara.gui.layouts.ui_trajectory import Ui_traj_dialog
 
 if TYPE_CHECKING:
     from molara.gui.main_window import MainWindow

@@ -14,7 +14,7 @@ from molara.gui.main_window import MainWindow
 from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.structure_widget import StructureWidget
 from molara.gui.trajectory_dialog import TrajectoryDialog
-from molara.gui.ui_form import Ui_MainWindow
+from molara.gui.layouts.ui_form import Ui_MainWindow
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
 from molara.structure.molecule import Molecule

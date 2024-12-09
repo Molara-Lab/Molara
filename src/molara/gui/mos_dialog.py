@@ -22,7 +22,7 @@ from molara.eval.generate_voxel_grid import generate_voxel_grid
 from molara.eval.marchingsquares import marching_squares
 from molara.eval.voxel_grid import VoxelGrid2D
 from molara.gui.surface_3d import Surface3DDialog
-from molara.gui.ui_mos_dialog import Ui_MOs_dialog
+from molara.gui.layouts.ui_mos_dialog import Ui_MOs_dialog
 from molara.util.constants import ANGSTROM_TO_BOHR
 
 __copyright__ = "Copyright 2024, Molara"
