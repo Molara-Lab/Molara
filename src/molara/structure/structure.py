@@ -107,8 +107,8 @@ class Structure:
         same_position_threshold = 1e-3
         bonded_pairs = []
 
-        vdw_radii = np.array([atom.vdw_radius for atom in self.atoms])
-        coordinates = np.array([atom.position for atom in self.atoms])
+        vdw_radii = np.array([atom.vdw_radius for atom in self.atoms if atom.vdw_radius > 0])
+        coordinates = np.array([atom.position for atom in self.atoms if atom.vdw_radius > 0])
 
         max_distance = 2.0 * vdw_radii.max() * self.bond_distance_factor
         tree = spatial.cKDTree(coordinates)

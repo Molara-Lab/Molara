@@ -38,6 +38,7 @@ class Drawer:
         :param draw_bonds: bool that specifies whether bonds shall be drawn (as cylinders)
         """
         self.subdivisions_sphere = 20
+        self.electron_scale = 0.03
         self.subdivisions_cylinder = 20
         self.stick_mode = False
         self.color_scheme = "Jmol"
@@ -188,11 +189,27 @@ class Drawer:
         scaling_factor = self.sphere_default_radius * self.sphere_scale
         if not self.stick_mode:
             self.atom_scales = np.array(
-                [3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms],
+                [
+                    (
+                        3 * [scaling_factor * atom.vdw_radius]
+                        if atom.vdw_radius > 0
+                        else 3 * [self.electron_scale]
+                    )
+                    for atom in self.atoms
+                ],
                 dtype=np.float32,
             )
         else:
-            self.atom_scales = np.array([3 * [scaling_factor] for _ in self.atoms], dtype=np.float32)
+            self.atom_scales = np.array([
+                    (
+                        3 * [scaling_factor]
+                        if atom.vdw_radius > 0
+                        else 3 * [self.electron_scale]
+                    )
+                    for atom in self.atoms
+                ],
+                dtype=np.float32,
+            )
 
     def reset_atom_model_matrices(self) -> None:
         """Reset the model matrices for the spheres."""
