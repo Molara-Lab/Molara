@@ -75,7 +75,7 @@ class ExportImageDialog(QDialog):
 
     def make_background_transparent(self) -> None:
         """Set the background of the image to be transparent."""
-        image = Image.open(self.ui.filenameInput.text(), "r")
+        image = Image.open(self.ui.filenameInput.text())
         image = image.convert("RGBA")
         image_data = np.array(image)
         # Create a mask for white pixels (where R=255, G=255, B=255)
