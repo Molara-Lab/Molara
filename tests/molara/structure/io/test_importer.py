@@ -112,7 +112,7 @@ class TestQmImporter(TestCase):
             return
         with NamedTemporaryFile(suffix=".txt") as file:
             filename = file.name
-        with Path(filename).open("w") as file:
+        with Path(filename).open("w", encoding="utf-8") as file:
             file.write("Invalid content!")
         msg = "Not a QM output file."
         with pytest.raises(FileFormatError, match=msg):
