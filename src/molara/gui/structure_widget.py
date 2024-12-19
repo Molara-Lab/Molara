@@ -43,14 +43,8 @@ class StructureWidget(QOpenGLWidget):
         self.renderer = Renderer()
         self.structures: list[Structure | Molecule | Crystal] = []
         self.vertex_attribute_objects = [-1]
-        self.axes = [
-            -1,
-            -1,
-        ]  # -1 means no axes are drawn, any other integer means axes are drawn
-        self.box = [
-            -1,
-            -1,
-        ]
+        self.draw_axes = False
+        self.box = False
         self.rotate = False
         self.translate = False
         self.click_position: np.ndarray | None = None
@@ -93,16 +87,6 @@ class StructureWidget(QOpenGLWidget):
         if len(self.structures) != 1:
             return False
         return self.structures[0].draw_bonds
-
-    @property
-    def draw_axes(self) -> bool:
-        """Specifies whether the axes should be drawn."""
-        return self.axes[0] != -1
-
-    @property
-    def draw_unit_cell_boundaries(self) -> bool:
-        """Specifies whether the unit cell boundaries should be drawn."""
-        return self.box[0] != -1
 
     @property
     def orthographic_projection(self) -> bool:
@@ -229,8 +213,10 @@ class StructureWidget(QOpenGLWidget):
         for name in ["Atoms", "Bonds"]:
             if name in self.renderer.objects3d:
                 self.renderer.remove_object(name)
-        self.renderer.objects3d['Atoms'] = self.structures[0].drawer.spheres
-        self.renderer.objects3d['Bonds'] = self.structures[0].drawer.cylinders
+        if self.structures[0].drawer.spheres is not None:
+            self.renderer.objects3d['Atoms'] = self.structures[0].drawer.spheres
+        if self.structures[0].drawer.cylinders is not None:
+            self.renderer.objects3d['Bonds'] = self.structures[0].drawer.cylinders
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""
@@ -341,10 +327,10 @@ class StructureWidget(QOpenGLWidget):
         length = 2.0
         radius = 0.02
         self.makeCurrent()
-        if self.draw_axes:
-            self.renderer.remove_cylinder(self.axes[0])
-            self.renderer.remove_sphere(self.axes[1])
-            self.axes = [-1, -1]
+        self.draw_axes = not self.draw_axes
+        if not self.draw_axes:
+            self.renderer.remove_object("Axes_cylinders")
+            self.renderer.remove_object("Axes_spheres")
             self.update()
             self.main_window.update_action_texts()
             return
@@ -355,13 +341,13 @@ class StructureWidget(QOpenGLWidget):
         )
         directions = np.eye(3, dtype=np.float32)
         colors = np.eye(3, dtype=np.float32)
-        radii = np.array([radius] * 3, dtype=np.float32)
-        lengths = np.array([length] * 3, dtype=np.float32)
-        self.axes[0] = self.renderer.draw_cylinders(
+        dimensions = np.array([[radius, length, radius]]*3, dtype=np.float32)
+
+        self.renderer.draw_cylinders(
+            "Axes_cylinders",
             positions,
             directions,
-            radii,
-            lengths,
+            dimensions,
             colors,
             25,
         )
@@ -374,7 +360,7 @@ class StructureWidget(QOpenGLWidget):
             dtype=np.float32,
         )
         radii = np.array([radius] * 4, dtype=np.float32)
-        self.axes[1] = self.renderer.draw_spheres(positions, radii, colors, 25)
+        self.renderer.draw_spheres("Axes_spheres", positions, radii, colors, 25)
         self.update()
 
         self.main_window.update_action_texts()
@@ -395,23 +381,23 @@ class StructureWidget(QOpenGLWidget):
 
         self.makeCurrent()
 
-        box_was_drawn = self.box[0] != -1
+        box_was_drawn = self.box
 
         if not box_was_drawn and update_box:
             # if no box is drawn and unit cell boundary shall not be toggled but just updated, nothing needs to be done!
             return
 
         if box_was_drawn:
-            self.renderer.remove_cylinder(self.box[0])
+            self.renderer.remove_object("Box_cylinder")
             # if a box was drawn and the unit cell boundary shall not be simply updated,
             # the box should be removed.
             if not update_box:
-                self.box = [-1, -1]
+                self.box = False
                 self.update()
                 self.main_window.update_action_texts()
                 return
             if not isinstance(self.structures[0], Crystal):
-                self.box = [-1, -1]
+                self.box = False
                 self.update()
                 self.main_window.update_action_texts()
                 return
@@ -428,12 +414,14 @@ class StructureWidget(QOpenGLWidget):
         radius = max(lowerlim_radius, diagonal_length / 350)  # just some arbitrary scaling that looks nice
         colors = np.array([0, 0, 0] * positions.shape[0], dtype=np.float32)
         radii = np.array([radius] * positions.shape[0], dtype=np.float32)
-        self.box[0] = self.renderer.draw_cylinders_from_to(
+        self.renderer.draw_cylinders_from_to(
+            "Box_cylinder",
             positions,
             radii,
             colors,
             25,
         )
+        self.box = True
         self.update()
 
         self.main_window.update_action_texts()

@@ -38,7 +38,7 @@ class Renderer:
         # multisampling anti-aliasing
         self.msaa = True
         # supersampling anti-aliasing factor
-        self.ssaa_factor = 1
+        self.ssaa_factor = 1.2
 
         self.device_pixel_ratio = 1
         self.objects3d: dict = {}
@@ -50,7 +50,7 @@ class Renderer:
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
         self.shade: str = ""
-        self.set_mode(SHADED)
+        self.set_mode(OUTLINED_SHADED)
 
     def set_mode(self, mode: str) -> None:
         """Set the mode of the renderer.
@@ -179,8 +179,7 @@ class Renderer:
         name: str,
         positions: np.ndarray,
         directions: np.ndarray,
-        radii: np.ndarray,
-        lengths: np.ndarray,
+        dimensions: np.ndarray,
         colors: np.ndarray,
         subdivisions: int,
     ) -> None:
@@ -194,8 +193,7 @@ class Renderer:
         :param name: Name of the cylinders that were created, this is used to remove the cylinders again.
         :param positions: Positions of the cylinders.
         :param directions: Directions of the cylinders.
-        :param radii: Radii of the cylinders.
-        :param lengths: Lengths of the cylinders.
+        :param dimensions: Dimensions of the cylinders ([[radius, length, radius] * number_of_instances]).
         :param colors: Colors of the cylinders.
         :param subdivisions: Number of subdivisions of the cylinder.
         :return: Returns the index of the cylinder in the list of cylinders.
@@ -203,8 +201,7 @@ class Renderer:
         self.objects3d[name] = Cylinders(subdivisions,
                                          positions,
                                          directions,
-                                         radii,
-                                         lengths,
+                                         dimensions,
                                          colors)
 
     def draw_cylinders_from_to( # noqa: PLR0913
@@ -235,10 +232,14 @@ class Renderer:
         _lengths = lengths[valid].tolist()
         _positions_middle = (0.5 * (pos1 + pos2))[valid].tolist()
 
-        positions_middle = np.array(_positions_middle)
+        positions_middle = np.array(_positions_middle, dtype=np.float32)
         lengths = np.array(_lengths)
+        dimensions = np.zeros((len(_lengths), 3), dtype=np.float32)
+        dimensions[:, 0] = radii[valid]
+        dimensions[:, 1] = lengths
+        dimensions[:, 2] = radii[valid]
         directions = np.array(_directions) / lengths[:, None]
-        self.draw_cylinders(name, positions_middle, -directions, radii, lengths, colors, subdivisions)
+        self.draw_cylinders(name, positions_middle, -directions.astype(np.float32), dimensions, colors, subdivisions)
 
     def draw_spheres( # noqa: PLR0913
         self,
@@ -330,7 +331,6 @@ class Renderer:
         glEnable(GL_DEPTH_TEST)
 
         self._init_rendering(shader_name="Main" + self.shade, camera=camera)
-
         for object_ in self.objects3d.values():
             _render_object(object_)
 
@@ -382,17 +382,17 @@ class Renderer:
         # texture unit 3
         glUniform1i(self.shaders[post_processing_shader].get_uniform_location("screenUnshadedTexture"), 3)
 
-    def post_process_main_buffer(self, post_processing_shader: str) -> None:
+    def post_process_main_buffer(self, post_processing_shader: str, default_framebuffer: int) -> None:
         """Post process the main buffer.
 
         This function uses the post-processing shader to post process the main buffer and render the new image to the
         Inter framebuffer for further use.
 
         :param post_processing_shader: Name of the post-processing shader.
-        :param mode: Mode of the post-processing.
+        :param default_framebuffer: Framebuffer for drawing to the screen.
         """
         self.init_post_processing_shader(post_processing_shader)
-        self.framebuffers["Inter"].bind()
+        glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer)
 
         # Reset framebuffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -445,13 +445,9 @@ class Renderer:
         self.framebuffers["Main"].bind()
         self.render_objects(camera)
 
-        # post-processing on framebuffer
+        # post-processing on framebuffer and rendering on screen
         shader_name = "Outline"
-        self.post_process_main_buffer(shader_name)
-
-        # render to screen (you can also apply one more post-processing step here if you want to)
-        shader_name = "Screen"
-        self.render_to_screen(shader_name, default_framebuffer, camera.width, camera.height)
+        self.post_process_main_buffer(shader_name, default_framebuffer)
 
 
 def _render_object(object_: Object3D) -> None:

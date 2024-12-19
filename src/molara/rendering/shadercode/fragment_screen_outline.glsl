@@ -53,17 +53,30 @@ float getSufaceIdDiff(vec3 surfaceValue) {
 }
 
 void main() {
+
     vec4 sceneColor = texture(screenTexture, TexCoords);
     // "surfaceValue" is the unshaded color
     vec3 surfaceValue = getSurfaceValue(0, 0);
+
+    // Get the difference between depth of neighboring pixels and current.
+
+    float depth = getPixelDepth(0, 0);
+    float depthDiff = 0.0;
+    depthDiff += abs(depth - getPixelDepth(1, 0));
+    depthDiff += abs(depth - getPixelDepth(-1, 0));
+    depthDiff += abs(depth - getPixelDepth(0, 1));
+    depthDiff += abs(depth - getPixelDepth(0, -1));
 
     // Get the difference between surface values of neighboring pixels
     // and current
     float surfaceValueDiff = getSufaceIdDiff(surfaceValue);
 
+    depthDiff = depthDiff;
+    depthDiff = saturateValue(depthDiff);
+
     if (surfaceValueDiff != 0.0) surfaceValueDiff = 1.0;
 
-    float outline = saturateValue(surfaceValueDiff);
+    float outline = saturateValue(surfaceValueDiff + depthDiff);
 
     vec3 color = vec3(0.0, 0.0, 0.0);
 

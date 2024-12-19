@@ -145,7 +145,7 @@ class MainWindow(QMainWindow):
         )
         text_unit_cell_boundaries = (
             "Hide Unit Cell Boundaries"
-            if self.structure_widget.draw_unit_cell_boundaries
+            if self.structure_widget.box
             else "Show Unit Cell Boundaries"
         )
         self.ui.actionToggle_Axes.setText(QCoreApplication.translate("MainWindow", text_axes, None))
