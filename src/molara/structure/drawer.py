@@ -115,7 +115,9 @@ class Drawer:
 
     def set_atom_colors(self) -> None:
         """Set the colors of the atoms."""
+        print(self.color_scheme)
         self.sphere_colors = np.array([atom.color[self.color_scheme] for atom in self.atoms], dtype=np.float32)
+        self.spheres.colors = self.sphere_colors
 
     def set_atom_positions(self) -> None:
         """Set the positions of the atoms."""
@@ -200,6 +202,7 @@ class Drawer:
             self.cylinder_colors.append(atom1.color[self.color_scheme])
             self.cylinder_colors.append(atom2.color[self.color_scheme])
         self.cylinder_colors = np.array(self.cylinder_colors, dtype=np.float32)
+        self.cylinders.colors = self.cylinder_colors
 
     def set_cylinder_model_matrices(self) -> None:
         """Set the model matrices for the cylinders."""
