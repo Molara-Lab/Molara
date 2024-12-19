@@ -13,7 +13,6 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from molara.rendering.atom_labels import calculate_atom_number_arrays
 from molara.rendering.camera import Camera
 from molara.rendering.rendering import Renderer
-from molara.rendering.shaders import compile_shaders
 from molara.structure.crystal import Crystal
 from molara.tools.raycasting import select_sphere
 
@@ -202,8 +201,10 @@ class StructureWidget(QOpenGLWidget):
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
-        self.renderer.set_shaders(compile_shaders())
-        self.renderer.aspect_ratio = self.width() / self.height()
+        self.renderer.set_shaders()
+        self.renderer.device_pixel_ratio = self.devicePixelRatio()
+        self.renderer.create_framebuffers(self.width(), self.height())
+        self.renderer.create_screen_vao()
 
     def resizeGL(self, width: int, height: int) -> None:  # noqa: N802
         """Resizes the widget.
@@ -212,60 +213,19 @@ class StructureWidget(QOpenGLWidget):
         :param height: widget height (in pixels)
         """
         glViewport(0, 0, width, height)  # one can also use self.width() and self.height()
+        self.renderer.create_framebuffers(width, height)
         self.camera.width, self.camera.height = width, height
         self.camera.calculate_projection_matrix()
-        self.renderer.aspect_ratio = self.width() / self.height()
         self.update()
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
         self.makeCurrent()
-        self.renderer.draw_scene(self.camera, self.bonds)
-        if self.show_atom_indices:
-            self.update_atom_number_labels()
-            self.renderer.display_numbers(self.camera, self.number_scale)
+        self.renderer.draw_scene(self.camera, self.defaultFramebufferObject())
 
     def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
         """Set the vertex attribute objects of the structure."""
-        assert isinstance(self.structures[0].drawer.cylinder_colors, np.ndarray)
-        sphere_vertices = self.structures[0].drawer.sphere.vertices
-        sphere_indices = self.structures[0].drawer.sphere.indices
-        cylinder_vertices = self.structures[0].drawer.cylinder.vertices
-        cylinder_indices = self.structures[0].drawer.cylinder.indices
-        sphere_model_matrices = self.structures[0].drawer.sphere_model_matrices
-        atom_colors = self.structures[0].drawer.atom_colors
-        cylinder_model_matrices = self.structures[0].drawer.cylinder_model_matrices
-        cylinder_colors = self.structures[0].drawer.cylinder_colors
-        for i in range(1, len(self.structures)):
-            sphere_model_matrices = np.concatenate(
-                (sphere_model_matrices, self.structures[i].drawer.sphere_model_matrices),
-                axis=0,
-            )
-            atom_colors = np.concatenate(
-                (atom_colors, self.structures[i].drawer.atom_colors),
-                axis=0,
-            )
-            cylinder_model_matrices = np.concatenate(
-                (cylinder_model_matrices, self.structures[i].drawer.cylinder_model_matrices),
-                axis=0,
-            )
-            cylinder_colors = np.concatenate(
-                (cylinder_colors, self.structures[i].drawer.cylinder_colors),
-                axis=0,
-            )
-        self.makeCurrent()
-        self.renderer.update_atoms_vao(
-            sphere_vertices,
-            sphere_indices,
-            sphere_model_matrices,
-            atom_colors,
-        )
-        self.renderer.update_bonds_vao(
-            cylinder_vertices,
-            cylinder_indices,
-            cylinder_model_matrices,
-            cylinder_colors,
-        ) if update_bonds else None
+        self.renderer.objects3d['Atoms'] = self.structures[0].drawer.spheres
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""

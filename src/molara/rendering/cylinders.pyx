@@ -6,21 +6,40 @@ They are used to create cylinders and multiple cylinders of the same color, resp
 cimport numpy as npc
 import numpy as np
 from molara.tools.mathtools import norm_float
+from molara.rendering.object3d import Object3D
 
 
-class Cylinder:
-    """Creates a Cylinder object, containing its vertices and indices.
+class Cylinders(Object3D):
+    """Creates a Cylinder object, containing its vertices and indices."""
 
-    :param color: Color of the cylinder.
-    :param subdivisions: Number of subdivisions of the cylinder.
-    """
-
-    def __init__(self, subdivisions: int) -> None:
-        """Creates a Cylinder object, containing its vertices and indices."""
+    def __init__(self,
+                 subdivisions: int,
+                 positions: np.ndarray,
+                 directions: np.ndarray,
+                 radii: np.ndarray,
+                 lengths: np.ndarray,
+                 colors: np.ndarray,) -> None:
+        """Create a Cylinder object to be drawn."""
         self.subdivisions = subdivisions
         vertices, indices = generate_cylinder(self.subdivisions)
+        super().__init__()
         self.vertices = vertices
         self.indices = indices
+        self.number_of_instances = len(positions)
+        self.number_of_vertices = len(vertices)
+        for i in range(self.number_of_instances):
+            model_matrix = calculate_cylinder_model_matrix(
+                np.array(positions[i], dtype=np.float32),
+                float(radii[i]),
+                float(lengths[i]),
+                np.array(directions[i], dtype=np.float32),
+            )
+            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+        self.model_matrices = model_matrices
+        self.colors = colors
+        self.generate_buffers()
+
+
 
 
 def generate_cylinder(

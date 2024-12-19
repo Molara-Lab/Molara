@@ -6,15 +6,15 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.rendering.cylinder import Cylinder, calculate_cylinder_model_matrix
+from molara.rendering.cylinders import Cylinders, calculate_cylinder_model_matrix
 from molara.rendering.matrices import (
     calculate_model_matrices,
     calculate_rotation_matrices,
     calculate_scale_matrices,
     calculate_translation_matrices,
 )
-from molara.rendering.sphere import (
-    Sphere,
+from molara.rendering.spheres import (
+    Spheres,
 )
 from molara.tools.mathtools import norm
 
@@ -37,6 +37,8 @@ class Drawer:
         :param bonds: list ids of bonded atoms
         :param draw_bonds: bool that specifies whether bonds shall be drawn (as cylinders)
         """
+        self.atoms: None | list = atoms
+        
         self.subdivisions_sphere = 20
         self.subdivisions_cylinder = 20
         self.stick_mode = False
@@ -47,16 +49,17 @@ class Drawer:
         self.cylinder_scale = 1.0
         self.cylinder_radius = 0.075
 
-        self.sphere = Sphere(self.subdivisions_sphere)
-        self.cylinder = Cylinder(self.subdivisions_cylinder)
+        self.spheres: Spheres | None = None
+        self.cylinders: Cylinders | None = None
+        # 
         self.sphere_model_matrices = np.array([], dtype=np.float32)
         self.sphere_translation_matrices: list | np.ndarray = []
         self.sphere_scale_matrices: list | np.ndarray = []
 
-        self.atom_positions: list | np.ndarray = []
-        self.atom_colors: np.ndarray = np.array([], dtype=np.float32)
-        self.atom_scales: list | np.ndarray = []
-        self.update_atoms(atoms)
+        self.sphere_positions: list | np.ndarray = []
+        self.sphere_colors: list | np.ndarray = []
+        self.sphere_radii: list | np.ndarray = []
+        self.update_spheres()
 
         self.cylinder_scale_matrices: list | np.ndarray = []
         self.cylinder_rotation_matrices: list | np.ndarray = []
@@ -75,16 +78,43 @@ class Drawer:
         """Specifies whether drawer has been passed any bonds to draw."""
         return self.bonds[0][0] != -1
 
-    def update_atoms(self, atoms: list[Atom] | None = None) -> None:
+    def update_spheres(self, atoms: None | list = None) -> None:
         """Update the bonds and/or bond matrices of the drawer."""
         if atoms is not None:
             self.atoms = atoms
-            self.set_atom_colors()
-            self.set_atom_positions()
-            self.set_atom_scales()
-            self.set_atom_scale_matrices()
-        self.set_atom_translation_matrices()
-        self.set_atom_model_matrices()
+
+        self.sphere_positions = []
+        self.sphere_colors = []
+        self.sphere_radii = []
+        scaling_factor = self.sphere_default_radius * self.sphere_scale
+        if not self.stick_mode:
+            for atom in self.atoms:
+                self.sphere_positions.append(atom.position)
+                self.sphere_colors.append(atom.color[self.color_scheme])
+                self.sphere_radii.append(scaling_factor * atom.vdw_radius)
+        else:
+            for atom in self.atoms:
+                self.sphere_positions.append(atom.position)
+                self.sphere_colors.append(atom.color[self.color_scheme])
+                self.sphere_radii.append(scaling_factor)
+
+        self.sphere_positions = np.array(self.sphere_positions, dtype=np.float32)
+        self.sphere_colors = np.array(self.sphere_colors, dtype=np.float32)
+        self.sphere_radii = np.array(self.sphere_radii, dtype=np.float32)
+
+        print(self.sphere_radii)
+
+        self.spheres = Spheres(
+            self.subdivisions_sphere,
+            self.sphere_positions,
+            self.sphere_radii,
+            self.sphere_colors,
+            wire_frame=False,
+        )
+            
+        #     self.set_atom_scale_matrices()
+        # self.set_atom_translation_matrices()
+        # self.set_atom_model_matrices()
 
     def update_bonds(self, bonds: np.ndarray | None = None, draw_bonds: bool = True) -> None:
         """Update the bonds and/or bond matrices of the drawer."""
@@ -115,7 +145,7 @@ class Drawer:
 
     def set_atom_colors(self) -> None:
         """Set the colors of the atoms."""
-        self.atom_colors = np.array([atom.color[self.color_scheme] for atom in self.atoms], dtype=np.float32)
+        self.sphere_colors = np.array([atom.color[self.color_scheme] for atom in self.atoms], dtype=np.float32)
 
     def set_cylinder_dimensions(self) -> None:
         """Set the dimensions of the cylinders.
@@ -177,22 +207,22 @@ class Drawer:
 
     def set_atom_positions(self) -> None:
         """Set the positions of the atoms."""
-        self.atom_positions = np.array(
+        self.sphere_positions = np.array(
             [np.array(atom.position, dtype=np.float32) for atom in self.atoms],
             dtype=np.float32,
         )
 
-    def set_atom_scales(self) -> None:
+    def set_sphere_scales(self) -> None:
         """Set the scales of the atoms."""
-        self.atom_scales = []
+        self.sphere_scales = []
         scaling_factor = self.sphere_default_radius * self.sphere_scale
         if not self.stick_mode:
-            self.atom_scales = np.array(
+            self.sphere_scales = np.array(
                 [3 * [scaling_factor * atom.vdw_radius] for atom in self.atoms],
                 dtype=np.float32,
             )
         else:
-            self.atom_scales = np.array([3 * [scaling_factor] for _ in self.atoms], dtype=np.float32)
+            self.sphere_scales = np.array([3 * [scaling_factor] for _ in self.atoms], dtype=np.float32)
 
     def reset_atom_model_matrices(self) -> None:
         """Reset the model matrices for the spheres."""
@@ -204,7 +234,7 @@ class Drawer:
 
     def reset_atom_colors(self) -> None:
         """Reset the colors for the spheres."""
-        self.atom_colors = np.array([], dtype=np.float32)
+        self.sphere_colors = np.array([], dtype=np.float32)
 
     def set_cylinder_model_matrices(self) -> None:
         """Set the model matrices for the cylinders."""
@@ -237,13 +267,13 @@ class Drawer:
     def set_atom_translation_matrices(self) -> None:
         """Set the translation matrices for the spheres."""
         self.sphere_translation_matrices = calculate_translation_matrices(
-            np.array(self.atom_positions),
+            np.array(self.sphere_positions),
         )
 
     def set_atom_scale_matrices(self) -> None:
         """Set the scale matrices for the spheres."""
         self.sphere_scale_matrices = calculate_scale_matrices(
-            np.array(self.atom_scales),
+            np.array(self.sphere_scales),
         )
 
     def set_atom_model_matrices(self) -> None:

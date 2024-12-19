@@ -3,19 +3,36 @@
 import numpy as np
 cimport numpy as npc
 from molara.tools.mathtools import norm
+from molara.rendering.object3d import Object3D
 
-class Sphere:
+class Spheres(Object3D):
     """Creates a Sphere object, containing its vertices and indices.
 
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, subdivisions: int) -> None:
+    def __init__(self, subdivisions: int,
+                 positions: np.ndarray,
+                 radii: np.ndarray,
+                 colors: np.ndarray,
+                 wire_frame: bool = False,) -> None:
         """Creates a Sphere object, containing its vertices and indices."""
         self.subdivisions = subdivisions
         vertices, indices = generate_sphere(self.subdivisions)
+        super().__init__()
+        self.wire_frame = wire_frame
         self.vertices = vertices
         self.indices = indices
+        self.number_of_instances = len(positions)
+        self.number_of_vertices = len(vertices)
+
+        for i in range(self.number_of_instances):
+            model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
+            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+        self.model_matrices = model_matrices
+        self.colors = colors
+
+        self.generate_buffers()
 
 
 def generate_sphere(
@@ -64,7 +81,7 @@ def generate_sphere(
 
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
-def calculate_sphere_model_matrix(npc.ndarray[float, ndim=1] position,
+def calculate_sphere_model_matrix(npc.ndarray position,
                                   float radius) -> np.ndarray:
     """Calculates the model matrix for a sphere.
 
