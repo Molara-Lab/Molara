@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import TYPE_CHECKING
-
+import yaml
 import numpy as np
 
 from molara.structure.atom import element_symbol_to_atomic_number
@@ -371,6 +371,35 @@ class MoldenImporter(MoleculesImporter):
         return mo_coefficients, labels, energies, spins, occupations
 
 
+class PDAInPsightsImporter(MoleculesImporter):
+    """Importer from *.json files."""
+
+    def load(self) -> Molecules:
+        """Read the file in self.path and creates a Molecules object."""
+        with open(self.path, "r") as file:
+            documents = list(yaml.safe_load_all(file))
+        pda_data = documents[1]
+        # get the atomic numbers:
+        atomic_numbers = []
+        for atom in pda_data["Atoms"]["Types"]:
+            atomic_numbers.append(element_symbol_to_atomic_number(atom.capitalize()))
+        coordinates = []
+        for position in pda_data["Atoms"]["Positions"]:
+            coordinates.append([float(x * BOHR_TO_ANGSTROM) for x in position])
+        for electron_type in pda_data["Clusters"][0]["Structures"][0]["Types"]:
+            electron_type = "Up" if electron_type == "a" else "Dn"
+            atomic_numbers.append(element_symbol_to_atomic_number(electron_type.capitalize()))
+        for electron_position in pda_data["Clusters"][0]["Structures"][0]["Positions"]:
+            coordinates.append([float(x * BOHR_TO_ANGSTROM) for x in electron_position])
+
+        # Create molecule
+        molecules = Molecules()
+        mol = Molecule(np.array(atomic_numbers), np.array(coordinates))
+
+
+        molecules.add_molecule(mol)
+        return molecules
+
 class CubeImporter(MoleculesImporter):
     """Importer from *.molden files."""
 
@@ -529,6 +558,7 @@ class GeneralImporter(MoleculesImporter):
         ".molden": MoldenImporter,
         ".input": MoldenImporter,
         ".cube": CubeImporter,
+        ".yml": PDAInPsightsImporter,
     }
 
     def __init__(
