@@ -58,7 +58,7 @@ class Molecule(Structure):
             position = atom.position - self.center_of_mass
             atom.set_position(position)
 
-        self.drawer.update_spheres(self.atoms)
+        self.drawer.set_spheres(self.atoms)
         if self.draw_bonds:
             self.drawer.update_bonds()
 

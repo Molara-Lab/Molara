@@ -9,6 +9,7 @@ from molara.tools.mathtools import norm_float
 from molara.rendering.object3d import Object3D
 
 
+
 class Cylinders(Object3D):
     """Creates a Cylinder object, containing its vertices and indices."""
 
@@ -16,10 +17,11 @@ class Cylinders(Object3D):
                  subdivisions: int,
                  positions: np.ndarray,
                  directions: np.ndarray,
-                 radii: np.ndarray,
-                 lengths: np.ndarray,
-                 colors: np.ndarray,) -> None:
+                 dimensions: np.ndarray,
+                 colors: np.ndarray,
+                 wire_frame: bool = False) -> None:
         """Create a Cylinder object to be drawn."""
+        self.wire_frame = wire_frame
         self.subdivisions = subdivisions
         vertices, indices = generate_cylinder(self.subdivisions)
         super().__init__()
@@ -27,18 +29,14 @@ class Cylinders(Object3D):
         self.indices = indices
         self.number_of_instances = len(positions)
         self.number_of_vertices = len(vertices)
-        for i in range(self.number_of_instances):
-            model_matrix = calculate_cylinder_model_matrix(
-                np.array(positions[i], dtype=np.float32),
-                float(radii[i]),
-                float(lengths[i]),
-                np.array(directions[i], dtype=np.float32),
-            )
-            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
-        self.model_matrices = model_matrices
+
+        self.calculate_translation_matrices(positions)
+        self.calculate_scaling_matrices(dimensions)
+        self.calculate_rotation_matrices(directions)
+        self.calculate_model_matrices()
+
         self.colors = colors
         self.generate_buffers()
-
 
 
 

@@ -4,6 +4,7 @@ import numpy as np
 cimport numpy as npc
 from molara.tools.mathtools import norm
 from molara.rendering.object3d import Object3D
+from molara.rendering.matrices import calculate_scale_matrices
 
 class Spheres(Object3D):
     """Creates a Sphere object, containing its vertices and indices.
@@ -26,13 +27,27 @@ class Spheres(Object3D):
         self.number_of_instances = len(positions)
         self.number_of_vertices = len(vertices)
 
-        for i in range(self.number_of_instances):
-            model_matrix = calculate_sphere_model_matrix(positions[i], radii[i])
-            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
-        self.model_matrices = model_matrices
+        self.calculate_translation_matrices(positions)
+        self.calculate_scaling_matrices(radii)
+        eye_matrix = np.eye(4, dtype=np.float32)
+        self.rotation_matrices = np.array([eye_matrix for _ in range(self.number_of_instances)], dtype=np.float32)
+        self.calculate_model_matrices()
+
         self.colors = colors
 
         self.generate_buffers()
+
+    def calculate_scaling_matrices(self, radii: np.ndarray) -> None:
+        """Calculates the scaling matrices for the spheres.
+
+        This is a special case as, a sphere needs to be scaled uniformly.
+        :param radii: Dimensions of the spheres.
+        """
+        dimensions = np.zeros((self.number_of_instances, 3), dtype=np.float32)
+        dimensions[:, 0] = radii
+        dimensions[:, 1] = radii
+        dimensions[:, 2] = radii
+        self.scaling_matrices = calculate_scale_matrices(dimensions)
 
 
 def generate_sphere(

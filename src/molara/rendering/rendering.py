@@ -38,7 +38,7 @@ class Renderer:
         # multisampling anti-aliasing
         self.msaa = True
         # supersampling anti-aliasing factor
-        self.ssaa_factor = 1.2
+        self.ssaa_factor = 1
 
         self.device_pixel_ratio = 1
         self.objects3d: dict = {}
@@ -50,7 +50,7 @@ class Renderer:
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
         self.shade: str = ""
-        self.set_mode(OUTLINED_UNSHADED)
+        self.set_mode(SHADED)
 
     def set_mode(self, mode: str) -> None:
         """Set the mode of the renderer.

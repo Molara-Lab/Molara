@@ -177,7 +177,6 @@ class StructureCustomizerDialog(QDialog):
         :param ball_size: size of the spheres
         :param stick_size: size of the cylinders
         """
-        return
         structure.drawer.cylinder_radius = stick_size
         structure.drawer.sphere_default_radius = ball_size
 
@@ -190,7 +189,7 @@ class StructureCustomizerDialog(QDialog):
             structure.drawer.sphere_scale = self.ui.ballSizeSpinBox.value()
         structure.drawer.set_atom_colors()
         structure.drawer.set_cylinder_colors()
-        structure.drawer.set_sphere_scales()
+        structure.drawer.set_sphere_radii()
         structure.drawer.set_atom_scale_matrices()
         structure.drawer.set_atom_model_matrices()
 
@@ -214,7 +213,7 @@ class StructureCustomizerDialog(QDialog):
             if self.bonds:
                 structure.draw_bonds = True
                 structure.drawer.cylinder_scale = self.ui.stickSizeSpinBox.value()
-                structure.drawer.set_cylinder_dimensions()
+                structure.drawer.set_cylinder_radii()
                 structure.drawer.set_cylinder_scale_matrices()
                 structure.drawer.set_cylinder_model_matrices()
             else:
