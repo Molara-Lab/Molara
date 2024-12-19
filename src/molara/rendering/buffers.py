@@ -77,8 +77,9 @@ class Buffers:
 def setup_vao(
     vertices: np.ndarray,
     indices: np.ndarray | None,
+    num_instances: int,
     model_matrices: np.ndarray,
-    colors: None| np.ndarray,
+    colors: None | np.ndarray,
     texture: bool = False,
 ) -> tuple[int, list[int]]:
     """Set up a vertex attribute object and binds it to the GPU.
@@ -86,6 +87,7 @@ def setup_vao(
     :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
         rgb are the color values [0,1], and nxnynz are the components of the normal vector.
     :param indices: Gives the connectivity of the vertices.
+    :param num_instances: Number of instances of the object.
     :param model_matrices: Each matrix gives the transformation from object space to world.
     :param colors: Colors of the vertices.
     :param texture: If True, the object has a texture and the vao pointers need to be adapted
@@ -142,12 +144,11 @@ def setup_vao(
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
     else:
-        ebo = None
+        ebo = -1
 
     # Instance colors
     if colors is not None:
         instance_vbo_color = glGenBuffers(1)
-        num_instances = len(colors)
         glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_color)
         glBufferData(
             GL_ARRAY_BUFFER,
@@ -170,7 +171,6 @@ def setup_vao(
 
     # Instance matrices
     instance_vbo_model = glGenBuffers(1)
-    num_instances = len(model_matrices)
     glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_model)
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -190,10 +190,8 @@ def setup_vao(
             ctypes.c_void_p(i * 16),
         )
         glVertexAttribDivisor(3 + i, 1)
-    if indices is not None:
-        buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
-    else:
-        buffers = [vbo, -1, instance_vbo_color, instance_vbo_model]
+    buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
+
     glBindVertexArray(0)
 
     return vao, buffers

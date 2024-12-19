@@ -61,13 +61,13 @@ class Object3D:
             self.translation_matrices, self.scaling_matrices, self.rotation_matrices
         )
 
-
     def generate_buffers(self) -> None:
         """Generate the vertex attribute objects and buffers for a given object."""
         # remember to put the buffer association into the setup function!!!
         self.vao, buffers = setup_vao(
             self.vertices,
             self.indices,
+            self.number_of_instances,
             self.model_matrices,
             self.colors,
             self.texture,

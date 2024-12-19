@@ -27,7 +27,6 @@ class Surface3DDialog(QDialog):
         self.molecule: None | Molecule = None
         self.voxel_grid: VoxelGrid3D = VoxelGrid3D()
         self.iso_value = 0.0
-        self.drawn_surfaces = [-1, -1]
         self.vertices_1: np.ndarray = np.array([])
         self.vertices_2: np.ndarray = np.array([])
         self.surfaces_are_visible = False
@@ -139,10 +138,9 @@ class Surface3DDialog(QDialog):
     def remove_surfaces(self) -> None:
         """Remove the surfaces."""
         self.parent().structure_widget.makeCurrent()
-        for surface in self.drawn_surfaces:
-            if surface != -1:
-                self.parent().structure_widget.renderer.remove_polygon(surface)
-        self.drawn_surfaces = [-1, -1]
+        for name in ["Surface_1", "Surface_2"]:
+            if name in self.parent().structure_widget.renderer.objects3d:
+                self.parent().structure_widget.renderer.remove_object(name)
         self.parent().structure_widget.update()
 
     def display_surfaces(self) -> None:
@@ -156,16 +154,18 @@ class Surface3DDialog(QDialog):
     def draw_surfaces(self) -> None:
         """Draw the surfaces."""
         self.remove_surfaces()
-        surface_1 = self.parent().structure_widget.renderer.draw_polygon(
-            self.vertices_1,
-            np.array([self.color_surface_1 / 255], dtype=np.float32),
-        )
-        self.drawn_surfaces = [surface_1]
-        surface_2 = self.parent().structure_widget.renderer.draw_polygon(
-            self.vertices_2,
-            np.array([self.color_surface_2 / 255], dtype=np.float32),
-        )
-        self.drawn_surfaces.append(surface_2)
+        if self.vertices_1.size != 0:
+            self.parent().structure_widget.renderer.draw_polygon(
+                "Surface_1",
+                self.vertices_1,
+                np.array([self.color_surface_1 / 255], dtype=np.float32),
+            )
+        if self.vertices_2.size != 0:
+            self.parent().structure_widget.renderer.draw_polygon(
+                "Surface_2",
+                self.vertices_2,
+                np.array([self.color_surface_2 / 255], dtype=np.float32),
+            )
         self.parent().structure_widget.update()
 
     def toggle_wire_mesh(self) -> None:

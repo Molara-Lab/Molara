@@ -3,12 +3,14 @@
 # mypy: disable-error-code="name-defined"
 from __future__ import annotations
 
+import ctypes
 from typing import TYPE_CHECKING
 
 import numpy as np
 from molara.rendering.shaders import Shader
 from molara.rendering.billboards import Billboards
 from molara.rendering.cylinders import Cylinders
+from molara.rendering.polygons import Polygon
 from OpenGL.GL import *
 from molara.rendering.framebuffers import Framebuffer
 
@@ -38,7 +40,7 @@ class Renderer:
         # multisampling anti-aliasing
         self.msaa = True
         # supersampling anti-aliasing factor
-        self.ssaa_factor = 1.2
+        self.ssaa_factor = 1
 
         self.device_pixel_ratio = 1
         self.objects3d: dict = {}
@@ -173,6 +175,19 @@ class Renderer:
                                                    normals,
                                                    sizes,
                                                    texture)
+
+    def draw_polygon(  # noqa: PLR0913
+        self,
+        name: str,
+        vertices: np.ndarray,
+        color: np.ndarray,
+    ) -> None:
+        """Draws one polygon.
+
+        :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
+        :param color: Colors of the vertices.
+        """
+        self.objects3d[name] = Polygon(vertices, color)
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -382,7 +397,12 @@ class Renderer:
         # texture unit 3
         glUniform1i(self.shaders[post_processing_shader].get_uniform_location("screenUnshadedTexture"), 3)
 
-    def post_process_main_buffer(self, post_processing_shader: str, default_framebuffer: int) -> None:
+    def post_process_main_buffer(self,
+                                 post_processing_shader: str,
+                                 default_framebuffer: int,
+                                 width: int,
+                                 height: int,
+                                 ) -> None:
         """Post process the main buffer.
 
         This function uses the post-processing shader to post process the main buffer and render the new image to the
@@ -390,9 +410,12 @@ class Renderer:
 
         :param post_processing_shader: Name of the post-processing shader.
         :param default_framebuffer: Framebuffer for drawing to the screen.
+        :param width: Width of the screen.
+        :param height: Height of the screen.
         """
         self.init_post_processing_shader(post_processing_shader)
         glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer)
+        glViewport(0, 0, int(width * self.device_pixel_ratio), int(height * self.device_pixel_ratio))
 
         # Reset framebuffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -447,7 +470,7 @@ class Renderer:
 
         # post-processing on framebuffer and rendering on screen
         shader_name = "Outline"
-        self.post_process_main_buffer(shader_name, default_framebuffer)
+        self.post_process_main_buffer(shader_name, default_framebuffer, camera.width, camera.height)
 
 
 def _render_object(object_: Object3D) -> None:
@@ -458,13 +481,16 @@ def _render_object(object_: Object3D) -> None:
     if object_.wire_frame:
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     glBindVertexArray(object_.vao)
-    glDrawElementsInstanced(
-        GL_TRIANGLES,
-        object_.number_of_vertices,
-        GL_UNSIGNED_INT,
-        None,
-        object_.number_of_instances,
-    )
+    if object_.buffers.ebo != -1:
+        glDrawElementsInstanced(
+            GL_TRIANGLES,
+            object_.number_of_vertices,
+            GL_UNSIGNED_INT,
+            None,
+            object_.number_of_instances,
+        )
+    else:
+        glDrawArraysInstanced(GL_TRIANGLES, 0, object_.number_of_vertices, object_.number_of_instances)
     if object_.wire_frame:
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     glBindVertexArray(0)
