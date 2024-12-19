@@ -207,7 +207,7 @@ class StructureWidget(QOpenGLWidget):
         self.makeCurrent()
         self.renderer.draw_scene(self.camera, self.defaultFramebufferObject())
 
-    def set_vertex_attribute_objects(self, update_bonds: bool = True) -> None:
+    def set_vertex_attribute_objects(self) -> None:
         """Set the vertex attribute objects of the structure."""
         self.makeCurrent()
         for name in ["Atoms", "Bonds"]:
@@ -216,7 +216,8 @@ class StructureWidget(QOpenGLWidget):
         if self.structures[0].drawer.spheres is not None:
             self.renderer.objects3d['Atoms'] = self.structures[0].drawer.spheres
         if self.structures[0].drawer.cylinders is not None:
-            self.renderer.objects3d['Bonds'] = self.structures[0].drawer.cylinders
+            if self.structures[0].draw_bonds:
+                self.renderer.objects3d['Bonds'] = self.structures[0].drawer.cylinders
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""

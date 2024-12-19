@@ -115,7 +115,6 @@ class Drawer:
 
     def set_atom_colors(self) -> None:
         """Set the colors of the atoms."""
-        print(self.color_scheme)
         self.sphere_colors = np.array([atom.color[self.color_scheme] for atom in self.atoms], dtype=np.float32)
         self.spheres.colors = self.sphere_colors
 
