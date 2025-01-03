@@ -193,11 +193,11 @@ class WorkaroundTestMainWindow:
     def test_toggle_axes(self) -> None:
         """Test the toggle_axes method."""
         window = self.window
-        assert window.structure_widget.axes == [-1, -1]
+        assert not window.structure_widget.draw_axes
         window.toggle_axes()
-        assert window.structure_widget.axes != [-1, -1]
+        assert window.structure_widget.draw_axes
         window.toggle_axes()
-        assert window.structure_widget.axes == [-1, -1]
+        assert not window.structure_widget.draw_axes
 
     def test_show_init_xyz(self) -> None:
         """Test the show_init_xyz method."""

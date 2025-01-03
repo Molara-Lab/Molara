@@ -95,7 +95,7 @@ class Structure:
             position = atom.position - self.center_of_mass
             atom.set_position(position)
 
-        self.drawer.update_atoms(self.atoms)
+        self.drawer.set_spheres(self.atoms)
         if self.draw_bonds:
             self.drawer.update_bonds()
 
