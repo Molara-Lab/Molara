@@ -77,7 +77,7 @@ class Buffers:
         self.texture = texture
 
 
-def setup_vao(
+def setup_vao(  # noqa: PLR0913
     vertices: np.ndarray,
     indices: np.ndarray | None,
     num_instances: int,
@@ -99,10 +99,7 @@ def setup_vao(
     vertex_attribute_positions_pointer_start = 0
     vertex_attribute_normals_pointer_start = 12
     vertex_attribute_texture_pointer_start = 24
-    if texture:
-        vertex_attribute_pointer_offset = 8
-    else:
-        vertex_attribute_pointer_offset = 6
+    vertex_attribute_pointer_offset = 8 if texture else 6
 
     vao = glGenVertexArrays(1)
     vbo = glGenBuffers(1)
@@ -200,7 +197,7 @@ def setup_vao(
     return vao, buffers
 
 
-def setup_texture_buffer(texture: Image):
+def setup_texture_buffer(texture: Image) -> int:
     """Set up the texture buffer.
 
     :param texture: The texture to be used, as a PIL Image object.

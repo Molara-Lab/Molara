@@ -23,7 +23,12 @@ class Billboards(Object3D):
                  normals: np.ndarray,
                  sizes: np.ndarray,
                  texture: Image,) -> None:
-        """Create a Cylinder object to be drawn."""
+        """Create a Cylinder object to be drawn.
+
+        :param positions: Positions of the billboards.
+        :param normals: Normals of the billboards.
+        :param sizes: Sizes of the billboards.
+        :param texture: Texture of the billboards. Needs to be a PIL image"""
         vertices, indices = generate_billboard()
         super().__init__()
         self.vertices = vertices

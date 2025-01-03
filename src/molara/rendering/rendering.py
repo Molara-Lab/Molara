@@ -7,19 +7,59 @@ import ctypes
 from typing import TYPE_CHECKING
 
 import numpy as np
-from OpenGL.GL import *
-from PIL import Image
+from OpenGL.GL import (
+    GL_ARRAY_BUFFER,
+    GL_COLOR_BUFFER_BIT,
+    GL_DEPTH_BUFFER_BIT,
+    GL_DEPTH_TEST,
+    GL_FALSE,
+    GL_FILL,
+    GL_FLOAT,
+    GL_FRAMEBUFFER,
+    GL_FRONT_AND_BACK,
+    GL_LINE,
+    GL_MULTISAMPLE,
+    GL_STATIC_DRAW,
+    GL_TEXTURE0,
+    GL_TEXTURE1,
+    GL_TEXTURE2,
+    GL_TEXTURE3,
+    GL_TEXTURE_2D,
+    GL_TRIANGLES,
+    GL_UNSIGNED_INT,
+    glActiveTexture,
+    glBindBuffer,
+    glBindFramebuffer,
+    glBindTexture,
+    glBindVertexArray,
+    glBufferData,
+    glClear,
+    glDisable,
+    glDrawArrays,
+    glDrawArraysInstanced,
+    glDrawElementsInstanced,
+    glEnable,
+    glEnableVertexAttribArray,
+    glGenBuffers,
+    glGenVertexArrays,
+    glPolygonMode,
+    glUniform1i,
+    glUniform3fv,
+    glUniformMatrix4fv,
+    glVertexAttribPointer,
+    glViewport,
+)
 
 from molara.rendering.billboards import Billboards
 from molara.rendering.cylinders import Cylinders
 from molara.rendering.framebuffers import Framebuffer
 from molara.rendering.polygons import Polygon
-from molara.rendering.rendering_functions import _render_object
 from molara.rendering.shaders import Shader
 from molara.rendering.spheres import Spheres
 
 if TYPE_CHECKING:
     from numpy import floating
+    from PIL import Image
 
     from molara.rendering.camera import Camera
     from molara.rendering.object3d import Object3D
@@ -42,7 +82,7 @@ class Renderer:
         # multisampling anti-aliasing
         self.msaa = True
         # supersampling anti-aliasing factor
-        self.ssaa_factor = 2
+        self.ssaa_factor = 1.2
 
         self.device_pixel_ratio = 1
         self.objects3d: dict = {}
@@ -53,7 +93,7 @@ class Renderer:
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
         self.shade: str = ""
-        self.set_mode(OUTLINED_SHADED)
+        self.set_mode(UNSHADED)
 
     def set_mode(self, mode: str) -> None:
         """Set the mode of the renderer.
@@ -61,9 +101,9 @@ class Renderer:
         :param mode: Mode of the renderer.
         """
         self.mode = mode
-        if mode == SHADED or mode == OUTLINED_SHADED:
+        if mode in (SHADED, OUTLINED_SHADED):
             self.shade = "Shaded"
-        elif mode == UNSHADED or mode == OUTLINED_UNSHADED:
+        elif mode in (UNSHADED, OUTLINED_UNSHADED):
             self.shade = "Unshaded"
 
     def create_framebuffers(self, width: float, height: float) -> None:
@@ -178,7 +218,7 @@ class Renderer:
         normals: np.ndarray,
         sizes: np.ndarray,
         texture: Image,
-    ):
+    ) -> None:
         """Draw one or multiple billboards with the same textures.
 
         If only one billboard is drawn, the positions, normals, and sizes are given
@@ -191,7 +231,6 @@ class Renderer:
         :param normals: Normals of the billboards.
         :param sizes: Sizes of the cylinders.
         :param texture: A PIL image used as a texture.
-        :return: Returns the index of the cylinder in the list of cylinders.
         """
         self.textured_objects3d[name] = Billboards(positions, normals, sizes, texture)
 
@@ -311,7 +350,7 @@ class Renderer:
             raise ValueError(msg)
 
     def _init_rendering(self, shader_name: str, camera: Camera) -> None:
-        """Initialize the uniform location of the shader code
+        """Initialize the uniform location of the shader code.
 
         :param shader_name: Name of the shader to be initialized.
         :param camera: Camera object from the scene.
@@ -339,13 +378,13 @@ class Renderer:
         :param default_framebuffer: Default framebuffer for drawing to the screen.
         :return:
         """
-        if self.mode == SHADED or self.mode == UNSHADED:
+        if self.mode in (SHADED, UNSHADED):
             if not self.msaa:
                 glDisable(GL_MULTISAMPLE)
             else:
                 glEnable(GL_MULTISAMPLE)
             self.draw_scene_default(camera, default_framebuffer)
-        elif self.mode == OUTLINED_UNSHADED or self.mode == OUTLINED_SHADED:
+        elif self.mode in (OUTLINED_UNSHADED, OUTLINED_SHADED):
             glDisable(GL_MULTISAMPLE)
             size_factor = self.framebuffers["Main"].buffer_size_factor
             glViewport(0, 0, int(camera.width * size_factor), int(camera.height * size_factor))
@@ -487,7 +526,7 @@ class Renderer:
         self.render_to_screen(shader_name, default_framebuffer, camera.width, camera.height)
 
 
-def _render_object_(object_: Object3D) -> None:
+def _render_object(object_: Object3D) -> None:
     """Draw a 3D object.
 
     :param object_: Object3D object to be drawn.

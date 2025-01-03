@@ -149,15 +149,10 @@ modules = [
     "src/molara/rendering/spheres.pyx",
     "src/molara/rendering/billboards.pyx",
     "src/molara/rendering/matrices.pyx",
-    "src/molara/rendering/rendering_functions.pyx",
     "src/molara/tools/mathtools.pyx",
 ]
 # Optional: Specify include directories
 include-dirs = [
     "",  # Current directory
     "{env:NUMPY_INCLUDE}",  # NumPy include directory
-    "/usr/local/include",  # For Intel Macs
-    "/opt/homebrew/include"  # For ARM Macs
 ]
-libraries = ["GL"]
-extra_link_args = ["-I/opt/homebrew/include", "-I/usr/local/include"]

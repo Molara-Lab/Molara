@@ -1,4 +1,4 @@
-"""This module contains the polygons classe.
+"""Contains the polygons class.
 
 It is used to draw a polygon.
 """
@@ -25,18 +25,18 @@ class Polygon(Object3D):
         self.colors = color[0]
         self.generate_buffers()
 
-    def calculate_scaling_matrices(self, dimensions: np.ndarray) -> None:
-        """Dummy function."""
+    def calculate_scaling_matrices(self, dimensions: np.ndarray) -> None:  # noqa: ARG002
+        """Contain dummy function."""
         return
 
-    def calculate_translation_matrices(self, positions: np.ndarray) -> None:
-        """Dummy function."""
+    def calculate_translation_matrices(self, positions: np.ndarray) -> None:  # noqa: ARG002
+        """Contain dummy function."""
         return
 
-    def calculate_rotation_matrices(self, directions: np.ndarray) -> None:
-        """Dummy function."""
+    def calculate_rotation_matrices(self, directions: np.ndarray) -> None:  # noqa: ARG002
+        """Contain dummy function."""
         return
 
     def calculate_model_matrices(self) -> None:
-        """Dummy function."""
+        """Contain dummy function."""
         return

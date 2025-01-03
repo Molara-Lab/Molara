@@ -38,24 +38,24 @@ class Object3D:
 
         self.indices = np.array([])
         self.vertices = np.array([])
-        self.texture = None
+        self.texture = False
 
-    def calculate_translation_matrices(self, positions: np.ndarray):
-        """Calculates the translation matrices for the cylinders.
+    def calculate_translation_matrices(self, positions: np.ndarray) -> None:
+        """Calculate the translation matrices for the cylinders.
 
         :param positions: Positions the object should be translated to.
         """
         self.translation_matrices = calculate_translation_matrices(positions)
 
-    def calculate_scaling_matrices(self, dimensions: np.ndarray):
-        """Calculates the translation matrices for the cylinders.
+    def calculate_scaling_matrices(self, dimensions: np.ndarray) -> None:
+        """Calculate the translation matrices for the cylinders.
 
         :param dimensions: Dimensions (in x, y, and z) the object should be scaled to.
         """
         self.scaling_matrices = calculate_scale_matrices(dimensions)
 
-    def calculate_rotation_matrices(self, directions: np.ndarray):
-        """Calculates the rotation matrices for the cylinders.
+    def calculate_rotation_matrices(self, directions: np.ndarray) -> None:
+        """Calculate the rotation matrices for the cylinders.
 
         :param directions: Direction the object should be rotated to (original direction must be y axis).
         """
@@ -80,10 +80,7 @@ class Object3D:
             self.colors,
             self.texture,
         )
-        if self.texture is not None:
-            texture_buffer = setup_texture_buffer(self.texture)
-        else:
-            texture_buffer = -1
+        texture_buffer = setup_texture_buffer(self.texture) if self.texture else -1
         self.buffers.save_buffer(
             vbo=buffers[0],
             ebo=buffers[1],

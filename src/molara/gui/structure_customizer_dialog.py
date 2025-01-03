@@ -177,7 +177,7 @@ class StructureCustomizerDialog(QDialog):
         :param ball_size: size of the spheres
         :param stick_size: size of the cylinders
         """
-        structure.drawer.cylinder_radius = stick_size
+        structure.drawer.cylinder_scale = stick_size
         structure.drawer.sphere_default_radius = ball_size
 
         # Set the color scheme
@@ -225,7 +225,7 @@ class StructureCustomizerDialog(QDialog):
                 self.parent().structure_widget.number_scale = self.ui.indexSizeSpinBox.value()
             self.parent().structure_widget.show_atom_indices = self.numbers
 
-            self.parent().structure_widget.set_vertex_attribute_objects()
+            self.parent().structure_widget.update_molecule_spheres_cylinders()
         self.parent().structure_widget.update()
 
     def toggle_stick_mode(self) -> None:

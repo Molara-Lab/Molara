@@ -74,6 +74,7 @@ class Drawer:
         self.sphere_colors = []
         self.sphere_radii = []
         scaling_factor = self.sphere_default_radius * self.sphere_scale
+        assert self.atoms is not None
         if not self.stick_mode:
             for atom in self.atoms:
                 self.sphere_positions.append(atom.position)
@@ -114,11 +115,14 @@ class Drawer:
 
     def set_atom_colors(self) -> None:
         """Set the colors of the atoms."""
+        assert self.atoms is not None
+        assert self.spheres is not None
         self.sphere_colors = np.array([atom.color[self.color_scheme] for atom in self.atoms], dtype=np.float32)
         self.spheres.colors = self.sphere_colors
 
     def set_atom_positions(self) -> None:
         """Set the positions of the atoms."""
+        assert self.atoms is not None
         self.sphere_positions = np.array(
             [np.array(atom.position, dtype=np.float32) for atom in self.atoms],
             dtype=np.float32,
@@ -128,6 +132,7 @@ class Drawer:
         """Set the scales of the atoms."""
         self.sphere_radii = []
         scaling_factor = self.sphere_default_radius * self.sphere_scale
+        assert self.atoms is not None
         if not self.stick_mode:
             self.sphere_radii = np.array(
                 [scaling_factor * atom.vdw_radius for atom in self.atoms],
@@ -146,6 +151,8 @@ class Drawer:
         self.cylinder_dimensions = []
         radius = self.cylinder_default_radius * self.cylinder_scale
 
+        assert self.bonds is not None
+        assert self.atoms is not None
         for bond in self.bonds:
             if bond[0] == -1:
                 continue
@@ -187,12 +194,17 @@ class Drawer:
 
         It is important to note, that the radius ([:,1]) of the cylinders need not be changed!
         """
+        assert isinstance(self.cylinder_dimensions, np.ndarray)
         self.cylinder_dimensions[:, 0] = self.cylinder_default_radius * self.cylinder_scale
         self.cylinder_dimensions[:, 2] = self.cylinder_default_radius * self.cylinder_scale
 
     def set_cylinder_colors(self) -> None:
         """Set the colors of the bonds (cylinders)."""
         self.cylinder_colors = []
+        assert self.bonds is not None
+        assert self.atoms is not None
+        if self.cylinders is None:
+            return
         for bond in self.bonds:
             if bond[0] == -1:
                 continue
@@ -204,30 +216,43 @@ class Drawer:
 
     def set_cylinder_model_matrices(self) -> None:
         """Set the model matrices for the cylinders."""
+        assert self.cylinders is not None
         self.cylinders.calculate_model_matrices()
         self.cylinders.generate_buffers()
 
     def set_cylinder_translation_matrices(self) -> None:
         """Set the translation matrices for the spheres."""
+        assert self.cylinders is not None
+
         self.cylinders.calculate_translation_matrices(self.cylinder_positions)
 
     def set_cylinder_scale_matrices(self) -> None:
         """Set the translation matrices for the cylinders."""
+        assert self.cylinders is not None
+
         self.cylinders.calculate_scaling_matrices(self.cylinder_dimensions)
 
     def set_cylinder_rotation_matrices(self) -> None:
         """Set the rotation matrices for the cylinders."""
+        assert self.cylinders is not None
+
         self.cylinders.calculate_rotation_matrices(self.cylinder_directions)
 
     def set_atom_translation_matrices(self) -> None:
         """Set the translation matrices for the spheres."""
+        assert self.spheres is not None
+
         self.spheres.calculate_translation_matrices(self.sphere_positions)
 
     def set_atom_scale_matrices(self) -> None:
         """Set the scale matrices for the spheres."""
+        assert self.spheres is not None
+
         self.spheres.calculate_scaling_matrices(self.sphere_radii)
 
     def set_atom_model_matrices(self) -> None:
         """Set the model matrices for the spheres."""
+        assert self.spheres is not None
+
         self.spheres.calculate_model_matrices()
         self.spheres.generate_buffers()

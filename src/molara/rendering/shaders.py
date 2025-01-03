@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from OpenGL.GL import (
     GL_FRAGMENT_SHADER,
     GL_VERTEX_SHADER,
@@ -23,15 +25,16 @@ class Shader:
         """Initialize the Shader class."""
         self.program: int = -1
 
-    def compile_shaders(self, vertex_path, fragment_path) -> None:
+    def compile_shaders(self, vertex_path: str, fragment_path: str) -> None:
         """Compiles the shader program with the given shader source code in glsl.
 
         :param vertex_path: The path to the vertex shader source code.
         :param fragment_path: The path to the fragment shader source code.
         """
 
-        def load_shader(path: str) -> str:
-            with open(path) as file:
+        def load_shader(path_: str) -> str:
+            path = Path(path_)
+            with path.open() as file:
                 return file.read()
 
         # Main shader
