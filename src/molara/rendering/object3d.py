@@ -1,8 +1,6 @@
 """Contain an abstract class for objects to inherit."""
+
 import numpy as np
-from molara.rendering.buffers import Buffers, setup_texture_buffer, setup_vao
-from molara.rendering.matrices import (calculate_model_matrices, calculate_rotation_matrices,
-                                       calculate_scale_matrices, calculate_translation_matrices)
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
     GL_ELEMENT_ARRAY_BUFFER,
@@ -10,6 +8,14 @@ from OpenGL.GL import (
     glBindVertexArray,
     glDeleteBuffers,
     glDeleteVertexArrays,
+)
+
+from molara.rendering.buffers import Buffers, setup_texture_buffer, setup_vao
+from molara.rendering.matrices import (
+    calculate_model_matrices,
+    calculate_rotation_matrices,
+    calculate_scale_matrices,
+    calculate_translation_matrices,
 )
 
 
@@ -58,7 +64,9 @@ class Object3D:
     def calculate_model_matrices(self) -> None:
         """Calculate the model matrices."""
         self.model_matrices = calculate_model_matrices(
-            self.translation_matrices, self.scaling_matrices, self.rotation_matrices
+            self.translation_matrices,
+            self.scaling_matrices,
+            self.rotation_matrices,
         )
 
     def generate_buffers(self) -> None:
@@ -76,10 +84,13 @@ class Object3D:
             texture_buffer = setup_texture_buffer(self.texture)
         else:
             texture_buffer = -1
-        self.buffers.save_buffer(vbo=buffers[0], ebo=buffers[1],
-                                 instance_vbo_color=buffers[2],
-                                 instance_vbo_model=buffers[3],
-                                 texture=texture_buffer)
+        self.buffers.save_buffer(
+            vbo=buffers[0],
+            ebo=buffers[1],
+            instance_vbo_color=buffers[2],
+            instance_vbo_model=buffers[3],
+            texture=texture_buffer,
+        )
 
     def __del__(self) -> None:
         """Free the GPU memory."""
@@ -87,8 +98,12 @@ class Object3D:
             glBindVertexArray(self.vao)
             glBindBuffer(GL_ARRAY_BUFFER, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            buffers = [self.buffers.vbo, self.buffers.ebo,
-                       self.buffers.instance_vbo_color, self.buffers.instance_vbo_model]
+            buffers = [
+                self.buffers.vbo,
+                self.buffers.ebo,
+                self.buffers.instance_vbo_color,
+                self.buffers.instance_vbo_model,
+            ]
             for buffer in buffers:
                 if buffer != -1:
                     glDeleteBuffers(1, [buffer])

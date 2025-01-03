@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable, glViewport
+from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -213,10 +213,10 @@ class StructureWidget(QOpenGLWidget):
             if name in self.renderer.objects3d:
                 self.renderer.remove_object(name)
         if self.structures[0].drawer.spheres is not None:
-            self.renderer.objects3d['Atoms'] = self.structures[0].drawer.spheres
+            self.renderer.objects3d["Atoms"] = self.structures[0].drawer.spheres
         if self.structures[0].drawer.cylinders is not None:
             if self.structures[0].draw_bonds:
-                self.renderer.objects3d['Bonds'] = self.structures[0].drawer.cylinders
+                self.renderer.objects3d["Bonds"] = self.structures[0].drawer.cylinders
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""
@@ -341,7 +341,7 @@ class StructureWidget(QOpenGLWidget):
         )
         directions = np.eye(3, dtype=np.float32)
         colors = np.eye(3, dtype=np.float32)
-        dimensions = np.array([[radius, length, radius]]*3, dtype=np.float32)
+        dimensions = np.array([[radius, length, radius]] * 3, dtype=np.float32)
 
         self.renderer.draw_cylinders(
             "Axes_cylinders",

@@ -20,11 +20,10 @@ class Framebuffer:
 
     def create(self, width: int, height: int) -> None:
         """Create a framebuffer object."""
-        def create_texture_buffer(texture: int,
-                                  var_internal_format: int,
-                                  var_format: int,
-                                  data_type: int,
-                                  attachement: int,) -> None:
+
+        def create_texture_buffer(
+            texture: int, var_internal_format: int, var_format: int, data_type: int, attachement: int
+        ) -> None:
             glBindTexture(GL_TEXTURE_2D, texture)
             glTexImage2D(GL_TEXTURE_2D, 0, var_internal_format, self.width, self.height, 0, var_format, data_type, None)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
@@ -48,7 +47,9 @@ class Framebuffer:
         create_texture_buffer(self.texture_color_buffer2, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_COLOR_ATTACHMENT2)
 
         self.texture_depth_buffer = glGenTextures(1)
-        create_texture_buffer(self.texture_depth_buffer, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_ATTACHMENT)
+        create_texture_buffer(
+            self.texture_depth_buffer, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_ATTACHMENT
+        )
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
 

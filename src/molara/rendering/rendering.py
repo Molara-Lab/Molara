@@ -7,21 +7,22 @@ import ctypes
 from typing import TYPE_CHECKING
 
 import numpy as np
-from molara.rendering.shaders import Shader
+from OpenGL.GL import *
+from PIL import Image
+
 from molara.rendering.billboards import Billboards
 from molara.rendering.cylinders import Cylinders
-from molara.rendering.polygons import Polygon
-from OpenGL.GL import *
-from molara.rendering.rendering_functions import _render_object
 from molara.rendering.framebuffers import Framebuffer
-
-from PIL import Image
+from molara.rendering.polygons import Polygon
+from molara.rendering.rendering_functions import _render_object
+from molara.rendering.shaders import Shader
 from molara.rendering.spheres import Spheres
 
 if TYPE_CHECKING:
+    from numpy import floating
+
     from molara.rendering.camera import Camera
     from molara.rendering.object3d import Object3D
-    from numpy import floating
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -47,8 +48,7 @@ class Renderer:
         self.objects3d: dict = {}
         self.textured_objects3d: dict = {}
         self.screen_vao = -1
-        self.framebuffers: dict = {"Main": Framebuffer(),
-                                   "Inter": Framebuffer()}
+        self.framebuffers: dict = {"Main": Framebuffer(), "Inter": Framebuffer()}
         self.framebuffers["Main"].ssaa_factor = self.ssaa_factor
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
@@ -78,15 +78,35 @@ class Renderer:
         self.screen_vao = glGenVertexArrays(1)
         glBindVertexArray(self.screen_vao)
 
-        quad_vertices = np.array([
-            -1.0, -1.0, 0.0, 0.0,  # Bottom-left
-            1.0, -1.0, 1.0, 0.0,  # Bottom-right
-            1.0, 1.0, 1.0, 1.0,  # Top-right
-
-            -1.0, -1.0, 0.0, 0.0,  # Bottom-left
-            1.0, 1.0, 1.0, 1.0,  # Top-right
-            -1.0, 1.0, 0.0, 1.0  # Top-left
-        ], dtype=np.float32)
+        quad_vertices = np.array(
+            [
+                -1.0,
+                -1.0,
+                0.0,
+                0.0,  # Bottom-left
+                1.0,
+                -1.0,
+                1.0,
+                0.0,  # Bottom-right
+                1.0,
+                1.0,
+                1.0,
+                1.0,  # Top-right
+                -1.0,
+                -1.0,
+                0.0,
+                0.0,  # Bottom-left
+                1.0,
+                1.0,
+                1.0,
+                1.0,  # Top-right
+                -1.0,
+                1.0,
+                0.0,
+                1.0,  # Top-left
+            ],
+            dtype=np.float32,
+        )
 
         screen_vbo = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, screen_vbo)
@@ -110,6 +130,7 @@ class Renderer:
 
     def set_shaders(self) -> None:
         """Set the shader program for the opengl widget."""
+
         def add_shader(name: str, vertex_path: str, fragment_path: str) -> None:
             """Add a shader to the shader program.
 
@@ -151,12 +172,12 @@ class Renderer:
         add_shader("Outline", shader_code_path + vertex_path, shader_code_path + fragment_path)
 
     def draw_billboard(
-            self,
-            name: str,
-            positions: np.ndarray,
-            normals: np.ndarray,
-            sizes: np.ndarray,
-            texture: Image,
+        self,
+        name: str,
+        positions: np.ndarray,
+        normals: np.ndarray,
+        sizes: np.ndarray,
+        texture: Image,
     ):
         """Draw one or multiple billboards with the same textures.
 
@@ -172,12 +193,9 @@ class Renderer:
         :param texture: A PIL image used as a texture.
         :return: Returns the index of the cylinder in the list of cylinders.
         """
-        self.textured_objects3d[name] = Billboards(positions,
-                                                   normals,
-                                                   sizes,
-                                                   texture)
+        self.textured_objects3d[name] = Billboards(positions, normals, sizes, texture)
 
-    def draw_polygon(  # noqa: PLR0913
+    def draw_polygon(
         self,
         name: str,
         vertices: np.ndarray,
@@ -214,13 +232,9 @@ class Renderer:
         :param subdivisions: Number of subdivisions of the cylinder.
         :return: Returns the index of the cylinder in the list of cylinders.
         """
-        self.objects3d[name] = Cylinders(subdivisions,
-                                         positions,
-                                         directions,
-                                         dimensions,
-                                         colors)
+        self.objects3d[name] = Cylinders(subdivisions, positions, directions, dimensions, colors)
 
-    def draw_cylinders_from_to( # noqa: PLR0913
+    def draw_cylinders_from_to(
         self,
         name: str,
         positions: np.ndarray,
@@ -257,7 +271,7 @@ class Renderer:
         directions = np.array(_directions) / lengths[:, None]
         self.draw_cylinders(name, positions_middle, -directions.astype(np.float32), dimensions, colors, subdivisions)
 
-    def draw_spheres( # noqa: PLR0913
+    def draw_spheres(  # noqa: PLR0913
         self,
         name: str,
         positions: np.ndarray,
@@ -281,7 +295,7 @@ class Renderer:
         :param wire_frame: If True, the sphere is drawn as wire mesh.
         :return: Returns the index of the sphere in the list of spheres.
         """
-        self.objects3d[name] = (Spheres(subdivisions, positions, radii, colors, wire_frame=wire_frame))
+        self.objects3d[name] = Spheres(subdivisions, positions, radii, colors, wire_frame=wire_frame)
 
     def remove_object(self, name: str) -> None:
         """Remove an object3d from the list of object3ds.
@@ -337,7 +351,6 @@ class Renderer:
             glViewport(0, 0, int(camera.width * size_factor), int(camera.height * size_factor))
             self.draw_scene_outlined(camera, default_framebuffer)
 
-
     def render_objects(self, camera: Camera) -> None:
         """Render the objects in the scene.
 
@@ -365,7 +378,6 @@ class Renderer:
         :param height: Height of the screen.
         :param default_framebuffer: Default framebuffer for drawing to the screen.
         """
-
         self.shaders[shader_name].use()
         glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer)
         glViewport(0, 0, int(width * self.device_pixel_ratio), int(height * self.device_pixel_ratio))
@@ -398,9 +410,10 @@ class Renderer:
         # texture unit 3
         glUniform1i(self.shaders[post_processing_shader].get_uniform_location("screenUnshadedTexture"), 3)
 
-    def post_process_main_buffer(self,
-                                 post_processing_shader: str,
-                                 ) -> None:
+    def post_process_main_buffer(
+        self,
+        post_processing_shader: str,
+    ) -> None:
         """Post process the main buffer.
 
         This function uses the post-processing shader to post process the main buffer and render the new image to the
@@ -495,5 +508,3 @@ def _render_object_(object_: Object3D) -> None:
     if object_.wire_frame:
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     glBindVertexArray(0)
-
-

@@ -4,17 +4,14 @@ It is used to draw a polygon.
 """
 
 import numpy as np
-from molara.rendering.object3d import Object3D
 
+from molara.rendering.object3d import Object3D
 
 
 class Polygon(Object3D):
     """Creates a Polygon object, containing its vertices and colors."""
 
-    def __init__(self,
-                 vertices: np.ndarray,
-                 color: np.ndarray,
-                 wire_frame: bool = False) -> None:
+    def __init__(self, vertices: np.ndarray, color: np.ndarray, wire_frame: bool = False) -> None:
         """Create a Cylinder object to be drawn."""
         self.wire_frame = wire_frame
         super().__init__()
@@ -27,7 +24,6 @@ class Polygon(Object3D):
 
         self.colors = color[0]
         self.generate_buffers()
-
 
     def calculate_scaling_matrices(self, dimensions: np.ndarray) -> None:
         """Dummy function."""

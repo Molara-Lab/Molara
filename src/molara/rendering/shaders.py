@@ -6,10 +6,10 @@ from OpenGL.GL import (
     GL_FRAGMENT_SHADER,
     GL_VERTEX_SHADER,
     glAttachShader,
-    glGetUniformLocation,
-    glUseProgram,
     glCreateProgram,
+    glGetUniformLocation,
     glLinkProgram,
+    glUseProgram,
 )
 from OpenGL.GL.shaders import compileShader
 
@@ -29,8 +29,9 @@ class Shader:
         :param vertex_path: The path to the vertex shader source code.
         :param fragment_path: The path to the fragment shader source code.
         """
+
         def load_shader(path: str) -> str:
-            with open(path, "r") as file:
+            with open(path) as file:
                 return file.read()
 
         # Main shader

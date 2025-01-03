@@ -144,9 +144,7 @@ class MainWindow(QMainWindow):
             "Perspective Projection" if self.structure_widget.orthographic_projection else "Orthographic Projection"
         )
         text_unit_cell_boundaries = (
-            "Hide Unit Cell Boundaries"
-            if self.structure_widget.box
-            else "Show Unit Cell Boundaries"
+            "Hide Unit Cell Boundaries" if self.structure_widget.box else "Show Unit Cell Boundaries"
         )
         self.ui.actionToggle_Axes.setText(QCoreApplication.translate("MainWindow", text_axes, None))
         self.ui.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", text_projection, None))

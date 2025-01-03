@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from molara.rendering.cylinders import Cylinders
-
 from molara.rendering.spheres import (
     Spheres,
 )
@@ -33,7 +32,7 @@ class Drawer:
         :param draw_bonds: bool that specifies whether bonds shall be drawn (as cylinders)
         """
         self.atoms: None | list = atoms
-        
+
         self.subdivisions_sphere = 20
         self.subdivisions_cylinder = 20
         self.stick_mode = False

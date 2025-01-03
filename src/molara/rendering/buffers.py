@@ -54,11 +54,14 @@ class Buffers:
         self.instance_vbo_model = -1
         self.texture = -1
 
-    def save_buffer(self, vbo: int = -1,
-                    instance_vbo_color: int = -1,
-                    instance_vbo_model: int = -1,
-                    ebo: int = -1,
-                    texture: int = -1) -> None:
+    def save_buffer(
+        self,
+        vbo: int = -1,
+        instance_vbo_color: int = -1,
+        instance_vbo_model: int = -1,
+        ebo: int = -1,
+        texture: int = -1,
+    ) -> None:
         """Save the buffers to delete or modify later.
 
         :param vbo: Pointer to the vbo object.
