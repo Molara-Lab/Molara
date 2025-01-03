@@ -12,6 +12,7 @@ from molara.rendering.billboards import Billboards
 from molara.rendering.cylinders import Cylinders
 from molara.rendering.polygons import Polygon
 from OpenGL.GL import *
+from molara.rendering.rendering_functions import _render_object
 from molara.rendering.framebuffers import Framebuffer
 
 from PIL import Image
@@ -40,7 +41,7 @@ class Renderer:
         # multisampling anti-aliasing
         self.msaa = True
         # supersampling anti-aliasing factor
-        self.ssaa_factor = 1
+        self.ssaa_factor = 2
 
         self.device_pixel_ratio = 1
         self.objects3d: dict = {}
@@ -399,9 +400,6 @@ class Renderer:
 
     def post_process_main_buffer(self,
                                  post_processing_shader: str,
-                                 default_framebuffer: int,
-                                 width: int,
-                                 height: int,
                                  ) -> None:
         """Post process the main buffer.
 
@@ -414,8 +412,7 @@ class Renderer:
         :param height: Height of the screen.
         """
         self.init_post_processing_shader(post_processing_shader)
-        glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer)
-        glViewport(0, 0, int(width * self.device_pixel_ratio), int(height * self.device_pixel_ratio))
+        self.framebuffers["Inter"].bind()
 
         # Reset framebuffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -468,12 +465,16 @@ class Renderer:
         self.framebuffers["Main"].bind()
         self.render_objects(camera)
 
-        # post-processing on framebuffer and rendering on screen
+        # post-processing on framebuffer
         shader_name = "Outline"
-        self.post_process_main_buffer(shader_name, default_framebuffer, camera.width, camera.height)
+        self.post_process_main_buffer(shader_name)
+
+        # Draw to screen
+        shader_name = "Screen"
+        self.render_to_screen(shader_name, default_framebuffer, camera.width, camera.height)
 
 
-def _render_object(object_: Object3D) -> None:
+def _render_object_(object_: Object3D) -> None:
     """Draw a 3D object.
 
     :param object_: Object3D object to be drawn.

@@ -196,7 +196,6 @@ class StructureWidget(QOpenGLWidget):
         :param width: widget width (in pixels)
         :param height: widget height (in pixels)
         """
-        glViewport(0, 0, width, height)  # one can also use self.width() and self.height()
         self.renderer.create_framebuffers(width, height)
         self.camera.width, self.camera.height = width, height
         self.camera.calculate_projection_matrix()

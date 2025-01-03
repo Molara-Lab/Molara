@@ -17,6 +17,7 @@ extensions = [
     "src/molara/rendering/spheres.pyx",
     "src/molara/rendering/billboards.pyx",
     "src/molara/rendering/matrices.pyx",
+    "src/molara/rendering/rendering_functions.pyx",
     "src/molara/tools/mathtools.pyx",
     "src/molara/tools/raycasting.pyx",
     "src/molara/eval/aos.pyx",
@@ -36,5 +37,5 @@ setup(
     # https://cython.readthedocs.io/en/latest/src/userguide/source_files_and_compilation.html#compiler-directives
     # external to be compiled
     ext_modules=cythonize(extensions, compiler_directives={"language_level": 3}),
-    include_dirs=[np.get_include()],
+    include_dirs=[np.get_include(), "/opt/homebrew/include"],
 )
