@@ -10,9 +10,10 @@ if TYPE_CHECKING:
     from molara.gui.main_window import MainWindow
 
 import numpy as np
+from PIL import Image
 
 from molara.rendering.billboards import Billboards
-from PIL import Image
+
 
 class WorkaroundTestBillboards:
     """Contains the tests for the buffers module."""
@@ -32,10 +33,8 @@ class WorkaroundTestBillboards:
 
     def _test_init(self) -> None:
         """Test the initialization of the Spheres class."""
-        positions = np.array([[0.0, 0.0, 0.0],
-                              [1.0, -2.345, 0.12]], dtype=np.float32)
-        scales = np.array([[1.0, 2.0, 1.0],
-                          [2.0, 1.0, 1.0]], dtype=np.float32)
+        positions = np.array([[0.0, 0.0, 0.0], [1.0, -2.345, 0.12]], dtype=np.float32)
+        scales = np.array([[1.0, 2.0, 1.0], [2.0, 1.0, 1.0]], dtype=np.float32)
         image = Image.open("tests/molara/rendering/images/MolaraLogo.png")
         billboards = Billboards(positions, positions, scales, image)
         assert billboards.texture is not None

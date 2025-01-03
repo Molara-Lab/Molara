@@ -32,10 +32,8 @@ class WorkaroundTestSpheres:
 
     def _test_init(self) -> None:
         """Test the initialization of the Spheres class."""
-        positions = np.array([[0.0, 0.0, 0.0],
-                              [1.0, -2.345, 0.12]], dtype=np.float32)
-        colors = np.array([[0.0, 1.0, 0.0],
-                            [1.0, 0.0, 0.0]], dtype=np.float32)
+        positions = np.array([[0.0, 0.0, 0.0], [1.0, -2.345, 0.12]], dtype=np.float32)
+        colors = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 0.0]], dtype=np.float32)
         scales = np.array([1.0, 2.0], dtype=np.float32)
         subdivisions = 20
         spheres = Spheres(subdivisions, positions, scales, colors)

@@ -32,14 +32,10 @@ class WorkaroundTestCylinders:
 
     def _test_init(self) -> None:
         """Test the initialization of the Spheres class."""
-        positions = np.array([[0.0, 0.0, 0.0],
-                              [1.0, -2.345, 0.12]], dtype=np.float32)
-        colors = np.array([[0.0, 1.0, 0.0],
-                            [1.0, 0.0, 0.0]], dtype=np.float32)
-        directions = np.array([[1.0, 0.0, 0.0],
-                                 [0.0, 1.0, 0.0]], dtype=np.float32)
-        dimensions = np.array([[1.0, 0.5, 1.0],
-                                 [0.5, 1.0, 0.5]], dtype=np.float32)
+        positions = np.array([[0.0, 0.0, 0.0], [1.0, -2.345, 0.12]], dtype=np.float32)
+        colors = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 0.0]], dtype=np.float32)
+        directions = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], dtype=np.float32)
+        dimensions = np.array([[1.0, 0.5, 1.0], [0.5, 1.0, 0.5]], dtype=np.float32)
         subdivisions = 20
         cylinders = Cylinders(subdivisions, positions, directions, dimensions, colors)
         assert cylinders.subdivisions == subdivisions

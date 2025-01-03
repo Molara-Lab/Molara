@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING
-from unittest import mock
 
 import numpy as np
 
@@ -62,10 +60,7 @@ class WorkaroundTestRenderer:
         radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
         lengths = np.array([1.0, 2.0, 3.0], dtype=np.float32)
         # get a dimensionsarray going with [[radius, length, radius] * number_of_instances]
-        dimensions = np.array([[0.5, 1.0, 0.5],
-                               [0.3, 2.0, 0.3],
-                               [0.2, 3.0, 0.2]],
-                              dtype=np.float32)
+        dimensions = np.array([[0.5, 1.0, 0.5], [0.3, 2.0, 0.3], [0.2, 3.0, 0.2]], dtype=np.float32)
 
         colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
         subdivisions = 10

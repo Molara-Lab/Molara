@@ -15,10 +15,10 @@ from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
 from gui.test_mos_dialog import WorkaroundTestMOsDialog
 from gui.test_normalization_dialog import WorkaroundTestNormalizationDialog
 from gui.test_structure_widget import WorkaroundTestStructureWidget
-from rendering.test_spheres import WorkaroundTestSpheres
-from rendering.test_cylinders import WorkaroundTestCylinders
 from rendering.test_billboards import WorkaroundTestBillboards
+from rendering.test_cylinders import WorkaroundTestCylinders
 from rendering.test_rendering import WorkaroundTestRenderer
+from rendering.test_spheres import WorkaroundTestSpheres
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
