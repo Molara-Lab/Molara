@@ -24,7 +24,7 @@ class Molecule(Structure):
     ) -> None:
         """Create a new Molecule object.
 
-        :param atomic_numbers:np.ndarray: atomic numbers of a atoms
+        :param atomic_numbers:np.ndarray: atomic numbers of the atoms
         :param coordinates:np.ndarray: coordinates of the molecule
         :param header:str: header from the imported file
         :param dummy: bool: a dummy object.

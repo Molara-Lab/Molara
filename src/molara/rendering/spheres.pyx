@@ -1,7 +1,6 @@
 """This module contains the Sphere and Spheres classes."""
 
 import numpy as np
-cimport numpy as npc
 from molara.tools.mathtools import norm
 from molara.rendering.object3d import Object3D
 from molara.rendering.matrices import calculate_scale_matrices
@@ -40,8 +39,6 @@ class Spheres(Object3D):
         self.calculate_model_matrices()
 
         self.colors = colors
-
-        self.generate_buffers()
 
     def calculate_scaling_matrices(self, radii: np.ndarray) -> None:
         """Calculates the scaling matrices for the spheres.

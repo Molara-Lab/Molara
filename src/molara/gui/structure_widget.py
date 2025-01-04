@@ -198,8 +198,10 @@ class StructureWidget(QOpenGLWidget):
                 self.renderer.remove_object(name)
         if self.structures[0].drawer.spheres is not None:
             self.renderer.objects3d["Atoms"] = self.structures[0].drawer.spheres
+            self.renderer.objects3d["Atoms"].generate_buffers()
         if self.structures[0].drawer.cylinders is not None and self.structures[0].draw_bonds:
             self.renderer.objects3d["Bonds"] = self.structures[0].drawer.cylinders
+            self.renderer.objects3d["Bonds"].generate_buffers()
 
     def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""

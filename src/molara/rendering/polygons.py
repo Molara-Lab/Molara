@@ -23,7 +23,6 @@ class Polygon(Object3D):
         self.model_matrices = np.array([np.identity(4, dtype=np.float32)])
 
         self.colors = color[0]
-        self.generate_buffers()
 
     def calculate_scaling_matrices(self, dimensions: np.ndarray) -> None:  # noqa: ARG002
         """Contain dummy function."""

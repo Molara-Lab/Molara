@@ -46,8 +46,6 @@ class Billboards(Object3D):
         self.texture = texture
         self.colors = None
 
-        self.generate_buffers()
-
 def generate_billboard() -> tuple[np.ndarray, np.ndarray]:
     """Calculates the vertices and indices of a board in the yz plane.
 

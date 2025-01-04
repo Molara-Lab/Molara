@@ -50,15 +50,14 @@ class WorkaroundTestRenderer:
         self.renderer.set_shaders()
         for i, shader in enumerate(self.renderer.shaders.values()):
             assert shader.program == shader_ints[i]
-        assert len(self.renderer.shaders) == 7
+        number_of_shader_programs = 7
+        assert len(self.renderer.shaders) == number_of_shader_programs
 
     def _test_draw_cylinders(self) -> None:
         """Test the draw_cylinders method of the Renderer class."""
         self.openGLWidget.makeCurrent()
         positions = np.array([[0, 0, 0], [1, 1, 1], [4, 5, 6]], dtype=np.float32)
         directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
-        radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
-        lengths = np.array([1.0, 2.0, 3.0], dtype=np.float32)
         # get a dimensionsarray going with [[radius, length, radius] * number_of_instances]
         dimensions = np.array([[0.5, 1.0, 0.5], [0.3, 2.0, 0.3], [0.2, 3.0, 0.2]], dtype=np.float32)
 
@@ -66,14 +65,14 @@ class WorkaroundTestRenderer:
         subdivisions = 10
 
         self.renderer.draw_cylinders("test1", positions, directions, dimensions, colors, subdivisions)
-        assert "test1" in self.renderer.objects3d.keys()
+        assert "test1" in self.renderer.objects3d
 
     def _test_remove_cylinder(self) -> None:
         """Test the remove_cylinder method of the Renderer class."""
         self.openGLWidget.makeCurrent()
 
         self.renderer.remove_object("test1")
-        assert "test1" not in self.renderer.objects3d.keys()
+        assert "test1" not in self.renderer.objects3d
 
     def _test_draw_cylinders_from_to(self) -> None:
         """Test the draw_cylinders_from_to method of the Renderer class."""
@@ -86,15 +85,14 @@ class WorkaroundTestRenderer:
             ],
             dtype=np.float32,
         )
-        directions = positions_from_to[:, 1, :] - positions_from_to[:, 0, :]
         radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
         colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
         subdivisions = 10
 
         self.renderer.draw_cylinders_from_to("test2", positions_from_to, radii, colors, subdivisions)
-        assert "test2" in self.renderer.objects3d.keys()
+        assert "test2" in self.renderer.objects3d
         self.renderer.remove_object("test2")
-        assert "test2" not in self.renderer.objects3d.keys()
+        assert "test2" not in self.renderer.objects3d
 
     def _test_draw_spheres(self) -> None:
         """Test the draw_spheres method of the Renderer class."""
@@ -105,17 +103,17 @@ class WorkaroundTestRenderer:
         subdivisions = 10
 
         self.renderer.draw_spheres("test3", positions, radii, colors, subdivisions)
-        assert "test3" in self.renderer.objects3d.keys()
+        assert "test3" in self.renderer.objects3d
 
         self.renderer.remove_object("test3")
-        assert "test3" not in self.renderer.objects3d.keys()
+        assert "test3" not in self.renderer.objects3d
 
         self.renderer.draw_spheres("test4", positions, radii, colors, subdivisions, wire_frame=True)
-        assert "test4" in self.renderer.objects3d.keys()
+        assert "test4" in self.renderer.objects3d
 
     def _test_remove_sphere(self) -> None:
         """Test the remove_sphere method of the Renderer class."""
         self.openGLWidget.makeCurrent()
 
         self.renderer.remove_object("test4")
-        assert "test4" not in self.renderer.objects3d.keys()
+        assert "test4" not in self.renderer.objects3d

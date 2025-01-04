@@ -57,9 +57,9 @@ class WorkaroundTestMOsDialog:
         # unrestricted case
         self._test_spin_selection()
         self._test_select_a_different_orbital()
-        self._test_wire_mesh()
         self._test_box()
         self._test_visualization()
+        self._test_wire_mesh()
         self._test_mo_initialization()
         self._test_change_iso_value()
         self._test_colors()
@@ -121,10 +121,12 @@ class WorkaroundTestMOsDialog:
 
     def _test_wire_mesh(self) -> None:
         """Test the wire mesh toggle button."""
-        assert not self.mo_dialog.parent().structure_widget.renderer.wire_mesh_surfaces
+        self.mo_dialog.toggle_surfaces()
+        assert not self.mo_dialog.parent().structure_widget.renderer.objects3d["Surface_1"].wire_frame
         self.mo_dialog.toggle_wire_mesh()
-        assert self.mo_dialog.parent().structure_widget.renderer.wire_mesh_surfaces
+        assert self.mo_dialog.parent().structure_widget.renderer.objects3d["Surface_1"].wire_frame
         self.mo_dialog.toggle_wire_mesh()
+        self.mo_dialog.toggle_surfaces()
 
     def _test_box(self) -> None:
         """Test the scale box size method and the corner calculation."""
@@ -151,9 +153,12 @@ class WorkaroundTestMOsDialog:
         """Test the visualization of the orbitals not their correctness."""
         self.mo_dialog.toggle_surfaces()
         number_of_vertices = 768
-        assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["n_vertices"] == number_of_vertices
+        assert (
+            self.mo_dialog.parent().structure_widget.renderer.objects3d["Surface_1"].number_of_vertices
+            == number_of_vertices
+        )
         self.mo_dialog.remove_surfaces()
-        assert self.mo_dialog.parent().structure_widget.renderer.polygons[0]["vao"] == 0
+        assert "Surface_1" not in self.mo_dialog.parent().structure_widget.renderer.objects3d
         self.mo_dialog.toggle_surfaces()
 
     def _test_close(self) -> None:
@@ -191,13 +196,13 @@ class WorkaroundTestMOsDialog:
         self.mo_dialog.toggle_isoline_border()
         assert self.mo_dialog.isoline_border_is_visible
         assert self.mo_dialog.ui.displayIsolineBorderButton.text() == "Hide Border"
-        assert self.mo_dialog.isoline_border_cylinders != -1
-        assert self.mo_dialog.isoline_border_spheres != -1
+        assert "Isoline_Border_Cylinders" in self.mo_dialog.parent().structure_widget.renderer.objects3d
+        assert "Isoline_Border_Spheres" in self.mo_dialog.parent().structure_widget.renderer.objects3d
         self.mo_dialog.toggle_isoline_border()
         assert not self.mo_dialog.isoline_border_is_visible
         assert self.mo_dialog.ui.displayIsolineBorderButton.text() == "Display Border"
-        assert self.mo_dialog.isoline_border_cylinders == -1
-        assert self.mo_dialog.isoline_border_spheres == -1
+        assert "Isoline_Border_Cylinders" not in self.mo_dialog.parent().structure_widget.renderer.objects3d
+        assert "Isoline_Border_Spheres" not in self.mo_dialog.parent().structure_widget.renderer.objects3d
 
     def _test_change_isoline_resolution(self) -> None:
         """Test changing the isoline resolution."""
@@ -230,8 +235,8 @@ class WorkaroundTestMOsDialog:
         self.mo_dialog.toggle_isoline_axes()
         assert not self.mo_dialog.isoline_axes_visible
         assert self.mo_dialog.ui.displayAxesButton.text() == "Display Axes"
-        assert self.mo_dialog.isoline_axes_cylinders == -1
-        assert self.mo_dialog.isoline_axes_spheres == -1
+        assert "Isoline_Axes_Cylinders" not in self.mo_dialog.parent().structure_widget.renderer.objects3d
+        assert "Isoline_Axes_Spheres" not in self.mo_dialog.parent().structure_widget.renderer.objects3d
 
     def _test_update_selected_atoms(self) -> None:
         """Test the update_selected_atoms method."""

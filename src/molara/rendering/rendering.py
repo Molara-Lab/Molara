@@ -233,6 +233,7 @@ class Renderer:
         :param texture: A PIL image used as a texture.
         """
         self.textured_objects3d[name] = Billboards(positions, normals, sizes, texture)
+        self.objects3d[name].generate_buffers()
 
     def draw_polygon(
         self,
@@ -246,6 +247,7 @@ class Renderer:
         :param color: Colors of the vertices.
         """
         self.objects3d[name] = Polygon(vertices, color)
+        self.objects3d[name].generate_buffers()
 
     def draw_cylinders(  # noqa: PLR0913
         self,
@@ -272,6 +274,7 @@ class Renderer:
         :return: Returns the index of the cylinder in the list of cylinders.
         """
         self.objects3d[name] = Cylinders(subdivisions, positions, directions, dimensions, colors)
+        self.objects3d[name].generate_buffers()
 
     def draw_cylinders_from_to(
         self,
@@ -335,6 +338,7 @@ class Renderer:
         :return: Returns the index of the sphere in the list of spheres.
         """
         self.objects3d[name] = Spheres(subdivisions, positions, radii, colors, wire_frame=wire_frame)
+        self.objects3d[name].generate_buffers()
 
     def remove_object(self, name: str) -> None:
         """Remove an object3d from the list of object3ds.

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import hashlib
+import pathlib
 import sys
 import unittest
 
@@ -11,7 +11,7 @@ from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from molara.rendering import shaders
+from molara.rendering.shaders import Shader
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
@@ -20,6 +20,17 @@ class TestShaders(unittest.TestCase):
 
     def test_compile_shaders(self) -> None:
         """Tests the compile_shaders function of the shaders module."""
+
+        def add_shader(vertex_path: str, fragment_path: str) -> Shader:
+            """Add a shader to the shader program.
+
+            :param vertex_path: Path to the vertex shader.
+            :param fragment_path: Path to the fragment shader.
+            """
+            shader = Shader()
+            shader.compile_shaders(vertex_path, fragment_path)
+            return shader
+
         QApplication.instance().shutdown() if QApplication.instance() else None  # type: ignore[union-attr]
         QApplication([])
         _format = QSurfaceFormat()
@@ -31,18 +42,42 @@ class TestShaders(unittest.TestCase):
         openglwidget = QOpenGLWidget(main_window)
         openglwidget.show()
         main_window.show()
-        program = shaders.compile_shaders()
-        assert isinstance(program, list)
 
-    def test_shader_src(self) -> None:
-        """Tests the vertex_src variable of the shaders module.
+        file_path = pathlib.Path(__file__).parent.resolve()
+        shader_code_path = f"{file_path}/../../../src/molara/rendering/shadercode/"
 
-        This is done by comparing the hash of the vertex_src and fragment_src C codes with the expected hashes.
-        Basically, this means that these codes should not be changed unless one really knows what they are doing.
-        """
-        assert isinstance(shaders.vertex_src_main, str)
-        vertex_src_hash = hashlib.sha256(shaders.vertex_src_main.encode()).hexdigest()
-        assert vertex_src_hash == "650efcd6e07d8d24f014d9be78edb39016949260ce5776f3f98e50893d1d30e9"
-        fragment_src_hash = hashlib.sha256(shaders.fragment_src_main.encode()).hexdigest()
+        shaders = []
 
-        assert fragment_src_hash == "2a111c7611839cd2a20d2953c548170fcd4d31dbe69ec88e1ca6a29f7d0722bb"
+        vertex_path = "vertex_main.glsl"
+        fragment_path = "fragment_main_shaded.glsl"
+        shaders.append(add_shader(shader_code_path + vertex_path, shader_code_path + fragment_path))
+
+        vertex_path = "vertex_main.glsl"
+        fragment_path = "fragment_main_unshaded.glsl"
+        shaders.append(add_shader(shader_code_path + vertex_path, shader_code_path + fragment_path))
+
+        vertex_path = "vertex_texture.glsl"
+        fragment_path = "fragment_texture_shaded.glsl"
+        shaders.append(add_shader(shader_code_path + vertex_path, shader_code_path + fragment_path))
+
+        vertex_path = "vertex_texture.glsl"
+        fragment_path = "fragment_texture_unshaded.glsl"
+        shaders.append(add_shader(shader_code_path + vertex_path, shader_code_path + fragment_path))
+
+        vertex_path = "vertex_screen.glsl"
+
+        fragment_path = "fragment_screen_default.glsl"
+        shaders.append(add_shader(shader_code_path + vertex_path, shader_code_path + fragment_path))
+
+        fragment_path = "fragment_screen_blur.glsl"
+        shaders.append(add_shader(shader_code_path + vertex_path, shader_code_path + fragment_path))
+
+        fragment_path = "fragment_screen_outline.glsl"
+        shaders.append(add_shader(shader_code_path + vertex_path, shader_code_path + fragment_path))
+
+        for shader in shaders:
+            shader.use()
+
+        shaders[0].use()
+        model_loc = shaders[0].get_uniform_location("projection")
+        assert model_loc == 0

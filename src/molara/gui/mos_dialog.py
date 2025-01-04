@@ -388,9 +388,9 @@ class MOsDialog(Surface3DDialog):
     def remove_box(self) -> None:
         """Remove the box."""
         self.parent().structure_widget.makeCurrent()
-        if "MOBox_cylinders" in self.parent().structure_widget.renderer.objects3d.keys():
+        if "MOBox_cylinders" in self.parent().structure_widget.renderer.objects3d:
             self.parent().structure_widget.renderer.remove_object("MOBox_cylinders")
-        if "MOBox_spheres" in self.parent().structure_widget.renderer.objects3d.keys():
+        if "MOBox_spheres" in self.parent().structure_widget.renderer.objects3d:
             self.parent().structure_widget.renderer.remove_object("MOBox_spheres")
         self.parent().structure_widget.update()
 
@@ -567,7 +567,7 @@ class MOsDialog(Surface3DDialog):
         """Remove the isolines."""
         self.parent().structure_widget.makeCurrent()
         for i in range(2):
-            if f"Isolines_{i+1}" in self.parent().structure_widget.renderer.objects3d.keys():
+            if f"Isolines_{i+1}" in self.parent().structure_widget.renderer.objects3d:
                 self.parent().structure_widget.renderer.remove_object(f"Isolines_{i+1}")
         self.parent().structure_widget.update()
         self.set_isolines_hidden()
@@ -626,9 +626,9 @@ class MOsDialog(Surface3DDialog):
 
     def remove_isoline_border(self) -> None:
         """Remove the border of the isoline grid."""
-        if "Isoline_Border_Cylinders" in self.parent().structure_widget.renderer.objects3d.keys():
+        if "Isoline_Border_Cylinders" in self.parent().structure_widget.renderer.objects3d:
             self.parent().structure_widget.renderer.remove_object("Isoline_Border_Cylinders")
-        if "Isoline_Border_Spheres" in self.parent().structure_widget.renderer.objects3d.keys():
+        if "Isoline_Border_Spheres" in self.parent().structure_widget.renderer.objects3d:
             self.parent().structure_widget.renderer.remove_object("Isoline_Border_Spheres")
         self.parent().structure_widget.update()
 
@@ -1118,9 +1118,9 @@ class MOsDialog(Surface3DDialog):
 
     def remove_isoline_axes(self) -> None:
         """Remove the isoline axes used for rotation and translation."""
-        if "Isoline_Axes_Cylinders" in self.parent().structure_widget.renderer.objects3d.keys():
+        if "Isoline_Axes_Cylinders" in self.parent().structure_widget.renderer.objects3d:
             self.parent().structure_widget.renderer.remove_object("Isoline_Axes_Cylinders")
-        if "Isoline_Axes_Spheres" in self.parent().structure_widget.renderer.objects3d.keys():
+        if "Isoline_Axes_Spheres" in self.parent().structure_widget.renderer.objects3d:
             self.parent().structure_widget.renderer.remove_object("Isoline_Axes_Spheres")
         self.parent().structure_widget.update()
 

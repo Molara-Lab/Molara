@@ -36,7 +36,6 @@ class Cylinders(Object3D):
         self.calculate_model_matrices()
 
         self.colors = colors
-        self.generate_buffers()
 
 
 

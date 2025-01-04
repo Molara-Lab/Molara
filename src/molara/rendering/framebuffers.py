@@ -52,13 +52,13 @@ class Framebuffer:
             var_internal_format: int,
             var_format: int,
             data_type: int,
-            attachement: int,
+            attachment: int,
         ) -> None:
             glBindTexture(GL_TEXTURE_2D, texture)
             glTexImage2D(GL_TEXTURE_2D, 0, var_internal_format, self.width, self.height, 0, var_format, data_type, None)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, GL_TEXTURE_2D, texture, 0)
+            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture, 0)
 
         self.width = width * self.buffer_size_factor
         self.height = height * self.buffer_size_factor
