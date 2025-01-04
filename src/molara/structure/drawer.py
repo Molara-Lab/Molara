@@ -218,7 +218,6 @@ class Drawer:
         """Set the model matrices for the cylinders."""
         assert self.cylinders is not None
         self.cylinders.calculate_model_matrices()
-        self.cylinders.generate_buffers()
 
     def set_cylinder_translation_matrices(self) -> None:
         """Set the translation matrices for the spheres."""
@@ -255,4 +254,3 @@ class Drawer:
         assert self.spheres is not None
 
         self.spheres.calculate_model_matrices()
-        self.spheres.generate_buffers()
