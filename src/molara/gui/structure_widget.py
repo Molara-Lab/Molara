@@ -39,7 +39,7 @@ class StructureWidget(QOpenGLWidget):
         self.main_window = self.central_widget.parent()  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.renderer = Renderer()
+        self.renderer = Renderer(self)
         self.structures: list[Structure | Molecule | Crystal] = []
         self.vertex_attribute_objects = [-1]
         self.draw_axes = False

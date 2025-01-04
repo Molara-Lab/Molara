@@ -25,7 +25,7 @@ class WorkaroundTestRenderer:
         self.qtbot = qtbot
         self.main_window = main_window
         self.openGLWidget = self.main_window.structure_widget
-        self.renderer = Renderer()
+        self.renderer = Renderer(self.openGLWidget)
         self.openGLWidget.show()
 
     def run_tests(self) -> None:

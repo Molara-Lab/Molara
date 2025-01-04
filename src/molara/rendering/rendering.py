@@ -57,6 +57,8 @@ from molara.rendering.polygons import Polygon
 from molara.rendering.shaders import Shader
 from molara.rendering.spheres import Spheres
 
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
+
 if TYPE_CHECKING:
     from numpy import floating
     from PIL import Image
@@ -75,9 +77,10 @@ OUTLINED_UNSHADED = "OutlinedUnshaded"
 class Renderer:
     """Contains the rendering function for the opengl widget."""
 
-    def __init__(self) -> None:
+    def __init__(self, opengl_widget: QOpenGLWidget) -> None:
         """Create a Renderer object."""
         self.shaders: dict = {}
+        self.opengl_widget = opengl_widget
 
         # multisampling anti-aliasing
         self.msaa = True
@@ -232,6 +235,7 @@ class Renderer:
         :param sizes: Sizes of the cylinders.
         :param texture: A PIL image used as a texture.
         """
+        self.opengl_widget.makeCurrent()
         self.textured_objects3d[name] = Billboards(positions, normals, sizes, texture)
         self.objects3d[name].generate_buffers()
 
@@ -246,6 +250,7 @@ class Renderer:
         :param vertices: Vertices in the following order x,y,z,nx,ny,nz,..., where xyz are the cartesian coordinates.
         :param color: Colors of the vertices.
         """
+        self.opengl_widget.makeCurrent()
         self.objects3d[name] = Polygon(vertices, color)
         self.objects3d[name].generate_buffers()
 
@@ -273,6 +278,7 @@ class Renderer:
         :param subdivisions: Number of subdivisions of the cylinder.
         :return: Returns the index of the cylinder in the list of cylinders.
         """
+        self.opengl_widget.makeCurrent()
         self.objects3d[name] = Cylinders(subdivisions, positions, directions, dimensions, colors)
         self.objects3d[name].generate_buffers()
 
@@ -337,6 +343,7 @@ class Renderer:
         :param wire_frame: If True, the sphere is drawn as wire mesh.
         :return: Returns the index of the sphere in the list of spheres.
         """
+        self.opengl_widget.makeCurrent()
         self.objects3d[name] = Spheres(subdivisions, positions, radii, colors, wire_frame=wire_frame)
         self.objects3d[name].generate_buffers()
 
