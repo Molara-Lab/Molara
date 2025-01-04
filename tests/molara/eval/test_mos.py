@@ -80,4 +80,5 @@ class TestMolecularOrbitals(TestCase):
         val = mos.get_mo_value(0, self.aos, np.array([0.10154165, 0.465418564, -1.498185465]))
         # Generated after comparing the mos with the mos of multiwfn.
         compared_val = 0.00907188975065531
-        assert val == compared_val
+        threshold = 1e-9
+        assert np.abs(val - compared_val) < threshold

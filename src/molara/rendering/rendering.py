@@ -49,7 +49,6 @@ from OpenGL.GL import (
     glVertexAttribPointer,
     glViewport,
 )
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 from molara.rendering.billboards import Billboards
 from molara.rendering.cylinders import Cylinders
@@ -61,6 +60,7 @@ from molara.rendering.spheres import Spheres
 if TYPE_CHECKING:
     from numpy import floating
     from PIL import Image
+    from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
     from molara.rendering.camera import Camera
     from molara.rendering.object3d import Object3D
