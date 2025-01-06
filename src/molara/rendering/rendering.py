@@ -219,7 +219,7 @@ class Renderer:
         positions: np.ndarray,
         normals: np.ndarray,
         sizes: np.ndarray,
-        texture: Image,
+        texture: Image.Image,
     ) -> None:
         """Draw one or multiple billboards with the same textures.
 
