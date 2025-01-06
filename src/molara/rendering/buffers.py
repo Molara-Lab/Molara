@@ -197,7 +197,7 @@ def setup_vao(  # noqa: PLR0913
     return vao, buffers
 
 
-def setup_texture_buffer(texture: Image) -> int:
+def setup_texture_buffer(texture: Image.Image) -> int:
     """Set up the texture buffer.
 
     :param texture: The texture to be used, as a PIL Image object.
