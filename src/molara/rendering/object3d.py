@@ -36,7 +36,7 @@ class Object3D:
         self.scaling_matrices = np.array([])
         self.model_matrices = np.array([])
 
-        self.indices = np.array([])
+        self.indices: np.ndarray | None = np.array([])
         self.vertices = np.array([])
         self.texture = False
 
