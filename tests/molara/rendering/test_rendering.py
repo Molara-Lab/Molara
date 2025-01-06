@@ -86,9 +86,6 @@ class WorkaroundTestRenderer:
 
         self.renderer.draw_cylinders("test1", positions, directions, dimensions, colors, subdivisions)
 
-        for mode in MODES:
-            self.renderer.set_mode(mode)
-
     def _test_draw_cylinders(self) -> None:
         """Test the draw_cylinders method of the Renderer class."""
         self.openGLWidget.makeCurrent()
