@@ -71,7 +71,7 @@ SHADED = "Shaded"
 UNSHADED = "Unshaded"
 OUTLINED_SHADED = "OutlinedShaded"
 OUTLINED_UNSHADED = "OutlinedUnshaded"
-
+MODES = [SHADED, UNSHADED, OUTLINED_SHADED, OUTLINED_UNSHADED]
 
 class Renderer:
     """Contains the rendering function for the opengl widget."""
@@ -102,6 +102,7 @@ class Renderer:
 
         :param mode: Mode of the renderer.
         """
+        assert mode in MODES
         self.mode = mode
         if mode in (SHADED, OUTLINED_SHADED):
             self.shade = "Shaded"
