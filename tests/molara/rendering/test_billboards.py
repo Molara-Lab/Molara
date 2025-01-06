@@ -34,8 +34,9 @@ class WorkaroundTestBillboards:
     def _test_init(self) -> None:
         """Test the initialization of the Spheres class."""
         positions = np.array([[0.0, 0.0, 0.0], [1.0, -2.345, 0.12]], dtype=np.float32)
+        normals = np.array([[1.0, 0.0, 0.0], [1.0, -2.345, 0.12]], dtype=np.float32)
         scales = np.array([[1.0, 2.0, 1.0], [2.0, 1.0, 1.0]], dtype=np.float32)
         image = Image.open("tests/molara/rendering/images/MolaraLogo.png")
-        billboards = Billboards(positions, positions, scales, image)
+        billboards = Billboards(positions, normals, scales, image)
         billboards.generate_buffers()
         assert billboards.texture is not None
