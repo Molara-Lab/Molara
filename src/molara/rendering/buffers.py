@@ -35,10 +35,11 @@ from OpenGL.GL import (
     glVertexAttribDivisor,
     glVertexAttribPointer,
 )
+from PIL import Image
 
 if TYPE_CHECKING:
     import numpy as np
-    from PIL import Image
+
 
 __copyright__ = "Copyright 2024, Molara"
 
