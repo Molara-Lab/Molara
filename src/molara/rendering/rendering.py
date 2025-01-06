@@ -213,7 +213,7 @@ class Renderer:
         fragment_path = "fragment_screen_outline.glsl"
         add_shader("Outline", shader_code_path + vertex_path, shader_code_path + fragment_path)
 
-    def draw_billboard(
+    def draw_billboards(
         self,
         name: str,
         positions: np.ndarray,
@@ -236,7 +236,7 @@ class Renderer:
         """
         self.opengl_widget.makeCurrent()
         self.textured_objects3d[name] = Billboards(positions, normals, sizes, texture)
-        self.objects3d[name].generate_buffers()
+        self.textured_objects3d[name].generate_buffers()
 
     def draw_polygon(
         self,

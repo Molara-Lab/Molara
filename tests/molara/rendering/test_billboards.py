@@ -37,4 +37,5 @@ class WorkaroundTestBillboards:
         scales = np.array([[1.0, 2.0, 1.0], [2.0, 1.0, 1.0]], dtype=np.float32)
         image = Image.open("tests/molara/rendering/images/MolaraLogo.png")
         billboards = Billboards(positions, positions, scales, image)
+        billboards.generate_buffers()
         assert billboards.texture is not None

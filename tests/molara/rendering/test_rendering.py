@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from PIL import Image
 
 from molara.rendering.rendering import Renderer
 
@@ -37,6 +38,9 @@ class WorkaroundTestRenderer:
         self._test_draw_cylinders_from_to()
         self._test_draw_spheres()
         self._test_remove_sphere()
+        self._test_draw_billboards()
+        self._test_remove_billboard()
+        self._test_shader_modes()
 
         self.openGLWidget.doneCurrent()
 
@@ -52,6 +56,39 @@ class WorkaroundTestRenderer:
             assert shader.program == shader_ints[i]
         number_of_shader_programs = 7
         assert len(self.renderer.shaders) == number_of_shader_programs
+
+    def _test_draw_billboards(self) -> None:
+        """Test the draw_billboards method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+        positions = np.array([[0.0, 0.0, 0.0], [1.0, -2.345, 0.12]], dtype=np.float32)
+        scales = np.array([[1.0, 2.0, 1.0], [2.0, 1.0, 1.0]], dtype=np.float32)
+        image = Image.open("tests/molara/rendering/images/MolaraLogo.png")
+        self.renderer.draw_billboards("test5", positions, positions, scales, image)
+        assert "test5" in self.renderer.textured_objects3d
+
+    def _test_remove_billboard(self) -> None:
+        """Test the remove_billboard method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+
+        self.renderer.remove_object("test5")
+        assert "test5" not in self.renderer.textured_objects3d
+
+    def _test_shader_modes(self) -> None:
+        """Test the shader_modes method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+        positions = np.array([[0, 0, 0], [1, 1, 1], [4, 5, 6]], dtype=np.float32)
+        directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        # get a dimensionsarray going with [[radius, length, radius] * number_of_instances]
+        dimensions = np.array([[0.5, 1.0, 0.5], [0.3, 2.0, 0.3], [0.2, 3.0, 0.2]], dtype=np.float32)
+
+        colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        subdivisions = 10
+
+        self.renderer.draw_cylinders("test1", positions, directions, dimensions, colors, subdivisions)
+        shader_modes = ["Shaded", "Unshaded", "OutlinedShaded", "OutlinedUnshaded"]
+        for mode in shader_modes:
+            self.renderer.set_mode(mode)
+            self.renderer.opengl_widget.update()
 
     def _test_draw_cylinders(self) -> None:
         """Test the draw_cylinders method of the Renderer class."""
