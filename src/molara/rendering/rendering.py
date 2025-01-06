@@ -298,6 +298,7 @@ class Renderer:
         :param subdivisions: Number of subdivisions of the cylinder.
         :return: Returns the index of the cylinder in the list of cylinders.
         """
+        self.opengl_widget.makeCurrent()
         _directions: list[list[floating]] = []
         _lengths: list[floating] = []
         _positions_middle: list[list[list[floating]]] = []
@@ -351,6 +352,7 @@ class Renderer:
 
         :param name: name of the object to be removed.
         """
+        self.opengl_widget.makeCurrent()
         if name in self.objects3d:
             del self.objects3d[name]
         elif name in self.textured_objects3d:
