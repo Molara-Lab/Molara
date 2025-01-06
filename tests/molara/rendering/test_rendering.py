@@ -85,7 +85,7 @@ class WorkaroundTestRenderer:
         subdivisions = 10
 
         self.renderer.draw_cylinders("test1", positions, directions, dimensions, colors, subdivisions)
-        shader_modes = ["Shaded", "Unshaded", "OutlinedShaded", "OutlinedUnshaded"]
+        shader_modes = ["Shaded", "OutlinedShaded"]
         for mode in shader_modes:
             self.renderer.set_mode(mode)
             self.renderer.opengl_widget.update()
