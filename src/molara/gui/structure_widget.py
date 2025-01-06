@@ -187,6 +187,8 @@ class StructureWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:  # noqa: N802
         """Draws the scene."""
+        if not self.isValid():
+            return
         self.makeCurrent()
         self.renderer.draw_scene(self.camera, self.defaultFramebufferObject())
 
