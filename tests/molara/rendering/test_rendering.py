@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
-from molara.rendering.rendering import Renderer, MODES
+from molara.rendering.rendering import MODES, Renderer
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot

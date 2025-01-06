@@ -73,6 +73,7 @@ OUTLINED_SHADED = "OutlinedShaded"
 OUTLINED_UNSHADED = "OutlinedUnshaded"
 MODES = [SHADED, UNSHADED, OUTLINED_SHADED, OUTLINED_UNSHADED]
 
+
 class Renderer:
     """Contains the rendering function for the opengl widget."""
 
