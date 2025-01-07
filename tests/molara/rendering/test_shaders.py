@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import sys
 import unittest
 
@@ -42,7 +43,8 @@ class TestShaders(unittest.TestCase):
         openglwidget.show()
         main_window.show()
 
-        shader_code_path = ""
+        file_path = pathlib.Path(__file__).parent.resolve()
+        shader_code_path = f"{file_path}/../../../src/molara/rendering/shadercode/"
 
         shaders = []
 

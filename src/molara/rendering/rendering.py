@@ -188,7 +188,7 @@ class Renderer:
             shader.compile_shaders(vertex_path, fragment_path)
             self.shaders[name] = shader
 
-        shader_code_path = ""
+        shader_code_path = "src/molara/rendering/shadercode/"
 
         vertex_path = "vertex_main.glsl"
         fragment_path = "fragment_main_shaded.glsl"

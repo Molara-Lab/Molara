@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import importlib.resources
+from pathlib import Path
 
 from OpenGL.GL import (
     GL_FRAGMENT_SHADER,
@@ -32,8 +32,9 @@ class Shader:
         :param fragment_path: The path to the fragment shader source code.
         """
 
-        def load_shader(file_name: str) -> str:
-            with importlib.resources.open_text("molara.rendering.shadercode", file_name) as file:
+        def load_shader(path_: str) -> str:
+            path = Path(path_)
+            with path.open() as file:
                 return file.read()
 
         # Main shader
