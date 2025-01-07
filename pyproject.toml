@@ -14,6 +14,7 @@ skip = ["*musllinux*"]
 
 [tool.setuptools.package-data]
 molara = ["py.typed"]
+shader_code = ["src/molara/rendering/shadercode/*.glsl"]
 
 [project]
 name = "Molara"
