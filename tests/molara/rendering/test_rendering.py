@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
-from molara.rendering.rendering import Renderer
+from molara.rendering.rendering import MODES, Renderer
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
@@ -85,6 +85,12 @@ class WorkaroundTestRenderer:
         subdivisions = 10
 
         self.renderer.draw_cylinders("test1", positions, directions, dimensions, colors, subdivisions)
+
+        for mode in MODES:
+            self.renderer.set_mode(mode)
+            self.openGLWidget.update()
+
+        self.renderer.remove_object("test1")
 
     def _test_draw_cylinders(self) -> None:
         """Test the draw_cylinders method of the Renderer class."""

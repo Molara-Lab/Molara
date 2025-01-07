@@ -1,14 +1,6 @@
 """Contain an abstract class for objects to inherit."""
 
 import numpy as np
-from OpenGL.GL import (
-    GL_ARRAY_BUFFER,
-    GL_ELEMENT_ARRAY_BUFFER,
-    glBindBuffer,
-    glBindVertexArray,
-    glDeleteBuffers,
-    glDeleteVertexArrays,
-)
 
 from molara.rendering.buffers import Buffers, setup_texture_buffer, setup_vao
 from molara.rendering.matrices import (
@@ -91,18 +83,3 @@ class Object3D:
 
     def __del__(self) -> None:
         """Free the GPU memory."""
-        if self.vao != 0:
-            glBindVertexArray(self.vao)
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            buffers = [
-                self.buffers.vbo,
-                self.buffers.ebo,
-                self.buffers.instance_vbo_color,
-                self.buffers.instance_vbo_model,
-            ]
-            for buffer in buffers:
-                if buffer != -1:
-                    glDeleteBuffers(1, [buffer])
-            glDeleteVertexArrays(1, [self.vao])
-        glBindVertexArray(0)
