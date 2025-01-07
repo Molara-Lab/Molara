@@ -62,14 +62,6 @@ class CubeFileDialog(Surface3DDialog):
         if self.surfaces_are_visible:
             self.display_surfaces()
 
-    def toggle_wire_mesh(self) -> None:
-        """Display the orbitals in the wire mesh mode."""
-        self.parent().structure_widget.makeCurrent()
-        self.parent().structure_widget.renderer.wire_mesh_surfaces = not (
-            self.parent().structure_widget.renderer.wire_mesh_surfaces
-        )
-        self.parent().structure_widget.update()
-
     def change_iso_value(self) -> None:
         """Change the iso value."""
         self.set_iso_value(self.ui.isoSpinBox.value())

@@ -12,40 +12,96 @@ from OpenGL.GL import (
     GL_ELEMENT_ARRAY_BUFFER,
     GL_FALSE,
     GL_FLOAT,
+    GL_LINEAR,
+    GL_REPEAT,
+    GL_RGBA,
     GL_STATIC_DRAW,
-    GL_UNSIGNED_INT,
+    GL_TEXTURE_2D,
+    GL_TEXTURE_MAG_FILTER,
+    GL_TEXTURE_MIN_FILTER,
+    GL_TEXTURE_WRAP_S,
+    GL_TEXTURE_WRAP_T,
+    GL_UNSIGNED_BYTE,
     glBindBuffer,
+    glBindTexture,
     glBindVertexArray,
     glBufferData,
     glEnableVertexAttribArray,
     glGenBuffers,
+    glGenTextures,
     glGenVertexArrays,
+    glTexImage2D,
+    glTexParameteri,
     glVertexAttribDivisor,
-    glVertexAttribIPointer,
     glVertexAttribPointer,
 )
+from PIL import Image
 
 if TYPE_CHECKING:
     import numpy as np
 
+
 __copyright__ = "Copyright 2024, Molara"
 
 
-def setup_vao(
+class Buffers:
+    """Store the different buffers for rendering."""
+
+    def __init__(self) -> None:
+        """Initialize the Buffer class."""
+        self.vbo = -1
+        self.ebo = -1
+        self.instance_vbo_color = -1
+        self.instance_vbo_model = -1
+        self.texture = -1
+
+    def save_buffer(
+        self,
+        vbo: int = -1,
+        instance_vbo_color: int = -1,
+        instance_vbo_model: int = -1,
+        ebo: int = -1,
+        texture: int = -1,
+    ) -> None:
+        """Save the buffers to delete or modify later.
+
+        :param vbo: Pointer to the vbo object.
+        :param instance_vbo_color: Pointer to the instance_vbo_color object.
+        :param instance_vbo_model: Pointer to the instance_vbo_model object.
+        :param texture: Pointer to the texture buffer.
+        :param ebo: Pointer to the ebo object.
+        """
+        self.vbo = vbo
+        self.ebo = ebo
+        self.instance_vbo_color = instance_vbo_color
+        self.instance_vbo_model = instance_vbo_model
+        self.texture = texture
+
+
+def setup_vao(  # noqa: PLR0913
     vertices: np.ndarray,
     indices: np.ndarray | None,
+    num_instances: int,
     model_matrices: np.ndarray,
-    colors: np.ndarray,
+    colors: None | np.ndarray,
+    texture: bool = False,
 ) -> tuple[int, list[int]]:
     """Set up a vertex attribute object and binds it to the GPU.
 
     :param vertices: Vertices in the following order x,y,z,r,g,b,nx,ny,nz,..., where xyz are the cartesian coordinates,
         rgb are the color values [0,1], and nxnynz are the components of the normal vector.
     :param indices: Gives the connectivity of the vertices.
+    :param num_instances: Number of instances of the object.
     :param model_matrices: Each matrix gives the transformation from object space to world.
     :param colors: Colors of the vertices.
+    :param texture: If True, the object has a texture and the vao pointers need to be adapted
     :return: Returns a bound vertex attribute object
     """
+    vertex_attribute_positions_pointer_start = 0
+    vertex_attribute_normals_pointer_start = 12
+    vertex_attribute_texture_pointer_start = 24
+    vertex_attribute_pointer_offset = 8 if texture else 6
+
     vao = glGenVertexArrays(1)
     vbo = glGenBuffers(1)
 
@@ -61,8 +117,8 @@ def setup_vao(
         3,
         GL_FLOAT,
         GL_FALSE,
-        vertices.itemsize * 6,
-        ctypes.c_void_p(0),
+        vertices.itemsize * vertex_attribute_pointer_offset,
+        ctypes.c_void_p(vertex_attribute_positions_pointer_start),
     )
 
     glEnableVertexAttribArray(1)
@@ -71,40 +127,51 @@ def setup_vao(
         3,
         GL_FLOAT,
         GL_FALSE,
-        vertices.itemsize * 6,
-        ctypes.c_void_p(12),
+        vertices.itemsize * vertex_attribute_pointer_offset,
+        ctypes.c_void_p(vertex_attribute_normals_pointer_start),
     )
+    if texture:
+        glEnableVertexAttribArray(2)
+        glVertexAttribPointer(
+            2,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            vertices.itemsize * vertex_attribute_pointer_offset,
+            ctypes.c_void_p(vertex_attribute_texture_pointer_start),
+        )
     if indices is not None:
         ebo = glGenBuffers(1)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
     else:
-        ebo = None
+        ebo = -1
 
     # Instance colors
-    instance_vbo_color = glGenBuffers(1)
-    num_instances = len(colors)
-    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_color)
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        num_instances * 3 * colors.itemsize,
-        colors,
-        GL_DYNAMIC_DRAW,
-    )
-    glEnableVertexAttribArray(2)
-    glVertexAttribPointer(
-        2,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        colors.itemsize * 3,
-        ctypes.c_void_p(0),
-    )
-    glVertexAttribDivisor(2, 1)
+    if colors is not None:
+        instance_vbo_color = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_color)
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            num_instances * 3 * colors.itemsize,
+            colors,
+            GL_DYNAMIC_DRAW,
+        )
+        glEnableVertexAttribArray(2)
+        glVertexAttribPointer(
+            2,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            colors.itemsize * 3,
+            ctypes.c_void_p(0),
+        )
+        glVertexAttribDivisor(2, 1)
+    else:
+        instance_vbo_color = -1
 
     # Instance matrices
     instance_vbo_model = glGenBuffers(1)
-    num_instances = len(model_matrices)
     glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_model)
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -124,41 +191,42 @@ def setup_vao(
             ctypes.c_void_p(i * 16),
         )
         glVertexAttribDivisor(3 + i, 1)
-    if indices is not None:
-        buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
-    else:
-        buffers = [vbo, instance_vbo_color, instance_vbo_model]
+    buffers = [vbo, ebo, instance_vbo_color, instance_vbo_model]
+
     glBindVertexArray(0)
 
     return vao, buffers
 
 
-def setup_vao_numbers(digits: np.ndarray, positions_3d: np.ndarray) -> tuple[int, list[int]]:
-    """Set up a vertex attribute object and binds it to the GPU.
+def setup_texture_buffer(texture: bool | Image.Image) -> int:
+    """Set up the texture buffer.
 
-    :param digits: The digits to be displayed.
-    :param positions_3d: The 3D positions of the atoms.
-    :return: Returns a bound vertex attribute object
+    :param texture: The texture to be used, as a PIL Image object.
     """
-    # Generate and bind VAO
-    vao = glGenVertexArrays(1)
-    glBindVertexArray(vao)
+    assert isinstance(texture, Image.Image)
+    texture_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, texture_id)
 
-    # Generate and bind VBO for instance data
-    instance_vbo_digits = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_digits)
-    glBufferData(GL_ARRAY_BUFFER, digits, GL_DYNAMIC_DRAW)
-    glEnableVertexAttribArray(0)
-    glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, digits.itemsize, ctypes.c_void_p(0))
+    img_data = texture.convert("RGBA").tobytes()
 
-    # Generate and bind VBO for instance data
-    instance_vbo_positions_3d = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, instance_vbo_positions_3d)
-    glBufferData(GL_ARRAY_BUFFER, positions_3d, GL_DYNAMIC_DRAW)
-    glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, instance_vbo_positions_3d.itemsize * 3, ctypes.c_void_p(0))
+    # Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
-    buffers = [instance_vbo_digits, instance_vbo_positions_3d]
-    glBindVertexArray(0)
+    # Upload the texture data
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGBA,
+        texture.width,
+        texture.height,
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        img_data,
+    )
 
-    return vao, buffers
+    # glBindTexture(GL_TEXTURE_2D, 0)  # Unbind the texture
+    return texture_id

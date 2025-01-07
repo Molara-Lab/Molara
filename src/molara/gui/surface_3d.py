@@ -27,7 +27,6 @@ class Surface3DDialog(QDialog):
         self.molecule: None | Molecule = None
         self.voxel_grid: VoxelGrid3D = VoxelGrid3D()
         self.iso_value = 0.0
-        self.drawn_surfaces = [-1, -1]
         self.vertices_1: np.ndarray = np.array([])
         self.vertices_2: np.ndarray = np.array([])
         self.surfaces_are_visible = False
@@ -35,6 +34,7 @@ class Surface3DDialog(QDialog):
         self.surface_text = "surface"
         self.action_text = ""
         self.voxel_grid_changed = False
+        self.draw_wire_frame = False
 
         # Color initialization
         self.color_surface_1 = np.array([255, 0, 0])
@@ -100,7 +100,7 @@ class Surface3DDialog(QDialog):
         self.voxel_grid = voxel_grid
 
     def set_surfaces_hidden(self) -> None:
-        """Set the isolines to hidden."""
+        """Set the isosurface to hidden."""
         self.surfaces_are_visible = False
         self.remove_surfaces()
         if self.action_text == "":
@@ -109,7 +109,7 @@ class Surface3DDialog(QDialog):
             self.surface_toggle_button.setText(f"{self.action_text} {self.surface_text}")
 
     def set_surfaces_visible(self) -> None:
-        """Set the isolines to visible."""
+        """Set the isosurface to visible."""
         self.surfaces_are_visible = True
         self.update_voxel_grid()
         self.display_surfaces()
@@ -119,7 +119,7 @@ class Surface3DDialog(QDialog):
             self.surface_toggle_button.setText(f"{self.action_text} {self.surface_text}")
 
     def toggle_surfaces(self) -> None:
-        """Toggle the display of the isolines."""
+        """Toggle the display of the isosurface."""
         self.surfaces_are_visible = not self.surfaces_are_visible
         if self.surfaces_are_visible:
             self.set_surfaces_visible()
@@ -139,10 +139,9 @@ class Surface3DDialog(QDialog):
     def remove_surfaces(self) -> None:
         """Remove the surfaces."""
         self.parent().structure_widget.makeCurrent()
-        for surface in self.drawn_surfaces:
-            if surface != -1:
-                self.parent().structure_widget.renderer.remove_polygon(surface)
-        self.drawn_surfaces = [-1, -1]
+        for name in ["Surface_1", "Surface_2"]:
+            if name in self.parent().structure_widget.renderer.objects3d:
+                self.parent().structure_widget.renderer.remove_object(name)
         self.parent().structure_widget.update()
 
     def display_surfaces(self) -> None:
@@ -152,29 +151,38 @@ class Surface3DDialog(QDialog):
         else:
             self.visualize_surfaces()
             self.voxel_grid_changed = False
+        self.update_wire_frame_surfaces()
 
     def draw_surfaces(self) -> None:
         """Draw the surfaces."""
         self.remove_surfaces()
-        surface_1 = self.parent().structure_widget.renderer.draw_polygon(
-            self.vertices_1,
-            np.array([self.color_surface_1 / 255], dtype=np.float32),
-        )
-        self.drawn_surfaces = [surface_1]
-        surface_2 = self.parent().structure_widget.renderer.draw_polygon(
-            self.vertices_2,
-            np.array([self.color_surface_2 / 255], dtype=np.float32),
-        )
-        self.drawn_surfaces.append(surface_2)
+        if self.vertices_1.size != 0:
+            self.parent().structure_widget.renderer.draw_polygon(
+                "Surface_1",
+                self.vertices_1,
+                np.array([self.color_surface_1 / 255], dtype=np.float32),
+            )
+        if self.vertices_2.size != 0:
+            self.parent().structure_widget.renderer.draw_polygon(
+                "Surface_2",
+                self.vertices_2,
+                np.array([self.color_surface_2 / 255], dtype=np.float32),
+            )
         self.parent().structure_widget.update()
 
     def toggle_wire_mesh(self) -> None:
         """Display the orbitals in the wire mesh mode."""
         self.parent().structure_widget.makeCurrent()
-        self.parent().structure_widget.renderer.wire_mesh_surfaces = not (
-            self.parent().structure_widget.renderer.wire_mesh_surfaces
-        )
+        self.draw_wire_frame = not self.draw_wire_frame
+        self.update_wire_frame_surfaces()
         self.parent().structure_widget.update()
+
+    def update_wire_frame_surfaces(self) -> None:
+        """Set the wire frame mode."""
+        self.parent().structure_widget.makeCurrent()
+        for i in range(2):
+            if f"Surface_{i + 1}" in self.parent().structure_widget.renderer.objects3d:
+                self.parent().structure_widget.renderer.objects3d[f"Surface_{i + 1}"].wire_frame = self.draw_wire_frame
 
     def visualize_surfaces(self) -> None:
         """Visualize the surface. A grid has to be set before calling this function."""
