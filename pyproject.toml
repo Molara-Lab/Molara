@@ -13,7 +13,9 @@ version = {"attr" = "molara.__version__"}
 skip = ["*musllinux*"]
 
 [tool.setuptools.package-data]
-molara = ["py.typed"]
+molara = ["py.typed",
+          "rendering.shadercode/*.glsl",
+        ]
 
 [project]
 name = "Molara"
