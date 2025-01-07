@@ -24,7 +24,7 @@ class Molecule(Structure):
     ) -> None:
         """Create a new Molecule object.
 
-        :param atomic_numbers:np.ndarray: atomic numbers of a atoms
+        :param atomic_numbers:np.ndarray: atomic numbers of the atoms
         :param coordinates:np.ndarray: coordinates of the molecule
         :param header:str: header from the imported file
         :param dummy: bool: a dummy object.
@@ -58,7 +58,7 @@ class Molecule(Structure):
             position = atom.position - self.center_of_mass
             atom.set_position(position)
 
-        self.drawer.update_atoms(self.atoms)
+        self.drawer.set_spheres(self.atoms)
         if self.draw_bonds:
             self.drawer.update_bonds()
 

@@ -119,8 +119,5 @@ class VoxelGrid2D(VoxelGrid):
         if voxel_size.shape != (number_of_grid_dimensions, number_of_cartesian_directions):
             msg = "The voxel size must have three dimensions"
             raise ValueError(msg)
-        if not np.all(voxel_size >= 0):
-            msg = "The voxel size must be positive"
-            raise ValueError(msg)
 
         super().set_grid(grid, origin, voxel_size)

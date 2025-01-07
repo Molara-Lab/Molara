@@ -54,8 +54,6 @@ class MOsDialog(Surface3DDialog):
         self.box_center = np.zeros(3, dtype=np.float64)
         self.minimum_box_size = np.zeros(3, dtype=np.float64)
         self.display_box = False
-        self.box_spheres = -1
-        self.box_cylinders = -1
         self.initial_box_size = 2
         self.box_positions: np.ndarray = np.array([])
         self.box_radii: np.ndarray = np.array([])
@@ -121,7 +119,6 @@ class MOsDialog(Surface3DDialog):
         # Isoline parameters
         self.isolines_are_visible = False
         self.isoline_radius = 0.006
-        self.isoline_drawn_lines = [-1, -1]
         self.isoline_voxel_grid = VoxelGrid2D()
         self.isoline_grid_parameters_changed = True
         self.isolines_1: np.ndarray = np.array([])
@@ -131,10 +128,6 @@ class MOsDialog(Surface3DDialog):
         self.isoline_border_scale = [1, 1]
         self.isoline_border_direction = np.zeros((3, 3), dtype=np.float64)
         self.isoline_border_center = np.zeros(3, dtype=np.float64)
-        self.isoline_border_cylinders = -1
-        self.isoline_border_spheres = -1
-        self.isoline_axes_cylinders = -1
-        self.isoline_axes_spheres = -1
         self.isoline_axes_visible = False
         self.isoline_rotation_values = [0, 0, 0]
         self.isoline_translation_values = [0, 0, 0]
@@ -395,12 +388,10 @@ class MOsDialog(Surface3DDialog):
     def remove_box(self) -> None:
         """Remove the box."""
         self.parent().structure_widget.makeCurrent()
-        if self.box_spheres != -1:
-            self.parent().structure_widget.renderer.remove_sphere(self.box_spheres)
-            self.box_spheres = -1
-        if self.box_cylinders != -1:
-            self.parent().structure_widget.renderer.remove_cylinder(self.box_cylinders)
-            self.box_cylinders = -1
+        if "MOBox_cylinders" in self.parent().structure_widget.renderer.objects3d:
+            self.parent().structure_widget.renderer.remove_object("MOBox_cylinders")
+        if "MOBox_spheres" in self.parent().structure_widget.renderer.objects3d:
+            self.parent().structure_widget.renderer.remove_object("MOBox_spheres")
         self.parent().structure_widget.update()
 
     def scale_box(self) -> None:
@@ -444,15 +435,17 @@ class MOsDialog(Surface3DDialog):
 
     def draw_box(self) -> None:
         """Draw the box to see where the mos will be calculated."""
-        self.box_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+        self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            "MOBox_cylinders",
             self.box_positions,
             self.box_radii,
             self.box_colors,
             10,
         )
-        self.box_spheres = self.parent().structure_widget.renderer.draw_spheres(
+        self.parent().structure_widget.renderer.draw_spheres(
+            "MOBox_spheres",
             np.array(self.box_corners, dtype=np.float32),
-            self.box_radii,
+            self.box_radii[:8],
             self.box_colors,
             10,
         )
@@ -573,10 +566,9 @@ class MOsDialog(Surface3DDialog):
     def remove_isolines(self) -> None:
         """Remove the isolines."""
         self.parent().structure_widget.makeCurrent()
-        for line in self.isoline_drawn_lines:
-            if line != -1:
-                self.parent().structure_widget.renderer.remove_cylinder(line)
-        self.isoline_drawn_lines = [-1, -1]
+        for i in range(2):
+            if f"Isolines_{i+1}" in self.parent().structure_widget.renderer.objects3d:
+                self.parent().structure_widget.renderer.remove_object(f"Isolines_{i+1}")
         self.parent().structure_widget.update()
         self.set_isolines_hidden()
 
@@ -616,13 +608,15 @@ class MOsDialog(Surface3DDialog):
             ],
             dtype=np.float32,
         )
-        self.isoline_border_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+        self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            "Isoline_Border_Cylinders",
             cylinder_end_points,
             np.array([0.01] * 4, dtype=np.float32),
             np.array([0, 0, 0] * 4, dtype=np.float32),
             10,
         )
-        self.isoline_border_spheres = self.parent().structure_widget.renderer.draw_spheres(
+        self.parent().structure_widget.renderer.draw_spheres(
+            "Isoline_Border_Spheres",
             self.isoline_border_points,
             np.array([0.01] * 4, dtype=np.float32),
             np.array([0, 0, 0] * 4, dtype=np.float32),
@@ -632,12 +626,10 @@ class MOsDialog(Surface3DDialog):
 
     def remove_isoline_border(self) -> None:
         """Remove the border of the isoline grid."""
-        if self.isoline_border_cylinders != -1:
-            self.parent().structure_widget.renderer.remove_cylinder(self.isoline_border_cylinders)
-            self.isoline_border_cylinders = -1
-        if self.isoline_border_spheres != -1:
-            self.parent().structure_widget.renderer.remove_sphere(self.isoline_border_spheres)
-            self.isoline_border_spheres = -1
+        if "Isoline_Border_Cylinders" in self.parent().structure_widget.renderer.objects3d:
+            self.parent().structure_widget.renderer.remove_object("Isoline_Border_Cylinders")
+        if "Isoline_Border_Spheres" in self.parent().structure_widget.renderer.objects3d:
+            self.parent().structure_widget.renderer.remove_object("Isoline_Border_Spheres")
         self.parent().structure_widget.update()
 
     def toggle_isoline_border(self) -> None:
@@ -791,18 +783,22 @@ class MOsDialog(Surface3DDialog):
         colors_1 = np.array(list(self.color_surface_1 / 255) * self.isolines_1.shape[0], dtype=np.float32)
         radii_2 = np.array([self.isoline_radius] * self.isolines_2.shape[0], dtype=np.float32)
         colors_2 = np.array(list(self.color_surface_2 / 255) * self.isolines_2.shape[0], dtype=np.float32)
-        self.isoline_drawn_lines[0] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
-            self.isolines_1,
-            radii_1,
-            colors_1,
-            10,
-        )
-        self.isoline_drawn_lines[1] = self.parent().structure_widget.renderer.draw_cylinders_from_to(
-            self.isolines_2,
-            radii_2,
-            colors_2,
-            10,
-        )
+        if self.isolines_1.size != 0:
+            self.parent().structure_widget.renderer.draw_cylinders_from_to(
+                "Isolines_1",
+                self.isolines_1,
+                radii_1,
+                colors_1,
+                10,
+            )
+        if self.isolines_2.size != 0:
+            self.parent().structure_widget.renderer.draw_cylinders_from_to(
+                "Isolines_2",
+                self.isolines_2,
+                radii_2,
+                colors_2,
+                10,
+            )
         self.parent().structure_widget.update()
         self.set_isolines_visible()
 
@@ -1122,12 +1118,10 @@ class MOsDialog(Surface3DDialog):
 
     def remove_isoline_axes(self) -> None:
         """Remove the isoline axes used for rotation and translation."""
-        if self.isoline_axes_cylinders != -1:
-            self.parent().structure_widget.renderer.remove_cylinder(self.isoline_axes_cylinders)
-            self.isoline_axes_cylinders = -1
-        if self.isoline_axes_spheres != -1:
-            self.parent().structure_widget.renderer.remove_sphere(self.isoline_axes_spheres)
-            self.isoline_axes_spheres = -1
+        if "Isoline_Axes_Cylinders" in self.parent().structure_widget.renderer.objects3d:
+            self.parent().structure_widget.renderer.remove_object("Isoline_Axes_Cylinders")
+        if "Isoline_Axes_Spheres" in self.parent().structure_widget.renderer.objects3d:
+            self.parent().structure_widget.renderer.remove_object("Isoline_Axes_Spheres")
         self.parent().structure_widget.update()
 
     def draw_isoline_axes(self) -> None:
@@ -1149,17 +1143,19 @@ class MOsDialog(Surface3DDialog):
         cylinder_colors = colors[:3]
         sphere_colors = np.vstack(([np.zeros(3)], colors))
         self.parent().structure_widget.makeCurrent()
-        self.isoline_axes_cylinders = self.parent().structure_widget.renderer.draw_cylinders_from_to(
+        self.parent().structure_widget.renderer.draw_cylinders_from_to(
+            "Isoline_Axes_Cylinders",
             cylinder_end_points,
             radii[:3],
             cylinder_colors,
-            10,
+            25,
         )
-        self.isoline_axes_spheres = self.parent().structure_widget.renderer.draw_spheres(
+        self.parent().structure_widget.renderer.draw_spheres(
+            "Isoline_Axes_Spheres",
             np.array(sphere_positions, dtype=np.float32),
-            radii,
-            sphere_colors,
-            10,
+            radii * 0.99,
+            np.array(sphere_colors, dtype=np.float32),
+            25,
         )
 
         self.parent().structure_widget.update()
