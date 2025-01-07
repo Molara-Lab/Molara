@@ -12,7 +12,7 @@ class Polygon(Object3D):
     """Creates a Polygon object, containing its vertices and colors."""
 
     def __init__(self, vertices: np.ndarray, color: np.ndarray, wire_frame: bool = False) -> None:
-        """Create a Cylinder object to be drawn."""
+        """Create a Polygon object to be drawn."""
         self.wire_frame = wire_frame
         super().__init__()
         self.vertices = vertices

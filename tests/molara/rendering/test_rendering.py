@@ -40,7 +40,7 @@ class WorkaroundTestRenderer:
         self._test_remove_sphere()
         self._test_draw_billboards()
         self._test_remove_billboard()
-        # self._test_shader_modes()
+        self._test_shader_modes()
 
         self.openGLWidget.doneCurrent()
 

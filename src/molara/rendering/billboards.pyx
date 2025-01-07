@@ -41,7 +41,9 @@ class Billboards(Object3D):
                 np.array(sizes[i], dtype=np.float32),
                 np.array(normals[i], dtype=np.float32),
             )
-            model_matrices = model_matrix if i == 0 else np.concatenate((model_matrices, model_matrix))
+            if i == 0:
+                model_matrices = np.zeros((self.number_of_instances, 4, 4), dtype=np.float32)
+            model_matrices[i] = model_matrix
         self.model_matrices = model_matrices
         self.texture = texture
         self.colors = None
