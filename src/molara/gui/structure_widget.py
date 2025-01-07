@@ -39,7 +39,6 @@ class StructureWidget(QOpenGLWidget):
         self.main_window = self.central_widget.parent()  # type: ignore[method-assign, assignment]
         QOpenGLWidget.__init__(self, parent)
 
-        self.renderer = Renderer(self)
         self.structures: list[Structure | Molecule | Crystal] = []
         self.vertex_attribute_objects = [-1]
         self.draw_axes = False
@@ -53,6 +52,7 @@ class StructureWidget(QOpenGLWidget):
         self.old_position = np.zeros(2)
         self.contour = False
         self.camera = Camera(self.width(), self.height())
+        self.renderer = Renderer(self)
         self.cursor_in_widget = False
         self.measurement_selected_spheres: list = [-1] * 4
         self.measurement_drawn_spheres: list = [-1] * 4
@@ -189,8 +189,9 @@ class StructureWidget(QOpenGLWidget):
         """Draws the scene."""
         if not self.isValid():
             return
+        self.renderer.default_framebuffer = self.defaultFramebufferObject()
         self.makeCurrent()
-        self.renderer.draw_scene(self.camera, self.defaultFramebufferObject())
+        self.renderer.draw_scene()
 
     def update_molecule_spheres_cylinders(self) -> None:
         """Update the spheres and cylinders (atoms and bonds of a molecule)."""

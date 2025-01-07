@@ -60,8 +60,8 @@ from molara.rendering.spheres import Spheres
 if TYPE_CHECKING:
     from numpy import floating
     from PIL import Image
-    from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
+    from molara.gui.structure_widget import StructureWidget
     from molara.rendering.camera import Camera
     from molara.rendering.object3d import Object3D
 
@@ -77,10 +77,12 @@ MODES = [SHADED, UNSHADED, OUTLINED_SHADED, OUTLINED_UNSHADED]
 class Renderer:
     """Contains the rendering function for the opengl widget."""
 
-    def __init__(self, opengl_widget: QOpenGLWidget) -> None:
+    def __init__(self, opengl_widget: StructureWidget) -> None:
         """Create a Renderer object."""
         self.shaders: dict = {}
         self.opengl_widget = opengl_widget
+        self.default_framebuffer = opengl_widget.defaultFramebufferObject()
+        self.camera: Camera = opengl_widget.camera
 
         # multisampling anti-aliasing
         self.msaa = True
@@ -96,7 +98,7 @@ class Renderer:
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
         self.shade: str = ""
-        self.set_mode(SHADED)
+        self.set_mode(OUTLINED_SHADED)
 
     def set_mode(self, mode: str) -> None:
         """Set the mode of the renderer.
@@ -363,11 +365,10 @@ class Renderer:
             msg = f"Spheres with the name '{name}' not found!"
             raise ValueError(msg)
 
-    def _init_rendering(self, shader_name: str, camera: Camera) -> None:
+    def _init_rendering(self, shader_name: str) -> None:
         """Initialize the uniform location of the shader code.
 
         :param shader_name: Name of the shader to be initialized.
-        :param camera: Camera object from the scene.
         """
         self.shaders[shader_name].use()
         light_direction_loc = self.shaders[shader_name].get_uniform_location("light_direction")
@@ -375,64 +376,53 @@ class Renderer:
         camera_loc = self.shaders[shader_name].get_uniform_location("camera_position")
         view_loc = self.shaders[shader_name].get_uniform_location("view")
 
-        light_direction = -camera.position - camera.up_vector * camera.distance_from_target * 0.5
+        light_direction = -self.camera.position - self.camera.up_vector * self.camera.distance_from_target * 0.5
         glUniform3fv(light_direction_loc, 1, light_direction)
-        glUniform3fv(camera_loc, 1, camera.position)
-        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, camera.projection_matrix)
-        glUniformMatrix4fv(view_loc, 1, GL_FALSE, camera.view_matrix)
+        glUniform3fv(camera_loc, 1, self.camera.position)
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, self.camera.projection_matrix)
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, self.camera.view_matrix)
 
     def draw_scene(
         self,
-        camera: Camera,
-        default_framebuffer: int,
     ) -> None:
-        """Draws the scene.
-
-        :param camera: Camera object.
-        :param default_framebuffer: Default framebuffer for drawing to the screen.
-        :return:
-        """
+        """Draws the scene."""
         if self.mode in (SHADED, UNSHADED):
             if not self.msaa:
                 glDisable(GL_MULTISAMPLE)
             else:
                 glEnable(GL_MULTISAMPLE)
-            self.draw_scene_default(camera, default_framebuffer)
+            self.draw_scene_default()
         elif self.mode in (OUTLINED_UNSHADED, OUTLINED_SHADED):
             glDisable(GL_MULTISAMPLE)
             size_factor = self.framebuffers["Main"].buffer_size_factor
-            glViewport(0, 0, int(camera.width * size_factor), int(camera.height * size_factor))
-            self.draw_scene_outlined(camera, default_framebuffer)
+            glViewport(0, 0, int(self.camera.width * size_factor), int(self.camera.height * size_factor))
+            self.draw_scene_outlined()
 
-    def render_objects(self, camera: Camera) -> None:
-        """Render the objects in the scene.
-
-        :param camera: Camera object.
-        """
+    def render_objects(self) -> None:
+        """Render the objects in the scene."""
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glEnable(GL_DEPTH_TEST)
 
-        self._init_rendering(shader_name="Main" + self.shade, camera=camera)
+        self._init_rendering(shader_name="Main" + self.shade)
         for object_ in self.objects3d.values():
             _render_object(object_)
 
-        self._init_rendering(shader_name="Texture" + self.shade, camera=camera)
+        self._init_rendering(shader_name="Texture" + self.shade)
 
         for object_ in self.textured_objects3d.values():
             glBindTexture(GL_TEXTURE_2D, object_.buffers.texture)
             _render_object(object_)
             glBindTexture(GL_TEXTURE_2D, 0)
 
-    def render_to_screen(self, shader_name: str, default_framebuffer: int, width: float, height: float) -> None:
+    def render_to_screen(self, shader_name: str, width: float, height: float) -> None:
         """Blur the color buffer inter framebuffer as a sort of antialiasing.
 
         :param shader_name: Name of the shader to be used. Can also contain one more post-processing step.
         :param width: Width of the screen.
         :param height: Height of the screen.
-        :param default_framebuffer: Default framebuffer for drawing to the screen.
         """
         self.shaders[shader_name].use()
-        glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer)
+        glBindFramebuffer(GL_FRAMEBUFFER, self.default_framebuffer)
         glViewport(0, 0, int(width * self.device_pixel_ratio), int(height * self.device_pixel_ratio))
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -473,7 +463,6 @@ class Renderer:
         Inter framebuffer for further use.
 
         :param post_processing_shader: Name of the post-processing shader.
-        :param default_framebuffer: Framebuffer for drawing to the screen.
         :param width: Width of the screen.
         :param height: Height of the screen.
         """
@@ -501,35 +490,22 @@ class Renderer:
 
     def draw_scene_default(
         self,
-        camera: Camera,
-        default_framebuffer: int,
     ) -> None:
         """Draws the scene.
 
         Uses the default shader to draw the scene.
-
-        :param camera: Camera object.
-        :param default_framebuffer: Default framebuffer for drawing to the screen.
-        :return:
         """
         # Render scene directly to the screen
-        glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer)
-        self.render_objects(camera)
+        glBindFramebuffer(GL_FRAMEBUFFER, self.default_framebuffer)
+        self.render_objects()
 
     def draw_scene_outlined(
         self,
-        camera: Camera,
-        default_framebuffer: int,
     ) -> None:
-        """Draws the scene.
-
-        :param camera: Camera object.
-        :param default_framebuffer: Default framebuffer for drawing to the screen.
-        :return:
-        """
+        """Draws the scene."""
         # initial rendering to framebuffer
         self.framebuffers["Main"].bind()
-        self.render_objects(camera)
+        self.render_objects()
 
         # post-processing on framebuffer
         shader_name = "Outline"
@@ -537,7 +513,7 @@ class Renderer:
 
         # Draw to screen
         shader_name = "Screen"
-        self.render_to_screen(shader_name, default_framebuffer, camera.width, camera.height)
+        self.render_to_screen(shader_name, self.camera.width, self.camera.height)
 
 
 def _render_object(object_: Object3D) -> None:

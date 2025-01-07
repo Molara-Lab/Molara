@@ -26,7 +26,7 @@ class WorkaroundTestRenderer:
         self.qtbot = qtbot
         self.main_window = main_window
         self.openGLWidget = self.main_window.structure_widget
-        self.renderer = Renderer(self.openGLWidget)
+        self.renderer = self.openGLWidget.renderer
         self.openGLWidget.show()
 
     def run_tests(self) -> None:
@@ -88,7 +88,7 @@ class WorkaroundTestRenderer:
 
         for mode in MODES:
             self.renderer.set_mode(mode)
-            self.openGLWidget.update()
+            self.renderer.draw_scene()
 
         self.renderer.remove_object("test1")
 
