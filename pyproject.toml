@@ -28,6 +28,7 @@ maintainers = [
     {name = "Michel Heinz, Gereon Feldmann, Adrian Usler, Alexander Bonkowski"},
 ]
 dependencies = [
+    "pillow>=10.0.0",
     "PyOpenGL>=3.1.6",
     "PySide6>=6.3.0", # tests fail below
     "matplotlib>=3.6.2", # see https://github.com/matplotlib/matplotlib/pull/24158
@@ -144,13 +145,14 @@ modules = [
     "src/molara/eval/generate_voxel_grid.pyx",
     "src/molara/eval/marchingcubes.pyx",
     "src/molara/eval/marchingsquares.pyx",
-    "src/molara/rendering/cylinder.pyx",
-    "src/molara/rendering/sphere.pyx",
+    "src/molara/rendering/cylinders.pyx",
+    "src/molara/rendering/spheres.pyx",
+    "src/molara/rendering/billboards.pyx",
     "src/molara/rendering/matrices.pyx",
     "src/molara/tools/mathtools.pyx",
 ]
 # Optional: Specify include directories
 include-dirs = [
-    "",
-    "{env:NUMPY_INCLUDE}",
+    "",  # Current directory
+    "{env:NUMPY_INCLUDE}",  # NumPy include directory
 ]

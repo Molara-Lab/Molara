@@ -1,21 +1,56 @@
 """This module contains the Sphere and Spheres classes."""
 
 import numpy as np
-cimport numpy as npc
 from molara.tools.mathtools import norm
+from molara.rendering.object3d import Object3D
+from molara.rendering.matrices import calculate_scale_matrices
 
-class Sphere:
+class Spheres(Object3D):
     """Creates a Sphere object, containing its vertices and indices.
 
     :param subdivisions: Number of subdivisions of the sphere.
     """
 
-    def __init__(self, subdivisions: int) -> None:
-        """Creates a Sphere object, containing its vertices and indices."""
+    def __init__(self, subdivisions: int,
+                 positions: np.ndarray,
+                 radii: np.ndarray,
+                 colors: np.ndarray,
+                 wire_frame: bool = False,) -> None:
+        """Creates a Sphere object, containing its vertices and indices.
+
+        :param subdivisions: Number of subdivisions of the sphere.
+        :param positions: Positions of the spheres. A 2D numpy array of shape (n, 3).
+        :param radii: Radii of the spheres. A 1D numpy array of shape (n,).
+        :param colors: Colors of the spheres. A 2D numpy array of shape (n, 3).
+        :param wire_frame: If True, the sphere will be rendered as a wire frame."""
         self.subdivisions = subdivisions
         vertices, indices = generate_sphere(self.subdivisions)
+        super().__init__()
+        self.wire_frame = wire_frame
         self.vertices = vertices
         self.indices = indices
+        self.number_of_instances = len(positions)
+        self.number_of_vertices = len(vertices)
+
+        self.calculate_translation_matrices(positions)
+        self.calculate_scaling_matrices(radii)
+        eye_matrix = np.eye(4, dtype=np.float32)
+        self.rotation_matrices = np.array([eye_matrix for _ in range(self.number_of_instances)], dtype=np.float32)
+        self.calculate_model_matrices()
+
+        self.colors = colors
+
+    def calculate_scaling_matrices(self, radii: np.ndarray) -> None:
+        """Calculates the scaling matrices for the spheres.
+
+        This is a special case as, a sphere needs to be scaled uniformly.
+        :param radii: Dimensions of the spheres.
+        """
+        dimensions = np.zeros((self.number_of_instances, 3), dtype=np.float32)
+        dimensions[:, 0] = radii
+        dimensions[:, 1] = radii
+        dimensions[:, 2] = radii
+        self.scaling_matrices = calculate_scale_matrices(dimensions)
 
 
 def generate_sphere(
@@ -63,30 +98,3 @@ def generate_sphere(
                 indices.extend([p1, p2, p3, p3, p2, p4])
 
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
-
-def calculate_sphere_model_matrix(npc.ndarray[float, ndim=1] position,
-                                  float radius) -> np.ndarray:
-    """Calculates the model matrix for a sphere.
-
-    :param position: Position of the sphere.
-    :param radius: Radius of the sphere.
-    :return: Model matrix of the sphere.
-    """
-
-    cdef npc.ndarray[float, ndim=2] translation_matrix
-    cdef npc.ndarray[float, ndim=2] scale_matrix
-    cdef npc.ndarray[float, ndim=2] model_matrix
-
-    translation_matrix = np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
-    translation_matrix[3, 0:3] = position
-
-    scale_matrix =np.array([[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]], dtype=np.float32)
-    scale_matrix[0,0] = radius
-    scale_matrix[1,1] = radius
-    scale_matrix[2,2] = radius
-
-    model_matrix = scale_matrix @ translation_matrix
-    return np.array(
-        [model_matrix],
-        dtype=np.float32,
-    )

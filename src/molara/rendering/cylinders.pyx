@@ -6,21 +6,37 @@ They are used to create cylinders and multiple cylinders of the same color, resp
 cimport numpy as npc
 import numpy as np
 from molara.tools.mathtools import norm_float
+from molara.rendering.object3d import Object3D
 
 
-class Cylinder:
-    """Creates a Cylinder object, containing its vertices and indices.
 
-    :param color: Color of the cylinder.
-    :param subdivisions: Number of subdivisions of the cylinder.
-    """
+class Cylinders(Object3D):
+    """Creates a Cylinder object, containing its vertices and indices."""
 
-    def __init__(self, subdivisions: int) -> None:
-        """Creates a Cylinder object, containing its vertices and indices."""
+    def __init__(self,
+                 subdivisions: int,
+                 positions: np.ndarray,
+                 directions: np.ndarray,
+                 dimensions: np.ndarray,
+                 colors: np.ndarray,
+                 wire_frame: bool = False) -> None:
+        """Create a Cylinder object to be drawn."""
+        self.wire_frame = wire_frame
         self.subdivisions = subdivisions
         vertices, indices = generate_cylinder(self.subdivisions)
+        super().__init__()
         self.vertices = vertices
         self.indices = indices
+        self.number_of_instances = len(positions)
+        self.number_of_vertices = len(vertices)
+
+        self.calculate_translation_matrices(positions)
+        self.calculate_scaling_matrices(dimensions)
+        self.calculate_rotation_matrices(directions)
+        self.calculate_model_matrices()
+
+        self.colors = colors
+
 
 
 def generate_cylinder(

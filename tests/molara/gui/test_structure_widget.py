@@ -57,12 +57,12 @@ class WorkaroundTestStructureWidget:
 
         structure_widget.toggle_unit_cell_boundaries()
         text_unit_cell_boundaries = "Hide Unit Cell Boundaries"
-        assert structure_widget.draw_unit_cell_boundaries
+        assert structure_widget.box
 
         assert window.ui.actionToggle_UnitCellBoundaries.text() == text_unit_cell_boundaries
 
         structure_widget.toggle_unit_cell_boundaries()
-        assert not structure_widget.draw_unit_cell_boundaries
+        assert not structure_widget.box
         text_unit_cell_boundaries = "Show Unit Cell Boundaries"
         assert window.ui.actionToggle_UnitCellBoundaries.text() == text_unit_cell_boundaries
 

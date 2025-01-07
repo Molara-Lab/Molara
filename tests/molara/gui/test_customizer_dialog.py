@@ -34,11 +34,14 @@ class WorkaroundTestCustomizerDialog:
 
     def run_tests(self) -> None:
         """Run the tests."""
-        self._test_stick_model()
+        self._test_stick_mode()
 
-    def _test_stick_model(self) -> None:
+    def _test_stick_mode(self) -> None:
         """Test the toggle stick model method."""
         self.customizer_dialog.toggle_stick_mode()
         assert not self.customizer_dialog.stick_mode
         self.customizer_dialog.toggle_stick_mode()
         assert self.customizer_dialog.stick_mode
+        self.molecule.drawer.set_spheres(self.molecule.atoms)
+        for radius in self.molecule.drawer.sphere_radii:
+            assert radius == self.molecule.drawer.sphere_radii[0]
