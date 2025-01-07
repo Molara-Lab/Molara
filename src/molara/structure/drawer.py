@@ -80,7 +80,10 @@ class Drawer:
             for atom in self.atoms:
                 self.sphere_positions.append(atom.position)
                 self.sphere_colors.append(atom.color[self.color_scheme])
-                self.sphere_radii.append(scaling_factor * atom.vdw_radius)
+                if atom.vdw_radius > 0:
+                    self.sphere_radii.append(scaling_factor * atom.vdw_radius)
+                else:
+                    self.sphere_radii.append(self.electron_scale)
         else:
             scaling_factor = self.cylinder_default_radius * self.sphere_scale
             scaling_factor *= 0.99
@@ -136,13 +139,19 @@ class Drawer:
         assert self.atoms is not None
         if not self.stick_mode:
             self.sphere_radii = np.array(
-                [scaling_factor * atom.vdw_radius for atom in self.atoms],
+                [
+                    scaling_factor * atom.vdw_radius if atom.vdw_radius > 0 else self.electron_scale
+                    for atom in self.atoms
+                ],
                 dtype=np.float32,
             )
         else:
             scaling_factor = self.cylinder_default_radius * self.sphere_scale
             scaling_factor *= 0.99
-            self.sphere_radii = np.array([scaling_factor for _ in self.atoms], dtype=np.float32)
+            self.sphere_radii = np.array(
+                [scaling_factor if atom.vdw_radius > 0 else self.electron_scale for atom in self.atoms],
+                dtype=np.float32,
+            )
 
     def set_cylinders(self) -> None:
         """Set the colors of the bonds (cylinders)."""

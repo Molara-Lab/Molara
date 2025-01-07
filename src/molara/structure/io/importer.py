@@ -8,8 +8,9 @@ from abc import ABC, abstractmethod
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import TYPE_CHECKING
-import yaml
+
 import numpy as np
+import yaml
 
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.io.importer_crystal import (
@@ -28,7 +29,7 @@ if TYPE_CHECKING:
     from os import PathLike
     from typing import Any
 
-    from molara.molecule.crystals import Crystals
+    from molara.structure.crystals import Crystals
 
     try:
         from cclib.data import ccData
@@ -376,29 +377,29 @@ class PDAInPsightsImporter(MoleculesImporter):
 
     def load(self) -> Molecules:
         """Read the file in self.path and creates a Molecules object."""
-        with open(self.path, "r") as file:
-            documents = list(yaml.safe_load_all(file))
+        with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
+            documents = list(yaml.load_all(file, Loader=yaml.CLoader))
         pda_data = documents[1]
         # get the atomic numbers:
-        atomic_numbers = []
-        for atom in pda_data["Atoms"]["Types"]:
-            atomic_numbers.append(element_symbol_to_atomic_number(atom.capitalize()))
-        coordinates = []
-        for position in pda_data["Atoms"]["Positions"]:
-            coordinates.append([float(x * BOHR_TO_ANGSTROM) for x in position])
-        for electron_type in pda_data["Clusters"][0]["Structures"][0]["Types"]:
-            electron_type = "Up" if electron_type == "a" else "Dn"
+        atomic_numbers = [element_symbol_to_atomic_number(atom.capitalize()) for atom in pda_data["Atoms"]["Types"]]
+        coordinates = [[float(x) * BOHR_TO_ANGSTROM for x in position] for position in pda_data["Atoms"]["Positions"]]
+        for electron_type_ in pda_data["Clusters"][0]["Structures"][0]["Types"]:
+            electron_type = "Up" if electron_type_ == "a" else "Dn"
             atomic_numbers.append(element_symbol_to_atomic_number(electron_type.capitalize()))
-        for electron_position in pda_data["Clusters"][0]["Structures"][0]["Positions"]:
-            coordinates.append([float(x * BOHR_TO_ANGSTROM) for x in electron_position])
+        coordinates.extend(
+            [
+                [float(x) * BOHR_TO_ANGSTROM for x in position]
+                for position in pda_data["Clusters"][0]["Structures"][0]["Positions"]
+            ],
+        )
 
         # Create molecule
         molecules = Molecules()
         mol = Molecule(np.array(atomic_numbers), np.array(coordinates))
 
-
         molecules.add_molecule(mol)
         return molecules
+
 
 class CubeImporter(MoleculesImporter):
     """Importer from *.molden files."""
