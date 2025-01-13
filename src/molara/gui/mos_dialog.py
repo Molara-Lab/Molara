@@ -567,8 +567,8 @@ class MOsDialog(Surface3DDialog):
         """Remove the isolines."""
         self.parent().structure_widget.makeCurrent()
         for i in range(2):
-            if f"Isolines_{i+1}" in self.parent().structure_widget.renderer.objects3d:
-                self.parent().structure_widget.renderer.remove_object(f"Isolines_{i+1}")
+            if f"Isolines_{i + 1}" in self.parent().structure_widget.renderer.objects3d:
+                self.parent().structure_widget.renderer.remove_object(f"Isolines_{i + 1}")
         self.parent().structure_widget.update()
         self.set_isolines_hidden()
 
