@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
@@ -161,7 +163,14 @@ class StructureWidget(QOpenGLWidget):
 
         :param filename: name of the file from which the camera settings shall be loaded
         """
+        if not filename.endswith(".json"):
+            return
+        with Path(filename).open() as file:
+            data = json.load(file)
         self.camera.import_settings(filename)
+        self.resize(data["width"], data["height"])
+        self.resizeGL(data["width"], data["height"])
+        self.main_window.resize(data["width"], data["height"])
         self.update()
 
     def initializeGL(self) -> None:  # noqa: N802
