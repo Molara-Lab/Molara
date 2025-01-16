@@ -42,7 +42,7 @@ class Structure:
 
         self.molar_mass: float = np.sum([atom.atomic_mass for atom in self.atoms])
 
-        self.bond_distance_factor = 1.0 / 1.75  # (sum of vdw radii) / 1.75 is the maximum distance for a bond
+        self.bond_distance_factor = 1.0 / 1.85  # (sum of vdw radii) / 1.75 is the maximum distance for a bond
         self.draw_bonds = draw_bonds
         self.bonded_pairs = NO_BONDS
         self.bonds_calculated = False

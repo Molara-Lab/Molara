@@ -38,6 +38,9 @@ class Molecule(Structure):
         self.gen_energy_information(header)
         self.basis_set: list = []
         self.voxel_grid = VoxelGrid3D()
+        self.electron_positions: np.ndarray = np.array([])
+        self.spin_correlations: np.ndarray = np.array([])
+
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
     def update_basis_set(self) -> None:
