@@ -65,6 +65,10 @@ class Molecule(Structure):
         if self.draw_bonds:
             self.drawer.update_bonds()
 
+        if self.electron_positions.size > 0:
+            self.electron_positions -= self.center_of_mass
+        self.coords -= self.center_of_mass
+
         self.center_of_mass = self.calculate_center_of_mass()
         self.geometric_center = np.mean(self.coords, axis=0)
         self.update_basis_set()

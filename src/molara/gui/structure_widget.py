@@ -557,3 +557,43 @@ class StructureWidget(QOpenGLWidget):
     def clear_builder_selected_atoms(self) -> None:
         """Reset the selected spheres builder spheres."""
         self.builder_selected_spheres = [-1] * 3
+
+    def show_spin_correlation(self) -> None:
+        """Show the spin correlation."""
+        if len(self.structures) != 1:
+            return
+        if self.structures[0].spin_correlations.size == 0:
+            return
+        # remove old spin correlation
+        if 'Spin_corr' in self.renderer.objects3d:
+            self.renderer.remove_object('Spin_corr')
+
+        colors_list = [
+            [0, 1, 0],
+            [1, 0, 1],
+        ]
+        radius = 0.01
+        subdivisions = 10
+
+        threshold = 0.99
+        electron_pairs_corr = []
+        for i in range(self.structures[0].spin_correlations.shape[0]):
+            for j in range(i + 1, self.structures[0].spin_correlations.shape[1]):
+                spin_cor = self.structures[0].spin_correlations[i, j]
+                if abs(spin_cor) > threshold:
+                    electron_pairs_corr.append([i, j, spin_cor])
+        positions = []
+        radii = []
+        colors = []
+        for pair in electron_pairs_corr:
+            positions.append(
+                [self.structures[0].electron_positions[pair[0]], self.structures[0].electron_positions[pair[1]]]
+            )
+            colors.append(colors_list[0] if pair[2] < 0 else colors_list[1])
+            radii.append(radius)
+        if len(electron_pairs_corr) == 0:
+            return
+        self.renderer.draw_cylinders_from_to('Spin_corr', np.array(positions, dtype=np.float32), np.array(radii, dtype=np.float32), np.array(colors, dtype=np.float32), subdivisions)
+
+
+        self.update()

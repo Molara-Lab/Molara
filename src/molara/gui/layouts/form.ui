@@ -20,13 +20,14 @@
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>37</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -90,13 +91,13 @@
     <addaction name="actionDisplay_MOs"/>
     <addaction name="actionDisplay_3D_Surface"/>
     <addaction name="actionBuilder"/>
+    <addaction name="actionPDA"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuTools"/>
    <addaction name="menuCrystal"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="quit">
    <property name="text">
     <string>Quit</string>
@@ -245,6 +246,11 @@
   <action name="actionCheck_Normalization">
    <property name="text">
     <string>Check Normalization</string>
+   </property>
+  </action>
+  <action name="actionPDA">
+   <property name="text">
+    <string>PDA</string>
    </property>
   </action>
  </widget>

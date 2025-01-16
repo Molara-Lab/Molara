@@ -406,7 +406,6 @@ class PDAInPsightsImporter(MoleculesImporter):
         spin_correlations = np.zeros((number_of_electrons, number_of_electrons))
         for i in range(number_of_electrons):
             for j in range(i+1, number_of_electrons):
-                print(f"Spin correlation between {i} and {j}: {spin_correlations_data[i][j]}")
                 spin_correlations[i, j] = spin_correlations_data[i][j][0]
         mol.electron_positions = np.array(electron_positions)
         mol.spin_correlations = spin_correlations

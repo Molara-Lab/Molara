@@ -86,6 +86,8 @@ class Ui_MainWindow(object):
         self.actionDisplay_Isolines.setObjectName(u"actionDisplay_Isolines")
         self.actionCheck_Normalization = QAction(MainWindow)
         self.actionCheck_Normalization.setObjectName(u"actionCheck_Normalization")
+        self.actionPDA = QAction(MainWindow)
+        self.actionPDA.setObjectName(u"actionPDA")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -96,9 +98,12 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.openGLWidget, 0, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QStatusBar(MainWindow)
+        self.statusbar.setObjectName(u"statusbar")
+        MainWindow.setStatusBar(self.statusbar)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 37))
+        self.menubar.setGeometry(QRect(0, 0, 800, 24))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuImport = QMenu(self.menuFile)
@@ -114,9 +119,6 @@ class Ui_MainWindow(object):
         self.menuTools = QMenu(self.menubar)
         self.menuTools.setObjectName(u"menuTools")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
-        self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
@@ -149,6 +151,7 @@ class Ui_MainWindow(object):
         self.menuTools.addAction(self.actionDisplay_MOs)
         self.menuTools.addAction(self.actionDisplay_3D_Surface)
         self.menuTools.addAction(self.actionBuilder)
+        self.menuTools.addAction(self.actionPDA)
 
         self.retranslateUi(MainWindow)
 
@@ -187,6 +190,7 @@ class Ui_MainWindow(object):
         self.actionDisplay_3D_Surface.setText(QCoreApplication.translate("MainWindow", u"Display 3D Surface", None))
         self.actionDisplay_Isolines.setText(QCoreApplication.translate("MainWindow", u"Display Isolines", None))
         self.actionCheck_Normalization.setText(QCoreApplication.translate("MainWindow", u"Check Normalization", None))
+        self.actionPDA.setText(QCoreApplication.translate("MainWindow", u"PDA", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
         self.menuExport.setTitle(QCoreApplication.translate("MainWindow", u"Export", None))
@@ -195,3 +199,4 @@ class Ui_MainWindow(object):
         self.menuCrystal.setTitle(QCoreApplication.translate("MainWindow", u"Crystal", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
     # retranslateUi
+
