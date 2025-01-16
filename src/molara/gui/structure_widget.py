@@ -162,6 +162,10 @@ class StructureWidget(QOpenGLWidget):
         :param filename: name of the file from which the camera settings shall be loaded
         """
         self.camera.import_settings(filename)
+        width, height = int(self.camera.width), int(self.camera.height)
+        self.resize(width, height)
+        self.resizeGL(width, height)
+        self.main_window.resize(width, height)
         self.update()
 
     def initializeGL(self) -> None:  # noqa: N802
