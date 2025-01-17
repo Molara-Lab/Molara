@@ -14,7 +14,7 @@ authors:
   given-names: "Gereon"
   orcid: "https://orcid.org/0009-0009-1466-4610"
 title: "Molara"
-version: 0.0.1
+version: 0.1.1
 doi: 10.5281/zenodo.11120925
 date-released: 2024-02-29
 url: "https://github.com/Molara-Lab/Molara"
