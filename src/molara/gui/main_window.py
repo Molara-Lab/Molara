@@ -203,7 +203,7 @@ class MainWindow(QMainWindow):
         if file_name == "":
             return
         exporter = GeneralExporter(file_name)
-        exporter.write_structure(self.structure_widget.structure)
+        exporter.write_structure(self.structure_widget.structures[0])
 
     def export_camera_settings(self) -> None:
         """Export camera settings to .npz file."""
