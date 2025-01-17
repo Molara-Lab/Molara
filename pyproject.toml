@@ -21,7 +21,7 @@ molara = ["py.typed",
 name = "Molara"
 description = "A visualisation tool for chemical structures."
 authors = [
-    {name = "Michel Heinz"},
+    {name = "Michel Heinz", email = "michel.heinz@rwth-aachen.de"},
     {name = "Gereon Feldmann"},
     {name = "Adrian Usler", email = "adrian.usler@rwth-aachen.de"},
     {name = "Alexander Bonkowski", email = "alexander.bonkowski@rwth-aachen.de"},
