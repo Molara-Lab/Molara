@@ -200,7 +200,6 @@ class MolecularOrbitals:
         for ao in aos:
             len_ao = len(ao.exponents)
             max_length = max(len_ao, max_length)
-
         basis_set_exponents = np.zeros((len(aos), max_length), dtype=np.float64)
         basis_set_coefficients = np.zeros((len(aos), max_length), dtype=np.float64)
         basis_set_norms = np.zeros((len(aos), max_length), dtype=np.float64)
@@ -241,7 +240,6 @@ class MolecularOrbitals:
         mo_coefficients = np.array(self.coefficients[:, index], dtype=np.float64)
         aos_values = np.zeros(len(mo_coefficients), dtype=np.float64)
         electron_position = np.array(electron_position, dtype=np.float64) * ANGSTROM_TO_BOHR
-
         return calculate_mo_cartesian(
             electron_position,
             basis_set_position,
