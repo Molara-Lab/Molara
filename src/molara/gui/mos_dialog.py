@@ -54,7 +54,7 @@ class MOsDialog(Surface3DDialog):
         self.box_center = np.zeros(3, dtype=np.float64)
         self.minimum_box_size = np.zeros(3, dtype=np.float64)
         self.display_box = False
-        self.initial_box_size = 2
+        self.initial_box_size = 4
         self.box_positions: np.ndarray = np.array([])
         self.box_radii: np.ndarray = np.array([])
         self.box_colors: np.ndarray = np.array([])
@@ -195,6 +195,7 @@ class MOsDialog(Surface3DDialog):
         self.fill_orbital_selector()
         self.update_color_buttons()
         self.ui.recalculateOrbitalButton.setDisabled(True)
+        self.ui.isoValueSpinBox.setValue(0.05)
 
         # Set the box size and draw the box
         self.calculate_minimum_box_size()
