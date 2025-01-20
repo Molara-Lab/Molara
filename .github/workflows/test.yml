@@ -28,6 +28,8 @@ jobs:
         include:
           - os: macos-latest
             version: { python: "3.11", resolution: highest, extra: "tests,strict" }
+          - os: ubuntu-24.04-arm
+            version: { python: "3.12", resolution: highest, extra: "tests,strict" }
 
     runs-on: ${{ matrix.os }}
 
