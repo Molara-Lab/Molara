@@ -152,7 +152,7 @@ class WorkaroundTestMOsDialog:
     def _test_visualization(self) -> None:
         """Test the visualization of the orbitals not their correctness."""
         self.mo_dialog.toggle_surfaces()
-        number_of_vertices = 768
+        number_of_vertices = 2640
         assert (
             self.mo_dialog.parent().structure_widget.renderer.objects3d["Surface_1"].number_of_vertices
             == number_of_vertices

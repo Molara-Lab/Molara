@@ -54,6 +54,8 @@ class StructureCustomizerDialog(QDialog):
         self.ui.stickSizeSpinBox.setValue(1.0)
         self.ui.toggleBondsButton.setText("Hide Bonds")
         self.ui.toggleNumbersButton.setText("Show Indices")
+        # Disable until further notice. Needs reimplementation!
+        self.ui.toggleNumbersButton.setDisabled(True)
         self.ui.colorSchemeSelect.addItems(["Jmol", "CPK"])
 
         self.ui.viewModeButton.clicked.connect(self.toggle_stick_mode)

@@ -44,7 +44,13 @@ class WorkaroundTestStructureWidget:
         self.test_toggle_axes()
         self.test_toggle_unit_cell_boundaries()
         self.test_select_atoms()
+        self.test_import_camera_settings()
         self.test_set_view_to_axes()
+
+    def test_import_camera_settings(self) -> None:
+        """Test the import function for the camera."""
+        settings_file = "tests/camera_files/camera.json"
+        self.main_window.structure_widget.import_camera_settings(settings_file)
 
     def test_toggle_unit_cell_boundaries(self) -> None:
         """Test the toggle_unit_cell_boundaries method."""

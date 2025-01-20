@@ -97,7 +97,7 @@ class MeasurementDialog(QDialog):
             _set_table_labels(vertical, obj, labels, colors)
 
         colors = ["#f00", "#0d0", "#00f", "#cc0"]
-        atom_labels = [rf"Atom {i+1}" for i in range(len(colors))]
+        atom_labels = [rf"Atom {i + 1}" for i in range(len(colors))]
 
         set_horizontal_table_labels(
             self.ui.tablePositions,

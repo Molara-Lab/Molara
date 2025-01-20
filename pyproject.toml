@@ -13,13 +13,15 @@ version = {"attr" = "molara.__version__"}
 skip = ["*musllinux*"]
 
 [tool.setuptools.package-data]
-molara = ["py.typed"]
+molara = ["py.typed",
+          "rendering.shadercode/*.glsl",
+        ]
 
 [project]
 name = "Molara"
 description = "A visualisation tool for chemical structures."
 authors = [
-    {name = "Michel Heinz"},
+    {name = "Michel Heinz", email = "michel.heinz@rwth-aachen.de"},
     {name = "Gereon Feldmann"},
     {name = "Adrian Usler", email = "adrian.usler@rwth-aachen.de"},
     {name = "Alexander Bonkowski", email = "alexander.bonkowski@rwth-aachen.de"},
@@ -80,7 +82,7 @@ dev = [
     "molara[doc]",
 ]
 strict = [
-    "PySide6==6.8.0.2",
+    "PySide6==6.8.1.1",
     "numpy==2.2.1",
     "pyrr==0.10.3",
     "scipy==1.14.1",
