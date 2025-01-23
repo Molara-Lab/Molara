@@ -575,12 +575,24 @@ class StructureWidget(QOpenGLWidget):
         radius = 0.01
         subdivisions = 10
 
-        threshold = 0.99
+        threshold = 0.08
         electron_pairs_corr = []
         for i in range(self.structures[0].spin_correlations.shape[0]):
             for j in range(i + 1, self.structures[0].spin_correlations.shape[1]):
                 spin_cor = self.structures[0].spin_correlations[i, j]
                 if abs(spin_cor) > threshold:
+                    atoms = self.structures[0].atoms
+                    core_electron = False
+                    for atom in atoms:
+                        if atom.atomic_number < 2:
+                            continue
+                        else:
+                            if (np.linalg.norm(atom.position - self.structures[0].electron_positions[i]) < 0.01 or
+                            np.linalg.norm(atom.position - self.structures[0].electron_positions[j]) < 0.01):
+                                core_electron = True
+                                break
+                    if core_electron:
+                        continue
                     electron_pairs_corr.append([i, j, spin_cor])
         positions = []
         radii = []
