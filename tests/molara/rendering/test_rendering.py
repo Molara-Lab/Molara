@@ -35,6 +35,7 @@ class WorkaroundTestRenderer:
         self._test_set_shaders()
         self._test_draw_cylinders()
         self._test_remove_cylinder()
+        self._test_draw_arrows()
         self._test_draw_cylinders_from_to()
         self._test_draw_spheres()
         self._test_remove_sphere()
@@ -132,6 +133,27 @@ class WorkaroundTestRenderer:
         assert "test2" in self.renderer.objects3d
         self.renderer.remove_object("test2")
         assert "test2" not in self.renderer.objects3d
+
+    def _test_draw_arrows(self) -> None:
+        """Test the draw_arrows method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+        positions_from_to = np.array(
+            [
+                [[1.2, 3.4, 5.6], [9.8, 7.6, 5.4]],
+                [[-3.3, -2.2, 1.1], [9.9, 8.8, -7.7]],
+                [[0, 0, 0], [1, 1, 1]],
+            ],
+            dtype=np.float32,
+        )
+        colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        subdivisions = 10
+
+        self.renderer.draw_arrows("test2", positions_from_to, colors, subdivisions)
+        assert "test2" in self.renderer.objects3d
+        assert "test2_" in self.renderer.objects3d
+        self.renderer.remove_object("test2")
+        assert "test2" not in self.renderer.objects3d
+        assert "test2_" not in self.renderer.objects3d
 
     def _test_draw_spheres(self) -> None:
         """Test the draw_spheres method of the Renderer class."""

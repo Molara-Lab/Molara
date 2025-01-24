@@ -29,6 +29,7 @@ class Cylinders(Object3D):
         self.indices = indices
         self.number_of_instances = len(positions)
         self.number_of_vertices = len(vertices)
+        self.number_of_indices = len(indices)
 
         self.calculate_translation_matrices(positions)
         self.calculate_scaling_matrices(dimensions)

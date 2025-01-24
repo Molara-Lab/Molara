@@ -51,6 +51,7 @@ from OpenGL.GL import (
 )
 
 from molara.rendering.billboards import Billboards
+from molara.rendering.cones import Cones
 from molara.rendering.cylinders import Cylinders
 from molara.rendering.framebuffers import Framebuffer
 from molara.rendering.polygons import Polygon
@@ -285,6 +286,135 @@ class Renderer:
         self.objects3d[name] = Cylinders(subdivisions, positions, directions, dimensions, colors)
         self.objects3d[name].generate_buffers()
 
+    def draw_cones(  # noqa: PLR0913
+        self,
+        name: str,
+        positions: np.ndarray,
+        directions: np.ndarray,
+        dimensions: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+    ) -> None:
+        """Draws one or multiple cones.
+
+        If only one cone is drawn, the positions, directions, radii, lengths and colors are given as np.ndarray
+        containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple cones are drawn,
+        the positions, directions, radii, lengths and colors are given as np.ndarray containing multiple arrays, for
+        instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
+
+        :param name: Name of the cones that were created, this is used to remove the cones again.
+        :param positions: Positions of the cones.
+        :param directions: Directions of the cones.
+        :param scales: Dimensions of the cones ([[scale, scale, scale] * number_of_instances]).
+        :param colors: Colors of the cones.
+        :param subdivisions: Number of subdivisions of the cone.
+        :return: Returns the index of the cone in the list of cones.
+        """
+        self.opengl_widget.makeCurrent()
+        self.objects3d[name] = Cones(subdivisions, positions, directions, dimensions, colors)
+        self.objects3d[name].generate_buffers()
+
+    def draw_arrows(  # noqa: PLR0913
+        self,
+        name: str,
+        positions: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+        arrow_ratio: float = 0.1,
+        radius: float = 0.01,
+    ) -> None:
+        """Draws one or multiple arrows.
+
+        If only one arrow is drawn, the positions, directions, radii, lengths and colors are given as np.ndarray
+        containing only one array, for instance: positions = np.array([[0, 0, 0, 1, 0, 0]]). If multiple arrows are
+        drawnthe positions, directions, radii, lengths and colors are given as np.ndarray containing multiple arrays,
+        for instance: positions = np.array([[0, 0, 0, 1, 0, 0], [1, 1, 1, 1, 0, 0]]).
+        :param name: Name of the arrows that were created, this is used to remove the arrows again.
+        :param positions: Positions [[start, end], [start, end], ...] of the arrows.
+        :param scale: Scale of the arrows.
+        :param colors: Colors of the arrows.
+        :param subdivisions: Number of subdivisions of the arrow.
+        :param arrow_ratio: Ratio of the arrow head to the arrow length.
+        :param radius: Radius of the cylinder.
+        """
+        self.opengl_widget.makeCurrent()
+        # Calculate the positions for the cylinder with the arrow_ratio:
+        cylinder_radius = radius
+        cone_radius = 2 * radius
+
+        # Extract starts and ends from (N, 2, 3)
+        starts = positions[:, 0]  # Shape: (N, 3) - all start points
+        ends = positions[:, 1]  # Shape: (N, 3) - all end points
+
+        # Calculate the direction vectors
+        vectors = ends - starts  # Shape: (N, 3)
+
+        # Calculate the length of each arrow
+        lengths = np.linalg.norm(vectors, axis=1, keepdims=True)  # Shape: (N, 1)
+
+        # Normalize the direction vectors
+        directions = vectors / lengths  # Shape: (N, 3)
+
+        # Calculate the start of the cone and end of the cylinder
+        cone_starts = ends - arrow_ratio * lengths * directions  # Shape: (N, 3)
+        cylinder_ends = cone_starts  # Shape: (N, 3)
+
+        # Stack results to create output arrays
+        cylinder_points = np.stack([starts, cylinder_ends], axis=1)  # Shape: (N, 2, 3)
+        cone_points = np.stack([cone_starts, ends], axis=1)  # Shape: (N, 2, 3)
+
+        self.draw_cylinders_from_to(
+            name,
+            cylinder_points,
+            np.array([cylinder_radius] * cylinder_points.shape[0]),
+            colors,
+            subdivisions,
+        )
+        self.draw_cones_from_to(
+            f"{name}_",
+            cone_points,
+            np.array([cone_radius] * cone_points.shape[0]),
+            colors,
+            subdivisions,
+        )
+
+    def draw_cones_from_to(
+        self,
+        name: str,
+        positions: np.ndarray,
+        radii: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+    ) -> None:
+        """Draws one or multiple cones.
+
+        :param name: Name of the cones that were created, this is used to remove the cones again.
+        :param positions: Positions [[start, end], [start, end], ...] of the cones.
+        :param radii: Radii of the cones.
+        :param colors: Colors of the cones.
+        :param subdivisions: Number of subdivisions of the cone.
+        """
+        self.opengl_widget.makeCurrent()
+        _directions: list[list[floating]] = []
+        _lengths: list[floating] = []
+        _positions_middle: list[list[list[floating]]] = []
+
+        pos1, pos2 = positions[:, 0], positions[:, 1]
+        lengths = np.linalg.norm(pos2 - pos1, axis=1)
+        valid = lengths > np.finfo(np.float32).eps
+        _directions = (pos2 - pos1)[valid].tolist()
+        _lengths = lengths[valid].tolist()
+        _positions_middle = (0.5 * (pos1 + pos2))[valid].tolist()
+
+        positions_middle = np.array(_positions_middle, dtype=np.float32)
+        lengths = np.array(_lengths)
+        dimensions = np.zeros((len(_lengths), 3), dtype=np.float32)
+        dimensions[:, 0] = radii[valid]
+        dimensions[:, 1] = lengths
+        dimensions[:, 2] = radii[valid]
+        directions = np.array(_directions) / lengths[:, None]
+        self.draw_cones(name, positions_middle, -directions.astype(np.float32), dimensions, colors, subdivisions)
+
     def draw_cylinders_from_to(
         self,
         name: str,
@@ -357,13 +487,20 @@ class Renderer:
         :param name: name of the object to be removed.
         """
         self.opengl_widget.makeCurrent()
+        found = False
         if name in self.objects3d:
             del self.objects3d[name]
-        elif name in self.textured_objects3d:
+            found = True
+        if f"{name}_" in self.objects3d:
+            del self.objects3d[f"{name}_"]
+            found = True
+        if name in self.textured_objects3d:
             del self.textured_objects3d[name]
-        else:
-            msg = f"Spheres with the name '{name}' not found!"
-            raise ValueError(msg)
+            found = True
+        if found:
+            return
+        msg = f"Objects with the name '{name}' not found!"
+        raise ValueError(msg)
 
     def _init_rendering(self, shader_name: str) -> None:
         """Initialize the uniform location of the shader code.
@@ -527,7 +664,7 @@ def _render_object(object_: Object3D) -> None:
     if object_.buffers.ebo != -1:
         glDrawElementsInstanced(
             GL_TRIANGLES,
-            object_.number_of_vertices,
+            object_.number_of_indices,
             GL_UNSIGNED_INT,
             None,
             object_.number_of_instances,

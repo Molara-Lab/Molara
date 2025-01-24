@@ -317,44 +317,27 @@ class StructureWidget(QOpenGLWidget):
     def toggle_axes(self) -> None:
         """Draws the cartesian axes."""
         length = 2.0
-        radius = 0.02
         self.makeCurrent()
         self.draw_axes = not self.draw_axes
         if not self.draw_axes:
-            self.renderer.remove_object("Axes_cylinders")
-            self.renderer.remove_object("Axes_spheres")
+            self.renderer.remove_object("Axes_structure_widget")
             self.update()
             self.main_window.update_action_texts()
             return
 
+        # Use draw_arrows:
         positions = np.array(
-            [[length / 2, 0, 0], [0, length / 2, 0], [0, 0, length / 2]],
+            [
+                [[0, 0, 0], [length, 0, 0]],
+                [[0, 0, 0], [0, length, 0]],
+                [[0, 0, 0], [0, 0, length]],
+            ],
             dtype=np.float32,
         )
-        directions = np.eye(3, dtype=np.float32)
         colors = np.eye(3, dtype=np.float32)
-        dimensions = np.array([[radius, length, radius]] * 3, dtype=np.float32)
 
-        self.renderer.draw_cylinders(
-            "Axes_cylinders",
-            positions,
-            directions,
-            dimensions,
-            colors,
-            25,
-        )
-        positions = np.array(
-            [[length, 0, 0], [0, length, 0], [0, 0, length], [0, 0, 0]],
-            dtype=np.float32,
-        )
-        colors = np.array(
-            [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
-            dtype=np.float32,
-        )
-        radii = np.array([radius] * 4, dtype=np.float32)
-        self.renderer.draw_spheres("Axes_spheres", positions, radii, colors, 25)
+        self.renderer.draw_arrows("Axes_structure_widget", positions, colors, subdivisions=25)
         self.update()
-
         self.main_window.update_action_texts()
 
     def toggle_projection(self) -> None:
