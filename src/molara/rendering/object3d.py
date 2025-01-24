@@ -21,6 +21,7 @@ class Object3D:
         self.number_of_instances = 0
         self.buffers = Buffers()
         self.number_of_vertices = 0
+        self.number_of_indices = 0
         self.colors = np.array([])
 
         self.translation_matrices = np.array([])
