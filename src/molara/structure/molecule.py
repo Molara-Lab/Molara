@@ -40,6 +40,7 @@ class Molecule(Structure):
         self.voxel_grid = VoxelGrid3D()
         self.electron_positions: np.ndarray = np.array([])
         self.spin_correlations: np.ndarray = np.array([])
+        self.pda_eigenvectors: np.ndarray = np.array([])
 
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 

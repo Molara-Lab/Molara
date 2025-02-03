@@ -380,7 +380,6 @@ class PDAInPsightsImporter(MoleculesImporter):
         cluster = 0
         subcluster = 0
         number_of_electrons = 0
-        electron_positions = []
         with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             documents = list(yaml.load_all(file, Loader=yaml.CLoader))
         pda_data = documents[1]
@@ -391,7 +390,7 @@ class PDAInPsightsImporter(MoleculesImporter):
             number_of_electrons += 1
             electron_type = "Up" if electron_type_ == "a" else "Dn"
             atomic_numbers.append(element_symbol_to_atomic_number(electron_type.capitalize()))
-        electron_positions =[
+        electron_positions = [
                 [float(x) * BOHR_TO_ANGSTROM for x in position]
                 for position in pda_data["Clusters"][cluster]["Structures"][subcluster]["Positions"]
             ]
@@ -400,15 +399,25 @@ class PDAInPsightsImporter(MoleculesImporter):
         # Create molecule
         molecules = Molecules()
         mol = Molecule(np.array(atomic_numbers), np.array(coordinates))
+        mol.electron_positions = np.array(electron_positions)
 
         # Read spin correlations
-        spin_correlations_data = pda_data["Clusters"][cluster]["SpinCorrelations"]
-        spin_correlations = np.zeros((number_of_electrons, number_of_electrons))
-        for i in range(number_of_electrons):
-            for j in range(i+1, number_of_electrons):
-                spin_correlations[i, j] = spin_correlations_data[i][j][0]
-        mol.electron_positions = np.array(electron_positions)
-        mol.spin_correlations = spin_correlations
+        if "SpinCorrelations" in pda_data["Clusters"][cluster]:
+            spin_correlations_data = pda_data["Clusters"][cluster]["SpinCorrelations"]
+            spin_correlations = np.zeros((number_of_electrons, number_of_electrons))
+            for i in range(number_of_electrons):
+                for j in range(i+1, number_of_electrons):
+                    spin_correlations[i, j] = spin_correlations_data[i][j][0]
+            mol.spin_correlations = spin_correlations
+
+        # Read Hessian:
+        if "Eigenvectors" in pda_data["Clusters"][cluster]["Structures"][subcluster]:
+            flattened_eigenvectors = []
+            for coords in pda_data["Clusters"][cluster]["Structures"][subcluster]["Eigenvectors"]:
+                flattened_eigenvectors.extend(coords)
+
+            eigenvectors = np.array(flattened_eigenvectors).reshape(number_of_electrons * 3, number_of_electrons, 3)
+            mol.pda_eigenvectors = eigenvectors * BOHR_TO_ANGSTROM
 
         molecules.add_molecule(mol)
         return molecules

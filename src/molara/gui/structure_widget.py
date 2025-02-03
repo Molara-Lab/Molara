@@ -546,7 +546,31 @@ class StructureWidget(QOpenGLWidget):
         if len(self.structures) != 1:
             return
         if self.structures[0].spin_correlations.size == 0:
-            return
+            if self.structures[0].pda_eigenvectors.size == 0:
+                return
+            else:
+                if 'eigvecs' in self.renderer.objects3d:
+                    self.renderer.remove_object('eigvecs')
+                eigenvector = 0
+
+                eigenvectors = self.structures[0].pda_eigenvectors
+                positions = []
+                colors = []
+
+                for i, atom in enumerate(self.structures[0].atoms[len(self.structures[0].atoms) - len(self.structures[0].electron_positions):]):
+                    if np.linalg.norm(eigenvectors[eigenvector, i]) < 0.01:
+                        continue
+                    if atom.atomic_number == -1:
+                        colors.append([1, 0, 0])
+                    if atom.atomic_number == -2:
+                        colors.append([0, 0, 1])
+                    positions.append(
+                        [self.structures[0].electron_positions[i], self.structures[0].electron_positions[i] + eigenvectors[eigenvector, i]]
+                    )
+                self.renderer.draw_arrows('eigvecs', np.array(positions, dtype=np.float32), np.array(colors, dtype=np.float32), 10, arrow_ratio=0.2)
+                self.update()
+                return
+
         # remove old spin correlation
         if 'Spin_corr' in self.renderer.objects3d:
             self.renderer.remove_object('Spin_corr')
@@ -558,7 +582,7 @@ class StructureWidget(QOpenGLWidget):
         radius = 0.01
         subdivisions = 10
 
-        threshold = 0.08
+        threshold = 0.99
         electron_pairs_corr = []
         for i in range(self.structures[0].spin_correlations.shape[0]):
             for j in range(i + 1, self.structures[0].spin_correlations.shape[1]):
