@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from numpy.typing import NDArray
 
 from molara.rendering.cylinders import Cylinders
 from molara.rendering.spheres import (
@@ -14,6 +13,8 @@ from molara.rendering.spheres import (
 from molara.tools.mathtools import norm
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
@@ -195,7 +196,7 @@ class Drawer:
 
         It is important to note, that the radius ([:,1]) of the cylinders need not be changed!
         """
-        assert isinstance(self.cylinder_dimensions, NDArray)
+        assert isinstance(self.cylinder_dimensions, np.ndarray)
         self.cylinder_dimensions[:, 0] = self.cylinder_default_radius * self.cylinder_scale
         self.cylinder_dimensions[:, 2] = self.cylinder_default_radius * self.cylinder_scale
 

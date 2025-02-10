@@ -6,7 +6,7 @@ import sys
 from typing import TYPE_CHECKING
 from unittest import mock
 
-from numpy.typing import NDArray
+import numpy as np
 
 from molara.rendering.atom_labels import calculate_atom_number_arrays, init_atom_number
 
@@ -36,8 +36,8 @@ class WorkaroundTestAtomLabels:
 
         digits, positions_3d = init_atom_number(self.main_window.structure_widget.structures[0])
 
-        assert isinstance(digits, NDArray)
-        assert isinstance(positions_3d, NDArray)
+        assert isinstance(digits, np.ndarray)
+        assert isinstance(positions_3d, np.ndarray)
         assert len(digits) == 17  # noqa: PLR2004
         assert len(positions_3d) == 17  # noqa: PLR2004
 
@@ -47,11 +47,11 @@ class WorkaroundTestAtomLabels:
             self.main_window.structure_widget.structures[0],
             self.main_window.structure_widget.camera,
         )
-        assert isinstance(digits, NDArray)
-        assert isinstance(positions_3d, NDArray)
+        assert isinstance(digits, np.ndarray)
+        assert isinstance(positions_3d, np.ndarray)
         assert len(digits) == 17  # noqa: PLR2004
         assert len(positions_3d) == 17  # noqa: PLR2004
         for i in range(17):
             assert digits[i] == i + 1
-            assert isinstance(positions_3d[i], NDArray)
+            assert isinstance(positions_3d[i], np.ndarray)
             assert len(positions_3d[i]) == 3  # noqa: PLR2004
