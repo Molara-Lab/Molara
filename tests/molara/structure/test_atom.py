@@ -7,6 +7,7 @@ from unittest import TestCase
 
 import numpy as np
 from numpy.testing import assert_array_equal
+from numpy.typing import NDArray
 
 from molara.structure.atom import Atom, element_symbol_to_atomic_number, elements
 from molara.structure.basisset import BasisSet
@@ -96,7 +97,7 @@ class TestAtom(TestCase):
             assert my_atom.atomic_mass == atomic_mass
             assert my_atom.electronegativity == electronegativity
             assert my_atom.vdw_radius == vdw_radius
-            assert isinstance(my_atom.position, np.ndarray)
+            assert isinstance(my_atom.position, NDArray)
             assert_array_equal(my_atom.position, position)
 
         general_attribute_tests(self.hydrogen, "H", z_h)

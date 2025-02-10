@@ -11,6 +11,8 @@ from numpy.testing import assert_array_almost_equal_nulp
 from molara.structure.io.importer import GeneralImporter
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.basisset import BasisFunction
 
 __copyright__ = "Copyright 2024, Molara"
@@ -103,11 +105,11 @@ def hermite_coefs(i: int, j: int, t: int, qx: float, a: float, b: float) -> floa
 
 def primitive_overlap(  # noqa: PLR0913
     a: float,
-    lmn1: np.ndarray,
-    a_xyz: np.ndarray,
+    lmn1: NDArray,
+    a_xyz: NDArray,
     b: float,
-    lmn2: np.ndarray,
-    b_xyz: np.ndarray,
+    lmn2: NDArray,
+    b_xyz: NDArray,
 ) -> float:
     """Evaluate overlap integral between two Gaussians.
 
@@ -132,8 +134,8 @@ def primitive_overlap(  # noqa: PLR0913
 def contracted_overlap(
     a: BasisFunction,
     b: BasisFunction,
-    a_xyz: np.ndarray,
-    b_xyz: np.ndarray,
+    a_xyz: NDArray,
+    b_xyz: NDArray,
 ) -> float:
     """Evaluate overlap between two contracted Gaussians.
 

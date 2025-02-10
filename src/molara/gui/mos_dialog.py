@@ -5,17 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtCore import Qt
-
-if TYPE_CHECKING:
-    from PySide6.QtGui import QCloseEvent
-
-    from molara.structure.atom import Atom
-    from molara.structure.basisset import BasisFunction
-    from molara.structure.molecularorbitals import MolecularOrbitals
-
-
 from pyrr.matrix33 import create_from_axis_rotation
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QButtonGroup, QHeaderView, QMainWindow, QTableWidgetItem
 
 from molara.eval.generate_voxel_grid import generate_voxel_grid
@@ -24,6 +15,14 @@ from molara.eval.voxel_grid import VoxelGrid2D
 from molara.gui.layouts.ui_mos_dialog import Ui_MOs_dialog
 from molara.gui.surface_3d import Surface3DDialog
 from molara.util.constants import ANGSTROM_TO_BOHR
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+    from PySide6.QtGui import QCloseEvent
+
+    from molara.structure.atom import Atom
+    from molara.structure.basisset import BasisFunction
+    from molara.structure.molecularorbitals import MolecularOrbitals
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -55,10 +54,10 @@ class MOsDialog(Surface3DDialog):
         self.minimum_box_size = np.zeros(3, dtype=np.float64)
         self.display_box = False
         self.initial_box_size = 4
-        self.box_positions: np.ndarray = np.array([])
-        self.box_radii: np.ndarray = np.array([])
-        self.box_colors: np.ndarray = np.array([])
-        self.box_corners: np.ndarray = np.array([])
+        self.box_positions: NDArray = np.array([])
+        self.box_radii: NDArray = np.array([])
+        self.box_colors: NDArray = np.array([])
+        self.box_corners: NDArray = np.array([])
 
         # Orbital selection parameters
         self.old_orbital = 0
@@ -121,18 +120,18 @@ class MOsDialog(Surface3DDialog):
         self.isoline_radius = 0.006
         self.isoline_voxel_grid = VoxelGrid2D()
         self.isoline_grid_parameters_changed = True
-        self.isolines_1: np.ndarray = np.array([])
-        self.isolines_2: np.ndarray = np.array([])
-        self.isoline_border_origin: np.ndarray = np.array([])
-        self.isoline_border_size: np.ndarray = np.array([4, 4])
+        self.isolines_1: NDArray = np.array([])
+        self.isolines_2: NDArray = np.array([])
+        self.isoline_border_origin: NDArray = np.array([])
+        self.isoline_border_size: NDArray = np.array([4, 4])
         self.isoline_border_scale = [1, 1]
         self.isoline_border_direction = np.zeros((3, 3), dtype=np.float64)
         self.isoline_border_center = np.zeros(3, dtype=np.float64)
         self.isoline_axes_visible = False
         self.isoline_rotation_values = [0, 0, 0]
         self.isoline_translation_values = [0, 0, 0]
-        self.isoline_border_points: np.ndarray = np.array([])
-        self.isoline_border_normal: np.ndarray = np.array([])
+        self.isoline_border_points: NDArray = np.array([])
+        self.isoline_border_normal: NDArray = np.array([])
         self.isoline_selected_atoms: list = [-1] * 3
         self.isoline_drawn_spheres: list = [-1] * 3
         self.isoline_border_is_visible = False
@@ -360,7 +359,7 @@ class MOsDialog(Surface3DDialog):
         self.ui.xAxisCheckBox.setChecked(True)
         self.remove_isoline_selected_atoms()
 
-    def calculate_corners_of_box(self) -> np.ndarray:
+    def calculate_corners_of_box(self) -> NDArray:
         """Calculate the corners of the cube."""
         origin = self.origin
         direction = self.direction
@@ -506,7 +505,7 @@ class MOsDialog(Surface3DDialog):
         self.voxel_grid_parameters_changed = False
         self.voxel_grid_changed = True
 
-    def calculate_cutoffs(self) -> np.ndarray:
+    def calculate_cutoffs(self) -> NDArray:
         """Calculate the cutoffs for the shells."""
         if self.aos is None:
             msg = "No basis functions loaded"
@@ -1046,7 +1045,7 @@ class MOsDialog(Surface3DDialog):
             self.remove_isoline_axes()
             self.draw_isoline_axes()
 
-    def rotate_isoline_border(self, axis: np.ndarray, value: float) -> None:
+    def rotate_isoline_border(self, axis: NDArray, value: float) -> None:
         """Transform the isoline border according to the selected checkboxes."""
         were_visible = self.isolines_are_visible
         self.remove_isolines()
@@ -1083,7 +1082,7 @@ class MOsDialog(Surface3DDialog):
 
     def set_isoline_border_parameters_from_normal(
         self,
-        normal: np.ndarray,
+        normal: NDArray,
     ) -> None:
         """Set the isoline border parameters from the normal.
 

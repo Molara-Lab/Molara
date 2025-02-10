@@ -9,6 +9,7 @@ from unittest import TestCase
 
 import numpy as np
 import pyrr
+from numpy.typing import NDArray
 
 from molara.rendering.camera import Camera
 from molara.util.testing import assert_vectors_equal
@@ -41,13 +42,13 @@ class TestCamera(TestCase):
         assert isinstance(camera.translation, pyrr.Vector3)
         assert isinstance(camera.target, pyrr.Vector3)
         assert isinstance(camera.rotation, pyrr.Quaternion)
-        assert isinstance(camera.view_matrix, np.ndarray)
+        assert isinstance(camera.view_matrix, NDArray)
         assert camera.view_matrix.shape == (4, 4)
-        assert isinstance(camera.view_matrix_inv, np.ndarray)
+        assert isinstance(camera.view_matrix_inv, NDArray)
         assert camera.view_matrix_inv.shape == (4, 4)
-        assert isinstance(camera.projection_matrix, np.ndarray)
+        assert isinstance(camera.projection_matrix, NDArray)
         assert camera.projection_matrix.shape == (4, 4)
-        assert isinstance(camera.projection_matrix_inv, np.ndarray)
+        assert isinstance(camera.projection_matrix_inv, NDArray)
         assert camera.projection_matrix_inv.shape == (4, 4)
 
     def test_reset(self) -> None:
@@ -88,7 +89,7 @@ class TestCamera(TestCase):
 
         assert not camera.orthographic_projection
         camera.calculate_projection_matrix()
-        assert isinstance(camera.projection_matrix, np.ndarray)
+        assert isinstance(camera.projection_matrix, NDArray)
         assert_vectors_equal(camera.projection_matrix, projection_matrix_perspective)
 
         camera.toggle_projection()

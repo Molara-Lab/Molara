@@ -12,6 +12,8 @@ from molara.eval.aos import calculate_aos
 from molara.structure.io.importer import GeneralImporter
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.basisset import BasisSet
 
 __copyright__ = "Copyright 2024, Molara"
@@ -62,7 +64,7 @@ class TestAos(TestCase):
         # }
         # pi = 0
 
-        def _test_orbital(orb: str, basisset: BasisSet, electron_pos: np.ndarray, nuclear_pos: np.ndarray) -> None:
+        def _test_orbital(orb: str, basisset: BasisSet, electron_pos: NDArray, nuclear_pos: NDArray) -> None:
             """Test the orbital."""
             orbital_type = orb[0]
             res = np.zeros(orbital_array_lengths[orb[0]])
@@ -102,13 +104,13 @@ class TestAos(TestCase):
 
 
 def reference_calculate_aos(  # noqa: PLR0913
-    electron_coords: np.ndarray,
-    atom_coords: np.ndarray,
-    exponents: np.ndarray,
-    coefficients: np.ndarray,
+    electron_coords: NDArray,
+    atom_coords: NDArray,
+    exponents: NDArray,
+    coefficients: NDArray,
     orbital: int,
-    norms: np.ndarray,
-) -> np.ndarray:
+    norms: NDArray,
+) -> NDArray:
     """Calculate the atomic orbitals for a given atom (cartesian).
 
     If the orbital is an s orbital, the function the return has size 1, if the orbital is a d orbital, the return
@@ -201,13 +203,13 @@ def reference_calculate_aos(  # noqa: PLR0913
 # The function is used to compare the results of the new implementation with the old one.
 # Once we are confident that the new implementation is correct, we can delete this function.
 def reference2_calculate_aos(  # noqa: C901 PLR0915 PLR0913
-    electron_coords: np.ndarray,
-    atom_coords: np.ndarray,
-    exponents: np.ndarray,
-    coefficients: np.ndarray,
+    electron_coords: NDArray,
+    atom_coords: NDArray,
+    exponents: NDArray,
+    coefficients: NDArray,
     orbital: int,
-    norms: np.ndarray,
-) -> np.ndarray:
+    norms: NDArray,
+) -> NDArray:
     """Calculate the atomic orbitals for a given atom (cartesian).
 
     If the orbital is an s orbital, the function the return has size 1, if the orbital is a d orbital, the return
