@@ -8,7 +8,7 @@ ci:
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.0
+    rev: v0.9.4
     hooks:
       - id: ruff
         args: [--fix]
@@ -24,18 +24,18 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.12.1
+    rev: v1.14.1
     hooks:
       - id: mypy
         additional_dependencies: ["types-requests"]
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.385
+    rev: v1.1.393
     hooks:
     - id: pyright
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.3.0
+    rev: v2.4.1
     hooks:
       - id: codespell
         exclude: ".svg"
@@ -43,14 +43,14 @@ repos:
         additional_dependencies: [tomli] # read pyproject.toml below py3.11
 
   - repo: https://github.com/MarcoGorelli/cython-lint
-    rev: v0.16.2
+    rev: v0.16.6
     hooks:
       - id: cython-lint
         args: [--no-pycodestyle]
       - id: double-quote-cython-strings
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.42.0
+    rev: v0.44.0
     hooks:
       - id: markdownlint
         # MD013: line too long

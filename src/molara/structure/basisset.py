@@ -384,7 +384,7 @@ def calculate_normalization_contracted_gtos(
             n += (coefficients[ia] * coefficients[ib] * norms[ia] * norms[ib]) / (exponents[ia] + exponents[ib]) ** (
                 m + 1.5
             )
-    n = n * prefactor
+    n *= prefactor
 
     return n ** (-0.5)
 

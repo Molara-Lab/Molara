@@ -6,14 +6,19 @@ import sys
 from typing import TYPE_CHECKING
 
 import pytest
+from gui.test_3d_surface_dialog import WorkaroundTestCubeFileDialog
 from gui.test_builder import WorkaroundTestBuilderDialog
+from gui.test_customizer_dialog import WorkaroundTestCustomizerDialog
 from gui.test_export_image_dialog import WorkaroundTestExportImageDialog
 from gui.test_main_window import WorkaroundTestMainWindow
 from gui.test_measurement_dialog import WorkaroundTestMeasurementDialog
 from gui.test_mos_dialog import WorkaroundTestMOsDialog
+from gui.test_normalization_dialog import WorkaroundTestNormalizationDialog
 from gui.test_structure_widget import WorkaroundTestStructureWidget
-from rendering.test_buffers import WorkaroundTestBuffers
+from rendering.test_billboards import WorkaroundTestBillboards
+from rendering.test_cylinders import WorkaroundTestCylinders
 from rendering.test_rendering import WorkaroundTestRenderer
+from rendering.test_spheres import WorkaroundTestSpheres
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
@@ -40,14 +45,38 @@ def test_gui_and_rendering(qtbot: QtBot) -> None:
     workaround_test_export_image_dialog = WorkaroundTestExportImageDialog(qtbot, main_window_tests.window)
     workaround_test_export_image_dialog.run_tests()
 
-    workaround_test_buffers = WorkaroundTestBuffers(qtbot, main_window_tests.window)
+    workaround_test_buffers = WorkaroundTestSpheres(qtbot, main_window_tests.window)
     workaround_test_buffers.run_tests()
+
+    workaround_test_cylinders = WorkaroundTestCylinders(qtbot, main_window_tests.window)
+    workaround_test_cylinders.run_tests()
+
+    workaround_test_billboards = WorkaroundTestBillboards(qtbot, main_window_tests.window)
+    workaround_test_billboards.run_tests()
 
     workaround_test_mos_dialog = WorkaroundTestMOsDialog(
         qtbot,
         main_window_tests.window,
     )
     workaround_test_mos_dialog.run_tests()
+
+    workaround_test_normalization_dialog = WorkaroundTestNormalizationDialog(
+        qtbot,
+        main_window_tests.window,
+    )
+    workaround_test_normalization_dialog.run_tests()
+
+    workaround_test_cube_file_dialog = WorkaroundTestCubeFileDialog(
+        qtbot,
+        main_window_tests.window,
+    )
+    workaround_test_cube_file_dialog.run_tests()
+
+    workaround_test_customizer_dialog = WorkaroundTestCustomizerDialog(
+        qtbot,
+        main_window_tests.window,
+    )
+    workaround_test_customizer_dialog.run_tests()
 
     main_window_tests.tearDown()
 

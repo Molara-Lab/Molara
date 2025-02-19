@@ -23,30 +23,34 @@ cpdef double calculate_mo_cartesian(
         int64_t[:] shells,
         double[:] mo_coefficients,
         double[:] aos_values,
+        double[:] cut_off_distances,
 ) nogil:
 
-    cdef double mo_value = 0.0
-    cdef int number_of_orbitals, i, shell_index, shell_start, shell_end, shell
+    cdef double mo_value = 0.0, distance_sq
+    cdef int i, shell_index, shell_start, shell_end, shell
 
-    number_of_orbitals = orbital_coefficients.shape[0]
     number_of_shells = shells.shape[0]
     shell_start = 0
     shell_end = 0
+    aos_values[:] = 0.0
     for shell_index in range(number_of_shells):
         shell = shells[shell_index]
+        distance_sq = ((electron_position[0] - orbital_position[shell_start, 0]) ** 2 +
+                        (electron_position[1] - orbital_position[shell_start, 1]) ** 2 +
+                        (electron_position[2] - orbital_position[shell_start, 2]) ** 2)
         shell_end = shell_start + number_of_basis_functions[shell]
-        _ = calculate_aos(
-            electron_position,
-            orbital_position[shell_start, :],
-            orbital_exponents[shell_start, :],
-            orbital_coefficients[shell_start, :],
-            orbital_norms[shell_start, :],
-            shell,
-            aos_values[shell_start:shell_end],
-        )
+        if distance_sq < cut_off_distances[shell_index] ** 2:
+            _ = calculate_aos(
+                electron_position,
+                orbital_position[shell_start, :],
+                orbital_exponents[shell_start, :],
+                orbital_coefficients[shell_start, :],
+                orbital_norms[shell_start, :],
+                shell,
+                aos_values[shell_start:shell_end],
+            )
+            for i in range(shell_start, shell_end):
+                mo_value += mo_coefficients[i] * aos_values[i]
         shell_start = shell_end
-
-    for i in range(number_of_orbitals):
-        mo_value += mo_coefficients[i] * aos_values[i]
 
     return mo_value

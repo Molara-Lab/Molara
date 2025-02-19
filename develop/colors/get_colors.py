@@ -7,6 +7,7 @@ The colors are fetched from the wikipedia page: https://en.wikipedia.org/wiki/CP
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import bs4
 import requests
@@ -81,5 +82,5 @@ def get_ase_colors() -> dict[str, dict[str, tuple]]:
 if __name__ == "__main__":
     c_table = fetch_color_table()
 
-    with open(file_path + "atom_colors.json", "w") as file:
+    with (Path(file_path) / "atom_colors.json").open("w") as file:
         json.dump(parse_color_table(c_table) | get_ase_colors(), file)

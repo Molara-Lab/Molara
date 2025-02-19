@@ -10,11 +10,11 @@ from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 from molara.gui.builder import BuilderDialog
 from molara.gui.crystal_dialog import CrystalDialog
+from molara.gui.layouts.ui_form import Ui_MainWindow
 from molara.gui.main_window import MainWindow
 from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.structure_widget import StructureWidget
 from molara.gui.trajectory_dialog import TrajectoryDialog
-from molara.gui.ui_form import Ui_MainWindow
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
 from molara.structure.molecule import Molecule
@@ -55,6 +55,8 @@ class WorkaroundTestMainWindow:
         self.test_export_image_dialog()
         self.test_show_builder_dialog()
         self.test_show_crystal_dialog()
+        self.test_show_3d_surface_dialog()
+        self.test_toggle_axes()
         self.test_show_init_xyz()
         self.test_load_molecules()
         self.test_show_measurement_dialog()
@@ -184,6 +186,19 @@ class WorkaroundTestMainWindow:
         self.window.crystal_dialog.reject()
         assert not self.window.crystal_dialog.isVisible()
 
+    def test_show_3d_surface_dialog(self) -> None:
+        """Test the show_3d_surface_dialog method."""
+        assert not self.window.surface_3d_dialog.isVisible()
+
+    def test_toggle_axes(self) -> None:
+        """Test the toggle_axes method."""
+        window = self.window
+        assert not window.structure_widget.draw_axes
+        window.toggle_axes()
+        assert window.structure_widget.draw_axes
+        window.toggle_axes()
+        assert not window.structure_widget.draw_axes
+
     def test_show_init_xyz(self) -> None:
         """Test the show_init_xyz method."""
         testargs = ["molara", "examples/xyz/pentane.xyz"]
@@ -258,7 +273,7 @@ class WorkaroundTestMainWindow:
 
         assert Path("~/.molara/settings/structure").expanduser().exists()
         assert Path("~/.molara/settings/structure/Default.json").expanduser().exists()
-        with open(Path("~/.molara/settings/structure/Default.json").expanduser()) as file:
+        with Path("~/.molara/settings/structure/Default.json").expanduser().open() as file:
             assert file.read() == (
                 '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, '
                 '"atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'

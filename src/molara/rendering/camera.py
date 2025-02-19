@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
@@ -25,7 +26,7 @@ class Camera:
         self.width = width
         self.height = height
         self.near = 0.1
-        self.far = 100.0
+        self.far = 720.0
         self.position = pyrr.Vector3([1.0, 0.0, 0.0], dtype=np.float32)
         self.up_vector = pyrr.Vector3([0.0, 1.0, 0.0], dtype=np.float32)
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
@@ -331,7 +332,7 @@ class Camera:
         }
         if not file_name.endswith(".json"):
             file_name += ".json"
-        with open(file_name, "w") as file:
+        with Path(file_name).open("w") as file:
             json.dump(settings, file, indent=4)
 
     def import_settings(self, file_name: str) -> None:
@@ -342,7 +343,7 @@ class Camera:
         if not file_name.endswith(".json"):
             # Show warning
             return
-        with open(file_name) as file:
+        with Path(file_name).open() as file:
             data = json.load(file)
         self.orthographic_projection = data["orthographic_projection"]
         self.fov = data["fov"]
@@ -364,35 +365,5 @@ class Camera:
         self.last_translation = pyrr.Vector3(data["last_translation"], dtype=np.float32)
         self.rotation = pyrr.Quaternion(data["rotation"])
         self.last_rotation = pyrr.Quaternion(data["last_rotation"])
-        self.calculate_projection_matrix()
-        self.update()
-
-    def adopt_config(self, other_camera: Camera, custom_geometry: tuple[int, int] | None = None) -> None:
-        """Adopt the configuration of another Camera object.
-
-        :param other_camera: the other Camera object
-        :param custom_geometry: custom geometry (width, height) for the Camera object
-        """
-        self.distance_from_target = other_camera.distance_from_target
-        self.fov = other_camera.fov
-        self.zoom_sensitivity = other_camera.zoom_sensitivity
-        if custom_geometry is None:
-            self.width = other_camera.width
-            self.height = other_camera.height
-        else:
-            self.width, self.height = custom_geometry[0], custom_geometry[1]
-        self.initial_position = other_camera.initial_position
-        self.initial_right_vector = other_camera.initial_right_vector
-        self.initial_target = other_camera.initial_target
-        self.initial_up_vector = other_camera.initial_up_vector
-        self.last_rotation = other_camera.last_rotation
-        self.last_translation = other_camera.last_translation
-        self.position = other_camera.position
-        self.right_vector = other_camera.right_vector
-        self.rotation = other_camera.rotation
-        self.target = other_camera.target
-        self.translation = other_camera.translation
-        self.up_vector = other_camera.up_vector
-        self.orthographic_projection = other_camera.orthographic_projection
         self.calculate_projection_matrix()
         self.update()

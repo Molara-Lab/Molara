@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from molara.data.constants import ANGSTROM_TO_BOHR
 from molara.structure.basisset import contracted_overlap
+from molara.util.constants import ANGSTROM_TO_BOHR
 
 if TYPE_CHECKING:
     from molara.structure.molecule import Molecule

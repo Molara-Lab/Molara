@@ -44,8 +44,8 @@ class Crystal(Structure):
         Particle positions are given in terms of the basis vectors:
         E.g. the position (0.5, 0.5, 0.) is always the center of a unit cell wall, regardless of the crystal system.
 
-        :param atomic_numbers: contains the atomic numbers of the particles specified for the unit cell.
-        :param coordinates: Nx3 matrix of particle (fractional) coordinates in the unit cell,
+        :param atomic_nums: contains the atomic numbers of the particles specified for the unit cell.
+        :param coords: Nx3 matrix of particle (fractional) coordinates in the unit cell,
             i.e., coordinates in terms of the basis vectors.
         :param basis_vectors: 3x3 matrix of the lattice basis vectors.
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
@@ -63,13 +63,13 @@ class Crystal(Structure):
 
     def _fold_coords_into_unitcell(
         self,
-        fractional_coords: ArrayLike,
-    ) -> list[list[float]]:
+        fractional_coords: list[list[float]],
+    ) -> list:
         """Folds coordinates into unit cell.
 
         :param fractional_coords: particle positions in fractional coordinates
         """
-        return np.mod(fractional_coords, 1.0).tolist()
+        return list(np.mod(fractional_coords, 1.0))
 
     def make_supercell(self, supercell_dims: list[int]) -> None:
         """Create a supercell of the crystal.
@@ -77,12 +77,9 @@ class Crystal(Structure):
         :param supercell_dims: side lengths of the supercell in terms of the cell constants
         """
         self.supercell_dims = supercell_dims
-        steps_a = np.arange(supercell_dims[0])
-        steps_b = np.arange(supercell_dims[1])
-        steps_c = np.arange(supercell_dims[2])
-        steps_a.shape = (*steps_a.shape, 1, 1)
-        steps_b.shape = (1, *steps_b.shape, 1)
-        steps_c.shape = (1, 1, *steps_c.shape)
+        steps_a = np.arange(supercell_dims[0]).reshape((-1, 1, 1))
+        steps_b = np.arange(supercell_dims[1]).reshape((1, -1, 1))
+        steps_c = np.arange(supercell_dims[2]).reshape((1, 1, -1))
         translations_a = 1.0 * steps_a + 0.0 * steps_b + 0.0 * steps_c
         translations_b = 0.0 * steps_a + 1.0 * steps_b + 0.0 * steps_c
         translations_c = 0.0 * steps_a + 0.0 * steps_b + 1.0 * steps_c
@@ -104,11 +101,11 @@ class Crystal(Structure):
             self.coords_unitcell,
             strict=True,
         ):
-            self.atomic_nums_supercell = np.append(
+            self.atomic_nums_supercell = np.append(  # type: ignore[assignment]
                 self.atomic_nums_supercell,
                 [atomic_number_i] * num_unit_cells,
             )
-            self.fractional_coords_supercell = np.append(
+            self.fractional_coords_supercell = np.append(  # type: ignore[assignment]
                 self.fractional_coords_supercell,
                 position_i + translation_vectors,
                 axis=0,
@@ -118,11 +115,11 @@ class Crystal(Structure):
         extra_atomic_nums, extra_fractional_coords = self.make_supercell_edge_atoms()
 
         if extra_atomic_nums:
-            self.atomic_nums_supercell = np.append(
+            self.atomic_nums_supercell = np.append(  # type: ignore[assignment]
                 self.atomic_nums_supercell,
                 extra_atomic_nums,
             )
-            self.fractional_coords_supercell = np.append(
+            self.fractional_coords_supercell = np.append(  # type: ignore[assignment]
                 self.fractional_coords_supercell,
                 extra_fractional_coords,
                 axis=0,

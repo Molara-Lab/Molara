@@ -265,7 +265,7 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915 PLR0913
         uao = np.zeros(1)
         for ic in range(ngto):
             u = coefficients[ic] * np.exp(-exponents[ic] * r2) * norms[ic]
-            uao[0] = uao[0] + u
+            uao[0] += u
     elif orbital == p:
         uao = np.zeros(3)
         for ic in range(ngto):
@@ -273,9 +273,9 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915 PLR0913
             dx = relative_coords[0]
             dy = relative_coords[1]
             dz = relative_coords[2]
-            uao[0] = uao[0] + dx * u
-            uao[1] = uao[1] + dy * u
-            uao[2] = uao[2] + dz * u
+            uao[0] += dx * u
+            uao[1] += dy * u
+            uao[2] += dz * u
     elif orbital == d:
         uao = np.zeros(6)
         for ic in range(ngto):
@@ -286,13 +286,13 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915 PLR0913
             dy2 = dy * dy
             dz = relative_coords[2]
             dz2 = dz * dz
-            uao[0] = uao[0] + dx2 * u
-            uao[1] = uao[1] + dy2 * u
-            uao[2] = uao[2] + dz2 * u
+            uao[0] += dx2 * u
+            uao[1] += dy2 * u
+            uao[2] += dz2 * u
             u = sqr3 * u
-            uao[3] = uao[3] + dx * dy * u
-            uao[4] = uao[4] + dx * dz * u
-            uao[5] = uao[5] + dy * dz * u
+            uao[3] += dx * dy * u
+            uao[4] += dx * dz * u
+            uao[5] += dy * dz * u
     elif orbital == f:
         uao = np.zeros(10)
         for ic in range(ngto):
@@ -304,18 +304,18 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915 PLR0913
             dz = relative_coords[2]
             dz2 = dz * dz
             dxyz = dx * dy * dz
-            uao[fxxx] = uao[fxxx] + dx2 * dx * u
-            uao[fyyy] = uao[fyyy] + dy2 * dy * u
-            uao[fzzz] = uao[fzzz] + dz2 * dz * u
+            uao[fxxx] += dx2 * dx * u
+            uao[fyyy] += dy2 * dy * u
+            uao[fzzz] += dz2 * dz * u
             u = sqr5 * u
-            uao[fxxy] = uao[fxxy] + dx2 * dy * u
-            uao[fxxz] = uao[fxxz] + dx2 * dz * u
-            uao[fxyy] = uao[fxyy] + dy2 * dx * u
-            uao[fyyz] = uao[fyyz] + dy2 * dz * u
-            uao[fxzz] = uao[fxzz] + dz2 * dx * u
-            uao[fyzz] = uao[fyzz] + dz2 * dy * u
+            uao[fxxy] += dx2 * dy * u
+            uao[fxxz] += dx2 * dz * u
+            uao[fxyy] += dy2 * dx * u
+            uao[fyyz] += dy2 * dz * u
+            uao[fxzz] += dz2 * dx * u
+            uao[fyzz] += dz2 * dy * u
             u = sqr3 * u
-            uao[fxyz] = uao[fxyz] + dxyz * u
+            uao[fxyz] += dxyz * u
     elif orbital == g:
         uao = np.zeros(15)
         for ic in range(ngto):
@@ -327,24 +327,24 @@ def reference2_calculate_aos(  # noqa: C901 PLR0915 PLR0913
             dz = relative_coords[2]
             dz2 = dz * dz
             dxyz = dx * dy * dz
-            uao[gxxxx] = uao[gxxxx] + dx2 * dx2 * u
-            uao[gyyyy] = uao[gyyyy] + dy2 * dy2 * u
-            uao[gzzzz] = uao[gzzzz] + dz2 * dz2 * u
+            uao[gxxxx] += dx2 * dx2 * u
+            uao[gyyyy] += dy2 * dy2 * u
+            uao[gzzzz] += dz2 * dz2 * u
             u = sqr7 * u
-            uao[gxxxy] = uao[gxxxy] + dx2 * dx * dy * u
-            uao[gxxxz] = uao[gxxxz] + dx2 * dx * dz * u
-            uao[gyyyx] = uao[gyyyx] + dy2 * dy * dx * u
-            uao[gyyyz] = uao[gyyyz] + dy2 * dy * dz * u
-            uao[gzzzx] = uao[gzzzx] + dz2 * dz * dx * u
-            uao[gzzzy] = uao[gzzzy] + dz2 * dz * dy * u
+            uao[gxxxy] += dx2 * dx * dy * u
+            uao[gxxxz] += dx2 * dx * dz * u
+            uao[gyyyx] += dy2 * dy * dx * u
+            uao[gyyyz] += dy2 * dy * dz * u
+            uao[gzzzx] += dz2 * dz * dx * u
+            uao[gzzzy] += dz2 * dz * dy * u
             u = sqr5 / sqr3 * u
-            uao[gxxyy] = uao[gxxyy] + dx2 * dy2 * u
-            uao[gxxzz] = uao[gxxzz] + dx2 * dz2 * u
-            uao[gyyzz] = uao[gyyzz] + dy2 * dz2 * u
+            uao[gxxyy] += dx2 * dy2 * u
+            uao[gxxzz] += dx2 * dz2 * u
+            uao[gyyzz] += dy2 * dz2 * u
             u = sqr3 * u
-            uao[gxxyz] = uao[gxxyz] + dx * dxyz * u
-            uao[gyyxz] = uao[gyyxz] + dy * dxyz * u
-            uao[gzzxy] = uao[gzzxy] + dz * dxyz * u
+            uao[gxxyz] += dx * dxyz * u
+            uao[gyyxz] += dy * dxyz * u
+            uao[gzzxy] += dz * dxyz * u
     else:
         msg = "(calculate_aos): wrong GTO"
         raise TypeError(msg)

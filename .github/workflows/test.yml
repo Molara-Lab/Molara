@@ -28,6 +28,8 @@ jobs:
         include:
           - os: macos-latest
             version: { python: "3.11", resolution: highest, extra: "tests,strict" }
+          - os: ubuntu-24.04-arm
+            version: { python: "3.12", resolution: highest, extra: "tests,strict" }
 
     runs-on: ${{ matrix.os }}
 
@@ -38,9 +40,10 @@ jobs:
         with:
           python-version: ${{ matrix.version.python }}
       - name: Set up uv
-        uses: astral-sh/setup-uv@v2
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
       - name: Install dependencies
         run: |
           uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} --system
@@ -54,6 +57,6 @@ jobs:
         run: |
           pytest --cov=src --cov-report=xml tests
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.5.0
+        uses: codecov/codecov-action@v5.3.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

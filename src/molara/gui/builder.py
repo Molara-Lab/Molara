@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
 
-from molara.gui.ui_builder import Ui_builder
+from molara.gui.layouts.ui_builder import Ui_builder
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
@@ -117,7 +117,7 @@ class BuilderDialog(QDialog):
         if not do_deletion:
             return
 
-        error_msg = f"Atom {index+1} will be deleted."
+        error_msg = f"Atom {index + 1} will be deleted."
         self.ui.ErrorMessageBrowser.setText(error_msg)
         self._delete_zmat_row(index, mol.n_at)
         self._delete_table_row(index)
@@ -230,7 +230,7 @@ class BuilderDialog(QDialog):
         # check for collisions
         self.colliding_idx = mol.compute_collision(pos) if count_atoms >= 3 else None  # noqa: PLR2004
         if self.colliding_idx is not None:
-            error_msg = f"The atom would collide with atom {self.colliding_idx+1}."
+            error_msg = f"The atom would collide with atom {self.colliding_idx + 1}."
             self.ui.ErrorMessageBrowser.setText(error_msg)
             return
 
@@ -276,7 +276,7 @@ class BuilderDialog(QDialog):
         if np.linalg.norm(self._orth(vec2, vec1)) == 0:
             vec2 = np.array([0, 1.0, 0])
         vec3 = np.cross(vec1, vec2)
-        vec3 = vec3 / np.linalg.norm(vec3)
+        vec3 /= np.linalg.norm(vec3)
         tmp = dist * np.sin(angle)
         coord = mol.atoms[at1_id].position + dist * np.cos(angle) * vec1
         coord += tmp * np.cos(dihedral) * vec2 + tmp * np.sin(dihedral) * vec3
@@ -454,7 +454,7 @@ class BuilderDialog(QDialog):
 
         for entry in self.z_matrix:
             if idx in entry["atom_ids"]:
-                error_msg = f"Cannot be deleted. Atom {idx+1} depends on this atom."
+                error_msg = f"Cannot be deleted. Atom {idx + 1} depends on this atom."
                 self.ui.ErrorMessageBrowser.setText(error_msg)
                 return False
 

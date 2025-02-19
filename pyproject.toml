@@ -13,13 +13,15 @@ version = {"attr" = "molara.__version__"}
 skip = ["*musllinux*"]
 
 [tool.setuptools.package-data]
-molara = ["py.typed"]
+molara = ["py.typed",
+          "rendering.shadercode/*.glsl",
+        ]
 
 [project]
 name = "Molara"
 description = "A visualisation tool for chemical structures."
 authors = [
-    {name = "Michel Heinz"},
+    {name = "Michel Heinz", email = "michel.heinz@rwth-aachen.de"},
     {name = "Gereon Feldmann"},
     {name = "Adrian Usler", email = "adrian.usler@rwth-aachen.de"},
     {name = "Alexander Bonkowski", email = "alexander.bonkowski@rwth-aachen.de"},
@@ -28,6 +30,7 @@ maintainers = [
     {name = "Michel Heinz, Gereon Feldmann, Adrian Usler, Alexander Bonkowski"},
 ]
 dependencies = [
+    "pillow>=10.0.0",
     "PyOpenGL>=3.1.6",
     "PySide6>=6.3.0", # tests fail below
     "matplotlib>=3.6.2", # see https://github.com/matplotlib/matplotlib/pull/24158
@@ -79,10 +82,10 @@ dev = [
     "molara[doc]",
 ]
 strict = [
-    "PySide6==6.7.3",
-    "numpy==2.1.1",
+    "PySide6==6.8.2",
+    "numpy==2.2.2",
     "pyrr==0.10.3",
-    "scipy==1.14.1",
+    "scipy==1.15.1",
     "cython==3.0.11",
 ]
 compchem = [
@@ -112,8 +115,6 @@ lint.ignore = [
   "FBT001", # Boolean-typed positional argument in function definition
   "FBT002", # Boolean default positional argument in function definition
   "INP001", # File {name} is part or an implicit namespace package. Add an `__init__.py`.
-  "PTH100", # `os.path.abspath()` should be replaced by `Path.resolve()`
-  "PTH123", # `open()` should be replaced by `Path.open()`
   "S101",   # Use of assert detected
   ]
 
@@ -143,13 +144,17 @@ modules = [
     "src/molara/eval/aos.pxd",
     "src/molara/eval/mos.pyx",
     "src/molara/eval/mos.pxd",
-    "src/molara/rendering/cylinder.pyx",
-    "src/molara/rendering/sphere.pyx",
+    "src/molara/eval/generate_voxel_grid.pyx",
+    "src/molara/eval/marchingcubes.pyx",
+    "src/molara/eval/marchingsquares.pyx",
+    "src/molara/rendering/cylinders.pyx",
+    "src/molara/rendering/spheres.pyx",
+    "src/molara/rendering/billboards.pyx",
     "src/molara/rendering/matrices.pyx",
     "src/molara/tools/mathtools.pyx",
 ]
 # Optional: Specify include directories
 include-dirs = [
-    "",
-    "{env:NUMPY_INCLUDE}",
+    "",  # Current directory
+    "{env:NUMPY_INCLUDE}",  # NumPy include directory
 ]
