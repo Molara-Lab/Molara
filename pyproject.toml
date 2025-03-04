@@ -82,11 +82,11 @@ dev = [
     "molara[doc]",
 ]
 strict = [
-    "PySide6==6.8.2",
-    "numpy==2.2.2",
+    "PySide6==6.8.2.1",
+    "numpy==2.2.3",
     "pyrr==0.10.3",
-    "scipy==1.15.1",
-    "cython==3.0.11",
+    "scipy==1.15.2",
+    "cython==3.0.12",
 ]
 compchem = [
     "cclib>=1.7",
