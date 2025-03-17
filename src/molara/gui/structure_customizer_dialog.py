@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from os import listdir
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -86,10 +87,10 @@ class StructureCustomizerDialog(QDialog):
             )
         save_files = [
             f
-            for f in Path(f"{self.home_path}/settings/structure").iterdir()
+            for f in listdir(f"{self.home_path}/settings/structure")
             if Path.is_file(self.home_path / "settings" / "structure" / f)
         ]
-        self.save_names = [str(f).split(".")[0] for f in save_files]
+        self.save_names = [f.split(".")[0] for f in save_files]
         self.save_names.sort()
         self.ui.loadSelect.clear()
         self.ui.loadSelect.addItems(self.save_names)
