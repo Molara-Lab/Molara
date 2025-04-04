@@ -115,7 +115,7 @@ class TestMolecule(TestCase):
 
     def test_compute_collision(self) -> None:
         """Test the compute_collision routine."""
-        # def compute_collision(self: Structure | Crystal | Molecule, coordinate: np.ndarray) -> int | None:
+        # def compute_collision(self: Structure | Crystal | Molecule, coordinate: NDArray) -> int | None:
         dist_threshold = 1e-10
         just_below = 0.99 * dist_threshold
         just_above = 1.01 * dist_threshold
