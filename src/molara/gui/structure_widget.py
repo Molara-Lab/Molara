@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
+from numpy.typing import NDArray
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QGuiApplication
@@ -45,7 +46,7 @@ class StructureWidget(QOpenGLWidget):
         self.box = False
         self.rotate = False
         self.translate = False
-        self.click_position: np.ndarray | None = None
+        self.click_position: NDArray | None = None
         self.rotation_angle_x = 0.0
         self.rotation_angle_y = 0.0
         self.position = np.zeros(2)
@@ -59,7 +60,7 @@ class StructureWidget(QOpenGLWidget):
         self.builder_selected_spheres: list = [-1] * 3
         self.builder_drawn_spheres: list = [-1] * 3
 
-        self.old_sphere_colors: list = [np.ndarray] * 4
+        self.old_sphere_colors: list = [NDArray] * 4
         self.highlighted_atoms_colors: list = [
             np.array([1, 0, 0], dtype=np.float32),
             np.array([0, 1, 0], dtype=np.float32),
@@ -67,7 +68,7 @@ class StructureWidget(QOpenGLWidget):
             np.array([1, 1, 0], dtype=np.float32),
         ]
         self.show_atom_indices = False
-        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1))
+        self.atom_indices_arrays: tuple[NDArray, NDArray] = (np.zeros(1), np.zeros(1))
         self.number_scale = 1.0
         self.highlighted_atoms: list = []
 
