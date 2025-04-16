@@ -99,7 +99,7 @@ class Renderer:
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
         self.shade: str = ""
-        self.set_mode(OUTLINED_UNSHADED)
+        self.set_mode(OUTLINED_SHADED)
 
     def set_mode(self, mode: str) -> None:
         """Set the mode of the renderer.
@@ -371,7 +371,7 @@ class Renderer:
             subdivisions,
         )
         self.draw_cones_from_to(
-            f"{name}_",
+            f"{name}_1",
             cone_points,
             np.array([cone_radius] * cone_points.shape[0]),
             colors,
@@ -453,6 +453,69 @@ class Renderer:
         directions = np.array(_directions) / lengths[:, None]
         self.draw_cylinders(name, positions_middle, -directions.astype(np.float32), dimensions, colors, subdivisions)
 
+    def draw_dashed_lines_from_to(
+        self,
+        name: str,
+        positions: np.ndarray,
+        radii: np.ndarray,
+        colors: np.ndarray,
+        subdivisions: int,
+        intervals: np.ndarray,
+    ) -> None:
+        """Draws one or multiple dashed lines.
+
+        :param name: Name of the dashed lines that were created, this is used to remove the dashed lines again.
+        :param positions: Positions [[start, end], [start, end], ...] of the dashed lines.
+        :param radii: Radii of the dashed lines.
+        :param colors: Colors of the dashed lines.
+        :param subdivisions: Number of subdivisions of the dashed lines.
+        :param intervals: Intervals of the dashed lines in angstrom.
+        :return: Returns the index of the cylinder in the list of dashed lines.
+        """
+        tol = 1e-10
+        self.opengl_widget.makeCurrent()
+        _directions: list[list[floating]] = []
+        _lengths: list[floating] = []
+        _positions_middle: list[list[list[floating]]] = []
+
+        _pos1, _pos2 = positions[:, 0], positions[:, 1]
+        lengths = np.linalg.norm(_pos2 - _pos1, axis=1)
+        valid = lengths > np.finfo(np.float32).eps
+        _directions = (_pos2 - _pos1)[valid].tolist()
+        _lengths = lengths[valid].tolist()
+        pos1 = _pos1[valid].copy()
+        lengths = np.array(_lengths)
+
+        directions = np.array(_directions) / lengths[:, None]
+
+        # split the long cylinder in multiple cylinders with the same length and a blank space inbetween them,
+        # according to the length of the intervals. Then draw the cylinders for each each line.
+        middle_positions = []
+        dimensions_lines = []
+        directions_lines = []
+        colors_lines = []
+        for i, length in enumerate(lengths):
+            current_length = 0
+            start_pos = pos1[i].copy()
+            draw = True
+            while current_length + intervals[i] < length:
+                if draw:
+                    middle_positions.append(start_pos + directions[i] * intervals[i] / 2)
+                    directions_lines.append(-directions[i])
+                    dimensions_lines.append([radii[i], intervals[i], radii[i]])
+                    colors_lines.append(colors[i])
+                start_pos += directions[i] * intervals[i]
+                current_length += intervals[i]
+                draw = not draw
+            if draw and length - current_length > tol:
+                middle_positions.append(start_pos + directions[i] * (length - current_length) / 2)
+                directions_lines.append(-directions[i])
+                dimensions_lines.append([radii[i], length - current_length, radii[i]])
+                colors_lines.append(colors[i])
+
+        self.draw_cylinders(name, np.array(middle_positions, dtype=np.float32), np.array(directions_lines, dtype=np.float32),
+                            np.array(dimensions_lines, dtype=np.float32), np.array(colors_lines, dtype=np.float32), subdivisions)
+
     def draw_spheres(  # noqa: PLR0913
         self,
         name: str,
@@ -492,7 +555,10 @@ class Renderer:
             del self.objects3d[name]
             found = True
         if f"{name}_" in self.objects3d:
-            del self.objects3d[f"{name}_"]
+            # remove all objects with the same name but different index
+            for key in list(self.objects3d.keys()):
+                if key.startswith(f"{name}_"):
+                    del self.objects3d[key]
             found = True
         if name in self.textured_objects3d:
             del self.textured_objects3d[name]

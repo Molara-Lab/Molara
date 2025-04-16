@@ -204,6 +204,17 @@ class MoldenImporter(MoleculesImporter):
         )
         molecules.mols[0].mos = MolecularOrbitals(labels, energies, spins, occupations)  # type: ignore[reportPossiblyUnboundVariable]
         orbital_labels = []
+        idx_to_pop = []
+
+        # This takes car for dummy atoms
+        for i in range(len(shells)):  # type: ignore[reportPossiblyUnboundVariable]
+            if not shells[i]:
+                idx_to_pop.append(i)
+        for idx in idx_to_pop:
+            shells.pop(idx)
+            exponents.pop(idx)
+            coefficients.pop(idx)
+
         for i in range(len(shells)):  # type: ignore[reportPossiblyUnboundVariable]
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_basis_functions(
@@ -248,6 +259,10 @@ class MoldenImporter(MoleculesImporter):
         i = 1
         while i < len(lines):
             atom_info = lines[i].split()
+            # check for dummy atoms
+            if atom_info[2] == "0":
+                i += 1
+                continue
             atomic_numbers.append(int(atom_info[2]))
             if not angstrom:
                 coordinates.append(
@@ -424,7 +439,7 @@ class PDAInPsightsImporter(MoleculesImporter):
 
 
 class CubeImporter(MoleculesImporter):
-    """Importer from *.molden files."""
+    """Importer from *.cube files."""
 
     def load(self) -> Molecules:
         """Read the file in self.path and creates a Molecules object."""
