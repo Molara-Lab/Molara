@@ -99,7 +99,7 @@ class Renderer:
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
         self.shade: str = ""
-        self.set_mode(OUTLINED_SHADED)
+        self.set_mode(SHADED)
 
     def set_mode(self, mode: str) -> None:
         """Set the mode of the renderer.
