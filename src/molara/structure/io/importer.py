@@ -391,49 +391,112 @@ class PDAInPsightsImporter(MoleculesImporter):
     """Importer from *.json files."""
 
     def load(self) -> Molecules:
-        """Read the file in self.path and creates a Molecules object."""
-        cluster = 0
-        subcluster = 0
-        number_of_electrons = 0
+        """Read the file in self.path and creates a Molecules object.
+
+        The values for Phi and the eigenvalues are divided by 2 in this function in order to be in accord with
+        -1/2 ln(PSI^2)
+        """
         with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
             documents = list(yaml.load_all(file, Loader=yaml.CLoader))
         pda_data = documents[1]
+
         # get the atomic numbers:
         atomic_numbers = [element_symbol_to_atomic_number(atom.capitalize()) for atom in pda_data["Atoms"]["Types"]]
         coordinates = [[float(x) * BOHR_TO_ANGSTROM for x in position] for position in pda_data["Atoms"]["Positions"]]
-        for electron_type_ in pda_data["Clusters"][cluster]["Structures"][subcluster]["Types"]:
-            number_of_electrons += 1
-            electron_type = "Up" if electron_type_ == "a" else "Dn"
-            atomic_numbers.append(element_symbol_to_atomic_number(electron_type.capitalize()))
-        electron_positions = [
-                [float(x) * BOHR_TO_ANGSTROM for x in position]
-                for position in pda_data["Clusters"][cluster]["Structures"][subcluster]["Positions"]
-            ]
-        coordinates.extend(electron_positions)
+        spin_correlations = np.array([])
+        spin_correlation_recorded = "SpinCorrelations" in pda_data["Clusters"][0]
+        eigenvectors_recorded = "Eigenvectors" in pda_data["Clusters"][0]["Structures"][0]
+        number_of_electrons = len(pda_data["Clusters"][0]["Structures"][0]["Types"])
 
         # Create molecule
         molecules = Molecules()
         mol = Molecule(np.array(atomic_numbers), np.array(coordinates))
-        mol.electron_positions = np.array(electron_positions)
 
-        # Read spin correlations
-        if "SpinCorrelations" in pda_data["Clusters"][cluster]:
-            spin_correlations_data = pda_data["Clusters"][cluster]["SpinCorrelations"]
-            spin_correlations = np.zeros((number_of_electrons, number_of_electrons))
-            for i in range(number_of_electrons):
-                for j in range(i+1, number_of_electrons):
-                    spin_correlations[i, j] = spin_correlations_data[i][j][0]
-            mol.spin_correlations = spin_correlations
+        # init counts:
+        number_of_subclusters = []
+        sample_size = pda_data["NSamples"]
+        ref_phi = 0
+        if "GlobalMinPhi" in pda_data.keys():
+            ref_phi = pda_data["GlobalMinPhi"]
+        mol.pda_data = {
+            "ref_phi": ref_phi,
+            "sample_size": sample_size,
+            "initialized": False,
+            "clusters": [],
+        }
 
-        # Read Hessian:
-        if "Eigenvectors" in pda_data["Clusters"][cluster]["Structures"][subcluster]:
-            flattened_eigenvectors = []
-            for coords in pda_data["Clusters"][cluster]["Structures"][subcluster]["Eigenvectors"]:
-                flattened_eigenvectors.extend(coords)
+        # Divide by 2 to be in accord with -1/2 ln(PSI^2)
+        for cluster in pda_data["Clusters"]:
+            temp_cluster_dict = {
+                'sample_size': cluster["N"],
+                'min_phi': cluster["ValueRange"][0][2] / 2,
+                'max_phi': cluster["ValueRange"][0][3] / 2,
+                'subclusters': [],
+            }
+            subcluster_pda_info = []
+            subcluster_sample_size = cluster["SubStructureN"]
+            subcluster_min_max_phi = cluster["SubStructureValueRange"]
+            number_of_subclusters_count = 0
 
-            eigenvectors = np.array(flattened_eigenvectors).reshape(number_of_electrons * 3, number_of_electrons, 3)
-            mol.pda_eigenvectors = eigenvectors * BOHR_TO_ANGSTROM
+            # Read spin correlations
+            if spin_correlation_recorded:
+                spin_correlations_data = cluster["SpinCorrelations"]
+                spin_correlations = np.zeros((number_of_electrons, number_of_electrons))
+                for i in range(number_of_electrons):
+                    for j in range(i + 1, number_of_electrons):
+                        spin_correlations[i, j] = spin_correlations_data[i][j][0]
+                temp_cluster_dict['spin_correlations'] = spin_correlations
 
+            for i, subcluster in enumerate(cluster["Structures"]):
+
+                number_of_subclusters_count += 1
+
+                electron_spins = np.array([-1 if spin == "a" else 1 for spin in subcluster["Types"]])
+                electron_positions = [
+                        [float(x) * BOHR_TO_ANGSTROM for x in position]
+                        for position in subcluster["Positions"]
+                    ]
+                if not subcluster_min_max_phi:
+                    min_phi = 0
+                    max_phi = 0
+                else:
+                    # Divide by 2 to be in accord with -1/2 ln(PSI^2)
+                    min_phi = subcluster_min_max_phi[i][0][2] / 2
+                    max_phi = subcluster_min_max_phi[i][0][3] / 2
+
+                if not subcluster_sample_size:
+                    subcluster_sample_size_temp = 1
+                else:
+                    subcluster_sample_size_temp = subcluster_sample_size[i]
+                subcluster_pda_info.append({
+                    'min_phi': min_phi,
+                    'max_phi': max_phi,
+                    'sample_size': subcluster_sample_size_temp,
+                    'electron_positions': np.array(electron_positions, dtype=np.float32),
+                    'electrons_spin': electron_spins,
+                    'pda_eigenvectors': np.array([]),
+                    'pda_eigenvalues': np.array([]),
+                })
+
+                if spin_correlation_recorded:
+                    subcluster_pda_info[-1]["spin_correlations"] = spin_correlations
+
+                # Read Hessian:
+                if eigenvectors_recorded:
+                    flattened_eigenvectors = []
+                    for coords in subcluster["Eigenvectors"]:
+                        flattened_eigenvectors.extend(coords)
+
+                    eigenvectors = np.array(flattened_eigenvectors).reshape(number_of_electrons * 3, number_of_electrons, 3)
+                    eigenvalues = np.array(subcluster["Eigenvalues"])
+                    subcluster_pda_info[-1]['pda_eigenvectors'] = eigenvectors * BOHR_TO_ANGSTROM
+                    # Divide by 2 to be in accord with -1/2 ln(PSI^2)
+                    subcluster_pda_info[-1]['pda_eigenvalues'] = eigenvalues / 2
+
+            temp_cluster_dict['subclusters'] = subcluster_pda_info
+            mol.pda_data['clusters'].append(temp_cluster_dict)
+            number_of_subclusters.append(number_of_subclusters_count)
+        mol.pda_data['initialized'] = True
         molecules.add_molecule(mol)
         return molecules
 

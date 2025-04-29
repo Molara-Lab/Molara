@@ -554,12 +554,12 @@ class Renderer:
         if name in self.objects3d:
             del self.objects3d[name]
             found = True
-        if f"{name}_" in self.objects3d:
-            # remove all objects with the same name but different index
-            for key in list(self.objects3d.keys()):
-                if key.startswith(f"{name}_"):
-                    del self.objects3d[key]
-            found = True
+
+        # remove all objects with the same name but different index
+        for key in list(self.objects3d.keys()):
+            if key.startswith(f"{name}_"):
+                del self.objects3d[key]
+                found = True
         if name in self.textured_objects3d:
             del self.textured_objects3d[name]
             found = True

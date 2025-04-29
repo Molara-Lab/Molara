@@ -38,9 +38,40 @@ class Molecule(Structure):
         self.gen_energy_information(header)
         self.basis_set: list = []
         self.voxel_grid = VoxelGrid3D()
-        self.electron_positions: np.ndarray = np.array([])
-        self.spin_correlations: np.ndarray = np.array([])
-        self.pda_eigenvectors: np.ndarray = np.array([])
+
+
+        # Container for all pda data:
+        # The dict should be filled as follows:
+        # dict = {
+        #    'ref_phi': float, reference value of phi
+        #    'sample_size': int, number of total structures that have been clustered
+        #    'initialized': bool, True if the data has been initialized
+        #    'clusters': [, list of cluster data
+        #       {
+        #             'sample_size': int, number of equivalent structures that have been clustered
+        #             'min_phi: float, minimum value of phi
+        #             'max_phi: float, maximum value of phi
+        #             'spin_correlations': np.ndarray, spin correlations of the electrons (size n_ele x n_ele)
+        #             'subclusters': [
+        #                {
+        #                    'min_phi: float, minimum value of phi
+        #                    'max_phi: float, maximum value of phi
+        #                    'sample_size': int, number of equivalent structures that have been clustered
+        #                    'electron_positions': np.ndarray, cartesian coordinates of the electrons
+        #                    'electrons_spin': np.ndarray, spin of the electrons (-1 for down, 1 for up)
+        #                    'pda_eigenvectors': np.ndarray, eigenvectors of the electrons
+        #                    'pda_eigenvalues': np.ndarray, eigenvalues of the electrons
+        #                }
+        #             ]
+        #          }
+        #       }
+        #    ]
+
+        self.pda_data: dict = {
+            "sample_size": 0,
+            "initialized": False,
+            "clusters": [],
+        }
 
         super().__init__(atomic_numbers, coordinates, draw_bonds)
 
@@ -66,8 +97,10 @@ class Molecule(Structure):
         if self.draw_bonds:
             self.drawer.update_bonds()
 
-        if self.electron_positions.size > 0:
-            self.electron_positions -= self.center_of_mass
+        if self.pda_data['initialized']:
+            for cluster in self.pda_data['clusters']:
+                for subcluster in cluster['subclusters']:
+                    subcluster['electron_positions'] -= self.center_of_mass
         self.coords -= self.center_of_mass
 
         self.center_of_mass = self.calculate_center_of_mass()

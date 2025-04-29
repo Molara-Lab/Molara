@@ -543,21 +543,25 @@ class StructureWidget(QOpenGLWidget):
 
     def show_spin_correlation(self) -> None:
         """Show the spin correlation."""
+        struc = 0
+        print(len(self.structures[0].pda_data))
+        for item in self.structures[0].pda_data:
+            print(len(item))
         if len(self.structures) != 1:
             return
-        if self.structures[0].spin_correlations.size == 0:
-            if self.structures[0].pda_eigenvectors.size == 0:
+        if self.structures[0].pda_data[struc]['spin_correlations'].size == 0:
+            if self.structures[0].pda_data[struc]['pda_eigenvectors'].size == 0:
                 return
             else:
                 if 'eigvecs' in self.renderer.objects3d:
                     self.renderer.remove_object('eigvecs')
                 eigenvector = 0
 
-                eigenvectors = self.structures[0].pda_eigenvectors
+                eigenvectors = self.structures[0].pda_data[struc]['pda_eigenvectors']
                 positions = []
                 colors = []
 
-                for i, atom in enumerate(self.structures[0].atoms[len(self.structures[0].atoms) - len(self.structures[0].electron_positions):]):
+                for i, atom in enumerate(self.structures[0].atoms[len(self.structures[0].atoms) - len(self.structures[0].pda_data[struc]['electron_positions']):]):
                     if np.linalg.norm(eigenvectors[eigenvector, i]) < 0.01:
                         continue
                     if atom.atomic_number == -1:
@@ -565,7 +569,7 @@ class StructureWidget(QOpenGLWidget):
                     if atom.atomic_number == -2:
                         colors.append([0, 0, 1])
                     positions.append(
-                        [self.structures[0].electron_positions[i], self.structures[0].electron_positions[i] + eigenvectors[eigenvector, i]]
+                        [self.structures[0].pda_data[struc]['electron_positions'][i], self.structures[0].pda_data[struc]['electron_positions'][i] + eigenvectors[eigenvector, i]]
                     )
                 self.renderer.draw_arrows('eigvecs', np.array(positions, dtype=np.float32), np.array(colors, dtype=np.float32), 10, arrow_ratio=0.2)
                 self.update()
@@ -584,9 +588,9 @@ class StructureWidget(QOpenGLWidget):
 
         threshold = 0.99
         electron_pairs_corr = []
-        for i in range(self.structures[0].spin_correlations.shape[0]):
-            for j in range(i + 1, self.structures[0].spin_correlations.shape[1]):
-                spin_cor = self.structures[0].spin_correlations[i, j]
+        for i in range(self.structures[0].pda_data[struc]['spin_correlations'].shape[0]):
+            for j in range(i + 1, self.structures[0].pda_data[struc]['spin_correlations'].shape[1]):
+                spin_cor = self.structures[0].pda_data[struc]['spin_correlations'][i, j]
                 if abs(spin_cor) > threshold:
                     atoms = self.structures[0].atoms
                     core_electron = False
@@ -594,8 +598,8 @@ class StructureWidget(QOpenGLWidget):
                         if atom.atomic_number < 2:
                             continue
                         else:
-                            if (np.linalg.norm(atom.position - self.structures[0].electron_positions[i]) < 0.01 or
-                            np.linalg.norm(atom.position - self.structures[0].electron_positions[j]) < 0.01):
+                            if (np.linalg.norm(atom.position - self.structures[0].pda_data[struc]['electron_positions'][i]) < 0.01 or
+                            np.linalg.norm(atom.position - self.structures[0].pda_data[struc]['electron_positions'][j]) < 0.01):
                                 core_electron = True
                                 break
                     if core_electron:
@@ -606,7 +610,7 @@ class StructureWidget(QOpenGLWidget):
         colors = []
         for pair in electron_pairs_corr:
             positions.append(
-                [self.structures[0].electron_positions[pair[0]], self.structures[0].electron_positions[pair[1]]]
+                [self.structures[0].pda_data[struc]['electron_positions'][pair[0]], self.structures[0].pda_data[struc]['electron_positions'][pair[1]]]
             )
             colors.append(colors_list[0] if pair[2] < 0 else colors_list[1])
             radii.append(radius)
