@@ -10,6 +10,8 @@ from molara.structure.basisset import contracted_overlap
 from molara.util.constants import ANGSTROM_TO_BOHR
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.molecule import Molecule
 
 
@@ -46,10 +48,10 @@ class PopulationAnalysis:
         self.calculate_ao_overlap_cartesian()
 
         # initialize the overlap matrix for spherical basis functions
-        self.overlap_matrix_ao_spherical: np.ndarray = np.array([])
+        self.overlap_matrix_ao_spherical: NDArray = np.array([])
 
         # initialize the overlap matrix for molecular orbitals
-        self.overlap_matrix_mo: np.ndarray = np.array([])
+        self.overlap_matrix_mo: NDArray = np.array([])
 
         if self.mo_type == "Cartesian":
             self.d_matrix = np.dot(
