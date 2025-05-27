@@ -67,7 +67,7 @@ pip install -e .
 ```
 
 > [!IMPORTANT]
-> The installation from source with `pip install -e .` involves a Cython build, for which it is required that a C compiler be installed on the system (a more detailed description can be found [here](https://cython.readthedocs.io/en/latest/src/quickstart/install.html)).
+> The installation from source with `pip install -e .` involves a Cython build, for which it is required that a C compiler be installed on the system (a more detailed description can be found [in the Cython docs](https://cython.readthedocs.io/en/latest/src/quickstart/install.html)).
 
 ## Known issues
 
