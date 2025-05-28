@@ -28,6 +28,8 @@ if TYPE_CHECKING:
     from os import PathLike
     from typing import Any
 
+    from numpy.typing import NDArray
+
     from molara.molecule.crystals import Crystals
 
     try:
@@ -479,7 +481,7 @@ class QmImporter(MoleculesImporter):
     def _get_electronic_energies_in_hartree(
         self,
         cclib_data: ccData,
-    ) -> np.ndarray | None:
+    ) -> NDArray | None:
         """Convert cclib energy to hartree.
 
         :param cclib_data: cclib data
