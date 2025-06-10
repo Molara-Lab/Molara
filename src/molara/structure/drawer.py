@@ -206,9 +206,9 @@ class Drawer:
         if self.cylinders is None:
             return
         for bond in self.bonds:
-            if bond[0] == -1:
+            if bond[0].item() == -1:
                 continue
-            atom1, atom2 = self.atoms[bond[0]], self.atoms[bond[1]]
+            atom1, atom2 = self.atoms[bond[0].item()], self.atoms[bond[1].item()]
             self.cylinder_colors.append(atom1.color[self.color_scheme])
             self.cylinder_colors.append(atom2.color[self.color_scheme])
         self.cylinder_colors = np.array(self.cylinder_colors, dtype=np.float32)
