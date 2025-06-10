@@ -154,9 +154,9 @@ class Drawer:
         assert self.bonds is not None
         assert self.atoms is not None
         for bond in self.bonds:
-            if bond[0].item() == -1:
+            if bond[0] == -1:
                 continue
-            atom1, atom2 = self.atoms[bond[0].item()], self.atoms[bond[1].item()]
+            atom1, atom2 = self.atoms[bond[0]], self.atoms[bond[1]]
             pos1, pos2 = atom1.position, atom2.position
             difference = pos1 - pos2
             # Calculate the length of the cylinder.
