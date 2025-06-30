@@ -61,11 +61,11 @@ class PymatgenImporter(Importer):
     def load(self) -> Crystals:
         """Import a file and returns the Crystal."""
         try:
-            from monty.io import zopen
+            from monty.io import zopen  # noqa: PLC0415
 
             with zopen(self.path, "rt", errors="replace") as f:
                 contents = f.read()
-            from pymatgen.core import Structure as PymatgenStructure
+            from pymatgen.core import Structure as PymatgenStructure  # noqa: PLC0415
 
             # structure = Structure.from_file(self.path)
             structure = PymatgenStructure.from_str(contents, fmt="poscar")
@@ -179,7 +179,7 @@ class VasprunImporter(Importer):
     def load(self) -> Crystals:
         """Import a file and returns the Crystal."""
         try:
-            from pymatgen.io.vasp import Vasprun
+            from pymatgen.io.vasp import Vasprun  # noqa: PLC0415
 
             vasprun = Vasprun(self.path)
             structure = vasprun.final_structure
