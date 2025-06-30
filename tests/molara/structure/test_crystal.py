@@ -68,7 +68,7 @@ class TestCrystal(TestCase):
     @pytest.mark.skipif(not find_spec("ase"), reason="ASE is not installed.")
     def test_from_ase(self) -> None:
         """Test the creation of a crystal from an ASE atoms object."""
-        from ase import Atoms
+        from ase import Atoms  # noqa: PLC0415
 
         atomic_numbers = [5, 7]
         coordinates = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
