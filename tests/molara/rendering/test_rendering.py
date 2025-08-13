@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING
-from unittest import mock
 
 import numpy as np
+from PIL import Image
 
-from molara.rendering.rendering import Renderer
-from molara.rendering.shaders import compile_shaders
+from molara.rendering.rendering import MODES, Renderer
 
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
@@ -28,7 +26,7 @@ class WorkaroundTestRenderer:
         self.qtbot = qtbot
         self.main_window = main_window
         self.openGLWidget = self.main_window.structure_widget
-        self.renderer = Renderer()
+        self.renderer = self.openGLWidget.renderer
         self.openGLWidget.show()
 
     def run_tests(self) -> None:
@@ -37,92 +35,84 @@ class WorkaroundTestRenderer:
         self._test_set_shaders()
         self._test_draw_cylinders()
         self._test_remove_cylinder()
+        self._test_draw_arrows()
         self._test_draw_cylinders_from_to()
         self._test_draw_spheres()
         self._test_remove_sphere()
-        self._test_numbers()
+        self._test_draw_billboards()
+        self._test_remove_billboard()
+        self._test_shader_modes()
 
         self.openGLWidget.doneCurrent()
 
     def _test_init(self) -> None:
         """Test the __init__ method of the Renderer class."""
         assert isinstance(self.renderer, Renderer)
-        assert isinstance(self.renderer.atoms_vao, dict)
-        assert isinstance(self.renderer.bonds_vao, dict)
-        assert isinstance(self.renderer.spheres, list)
-        assert isinstance(self.renderer.cylinders, list)
-        assert self.renderer.shaders == [0]
 
     def _test_set_shaders(self) -> None:
         """Test the set_shader method of the Renderer class."""
-        shader_int = [192837465, 42]
-        self.renderer.set_shaders(shader_int)
-        assert self.renderer.shaders == shader_int
+        shader_ints = [24, 27, 30, 33, 36, 39, 42]
+        self.renderer.set_shaders()
+        for i, shader in enumerate(self.renderer.shaders.values()):
+            assert shader.program == shader_ints[i]
+        number_of_shader_programs = 7
+        assert len(self.renderer.shaders) == number_of_shader_programs
+
+    def _test_draw_billboards(self) -> None:
+        """Test the draw_billboards method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+        positions = np.array([[0.0, 0.0, 0.0], [1.0, -2.345, 0.12]], dtype=np.float32)
+        scales = np.array([[1.0, 2.0, 1.0], [2.0, 1.0, 1.0]], dtype=np.float32)
+        image = Image.open("tests/molara/rendering/images/MolaraLogo.png")
+        self.renderer.draw_billboards("test5", positions, positions, scales, image)
+        assert "test5" in self.renderer.textured_objects3d
+
+    def _test_remove_billboard(self) -> None:
+        """Test the remove_billboard method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+
+        self.renderer.remove_object("test5")
+        assert "test5" not in self.renderer.textured_objects3d
+
+    def _test_shader_modes(self) -> None:
+        """Test the shader_modes method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+        positions = np.array([[0, 0, 0], [1, 1, 1], [4, 5, 6]], dtype=np.float32)
+        directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        # get a dimensionsarray going with [[radius, length, radius] * number_of_instances]
+        dimensions = np.array([[0.5, 1.0, 0.5], [0.3, 2.0, 0.3], [0.2, 3.0, 0.2]], dtype=np.float32)
+
+        colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        subdivisions = 10
+
+        self.renderer.draw_cylinders("test1", positions, directions, dimensions, colors, subdivisions)
+
+        for mode in MODES:
+            self.renderer.set_mode(mode)
+            self.renderer.draw_scene()
+
+        self.renderer.remove_object("test1")
 
     def _test_draw_cylinders(self) -> None:
         """Test the draw_cylinders method of the Renderer class."""
         self.openGLWidget.makeCurrent()
         positions = np.array([[0, 0, 0], [1, 1, 1], [4, 5, 6]], dtype=np.float32)
         directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
-        radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
-        lengths = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+        # get a dimensionsarray going with [[radius, length, radius] * number_of_instances]
+        dimensions = np.array([[0.5, 1.0, 0.5], [0.3, 2.0, 0.3], [0.2, 3.0, 0.2]], dtype=np.float32)
+
         colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
         subdivisions = 10
 
-        mostrecent_cylinder_id = -1
-        cylinder_total_counter = 0
-
-        def _test_ids_and_counters(result: int) -> None:
-            """Test most recent cylinder ids, cylinder vao entries and...?."""
-            assert result == mostrecent_cylinder_id
-            assert self.renderer.cylinders[mostrecent_cylinder_id]["vao"] == cylinder_total_counter
-            start_id = 1 + (cylinder_total_counter - 1) * 4
-            end_id = 1 + cylinder_total_counter * 4
-            buffers_comparison = list(range(start_id, end_id))
-            assert self.renderer.cylinders[mostrecent_cylinder_id]["buffers"] == buffers_comparison
-
-        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        # for the first added cylinder, cylinder_total_counter must be set to the vao id of the first cylinder.
-        # this is because previous tests might have added cylinders already.
-        # after this, every added cylinder should increase the cylinder_total_counter by 1.
-        cylinder_total_counter = self.renderer.cylinders[mostrecent_cylinder_id]["vao"]
-        mostrecent_cylinder_id += 1
-        _test_ids_and_counters(result)
-
-        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        cylinder_total_counter += 1
-        mostrecent_cylinder_id += 1
-        _test_ids_and_counters(result)
-
-        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        cylinder_total_counter += 1
-        mostrecent_cylinder_id += 1
-        _test_ids_and_counters(result)
-
-        self.renderer.remove_cylinder(0)
-        result = self.renderer.draw_cylinders(positions, directions, radii, lengths, colors, subdivisions)
-        mostrecent_cylinder_id = 0
-        cylinder_total_counter += 1
+        self.renderer.draw_cylinders("test1", positions, directions, dimensions, colors, subdivisions)
+        assert "test1" in self.renderer.objects3d
 
     def _test_remove_cylinder(self) -> None:
         """Test the remove_cylinder method of the Renderer class."""
         self.openGLWidget.makeCurrent()
 
-        def _remove_tests(cylinder_id: int) -> None:
-            """Test the removal of a cylinder."""
-            self.renderer.remove_cylinder(cylinder_id)
-            if cylinder_id >= len(self.renderer.cylinders):
-                return
-            assert self.renderer.cylinders[cylinder_id]["vao"] == 0
-            assert self.renderer.cylinders[cylinder_id]["n_instances"] == 0
-            assert self.renderer.cylinders[cylinder_id]["n_vertices"] == 0
-            assert self.renderer.cylinders[cylinder_id]["buffers"] == []
-
-        _remove_tests(0)
-        _remove_tests(1)
-        _remove_tests(2)
-        # also test removing a cylinder that does not exist. Nothing should happen.
-        _remove_tests(543210)
+        self.renderer.remove_object("test1")
+        assert "test1" not in self.renderer.objects3d
 
     def _test_draw_cylinders_from_to(self) -> None:
         """Test the draw_cylinders_from_to method of the Renderer class."""
@@ -135,23 +125,35 @@ class WorkaroundTestRenderer:
             ],
             dtype=np.float32,
         )
-        positions = positions_from_to.mean(axis=1, dtype=np.float32)
-        directions = positions_from_to[:, 1, :] - positions_from_to[:, 0, :]
         radii = np.array([0.5, 0.3, 0.2], dtype=np.float32)
         colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
         subdivisions = 10
 
-        id_cylinder_from_to = self.renderer.draw_cylinders_from_to(positions_from_to, radii, colors, subdivisions)
-        id_cylinder_normal = self.renderer.draw_cylinders(
-            positions,
-            directions,
-            radii,
-            np.linalg.norm(directions, axis=1),
-            colors,
-            subdivisions,
+        self.renderer.draw_cylinders_from_to("test2", positions_from_to, radii, colors, subdivisions)
+        assert "test2" in self.renderer.objects3d
+        self.renderer.remove_object("test2")
+        assert "test2" not in self.renderer.objects3d
+
+    def _test_draw_arrows(self) -> None:
+        """Test the draw_arrows method of the Renderer class."""
+        self.openGLWidget.makeCurrent()
+        positions_from_to = np.array(
+            [
+                [[1.2, 3.4, 5.6], [9.8, 7.6, 5.4]],
+                [[-3.3, -2.2, 1.1], [9.9, 8.8, -7.7]],
+                [[0, 0, 0], [1, 1, 1]],
+            ],
+            dtype=np.float32,
         )
-        assert id_cylinder_from_to == 0
-        assert id_cylinder_normal == 1
+        colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
+        subdivisions = 10
+
+        self.renderer.draw_arrows("test2", positions_from_to, colors, subdivisions)
+        assert "test2" in self.renderer.objects3d
+        assert "test2_" in self.renderer.objects3d
+        self.renderer.remove_object("test2")
+        assert "test2" not in self.renderer.objects3d
+        assert "test2_" not in self.renderer.objects3d
 
     def _test_draw_spheres(self) -> None:
         """Test the draw_spheres method of the Renderer class."""
@@ -161,68 +163,18 @@ class WorkaroundTestRenderer:
         colors = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
         subdivisions = 10
 
-        mostrecent_sphere_id = -1
-        sphere_total_counter = 0
+        self.renderer.draw_spheres("test3", positions, radii, colors, subdivisions)
+        assert "test3" in self.renderer.objects3d
 
-        def _test_ids_and_counters(result: int) -> None:
-            """Test most recent sphere ids, sphere vao entries and...?."""
-            assert result == mostrecent_sphere_id
-            assert self.renderer.spheres[mostrecent_sphere_id]["vao"] == sphere_total_counter
-            start_id = 1 + (sphere_total_counter - 1) * 4
-            end_id = 1 + sphere_total_counter * 4
-            buffers_comparison = list(range(start_id, end_id))
-            assert self.renderer.spheres[mostrecent_sphere_id]["buffers"] == buffers_comparison
+        self.renderer.remove_object("test3")
+        assert "test3" not in self.renderer.objects3d
 
-        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
-        mostrecent_sphere_id += 1
-        # for the first added sphere, sphere_total_counter must be set to the vao id of the first sphere.
-        # this is because previous tests might have added spheres already.
-        # after this, every added sphere should increase the sphere_total_counter by 1.
-        sphere_total_counter = self.renderer.spheres[mostrecent_sphere_id]["vao"]
-        _test_ids_and_counters(result)
-
-        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
-        mostrecent_sphere_id += 1
-        sphere_total_counter += 1
-        _test_ids_and_counters(result)
-
-        result = self.renderer.draw_spheres(positions, radii, colors, subdivisions)
-        mostrecent_sphere_id += 1
-        sphere_total_counter += 1
-        _test_ids_and_counters(result)
+        self.renderer.draw_spheres("test4", positions, radii, colors, subdivisions, wire_frame=True)
+        assert "test4" in self.renderer.objects3d
 
     def _test_remove_sphere(self) -> None:
         """Test the remove_sphere method of the Renderer class."""
         self.openGLWidget.makeCurrent()
 
-        def _remove_tests(sphere_id: int) -> None:
-            """Test the removal of a sphere."""
-            self.renderer.remove_sphere(sphere_id)
-            if sphere_id >= len(self.renderer.spheres):
-                return
-            assert self.renderer.spheres[sphere_id]["vao"] == 0
-            assert self.renderer.spheres[sphere_id]["n_instances"] == 0
-            assert self.renderer.spheres[sphere_id]["n_vertices"] == 0
-            assert self.renderer.spheres[sphere_id]["buffers"] == []
-
-        _remove_tests(0)
-        _remove_tests(1)
-        _remove_tests(2)
-        # also test removing a sphere that does not exist. Nothing should happen.
-        _remove_tests(543210)
-
-    def _test_numbers(self) -> None:
-        """Test the draw_numbers method of the Renderer class."""
-        self.renderer.set_shaders(compile_shaders())
-        testargs = ["molara", "examples/xyz/pentane.xyz"]
-        with mock.patch.object(sys, "argv", testargs):
-            self.main_window.show_init_xyz()
-        digits = np.array([1, 2, 3, 4, 5], dtype=np.int32)
-        positions_3d = np.array([[0, -0, 0], [1, 1, -1], [4, -5, 6], [-7, 8, 9], [-10, -11, -12]], dtype=np.float32)
-        self.renderer.draw_numbers(digits, positions_3d)
-
-        # Test if the vaos are deleted correctly.
-        self.renderer.draw_numbers(digits, positions_3d)
-
-        camera = self.main_window.structure_widget.camera
-        self.renderer.display_numbers(camera, 0.25)
+        self.renderer.remove_object("test4")
+        assert "test4" not in self.renderer.objects3d

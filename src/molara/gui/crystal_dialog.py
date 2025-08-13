@@ -6,7 +6,7 @@ import numpy as np
 from PySide6.QtCore import SIGNAL
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 
-from molara.gui.ui_crystalstructure_dialog import Ui_CrystalDialog
+from molara.gui.layouts.ui_crystalstructure_dialog import Ui_CrystalDialog
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.crystal import Crystal
 

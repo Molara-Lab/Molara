@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import shutil
-from os import listdir
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -14,7 +13,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
 )
 
-from molara.gui.ui_structure_customizer import Ui_structure_customizer
+from molara.gui.layouts.ui_structure_customizer import Ui_structure_customizer
 from molara.rendering.atom_labels import init_atom_number
 
 if TYPE_CHECKING:
@@ -54,6 +53,8 @@ class StructureCustomizerDialog(QDialog):
         self.ui.stickSizeSpinBox.setValue(1.0)
         self.ui.toggleBondsButton.setText("Hide Bonds")
         self.ui.toggleNumbersButton.setText("Show Indices")
+        # Disable until further notice. Needs reimplementation!
+        self.ui.toggleNumbersButton.setDisabled(True)
         self.ui.colorSchemeSelect.addItems(["Jmol", "CPK"])
 
         self.ui.viewModeButton.clicked.connect(self.toggle_stick_mode)
@@ -83,11 +84,7 @@ class StructureCustomizerDialog(QDialog):
                 f"{self.src_path}/settings/structure/Default.json",
                 f"{self.home_path}/settings/structure/Default.json",
             )
-        save_files = [
-            f
-            for f in listdir(f"{self.home_path}/settings/structure")
-            if Path.is_file(self.home_path / "settings" / "structure" / f)
-        ]
+        save_files = [f.name for f in (self.home_path / "settings" / "structure").iterdir() if f.is_file()]
         self.save_names = [f.split(".")[0] for f in save_files]
         self.save_names.sort()
         self.ui.loadSelect.clear()
@@ -177,7 +174,7 @@ class StructureCustomizerDialog(QDialog):
         :param ball_size: size of the spheres
         :param stick_size: size of the cylinders
         """
-        structure.drawer.cylinder_radius = stick_size
+        structure.drawer.cylinder_scale = stick_size
         structure.drawer.sphere_default_radius = ball_size
 
         # Set the color scheme
@@ -189,7 +186,7 @@ class StructureCustomizerDialog(QDialog):
             structure.drawer.sphere_scale = self.ui.ballSizeSpinBox.value()
         structure.drawer.set_atom_colors()
         structure.drawer.set_cylinder_colors()
-        structure.drawer.set_atom_scales()
+        structure.drawer.set_sphere_radii()
         structure.drawer.set_atom_scale_matrices()
         structure.drawer.set_atom_model_matrices()
 
@@ -213,7 +210,7 @@ class StructureCustomizerDialog(QDialog):
             if self.bonds:
                 structure.draw_bonds = True
                 structure.drawer.cylinder_scale = self.ui.stickSizeSpinBox.value()
-                structure.drawer.set_cylinder_dimensions()
+                structure.drawer.set_cylinder_radii()
                 structure.drawer.set_cylinder_scale_matrices()
                 structure.drawer.set_cylinder_model_matrices()
             else:
@@ -225,7 +222,7 @@ class StructureCustomizerDialog(QDialog):
                 self.parent().structure_widget.number_scale = self.ui.indexSizeSpinBox.value()
             self.parent().structure_widget.show_atom_indices = self.numbers
 
-            self.parent().structure_widget.set_vertex_attribute_objects()
+            self.parent().structure_widget.update_molecule_spheres_cylinders()
         self.parent().structure_widget.update()
 
     def toggle_stick_mode(self) -> None:

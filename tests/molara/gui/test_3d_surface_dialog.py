@@ -45,7 +45,7 @@ class WorkaroundTestCubeFileDialog:
     def _test_toggle_surfaces(self) -> None:
         """Test the toggle_surfaces method."""
         self.main_window.surface_3d_dialog.toggle_surfaces()
-        assert self.main_window.surface_3d_dialog.show_surfaces
+        assert self.main_window.surface_3d_dialog.surfaces_are_visible
 
     def _test_change_iso_value(self) -> None:
         """Test the change_iso_value method."""
@@ -56,11 +56,11 @@ class WorkaroundTestCubeFileDialog:
 
     def _test_toggle_wire_mesh(self) -> None:
         """Test the toggle_wire_mesh method."""
-        assert not self.main_window.structure_widget.renderer.wire_mesh_surfaces
+        assert not self.main_window.surface_3d_dialog.draw_wire_frame
         self.main_window.surface_3d_dialog.toggle_wire_mesh()
-        assert self.main_window.structure_widget.renderer.wire_mesh_surfaces
+        assert self.main_window.surface_3d_dialog.draw_wire_frame
         self.main_window.surface_3d_dialog.toggle_wire_mesh()
-        assert not self.main_window.structure_widget.renderer.wire_mesh_surfaces
+        assert not self.main_window.surface_3d_dialog.draw_wire_frame
 
     def _test_color(self) -> None:
         """Test all color methods."""

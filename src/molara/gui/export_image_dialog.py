@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 from PySide6.QtWidgets import QDialog, QFileDialog, QMainWindow
 
-from molara.gui.ui_export_image_dialog import Ui_Dialog
+from molara.gui.layouts.ui_export_image_dialog import Ui_Dialog
 
 
 class ExportImageDialog(QDialog):

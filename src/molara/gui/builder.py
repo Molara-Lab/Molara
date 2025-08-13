@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
 
-from molara.gui.ui_builder import Ui_builder
+from molara.gui.layouts.ui_builder import Ui_builder
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
@@ -32,7 +32,7 @@ __copyright__ = "Copyright 2024, Molara"
 def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
     """Toggles the disable slot variable to circumvent recursivity."""
 
-    def wrapper(self: BuilderDialog, *args: P.args, **kwargs: P.kwargs) -> None:
+    def wrapper(self: BuilderDialog, *args: P.args, **kwargs: P.kwargs) -> None:  # type: ignore[valid-type]
         if self.disable_slot:
             return
         self.disable_slot = True
@@ -117,7 +117,7 @@ class BuilderDialog(QDialog):
         if not do_deletion:
             return
 
-        error_msg = f"Atom {index+1} will be deleted."
+        error_msg = f"Atom {index + 1} will be deleted."
         self.ui.ErrorMessageBrowser.setText(error_msg)
         self._delete_zmat_row(index, mol.n_at)
         self._delete_table_row(index)
@@ -230,7 +230,7 @@ class BuilderDialog(QDialog):
         # check for collisions
         self.colliding_idx = mol.compute_collision(pos) if count_atoms >= 3 else None  # noqa: PLR2004
         if self.colliding_idx is not None:
-            error_msg = f"The atom would collide with atom {self.colliding_idx+1}."
+            error_msg = f"The atom would collide with atom {self.colliding_idx + 1}."
             self.ui.ErrorMessageBrowser.setText(error_msg)
             return
 
@@ -454,7 +454,7 @@ class BuilderDialog(QDialog):
 
         for entry in self.z_matrix:
             if idx in entry["atom_ids"]:
-                error_msg = f"Cannot be deleted. Atom {idx+1} depends on this atom."
+                error_msg = f"Cannot be deleted. Atom {idx + 1} depends on this atom."
                 self.ui.ErrorMessageBrowser.setText(error_msg)
                 return False
 

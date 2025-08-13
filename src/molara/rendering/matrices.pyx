@@ -6,8 +6,7 @@ from cython import nogil
 
 @boundscheck(False)
 def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
-                             float[:,:,:] rotation=np.array([[[-1.0]]], dtype=np.float32),
-                             bint cylinder=False):
+                             float[:,:,:] rotation=np.array([[[-1.0]]], dtype=np.float32)):
 
     cdef int n = translation.shape[0], i, j, k, l
     cdef float[:,:,:] model_matrices = np.zeros((n, 4, 4), dtype=np.float32)
@@ -26,11 +25,7 @@ def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
                 model_matrices[i, 3, 2] = translation[i, 3, 2]
         else:
             for i in prange(n):
-                if cylinder:
-                    if (i % 2) == 0:
-                        dot_product_m(rotation[i//2, :, :], scale[i//2, :, :], temp)
-                else:
-                    dot_product_m(rotation[i, :, :], scale[i, :, :], temp)
+                dot_product_m(rotation[i, :, :], scale[i, :, :], temp)
                 model_matrices[i, :3, :3] = temp[:,:]
                 model_matrices[i, 3, 0] = translation[i, 3, 0]
                 model_matrices[i, 3, 1] = translation[i, 3, 1]
@@ -58,11 +53,11 @@ cdef int dot_product_m(float[:,:] a, float[:,:] b, float[:,:] res) nogil:
 
     return 0
 @boundscheck(False)
-def calculate_translation_matrices(npc.ndarray[float, ndim=2] positions) -> npc.ndarray:
+def calculate_translation_matrices(float[:, :] positions) -> npc.ndarray:
     """Calculates the translation matrix for a sphere.
 
-    :param position: Position of the sphere.
-    :return: Translation matrix of the sphere.
+    :param positions: Positions to translate to.
+    :return: Translation matrix.
     """
 
     cdef npc.ndarray[float, ndim=3] translation_matrices = np.zeros((positions.shape[0], 4, 4), dtype=np.float32)
@@ -82,7 +77,7 @@ def calculate_translation_matrices(npc.ndarray[float, ndim=2] positions) -> npc.
     return np.array(translation_matrices, dtype=np.float32)
 
 @boundscheck(False)
-def calculate_scale_matrices(npc.ndarray[float, ndim=2] scales) -> np.ndarray:
+def calculate_scale_matrices(float[:,:] scales) -> np.ndarray:
     """Calculates the scale matrix for a sphere.
 
     :param scales: Scales of the spheres.
@@ -103,7 +98,7 @@ def calculate_scale_matrices(npc.ndarray[float, ndim=2] scales) -> np.ndarray:
 
 @boundscheck(False)
 def calculate_rotation_matrices(
-    double[:,:] directions,
+    float[:,:] directions,
 ):
     """Calculates the rotation matrix.
 
@@ -112,10 +107,10 @@ def calculate_rotation_matrices(
     """
     cdef npc.ndarray[float, ndim=3] rotation_matrices = np.zeros((directions.shape[0], 4, 4), dtype=np.float32)
     cdef int n = directions.shape[0], i, j, k
-    cdef double[3] rotation_axis
+    cdef float[3] rotation_axis
     cdef float rotation_angle, x, y, z, c, s, t, dot_product
     cdef float normalized_direction[3]
-    cdef double direction_norm
+    cdef float direction_norm
     cdef float[3] y_axis = [0., 1., 0.]
 
     with (nogil):

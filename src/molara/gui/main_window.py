@@ -12,13 +12,14 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.gui.builder import BuilderDialog
 from molara.gui.crystal_dialog import CrystalDialog
 from molara.gui.export_image_dialog import ExportImageDialog
+from molara.gui.layouts.ui_form import Ui_MainWindow
 from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.mos_dialog import MOsDialog
+from molara.gui.normalization_dialog import NormalizationDialog
 from molara.gui.structure_customizer_dialog import StructureCustomizerDialog
 from molara.gui.supercell_dialog import SupercellDialog
 from molara.gui.surface_3d_dialog import CubeFileDialog
 from molara.gui.trajectory_dialog import TrajectoryDialog
-from molara.gui.ui_form import Ui_MainWindow
 from molara.structure.crystal import Crystal
 from molara.structure.crystals import Crystals
 from molara.structure.io.exporter import GeneralExporter
@@ -57,6 +58,7 @@ class MainWindow(QMainWindow):
         self.builder_dialog = BuilderDialog(self)
         self.supercell_dialog = SupercellDialog(self)
         self.structure_customizer_dialog = StructureCustomizerDialog(self)
+        self.normalization_dialog = NormalizationDialog(self)
         self.mo_dialog = MOsDialog(self)
         self.surface_3d_dialog = CubeFileDialog(self)
         self.mols = Molecules()
@@ -98,25 +100,23 @@ class MainWindow(QMainWindow):
         self.ui.actionOpen_Structure_Customizer.triggered.connect(
             self.show_structure_customizer_dialog,
         )
+
         # tools
-        self.ui.actionBuilder.triggered.connect(
-            self.show_builder_dialog,
-        )
-        self.ui.actionMeasure.triggered.connect(
-            self.show_measurement_dialog,
-        )
-        self.ui.actionDisplay_MOs.triggered.connect(
-            self.show_mo_dialog,
-        )
-        self.ui.actionDisplay_3D_Surface.triggered.connect(
-            self.show_surface_3d_dialog,
-        )
+        self.ui.actionBuilder.triggered.connect(self.show_builder_dialog)
+        self.ui.actionMeasure.triggered.connect(self.show_measurement_dialog)
+        self.ui.actionDisplay_MOs.triggered.connect(self.show_mo_dialog)
+        self.ui.actionDisplay_3D_Surface.triggered.connect(self.show_surface_3d_dialog)
+        self.ui.actionCheck_Normalization.triggered.connect(self.show_normalization_dialog)
 
         self.ui.actionRead_POSCAR.triggered.connect(self.show_poscar)
         self.ui.actionCreate_Lattice.triggered.connect(self.crystal_dialog.show)
         self.ui.actionSupercell.triggered.connect(self.edit_supercell_dims)
         self.ui.actionToggle_UnitCellBoundaries.triggered.connect(self.structure_widget.toggle_unit_cell_boundaries)
         self.update_action_texts()
+
+    def show_normalization_dialog(self) -> None:
+        """Show the normalization dialog."""
+        self.normalization_dialog.initialize_dialog()
 
     def show_mo_dialog(self) -> None:
         """Check if molecular orbitals have been loaded and perform actions accordingly."""
@@ -144,9 +144,7 @@ class MainWindow(QMainWindow):
             "Perspective Projection" if self.structure_widget.orthographic_projection else "Orthographic Projection"
         )
         text_unit_cell_boundaries = (
-            "Hide Unit Cell Boundaries"
-            if self.structure_widget.draw_unit_cell_boundaries
-            else "Show Unit Cell Boundaries"
+            "Hide Unit Cell Boundaries" if self.structure_widget.box else "Show Unit Cell Boundaries"
         )
         self.ui.actionToggle_Axes.setText(QCoreApplication.translate("MainWindow", text_axes, None))
         self.ui.actionToggle_Projection.setText(QCoreApplication.translate("MainWindow", text_projection, None))
@@ -205,7 +203,7 @@ class MainWindow(QMainWindow):
         if file_name == "":
             return
         exporter = GeneralExporter(file_name)
-        exporter.write_structure(self.structure_widget.structure)
+        exporter.write_structure(self.structure_widget.structures[0])
 
     def export_camera_settings(self) -> None:
         """Export camera settings to .npz file."""
