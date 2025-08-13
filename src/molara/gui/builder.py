@@ -33,7 +33,7 @@ __copyright__ = "Copyright 2024, Molara"
 def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
     """Toggles the disable slot variable to circumvent recursivity."""
 
-    def wrapper(self: BuilderDialog, *args: P.args, **kwargs: P.kwargs) -> None:
+    def wrapper(self: BuilderDialog, *args: P.args, **kwargs: P.kwargs) -> None:  # type: ignore[valid-type]
         if self.disable_slot:
             return
         self.disable_slot = True

@@ -452,7 +452,7 @@ class QmImporter(MoleculesImporter):
         :param path: input file path
         """
         try:
-            import cclib
+            import cclib  # noqa: PLC0415
         except ImportError as err:
             msg = "Could not import cclib."
             raise ImportError(msg) from err
