@@ -82,5 +82,5 @@ def get_ase_colors() -> dict[str, dict[str, tuple]]:
 if __name__ == "__main__":
     c_table = fetch_color_table()
 
-    with (Path(file_path) / "atom_colors.json").open("w") as file:
+    with (Path(file_path) / "atom_colors.json").open("w", encoding="utf-8") as file:
         json.dump(parse_color_table(c_table) | get_ase_colors(), file)
