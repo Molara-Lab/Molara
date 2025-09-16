@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 from unittest import TestCase, mock
@@ -135,9 +136,14 @@ class TestPoscarImporter(TestCase):
         assert_crystals_equal(crystal_pymatgen, self.crystal)
 
         # test what happens if pymatgen import fails
-        with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
-            with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
-                crystals = PoscarImporter("examples/POSCAR/BN_POSCAR").load(use_pymatgen=True)
+        if sys.version_info >= (3, 13):
+            with mock.patch("importlib.util.find_spec", return_value=None):  # noqa: SIM117
+                with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
+                    crystals = PoscarImporter("examples/POSCAR/BN_POSCAR").load(use_pymatgen=True)
+        else:
+            with mock.patch("builtins.__import__", side_effect=ImportError):  # noqa: SIM117
+                with pytest.warns(UserWarning, match="pymatgen is not installed, using internal parser"):
+                    crystals = PoscarImporter("examples/POSCAR/BN_POSCAR").load(use_pymatgen=True)
         crystal = crystals.get_current_mol()
         crystal.make_supercell(supercell_dims)
         assert_crystals_equal(crystal, self.crystal)
