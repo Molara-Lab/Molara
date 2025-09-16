@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 from unittest import TestCase
 
 import numpy as np
+from molara.eval.aos import calculate_aos
 from numpy.testing import assert_almost_equal
 
-from molara.eval.aos import calculate_aos
 from molara.structure.io.importer import GeneralImporter
 
 if TYPE_CHECKING:

@@ -5,8 +5,8 @@ from __future__ import annotations
 from unittest import TestCase
 
 import numpy as np
-
 from molara.eval.aos import calculate_aos
+
 from molara.structure.basisset import BasisSet
 
 __copyright__ = "Copyright 2024, Molara"
