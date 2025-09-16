@@ -101,7 +101,7 @@ class StructureWidget(QOpenGLWidget):
         if not self.structures[0].atoms:
             return
         if len(self.structures[0].atoms) > 1:
-            x, y, z = np.array([atom.position for atom in self.structures[0].atoms]).T
+            _x, y, z = np.array([atom.position for atom in self.structures[0].atoms]).T
             dy = y.max() - y.min()
             dz = z.max() - z.min()
         self.camera.reset(self.width(), self.height(), dy, dz)
