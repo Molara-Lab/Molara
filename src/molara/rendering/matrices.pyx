@@ -2,13 +2,12 @@ import numpy as np
 cimport numpy as npc
 from cython.parallel import prange
 from cython import boundscheck, exceptval
-from cython import nogil
 
 @boundscheck(False)
 def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
                              float[:,:,:] rotation=np.array([[[-1.0]]], dtype=np.float32)):
 
-    cdef int n = translation.shape[0], i, j
+    cdef int n = translation.shape[0], i
     cdef float[:,:,:] model_matrices = np.zeros((n, 4, 4), dtype=np.float32)
     cdef float[:,:] temp = np.zeros((3,3), dtype=np.float32)
 
