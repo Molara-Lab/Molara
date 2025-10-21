@@ -8,10 +8,9 @@ from cython import nogil
 def calculate_model_matrices(float[:,:,:] translation, float[:,:,:] scale,
                              float[:,:,:] rotation=np.array([[[-1.0]]], dtype=np.float32)):
 
-    cdef int n = translation.shape[0], i, j, k, l
+    cdef int n = translation.shape[0], i, j
     cdef float[:,:,:] model_matrices = np.zeros((n, 4, 4), dtype=np.float32)
     cdef float[:,:] temp = np.zeros((3,3), dtype=np.float32)
-    cdef float temp1
 
     model_matrices[:, 3, 3] = 1.0
     with nogil:
@@ -108,7 +107,7 @@ def calculate_rotation_matrices(
     cdef npc.ndarray[float, ndim=3] rotation_matrices = np.zeros((directions.shape[0], 4, 4), dtype=np.float32)
     cdef int n = directions.shape[0], i, j, k
     cdef float[3] rotation_axis
-    cdef float rotation_angle, x, y, z, c, s, t, dot_product
+    cdef float x, y, z, c, s, t, dot_product
     cdef float normalized_direction[3]
     cdef float direction_norm
     cdef float[3] y_axis = [0., 1., 0.]
