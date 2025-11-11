@@ -6,16 +6,17 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 import numpy as np
-
-if TYPE_CHECKING:
-    from PySide6.QtGui import QCloseEvent
-
-    from molara.structure.molecule import Molecule
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QColorDialog, QDialog, QMainWindow, QPushButton
 
 from molara.eval.marchingcubes import marching_cubes
 from molara.eval.voxel_grid import VoxelGrid3D
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+    from PySide6.QtGui import QCloseEvent
+
+    from molara.structure.molecule import Molecule
 
 
 class Surface3DDialog(QDialog):
@@ -27,8 +28,8 @@ class Surface3DDialog(QDialog):
         self.molecule: None | Molecule = None
         self.voxel_grid: VoxelGrid3D = VoxelGrid3D()
         self.iso_value = 0.0
-        self.vertices_1: np.ndarray = np.array([])
-        self.vertices_2: np.ndarray = np.array([])
+        self.vertices_1: NDArray = np.array([])
+        self.vertices_2: NDArray = np.array([])
         self.surfaces_are_visible = False
         self.surface_toggle_button: QPushButton = QPushButton()
         self.surface_text = "surface"
@@ -83,11 +84,11 @@ class Surface3DDialog(QDialog):
         """Set the iso value."""
         self.iso_value = iso_value
 
-    def set_color_surface_1(self, color: np.ndarray) -> None:
+    def set_color_surface_1(self, color: NDArray) -> None:
         """Set the color of the first surface."""
         self.color_surface_1 = color
 
-    def set_color_surface_2(self, color: np.ndarray) -> None:
+    def set_color_surface_2(self, color: NDArray) -> None:
         """Set the color of the second surface."""
         self.color_surface_2 = color
 
