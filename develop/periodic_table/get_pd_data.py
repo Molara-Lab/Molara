@@ -35,10 +35,10 @@ def fetch_license() -> str:
 
 if __name__ == "__main__":
     pt_data = fetch_periodic_table()
-    with (file_path / "periodic_table.json").open(mode="w") as file:
+    with (file_path / "periodic_table.json").open(mode="w", encoding="utf-8") as file:
         json.dump(pt_data, file)
 
     license_text = fetch_license()
-    with (file_path / "periodic_table_copyright").open(mode="w") as file:
+    with (file_path / "periodic_table_copyright").open(mode="w", encoding="utf-8") as file:
         file.write("Periodic Table data from pymatgen.\nThe data is licensed under the following terms:\n\n")
         file.write(license_text)
