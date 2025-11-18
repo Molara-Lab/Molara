@@ -1,6 +1,7 @@
 """Contains the Cones class."""
 
 import numpy as np
+from numpy.typing import NDArray
 
 from molara.rendering.object3d import Object3D
 
@@ -11,10 +12,10 @@ class Cones(Object3D):
     def __init__(
         self,
         subdivisions: int,
-        positions: np.ndarray,
-        directions: np.ndarray,
-        dimensions: np.ndarray,
-        colors: np.ndarray,
+        positions: NDArray,
+        directions: NDArray,
+        dimensions: NDArray,
+        colors: NDArray,
     ) -> None:
         """Create cones object to be drawn."""
         self.subdivisions = subdivisions
@@ -36,7 +37,7 @@ class Cones(Object3D):
 
 def generate_cone(
     subdivisions: int,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[NDArray, NDArray]:
     """Calculate the vertices and indices of a cone for a given number of subdivisions.
 
     :param subdivisions: Number of subdivisions of the cone.
