@@ -273,7 +273,7 @@ class WorkaroundTestMainWindow:
 
         assert Path("~/.molara/settings/structure").expanduser().exists()
         assert Path("~/.molara/settings/structure/Default.json").expanduser().exists()
-        with Path("~/.molara/settings/structure/Default.json").expanduser().open() as file:
+        with Path("~/.molara/settings/structure/Default.json").expanduser().open("r", encoding="utf-8") as file:
             assert file.read() == (
                 '{"stick_mode": false, "bonds": true, "ball_size": 1.0, "stick_size": 1.0, '
                 '"atom_numbers": false, "atom_numbers_size": 1.0, "color_scheme": "CPK"}'
