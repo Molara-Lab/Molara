@@ -1,6 +1,7 @@
 """Contain an abstract class for objects to inherit."""
 
 import numpy as np
+from numpy.typing import NDArray
 
 from molara.rendering.buffers import Buffers, setup_texture_buffer, setup_vao
 from molara.rendering.matrices import (
@@ -29,25 +30,25 @@ class Object3D:
         self.scaling_matrices = np.array([])
         self.model_matrices = np.array([])
 
-        self.indices: np.ndarray | None = np.array([])
+        self.indices: NDArray | None = np.array([])
         self.vertices = np.array([])
         self.texture = False
 
-    def calculate_translation_matrices(self, positions: np.ndarray) -> None:
+    def calculate_translation_matrices(self, positions: NDArray) -> None:
         """Calculate the translation matrices for the cylinders.
 
         :param positions: Positions the object should be translated to.
         """
         self.translation_matrices = calculate_translation_matrices(positions)
 
-    def calculate_scaling_matrices(self, dimensions: np.ndarray) -> None:
+    def calculate_scaling_matrices(self, dimensions: NDArray) -> None:
         """Calculate the translation matrices for the cylinders.
 
         :param dimensions: Dimensions (in x, y, and z) the object should be scaled to.
         """
         self.scaling_matrices = calculate_scale_matrices(dimensions)
 
-    def calculate_rotation_matrices(self, directions: np.ndarray) -> None:
+    def calculate_rotation_matrices(self, directions: NDArray) -> None:
         """Calculate the rotation matrices for the cylinders.
 
         :param directions: Direction the object should be rotated to (original direction must be y axis).

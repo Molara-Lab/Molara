@@ -60,6 +60,7 @@ from molara.rendering.spheres import Spheres
 
 if TYPE_CHECKING:
     from numpy import floating
+    from numpy.typing import NDArray
     from PIL import Image
 
     from molara.gui.structure_widget import StructureWidget
@@ -221,16 +222,16 @@ class Renderer:
     def draw_billboards(
         self,
         name: str,
-        positions: np.ndarray,
-        normals: np.ndarray,
-        sizes: np.ndarray,
+        positions: NDArray,
+        normals: NDArray,
+        sizes: NDArray,
         texture: Image.Image,
     ) -> None:
         """Draw one or multiple billboards with the same textures.
 
         If only one billboard is drawn, the positions, normals, and sizes are given
-        as np.ndarray containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple
-        billboards are drawn, the positions, normals, and sizes are given as np.ndarray containing multiple arrays, for
+        as NDArray containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple
+        billboards are drawn, the positions, normals, and sizes are given as NDArray containing multiple arrays, for
         instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
 
         :param name: Name of the billboards that were created, this is used to remove the billboards again.
@@ -246,8 +247,8 @@ class Renderer:
     def draw_polygon(
         self,
         name: str,
-        vertices: np.ndarray,
-        color: np.ndarray,
+        vertices: NDArray,
+        color: NDArray,
     ) -> None:
         """Draws one polygon.
 
@@ -261,17 +262,17 @@ class Renderer:
     def draw_cylinders(  # noqa: PLR0913
         self,
         name: str,
-        positions: np.ndarray,
-        directions: np.ndarray,
-        dimensions: np.ndarray,
-        colors: np.ndarray,
+        positions: NDArray,
+        directions: NDArray,
+        dimensions: NDArray,
+        colors: NDArray,
         subdivisions: int,
     ) -> None:
         """Draws one or multiple cylinders.
 
-        If only one cylinder is drawn, the positions, directions, radii, lengths and colors are given as np.ndarray
+        If only one cylinder is drawn, the positions, directions, radii, lengths and colors are given as NDArray
         containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple cylinders are drawn,
-        the positions, directions, radii, lengths and colors are given as np.ndarray containing multiple arrays, for
+        the positions, directions, radii, lengths and colors are given as NDArray containing multiple arrays, for
         instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
 
         :param name: Name of the cylinders that were created, this is used to remove the cylinders again.
@@ -289,17 +290,17 @@ class Renderer:
     def draw_cones(  # noqa: PLR0913
         self,
         name: str,
-        positions: np.ndarray,
-        directions: np.ndarray,
-        dimensions: np.ndarray,
-        colors: np.ndarray,
+        positions: NDArray,
+        directions: NDArray,
+        dimensions: NDArray,
+        colors: NDArray,
         subdivisions: int,
     ) -> None:
         """Draws one or multiple cones.
 
-        If only one cone is drawn, the positions, directions, radii, lengths and colors are given as np.ndarray
+        If only one cone is drawn, the positions, directions, radii, lengths and colors are given as NDArray
         containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple cones are drawn,
-        the positions, directions, radii, lengths and colors are given as np.ndarray containing multiple arrays, for
+        the positions, directions, radii, lengths and colors are given as NDArray containing multiple arrays, for
         instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
 
         :param name: Name of the cones that were created, this is used to remove the cones again.
@@ -317,17 +318,17 @@ class Renderer:
     def draw_arrows(  # noqa: PLR0913
         self,
         name: str,
-        positions: np.ndarray,
-        colors: np.ndarray,
+        positions: NDArray,
+        colors: NDArray,
         subdivisions: int,
         arrow_ratio: float = 0.1,
         radius: float = 0.01,
     ) -> None:
         """Draws one or multiple arrows.
 
-        If only one arrow is drawn, the positions, directions, radii, lengths and colors are given as np.ndarray
+        If only one arrow is drawn, the positions, directions, radii, lengths and colors are given as NDArray
         containing only one array, for instance: positions = np.array([[0, 0, 0, 1, 0, 0]]). If multiple arrows are
-        drawnthe positions, directions, radii, lengths and colors are given as np.ndarray containing multiple arrays,
+        drawnthe positions, directions, radii, lengths and colors are given as NDArray containing multiple arrays,
         for instance: positions = np.array([[0, 0, 0, 1, 0, 0], [1, 1, 1, 1, 0, 0]]).
         :param name: Name of the arrows that were created, this is used to remove the arrows again.
         :param positions: Positions [[start, end], [start, end], ...] of the arrows.
@@ -381,9 +382,9 @@ class Renderer:
     def draw_cones_from_to(
         self,
         name: str,
-        positions: np.ndarray,
-        radii: np.ndarray,
-        colors: np.ndarray,
+        positions: NDArray,
+        radii: NDArray,
+        colors: NDArray,
         subdivisions: int,
     ) -> None:
         """Draws one or multiple cones.
@@ -418,9 +419,9 @@ class Renderer:
     def draw_cylinders_from_to(
         self,
         name: str,
-        positions: np.ndarray,
-        radii: np.ndarray,
-        colors: np.ndarray,
+        positions: NDArray,
+        radii: NDArray,
+        colors: NDArray,
         subdivisions: int,
     ) -> None:
         """Draws one or multiple cylinders.
@@ -456,17 +457,17 @@ class Renderer:
     def draw_spheres(  # noqa: PLR0913
         self,
         name: str,
-        positions: np.ndarray,
-        radii: np.ndarray,
-        colors: np.ndarray,
+        positions: NDArray,
+        radii: NDArray,
+        colors: NDArray,
         subdivisions: int,
         wire_frame: bool = False,
     ) -> None:
         """Draws one or multiple spheres.
 
         If only one sphere is drawn, the positions, radii and colors are given
-        as np.ndarray containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple
-        spheres are drawn, the positions, radii and colors are given as np.ndarray containing multiple arrays, for
+        as NDArray containing only one array, for instance: positions = np.array([[0, 0, 0]]). If multiple
+        spheres are drawn, the positions, radii and colors are given as NDArray containing multiple arrays, for
         instance: positions = np.array([[0, 0, 0], [1, 1, 1]]).
 
         :param name: Name of the spheres that were created, this is used to remove the spheres again.
