@@ -86,7 +86,7 @@ strict = [
     "numpy==2.2.6",
     "pyrr==0.10.3",
     "scipy==1.15.3",
-    "cython==3.2.2",
+    "cython==3.2.3",
 ]
 compchem = [
     "cclib>=1.7",
