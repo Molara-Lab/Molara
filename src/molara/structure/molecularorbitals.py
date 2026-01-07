@@ -10,6 +10,8 @@ from molara.eval.mos import calculate_mo_cartesian
 from molara.util.constants import ANGSTROM_TO_BOHR
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.basisset import BasisFunction
 
 __copyright__ = "Copyright 2024, Molara"
@@ -59,16 +61,16 @@ class MolecularOrbitals:
             self.basis_functions = []
         self.basis_type = basis_type
 
-        self.coefficients: np.ndarray = np.array([])
-        self.coefficients_spherical: np.ndarray = np.array([])
-        self.coefficients_display: np.ndarray = np.array([])
-        self.cut_off_distances_shells: np.ndarray = np.array([])
+        self.coefficients: NDArray = np.array([])
+        self.coefficients_spherical: NDArray = np.array([])
+        self.coefficients_display: NDArray = np.array([])
+        self.cut_off_distances_shells: NDArray = np.array([])
 
         # Construct transformation matrices for spherical to cartesian transformation
-        self.t_sc_d: np.ndarray = np.array([])
-        self.t_sc_f: np.ndarray = np.array([])
-        self.t_sc_g: np.ndarray = np.array([])
-        self.transformation_matrix_spherical_cartesian: np.ndarray = np.array([])
+        self.t_sc_d: NDArray = np.array([])
+        self.t_sc_f: NDArray = np.array([])
+        self.t_sc_g: NDArray = np.array([])
+        self.transformation_matrix_spherical_cartesian: NDArray = np.array([])
         self.construct_transformation_matrices()
 
     def calculate_cut_offs(
@@ -78,7 +80,7 @@ class MolecularOrbitals:
         threshold: float = 0.001,
         max_distance: float = 40.0,
         max_points_number: int = 200,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Calculate the cut-offs for the molecular orbitals.
 
         A cutoff distance is calculated for each basis function of the molecular orbital. The cutoff distance is the
@@ -153,12 +155,12 @@ class MolecularOrbitals:
 
     def set_mo_coefficients(
         self,
-        mo_coefficients: np.ndarray,
+        mo_coefficients: NDArray,
         spherical_order: str = "none",
     ) -> None:
         """Set the coefficients for the molecular orbitals and transform to cartesian ones.
 
-        :param mo_coefficients: np.ndarray: coefficients for the mos (MOs should be represented as the columns)
+        :param mo_coefficients: NDArray: coefficients for the mos (MOs should be represented as the columns)
         :param spherical_order: string: spherical order of the coefficients, only molden supported. if none is given the
         coefficients are assumed to be in cartesian order
         """
@@ -179,7 +181,7 @@ class MolecularOrbitals:
         self,
         index: int,
         aos: list[BasisFunction],
-        electron_position: np.ndarray,
+        electron_position: NDArray,
     ) -> float:
         """Calculate the value of one mo for a given electron position. Cartesian only!.
 
@@ -498,12 +500,12 @@ class MolecularOrbitals:
 
     def spherical_to_cartesian_transformation(
         self,
-        mo_coefficients: np.ndarray,
-    ) -> np.ndarray:
+        mo_coefficients: NDArray,
+    ) -> NDArray:
         """Transform spherical coefficients to cartesian coefficients.
 
-        :param mo_coefficients: np.ndarray: coefficients for the mos
-        :return: np.ndarray: cartesian coefficients
+        :param mo_coefficients: NDArray: coefficients for the mos
+        :return: NDArray: cartesian coefficients
         """
         # Only works if the number of MOS is correct, i.e. not for truncated molden files...
         number_of_spherical_basis_functions_mos, number_of_mos = mo_coefficients.shape
