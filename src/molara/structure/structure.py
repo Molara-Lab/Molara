@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 from scipy import spatial
 
 from molara.structure.atom import Atom
 from molara.structure.drawer import Drawer
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -18,14 +23,14 @@ class Structure:
 
     def __init__(
         self: Structure,
-        atomic_numbers: np.ndarray,
-        coordinates: np.ndarray,
+        atomic_numbers: NDArray,
+        coordinates: NDArray,
         draw_bonds: bool = True,
     ) -> None:
         """Create a new Structure object.
 
-        :param atomic_numbers: np.ndarray: atomic numbers of a atoms
-        :param coordinates: np.ndarray: coordinates of the atoms
+        :param atomic_numbers: NDArray: atomic numbers of a atoms
+        :param coordinates: NDArray: coordinates of the atoms
         :param header:str: header from the imported file
         """
         self.atomic_numbers = np.array(atomic_numbers)
@@ -64,7 +69,7 @@ class Structure:
             draw_bonds=self.draw_bonds,
         )
 
-    def compute_collision(self: Structure, coordinate: np.ndarray) -> int | None:
+    def compute_collision(self: Structure, coordinate: NDArray) -> int | None:
         """Compute if the given coordinate is equal to the coordinate of an existing atom.
 
         Return None if no atom collides.
@@ -78,7 +83,7 @@ class Structure:
                 return i
         return None
 
-    def calculate_center_of_mass(self: Structure) -> np.ndarray:
+    def calculate_center_of_mass(self: Structure) -> NDArray:
         """Return the center of mass of the structure."""
         return np.average(
             [atom.position for atom in self.atoms],
@@ -102,7 +107,7 @@ class Structure:
         self.center_of_mass = self.calculate_center_of_mass()
         self.geometric_center = np.mean(self.coords, axis=0)
 
-    def calculate_bonds(self: Structure) -> np.ndarray:
+    def calculate_bonds(self: Structure) -> NDArray:
         """Calculate the bonded pairs of atoms."""
         same_position_threshold = 1e-3
         bonded_pairs = []
@@ -146,7 +151,7 @@ class Structure:
     def add_atom(
         self: Structure,
         atomic_number: int,
-        coordinate: np.ndarray,
+        coordinate: NDArray,
     ) -> None:
         """Add an atom to the structure.
 
