@@ -137,7 +137,7 @@ class Camera:
         self.position = pyrr.Vector3(position, dtype=np.float32)
         self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
-        self.distance_from_target = distance_from_target if distance_from_target else self.distance_from_target
+        self.distance_from_target = distance_from_target or self.distance_from_target
         self.projection_matrix = None
         self.calculate_projection_matrix()
 
