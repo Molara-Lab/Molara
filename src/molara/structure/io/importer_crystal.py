@@ -104,7 +104,7 @@ class PoscarImporter(Importer):
             try:
                 crystal = PymatgenImporter(self.path).load().get_current_mol()
             except ImportError:
-                warnings.warn("pymatgen is not installed, using internal parser", stacklevel=2)
+                warnings.warn("pymatgen is not installed, using internal parser", UserWarning, stacklevel=2)
                 crystal = self.parse_poscar()
 
         else:
