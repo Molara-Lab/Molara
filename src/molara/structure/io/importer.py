@@ -28,9 +28,8 @@ if TYPE_CHECKING:
     from os import PathLike
     from typing import Any
 
-    from numpy.typing import NDArray
-
     from molara.molecule.crystals import Crystals
+    from numpy.typing import NDArray
 
     try:
         from cclib.data import ccData
