@@ -17,6 +17,8 @@ from molara.gui.layouts.ui_structure_customizer import Ui_structure_customizer
 from molara.rendering.atom_labels import init_atom_number
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.crystal import Crystal
     from molara.structure.molecule import Molecule
     from molara.structure.structure import Structure
@@ -47,7 +49,7 @@ class StructureCustomizerDialog(QDialog):
         self.bonds = True
         self.numbers = False
         self.max_atoms_for_numbers = 999
-        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1), np.zeros(1))
+        self.atom_indices_arrays: tuple[NDArray, NDArray, NDArray] = (np.zeros(1), np.zeros(1), np.zeros(1))
 
         self.ui.ballSizeSpinBox.setValue(1.0)
         self.ui.stickSizeSpinBox.setValue(1.0)

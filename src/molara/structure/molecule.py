@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from molara.eval.voxel_grid import VoxelGrid3D
 from molara.structure.molecularorbitals import MolecularOrbitals
 from molara.structure.structure import Structure
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -16,16 +21,16 @@ class Molecule(Structure):
 
     def __init__(
         self,
-        atomic_numbers: np.ndarray,
-        coordinates: np.ndarray,
+        atomic_numbers: NDArray,
+        coordinates: NDArray,
         header: str | None = None,
         dummy: bool = False,
         draw_bonds: bool = True,
     ) -> None:
         """Create a new Molecule object.
 
-        :param atomic_numbers:np.ndarray: atomic numbers of the atoms
-        :param coordinates:np.ndarray: coordinates of the molecule
+        :param atomic_numbers:NDArray: atomic numbers of the atoms
+        :param coordinates:NDArray: coordinates of the molecule
         :param header:str: header from the imported file
         :param dummy: bool: a dummy object.
         :param draw_bonds: bool: draw bonds between atoms (Default is True)

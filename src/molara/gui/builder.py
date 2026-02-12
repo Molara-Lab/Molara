@@ -17,6 +17,7 @@ from molara.structure.molecules import Molecules
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from numpy.typing import NDArray
     from PySide6.QtWidgets import QMainWindow
     from typing_extensions import ParamSpec
 
@@ -181,7 +182,7 @@ class BuilderDialog(QDialog):
         self.structure_widget.set_structure([mol])
         self._update_z_matrix(mol.n_at)
 
-    def _orth(self, vec: np.ndarray, unitvec: np.ndarray) -> np.ndarray:
+    def _orth(self, vec: NDArray, unitvec: NDArray) -> NDArray:
         """Calculate a vector that is orthogonal to the two given vectors.
 
         :param vec: vector to orthogonalize
@@ -237,7 +238,7 @@ class BuilderDialog(QDialog):
         mol.toggle_bonds() if count_atoms == 1 else None
         mol.add_atom(atomic_num, np.squeeze(pos))
 
-    def calc_position_new_atom(self, count_atoms: int, params: tuple, atom_ids: list) -> np.ndarray:
+    def calc_position_new_atom(self, count_atoms: int, params: tuple, atom_ids: list) -> NDArray:
         """Calculate the position of the new atom to be added.
 
         :param count_atoms: number of atoms that have been added so far
