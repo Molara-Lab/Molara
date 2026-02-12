@@ -12,7 +12,7 @@ from molara.structure.atom import atomic_number_to_symbol, elements
 from .structure import Structure
 
 if TYPE_CHECKING:
-    from numpy.typing import ArrayLike
+    from numpy.typing import ArrayLike, NDArray
 
     try:
         from pymatgen.core import Structure as Pmgstructure
@@ -141,7 +141,7 @@ class Crystal(Structure):
     def fractional_to_cartesian_coords(
         fractional_coords: ArrayLike,
         basis_vectors: ArrayLike,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Transform fractional coordinates (coordinates in terms of basis vectors) to cartesian coordinates.
 
         :param fractional_coords: fractional coordinates of the atoms
@@ -149,7 +149,7 @@ class Crystal(Structure):
         """
         return np.dot(fractional_coords, basis_vectors)
 
-    def edge_atom_coords(self) -> tuple[np.ndarray, np.ndarray]:
+    def edge_atom_coords(self) -> tuple[NDArray, NDArray]:
         """Return the coordinates of the edge atoms in the supercell."""
         _fractional_coords_np = np.array(self.fractional_coords_supercell)
         if len(_fractional_coords_np.shape) != 2:  # noqa: PLR2004
@@ -252,7 +252,7 @@ class Crystal(Structure):
         return extra_atomic_nums, extra_fractional_coords
 
     @property
-    def unitcell_boundaries_positions(self) -> np.ndarray:
+    def unitcell_boundaries_positions(self) -> NDArray:
         """Return the positions of the unit cell box."""
         basis_vectors_matrix = np.array(self.basis_vectors)
         zero_vec = np.array([0, 0, 0])

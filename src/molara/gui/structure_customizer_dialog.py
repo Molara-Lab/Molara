@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import shutil
-from os import listdir
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -18,6 +17,8 @@ from molara.gui.layouts.ui_structure_customizer import Ui_structure_customizer
 from molara.rendering.atom_labels import init_atom_number
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.crystal import Crystal
     from molara.structure.molecule import Molecule
     from molara.structure.structure import Structure
@@ -48,7 +49,7 @@ class StructureCustomizerDialog(QDialog):
         self.bonds = True
         self.numbers = False
         self.max_atoms_for_numbers = 999
-        self.atom_indices_arrays: tuple[np.ndarray, np.ndarray, np.ndarray] = (np.zeros(1), np.zeros(1), np.zeros(1))
+        self.atom_indices_arrays: tuple[NDArray, NDArray, NDArray] = (np.zeros(1), np.zeros(1), np.zeros(1))
 
         self.ui.ballSizeSpinBox.setValue(1.0)
         self.ui.stickSizeSpinBox.setValue(1.0)
@@ -85,11 +86,7 @@ class StructureCustomizerDialog(QDialog):
                 f"{self.src_path}/settings/structure/Default.json",
                 f"{self.home_path}/settings/structure/Default.json",
             )
-        save_files = [
-            f
-            for f in listdir(f"{self.home_path}/settings/structure")
-            if Path.is_file(self.home_path / "settings" / "structure" / f)
-        ]
+        save_files = [f.name for f in (self.home_path / "settings" / "structure").iterdir() if f.is_file()]
         self.save_names = [f.split(".")[0] for f in save_files]
         self.save_names.sort()
         self.ui.loadSelect.clear()

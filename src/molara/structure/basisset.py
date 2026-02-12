@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -48,7 +53,7 @@ class BasisSet:
         shells: list,
         exponents: list,
         coefficients: list,
-        position: np.ndarray,
+        position: NDArray,
         normalization_mode: str = "none",
     ) -> None:
         """Generate the basis functions for the basis set and normalizes the primitive functions if needed.
@@ -114,7 +119,7 @@ class BasisSet:
             ],
         ]
         for shell in shells:
-            ijks: list[list] | np.ndarray = generate_ijks(shell)
+            ijks: list[list] | NDArray = generate_ijks(shell)
             coefficients[i] = np.array(coefficients[i])
             exponents[i] = np.array(exponents[i])
             ijks = np.array(ijks, dtype=int)
@@ -182,10 +187,10 @@ class BasisFunction:
 
     def __init__(
         self,
-        ijk: np.ndarray,
-        exponents: np.ndarray,
-        coefficients: np.ndarray,
-        position: np.ndarray,
+        ijk: NDArray,
+        exponents: NDArray,
+        coefficients: NDArray,
+        position: NDArray,
         normalization_mode: str,
     ) -> None:
         """Initialize the BasisFunction class.
@@ -263,11 +268,11 @@ def hermite_coefs(  # noqa: PLR0913
 
 def primitive_overlap(  # noqa: PLR0913
     a: float,
-    lmn1: np.ndarray,
-    a_xyz: np.ndarray,
+    lmn1: NDArray,
+    a_xyz: NDArray,
     b: float,
-    lmn2: np.ndarray,
-    b_xyz: np.ndarray,
+    lmn2: NDArray,
+    b_xyz: NDArray,
 ) -> float:
     """Evaluate overlap integral between two Gaussians.
 
@@ -292,8 +297,8 @@ def primitive_overlap(  # noqa: PLR0913
 def contracted_overlap(
     a: BasisFunction,
     b: BasisFunction,
-    a_xyz: np.ndarray,
-    b_xyz: np.ndarray,
+    a_xyz: NDArray,
+    b_xyz: NDArray,
 ) -> float:
     """Evaluate overlap between two contracted Gaussians.
 
@@ -325,9 +330,9 @@ def contracted_overlap(
 
 
 def calculate_normalization_primitive_gtos(
-    ijk: np.ndarray,
-    exponents: np.ndarray,
-) -> np.ndarray:
+    ijk: NDArray,
+    exponents: NDArray,
+) -> NDArray:
     """Normalize the primitive gaussians.
 
     :param ijk: list of ijk values
@@ -354,10 +359,10 @@ def calculate_normalization_primitive_gtos(
 
 
 def calculate_normalization_contracted_gtos(
-    ijk: np.ndarray,
-    exponents: np.ndarray,
-    coefficients: np.ndarray,
-    norms: np.ndarray,
+    ijk: NDArray,
+    exponents: NDArray,
+    coefficients: NDArray,
+    norms: NDArray,
 ) -> float:
     """Normalize the contracted gaussians.
 

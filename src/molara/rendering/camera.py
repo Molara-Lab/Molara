@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-import numpy.typing as npt
 import pyrr
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike, NDArray
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -32,7 +34,7 @@ class Camera:
         self.right_vector = pyrr.Vector3([0.0, 0.0, -1.0], dtype=np.float32)
         self.distance_from_target = 5.0
         self.zoom_sensitivity = 0.15
-        self.projection_matrix: npt.ArrayLike | None = None
+        self.projection_matrix: ArrayLike | None = None
         self.orthographic_projection = False  # specify whether orthographic projection shall be used
         self.calculate_projection_matrix()
 
@@ -137,7 +139,7 @@ class Camera:
         self.position = pyrr.Vector3(position, dtype=np.float32)
         self.up_vector = pyrr.Vector3(up_vector, dtype=np.float32)
         self.right_vector = pyrr.Vector3(right_vector, dtype=np.float32)
-        self.distance_from_target = distance_from_target if distance_from_target else self.distance_from_target
+        self.distance_from_target = distance_from_target or self.distance_from_target
         self.projection_matrix = None
         self.calculate_projection_matrix()
 
@@ -240,8 +242,8 @@ class Camera:
 
     def set_translation_vector(
         self,
-        old_mouse_position: np.ndarray,
-        mouse_position: np.ndarray,
+        old_mouse_position: NDArray,
+        mouse_position: NDArray,
     ) -> None:
         """Calculate the translation matrix using the normalized mouse positions.
 
@@ -254,8 +256,8 @@ class Camera:
 
     def set_rotation_quaternion(
         self,
-        old_mouse_position: np.ndarray,
-        new_mouse_position: np.ndarray,
+        old_mouse_position: NDArray,
+        new_mouse_position: NDArray,
     ) -> None:
         """Calculate the rotation quaternion using the normalized mouse positions.
 
@@ -263,7 +265,7 @@ class Camera:
         :param new_mouse_position: New normalized x and y coordinate of the mouse position on the opengl widget.
         """
 
-        def calculate_arcball_point(x: float, y: float) -> np.ndarray:
+        def calculate_arcball_point(x: float, y: float) -> NDArray:
             """Calculate the x, y, and z on the surface of an invisible sphere.
 
             :param x: Normalized x coordinate.

@@ -7,11 +7,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.rendering.camera import Camera
     from molara.structure.structure import Structure
 
 
-def init_atom_number(structure: Structure) -> tuple[np.ndarray, np.ndarray]:
+def init_atom_number(structure: Structure) -> tuple[NDArray, NDArray]:
     """Initialize the labels for numbering atoms.
 
     :param structure: Structure object
@@ -26,8 +28,8 @@ def init_atom_number(structure: Structure) -> tuple[np.ndarray, np.ndarray]:
 
 
 def calculate_atom_number_arrays(
-    digits: np.ndarray,
-    positions_3d: np.ndarray,
+    digits: NDArray,
+    positions_3d: NDArray,
     structure: Structure,
     camera: Camera,
 ) -> None:

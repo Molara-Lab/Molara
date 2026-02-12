@@ -13,6 +13,8 @@ from molara.rendering.spheres import (
 from molara.tools.mathtools import norm
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from molara.structure.atom import Atom
 
 __copyright__ = "Copyright 2024, Molara"
@@ -24,7 +26,7 @@ NO_BONDS = np.array([[-1, -1]], dtype=np.int_)
 class Drawer:
     """Creates a Drawer object."""
 
-    def __init__(self, atoms: list[Atom], bonds: np.ndarray, draw_bonds: bool) -> None:
+    def __init__(self, atoms: list[Atom], bonds: NDArray, draw_bonds: bool) -> None:
         """Create a Drawer object.
 
         :param atoms: list of atoms to be drawn
@@ -46,15 +48,15 @@ class Drawer:
         self.spheres: Spheres | None = None
         self.cylinders: Cylinders | None = None
 
-        self.sphere_positions: list | np.ndarray = []
-        self.sphere_colors: list | np.ndarray = []
-        self.sphere_radii: list | np.ndarray = []
+        self.sphere_positions: list | NDArray = []
+        self.sphere_colors: list | NDArray = []
+        self.sphere_radii: list | NDArray = []
         self.set_spheres()
 
-        self.cylinder_colors: list | np.ndarray = []
-        self.cylinder_positions: list | np.ndarray = []
-        self.cylinder_directions: list | np.ndarray = []
-        self.cylinder_dimensions: list | np.ndarray = []
+        self.cylinder_colors: list | NDArray = []
+        self.cylinder_positions: list | NDArray = []
+        self.cylinder_directions: list | NDArray = []
+        self.cylinder_dimensions: list | NDArray = []
 
         self.bonds = NO_BONDS
         self.draw_bonds = draw_bonds
@@ -100,7 +102,7 @@ class Drawer:
             wire_frame=False,
         )
 
-    def update_bonds(self, bonds: np.ndarray | None = None, draw_bonds: bool = True) -> None:
+    def update_bonds(self, bonds: NDArray | None = None, draw_bonds: bool = True) -> None:
         """Update the bonds and/or bond matrices of the drawer."""
         self.draw_bonds = draw_bonds
 

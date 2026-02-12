@@ -5,7 +5,6 @@ from __future__ import annotations
 import ctypes
 from typing import TYPE_CHECKING
 
-import numpy as np
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
     GL_DYNAMIC_DRAW,
@@ -38,7 +37,7 @@ from OpenGL.GL import (
 from PIL import Image
 
 if TYPE_CHECKING:
-    import numpy as np
+    from numpy.typing import NDArray
 
 
 __copyright__ = "Copyright 2024, Molara"
@@ -79,11 +78,11 @@ class Buffers:
 
 
 def setup_vao(  # noqa: PLR0913
-    vertices: np.ndarray,
-    indices: np.ndarray | None,
+    vertices: NDArray,
+    indices: NDArray | None,
     num_instances: int,
-    model_matrices: np.ndarray,
-    colors: None | np.ndarray,
+    model_matrices: NDArray,
+    colors: None | NDArray,
     texture: bool = False,
 ) -> tuple[int, list[int]]:
     """Set up a vertex attribute object and binds it to the GPU.

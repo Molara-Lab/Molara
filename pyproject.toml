@@ -51,6 +51,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Visualization",
@@ -82,11 +83,11 @@ dev = [
     "molara[doc]",
 ]
 strict = [
-    "PySide6==6.8.2",
-    "numpy==2.2.2",
+    "PySide6==6.10.1",
+    "numpy==2.2.6",
     "pyrr==0.10.3",
-    "scipy==1.15.1",
-    "cython==3.0.11",
+    "scipy==1.15.3",
+    "cython==3.2.4",
 ]
 compchem = [
     "cclib>=1.7",

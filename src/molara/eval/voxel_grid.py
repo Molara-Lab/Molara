@@ -11,16 +11,17 @@ Example Usage:
 """
 
 import numpy as np
+from numpy.typing import NDArray
 
 
 class VoxelGrid:
     """Class for voxel grid storage and manipulation.
 
     Attributes:
-        grid (np.ndarray): The 3D array containing voxel data values
-        origin (np.ndarray): The coordinates of the grid's origin point
-        voxel_size (np.ndarray): The dimensions of each voxel
-        voxel_number (np.ndarray): The number of voxels along each axis
+        grid (NDArray): The 3D array containing voxel data values
+        origin (NDArray): The coordinates of the grid's origin point
+        voxel_size (NDArray): The dimensions of each voxel
+        voxel_number (NDArray): The number of voxels along each axis
         is_initialized (bool): Flag indicating if the grid has been properly set up
 
     """
@@ -40,7 +41,7 @@ class VoxelGrid:
         self.voxel_number = np.array([])
         self.is_initialized = False
 
-    def set_grid(self, grid: np.ndarray, origin: np.ndarray, voxel_size: np.ndarray) -> None:
+    def set_grid(self, grid: NDArray, origin: NDArray, voxel_size: NDArray) -> None:
         """Set the grid, origin, and voxel size.
 
         :param grid: 3D array representing the voxel grid
@@ -58,15 +59,15 @@ class VoxelGrid3D(VoxelGrid):
     """Class for voxel grid storage and manipulation.
 
     Attributes:
-        grid (np.ndarray): The 3D array containing voxel data values
-        origin (np.ndarray): The coordinates of the grid's origin point
-        voxel_size (np.ndarray): The dimensions of each voxel
-        voxel_number (np.ndarray): The number of voxels along each axis
+        grid (NDArray): The 3D array containing voxel data values
+        origin (NDArray): The coordinates of the grid's origin point
+        voxel_size (NDArray): The dimensions of each voxel
+        voxel_number (NDArray): The number of voxels along each axis
         is_initialized (bool): Flag indicating if the grid has been properly set up
 
     """
 
-    def set_grid(self, grid: np.ndarray, origin: np.ndarray, voxel_size: np.ndarray) -> None:
+    def set_grid(self, grid: NDArray, origin: NDArray, voxel_size: NDArray) -> None:
         """Set the grid, origin, and voxel size.
 
         :param grid: 3D array representing the voxel grid (i_voxel_number, j_voxel_number, k_voxel_number)
@@ -93,15 +94,15 @@ class VoxelGrid2D(VoxelGrid):
     """Class for voxel grid storage and manipulation.
 
     Attributes:
-        grid (np.ndarray): The 2D array containing voxel data values
-        origin (np.ndarray): The coordinates of the grid's origin point
-        voxel_size (np.ndarray): The dimensions of each voxel
-        voxel_number (np.ndarray): The number of voxels along each axis
+        grid (NDArray): The 2D array containing voxel data values
+        origin (NDArray): The coordinates of the grid's origin point
+        voxel_size (NDArray): The dimensions of each voxel
+        voxel_number (NDArray): The number of voxels along each axis
         is_initialized (bool): Flag indicating if the grid has been properly set up
 
     """
 
-    def set_grid(self, grid: np.ndarray, origin: np.ndarray, voxel_size: np.ndarray) -> None:
+    def set_grid(self, grid: NDArray, origin: NDArray, voxel_size: NDArray) -> None:
         """Set the grid, origin, and voxel size.
 
         :param grid: 2D array representing the voxel grid (i_voxel_number, j_voxel_number)
