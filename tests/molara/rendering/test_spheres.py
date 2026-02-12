@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from molara.gui.main_window import MainWindow
 
 import numpy as np
-
 from molara.rendering.spheres import Spheres
 
 

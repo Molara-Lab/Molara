@@ -10,9 +10,8 @@ if TYPE_CHECKING:
     from molara.gui.main_window import MainWindow
 
 import numpy as np
-from PIL import Image
-
 from molara.rendering.billboards import Billboards
+from PIL import Image
 
 
 class WorkaroundTestBillboards:
