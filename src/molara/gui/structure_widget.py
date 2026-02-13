@@ -171,6 +171,8 @@ class StructureWidget(QOpenGLWidget):
 
     def initializeGL(self) -> None:  # noqa: N802
         """Initialize the widget."""
+        if self.renderer._shaders_ready:
+            return
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
@@ -196,6 +198,14 @@ class StructureWidget(QOpenGLWidget):
             return
         self.renderer.default_framebuffer = self.defaultFramebufferObject()
         self.makeCurrent()
+        if not self.renderer._shaders_ready:
+            glClearColor(1, 1, 1, 1.0)
+            glEnable(GL_DEPTH_TEST)
+            glEnable(GL_MULTISAMPLE)
+            self.renderer.set_shaders()
+            self.renderer.device_pixel_ratio = self.devicePixelRatio()
+            self.renderer.create_framebuffers(self.width(), self.height())
+            self.renderer.create_screen_vao()
         self.renderer.draw_scene()
 
     def update_molecule_spheres_cylinders(self) -> None:
