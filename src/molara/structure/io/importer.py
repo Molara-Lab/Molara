@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import locale
 import re
 from abc import ABC, abstractmethod
 from fnmatch import fnmatch
@@ -112,7 +111,7 @@ class CoordImporter(MoleculesImporter):
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
+        with self.path.open(encoding="utf-8") as file:
             lines = file.readlines()  # To skip first row
 
         atomic_numbers = []
@@ -150,7 +149,7 @@ class MoldenImporter(MoleculesImporter):
         spherical_order = "none"
         normalization_mode = "none"
 
-        with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
+        with self.path.open(encoding="utf-8") as file:
             lines = file.readlines()
 
         while i < len(lines):
@@ -379,7 +378,7 @@ class CubeImporter(MoleculesImporter):
         """Read the file in self.path and creates a Molecules object."""
         molecules = Molecules()
 
-        with self.path.open(encoding=locale.getpreferredencoding(do_setlocale=False)) as file:
+        with self.path.open(encoding="utf-8") as file:
             lines = file.readlines()
 
         # Get number of atoms and position of the origin
