@@ -158,7 +158,7 @@ class TestCamera(TestCase):
         camera.export_settings(filename)
 
         assert Path(filename).exists()
-        with Path(filename).open() as file:
+        with Path(filename).open("r", encoding="utf-8") as file:
             data = json.load(file)
 
         # check if settings are correct
