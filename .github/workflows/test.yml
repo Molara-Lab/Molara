@@ -23,13 +23,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         version:
           - { python: "3.10", resolution: lowest-direct, extra: "tests,crystal,compchem" }
-          - { python: "3.13", resolution: highest, extra: "tests,strict,crystal,compchem" }
-        # Add macOS without optional dependencies, running only on python 3.10
+          - { python: "3.14", resolution: highest, extra: "tests,strict,crystal,compchem" }
         include:
           - os: macos-latest
             version: { python: "3.11", resolution: highest, extra: "tests,strict" }
           - os: ubuntu-24.04-arm
-            version: { python: "3.12", resolution: highest, extra: "tests,strict" }
+            version: { python: "3.13", resolution: highest, extra: "tests,strict" }
 
     runs-on: ${{ matrix.os }}
 
@@ -49,10 +48,7 @@ jobs:
           uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} --system
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
-        run: |
-          sudo apt update && sudo apt install -y libegl1-mesa-dev
-          sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
-          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+        uses: ./.github/actions/install_linux_dependencies
       - name: Run tests
         run: |
           pytest --cov=src --cov-report=xml tests
