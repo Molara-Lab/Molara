@@ -28,7 +28,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Build sdist
         run: |
@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["310", "311", "312", "313"]
+        python-version: ["310", "311", "312", "313", "314"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repo
@@ -69,10 +69,10 @@ jobs:
       # For pypi trusted publishing
       id-token: write
     steps:
-      - name: Set up Python 3.13
+      - name: Set up Python 3.14
         uses: actions/setup-python@v6
         with:
-          python-version: 3.13
+          python-version: 3.14
 
       - name: Get build artifacts
         uses: actions/download-artifact@v7

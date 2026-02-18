@@ -1,0 +1,14 @@
+# .github/actions/install_linux_dependencies/action.yml
+# Composite action to install Linux dependencies for GUI testing
+
+name: 'Install Linux dependencies'
+description: 'Install Linux dependencies for GUI tests (libegl, libxcb, Xvfb, etc.)'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Linux dependencies
+      shell: bash
+      run: |
+        sudo apt update && sudo apt install -y libegl1-mesa-dev
+        sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
+        sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
