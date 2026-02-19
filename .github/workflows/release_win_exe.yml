@@ -77,7 +77,7 @@ jobs:
 
       - name: Upload .exe as workflow artifact for PR/manual testing
         if: github.event_name != 'release'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: Molara-${{ github.run_id }}.exe
           path: dist\\Molara.exe
