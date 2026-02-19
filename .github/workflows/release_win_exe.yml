@@ -27,10 +27,6 @@ jobs:
           pip install cython
           pip install .
 
-      - name: Build Cython extensions in-place
-        run: |
-          python setup.py build_ext --inplace
-
       - name: Build Windows executable with PyInstaller (include data files and compiled extensions)
         shell: pwsh
         run: |
@@ -41,24 +37,7 @@ jobs:
             '--add-data','src\molara\structure\atom_colors.json;molara\structure'
           )
 
-          # Find compiled extension modules (.pyd) and add them as binaries
-          $pydFiles = Get-ChildItem -Path . -Recurse -Filter *.pyd -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notmatch '\\venv\\' }
-          $addBin = @()
-          foreach ($f in $pydFiles) {
-            $filename = $f.Name
-            # Determine destination inside package preserving subpath under src\molara
-            $rel = $f.FullName.Substring((Get-Location).Path.Length).TrimStart('\')
-            if ($rel -match 'src\\molara\\(.*)') {
-              $sub = $Matches[1]
-              $dest = "molara\\$sub\\$filename"
-            } else {
-              $dest = "molara\\$filename"
-            }
-            $addBin += '--add-binary'
-            $addBin += "$($f.FullName);$dest"
-          }
-
-          $args = @('--noconfirm','--onedir','--name','Molara') + $addData + $addBin + @('src\molara\__main__.py')
+          $args = @('--noconfirm','--onedir','--name','Molara') + $addData + @('src\molara\__main__.py')
           Write-Host 'Running pyinstaller with arguments:'
           Write-Host ($args -join ' ')
           pyinstaller @args
