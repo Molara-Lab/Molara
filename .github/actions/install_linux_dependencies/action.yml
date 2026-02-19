@@ -2,7 +2,7 @@
 #
 # Dependencies for Qt testing are installed according to a StackOverflow answer: https://stackoverflow.com/a/68213228/11339443
 #   (e.g., '^libxcb.*-dev' libx11-xcb-dev, etc.)
-# 
+#
 # Below are packages previously listed for installation.
 # If, in the future, problems arise in GitHub Actions, try installing them again.
 #   libxcb-randr0 libxcb-xfixes0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1
