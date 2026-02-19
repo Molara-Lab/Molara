@@ -58,26 +58,30 @@ jobs:
             $addBin += "$($f.FullName);$dest"
           }
 
-          $args = @('--noconfirm','--onefile','--runtime-tmpdir','.','--name','Molara') + $addData + $addBin + @('src\molara\__main__.py')
+          $args = @('--noconfirm','--onedir','--name','Molara') + $addData + $addBin + @('src\molara\__main__.py')
           Write-Host 'Running pyinstaller with arguments:'
           Write-Host ($args -join ' ')
           pyinstaller @args
 
       - name: List dist
-        run: dir dist
+        run: dir dist\Molara
 
-      - name: Upload .exe to GitHub release
+      - name: Zip dist folder
+        shell: pwsh
+        run: Compress-Archive -Path dist\Molara -DestinationPath Molara.zip -Force
+
+      - name: Upload ZIP to GitHub release
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: dist\\Molara.exe
-          asset_name: Molara.exe
-          asset_content_type: application/octet-stream
+          asset_path: Molara.zip
+          asset_name: Molara.zip
+          asset_content_type: application/zip
 
-      - name: Upload .exe as workflow artifact for manual testing
+      - name: Upload ZIP as workflow artifact for manual testing
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v6
         with:
           name: Molara-${{ github.run_id }}
-          path: dist\\Molara.exe
+          path: Molara.zip
