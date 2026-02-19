@@ -1,5 +1,16 @@
-# .github/actions/install_linux_dependencies/action.yml
 # Composite action to install Linux dependencies for GUI testing
+#
+# Dependencies for Qt testing are installed according to a StackOverflow answer: https://stackoverflow.com/a/68213228/11339443
+#   (e.g., '^libxcb.*-dev' libx11-xcb-dev, etc.)
+# 
+# Below are packages previously listed for installation.
+# If, in the future, problems arise in GitHub Actions, try installing them again.
+#   libxcb-randr0 libxcb-xfixes0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1
+#   libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-shape0
+#   libglib2.0-0
+#   libxkbcommon-x11-0
+#   libxrender-dev
+#   xvfb
 
 name: 'Install Linux dependencies'
 description: 'Install Linux dependencies for GUI tests (libegl, libxcb, Xvfb, etc.)'
