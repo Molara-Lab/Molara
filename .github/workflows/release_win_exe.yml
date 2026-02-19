@@ -58,7 +58,7 @@ jobs:
             $addBin += "$($f.FullName);$dest"
           }
 
-          $args = @('--noconfirm','--onefile','--name','Molara') + $addData + $addBin + @('src\molara\__main__.py')
+          $args = @('--noconfirm','--onefile','--runtime-tmpdir','.','--name','Molara') + $addData + $addBin + @('src\molara\__main__.py')
           Write-Host 'Running pyinstaller with arguments:'
           Write-Host ($args -join ' ')
           pyinstaller @args
@@ -75,9 +75,9 @@ jobs:
           asset_name: Molara.exe
           asset_content_type: application/octet-stream
 
-      - name: Upload .exe as workflow artifact for PR/manual testing
+      - name: Upload .exe as workflow artifact for manual testing
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v6
         with:
-          name: Molara-${{ github.run_id }}.exe
+          name: Molara-${{ github.run_id }}
           path: dist\\Molara.exe
