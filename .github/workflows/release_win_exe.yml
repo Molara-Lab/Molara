@@ -27,6 +27,9 @@ jobs:
           pip install cython
           pip install .
 
+      - name: Build Cython extensions in-place
+        run: python setup.py build_ext --inplace
+
       - name: Build Windows executable with PyInstaller (include data files and compiled extensions)
         shell: pwsh
         run: |
@@ -37,7 +40,23 @@ jobs:
             '--add-data','src\molara\structure\atom_colors.json;molara\structure'
           )
 
-          $args = @('--noconfirm','--onedir','--name','Molara') + $addData + @('src\molara\__main__.py')
+          # Explicitly declare all Cython extension modules as hidden imports
+          # so PyInstaller bundles them even if not detected statically
+          $hiddenImports = @(
+            '--hidden-import','molara.eval.aos',
+            '--hidden-import','molara.eval.mos',
+            '--hidden-import','molara.eval.generate_voxel_grid',
+            '--hidden-import','molara.eval.marchingcubes',
+            '--hidden-import','molara.eval.marchingsquares',
+            '--hidden-import','molara.rendering.cylinders',
+            '--hidden-import','molara.rendering.spheres',
+            '--hidden-import','molara.rendering.billboards',
+            '--hidden-import','molara.rendering.matrices',
+            '--hidden-import','molara.tools.mathtools',
+            '--hidden-import','molara.tools.raycasting'
+          )
+
+          $args = @('--noconfirm','--onedir','--name','Molara') + $addData + $hiddenImports + @('src\molara\__main__.py')
           Write-Host 'Running pyinstaller with arguments:'
           Write-Host ($args -join ' ')
           pyinstaller @args
