@@ -10,4 +10,4 @@ cpdef double calculate_mo_cartesian(
         double[:],
         double[:],
         double[:],
-) nogil
+) nogil noexcept

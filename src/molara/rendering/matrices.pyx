@@ -67,9 +67,9 @@ def calculate_translation_matrices(float[:, :] positions) -> npc.ndarray:
             translation_matrices[i, 1, 1] = 1.0
             translation_matrices[i, 2, 2] = 1.0
             translation_matrices[i, 3, 3] = 1.0
-            translation_matrices[i, 3, 0] = positions[i, 0]
-            translation_matrices[i, 3, 1] = positions[i, 1]
-            translation_matrices[i, 3, 2] = positions[i, 2]
+            translation_matrices[i, 3, 0] = <float>positions[i, 0]
+            translation_matrices[i, 3, 1] = <float>positions[i, 1]
+            translation_matrices[i, 3, 2] = <float>positions[i, 2]
 
 
     return np.array(translation_matrices, dtype=np.float32)
