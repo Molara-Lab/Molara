@@ -100,6 +100,7 @@ class Renderer:
         self.framebuffers["Inter"].ssaa_factor = self.ssaa_factor
         self.mode: str = ""
         self.shade: str = ""
+        self._shaders_ready: bool = False
         self.set_mode(SHADED)
 
     def set_mode(self, mode: str) -> None:
@@ -218,6 +219,7 @@ class Renderer:
 
         fragment_path = "fragment_screen_outline.glsl"
         add_shader("Outline", shader_code_path + vertex_path, shader_code_path + fragment_path)
+        self._shaders_ready = True
 
     def draw_billboards(
         self,
@@ -524,6 +526,8 @@ class Renderer:
         self,
     ) -> None:
         """Draws the scene."""
+        if not self._shaders_ready:
+            return
         if self.mode in (SHADED, UNSHADED):
             if not self.msaa:
                 glDisable(GL_MULTISAMPLE)
