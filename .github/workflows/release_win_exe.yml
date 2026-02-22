@@ -82,4 +82,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: Molara-${{ github.run_id }}
-          path: Molara.zip
+          path: dist\Molara
