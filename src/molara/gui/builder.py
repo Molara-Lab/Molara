@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Concatenate, ParamSpec
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
@@ -19,21 +19,21 @@ if TYPE_CHECKING:
 
     from numpy.typing import NDArray
     from PySide6.QtWidgets import QMainWindow
-    from typing_extensions import ParamSpec
 
     from molara.gui.main_window import MainWindow
     from molara.gui.structure_widget import StructureWidget
 
-    T = TypeVar("T")
-    P = ParamSpec("P")
+P = ParamSpec("P")
 
 __copyright__ = "Copyright 2024, Molara"
 
 
-def toggle_slot(func: Callable[..., Any]) -> Callable[..., Any]:
+def toggle_slot(
+    func: Callable[Concatenate[BuilderDialog, P], None],
+) -> Callable[Concatenate[BuilderDialog, P], None]:
     """Toggles the disable slot variable to circumvent recursivity."""
 
-    def wrapper(self: BuilderDialog, *args: P.args, **kwargs: P.kwargs) -> None:  # type: ignore[valid-type]
+    def wrapper(self: BuilderDialog, *args: P.args, **kwargs: P.kwargs) -> None:
         if self.disable_slot:
             return
         self.disable_slot = True
@@ -413,6 +413,10 @@ class BuilderDialog(QDialog):
         :param row: Index of the row of interest.
         """
         param_type_validity = True
+        element: str = ""
+        dist: str = "0"
+        angle: str = "0"
+        dihedral: str = "0"
 
         if row >= 0:
             element = str(self.ui.tableWidget.item(row, 0).text().capitalize())
@@ -435,13 +439,13 @@ class BuilderDialog(QDialog):
             return (None,)
 
         if row == 0:
-            return (element, None)  # type: ignore[reportPossiblyUnboundVariable]
+            return (element, None)
         if row == 1:
-            return (element, float(dist))  # type: ignore[reportPossiblyUnboundVariable]
+            return (element, float(dist))
         if row == 2:  # noqa: PLR2004
-            return (element, float(dist), np.deg2rad(float(angle)))  # type: ignore[reportPossiblyUnboundVariable]
+            return (element, float(dist), np.deg2rad(float(angle)))
 
-        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))  # type: ignore[reportPossiblyUnboundVariable]
+        return (element, float(dist), np.deg2rad(float(angle)), np.deg2rad(float(dihedral)))
 
     def _check_z_matrix_deletion(self, idx: int) -> bool:
         """Check if the deletion of the z-matrix entry is valid.
