@@ -15,6 +15,7 @@ skip = ["*musllinux*"]
 [tool.setuptools.package-data]
 molara = ["py.typed",
           "rendering.shadercode/*.glsl",
+          "gui/layouts/*.ui",
         ]
 
 [project]
@@ -105,7 +106,7 @@ molara = "molara.__main__:main"
 source = ["src/*"]
 
 [tool.ruff]
-exclude = ["ui_*",]
+exclude = []
 target-version = "py310"
 line-length = 120
 lint.select = ["ALL"]
@@ -120,7 +121,6 @@ lint.ignore = [
   ]
 
 [tool.mypy]
-exclude = ["ui_*"]
 ignore_missing_imports = true
 no_implicit_optional = false
 
@@ -132,7 +132,6 @@ reportMissingImports = false
 reportMissingModuleSource = false
 reportInvalidTypeForm = false
 exclude = ["tests"]
-ignore = ["**/ui_*"]
 
 [tool.codespell]
 ignore-words-list = "nd,te,TITEL"

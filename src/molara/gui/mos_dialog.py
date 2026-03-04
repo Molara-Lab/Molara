@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QButtonGroup, QHeaderView, QMainWindow, QTableWidg
 from molara.eval.generate_voxel_grid import generate_voxel_grid
 from molara.eval.marchingsquares import marching_squares
 from molara.eval.voxel_grid import VoxelGrid2D
-from molara.gui.layouts.ui_mos_dialog import Ui_MOs_dialog
+from molara.gui.layouts.loader import load_ui
 from molara.gui.surface_3d import Surface3DDialog
 from molara.util.constants import ANGSTROM_TO_BOHR
 
@@ -69,8 +69,7 @@ class MOsDialog(Surface3DDialog):
         self.display_spin = 0
 
         # Ui connections
-        self.ui = Ui_MOs_dialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("mos_dialog.ui", self)
         self.ui.displayMos.clicked.connect(self.toggle_surfaces)
         self.ui.orbitalSelector.cellClicked.connect(self.select_row)
         self.ui.toggleDisplayBoxButton.clicked.connect(self.toggle_box)

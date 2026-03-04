@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 from PySide6.QtWidgets import QDialog, QFileDialog, QMainWindow
 
-from molara.gui.layouts.ui_export_image_dialog import Ui_Dialog
+from molara.gui.layouts.loader import load_ui
 
 
 class ExportImageDialog(QDialog):
@@ -18,8 +18,7 @@ class ExportImageDialog(QDialog):
     def __init__(self, parent: QMainWindow) -> None:
         """Instantiate the dialog object."""
         super().__init__(parent)
-        self.ui = Ui_Dialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("export_image_dialog.ui", self)
         self.set_event_connections()
         self.transparent_background = False
 

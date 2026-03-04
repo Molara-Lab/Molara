@@ -10,7 +10,6 @@ from PySide6.QtWidgets import QApplication, QMenu, QMenuBar
 
 from molara.gui.builder import BuilderDialog
 from molara.gui.crystal_dialog import CrystalDialog
-from molara.gui.layouts.ui_form import Ui_MainWindow
 from molara.gui.main_window import MainWindow
 from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.structure_widget import StructureWidget
@@ -76,7 +75,6 @@ class WorkaroundTestMainWindow:
 
     def test_ui(self) -> None:
         """Write test code to verify that the ui has been set up correctly."""
-        assert isinstance(self.window.ui, Ui_MainWindow)
         ui = self.window.ui
         assert isinstance(ui.openGLWidget, StructureWidget)
         assert self.window.structure_widget is ui.openGLWidget
