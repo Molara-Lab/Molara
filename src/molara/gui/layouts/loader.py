@@ -76,7 +76,8 @@ def load_ui(ui_name: str, base_instance: QWidget) -> QWidget:
     :returns: *base_instance* with child widgets attached as attributes.
     :raises RuntimeError: If the .ui file cannot be opened.
     """
-    from molara.gui.structure_widget import StructureWidget  # avoid circular import
+    # avoid circular import (StructureWidget imports load_ui on module level)
+    from molara.gui.structure_widget import StructureWidget  # noqa: PLC0415
 
     loader = _UiLoader(base_instance)
     loader.registerCustomWidget(StructureWidget)
