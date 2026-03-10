@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtWidgets import QDialog, QMainWindow
 
 from molara.eval.populationanalysis import PopulationAnalysis
-from molara.gui.layouts.ui_normalization_dialog import Ui_normalization_dialog
+from molara.gui.layouts.loader import load_ui
 
 if TYPE_CHECKING:
     from PySide6.QtCore import QEvent
@@ -24,8 +24,7 @@ class NormalizationDialog(QDialog):
 
         self.molecule: Molecule | None = None
 
-        self.ui = Ui_normalization_dialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("normalization_dialog.ui", self)
 
         self.ui.normalizationButton.clicked.connect(self.run_population_analysis)
 

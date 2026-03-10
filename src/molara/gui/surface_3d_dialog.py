@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
     from molara.structure.molecule import Molecule
 
-from molara.gui.layouts.ui_surface_3d_dialog import Ui_Surface3D_dialog
+from molara.gui.layouts.loader import load_ui
 from molara.gui.surface_3d import Surface3DDialog
 
 __copyright__ = "Copyright 2024, Molara"
@@ -29,8 +29,7 @@ class CubeFileDialog(Surface3DDialog):
         )
         self.molecule: None | Molecule = None
 
-        self.ui = Ui_Surface3D_dialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("surface_3d_dialog.ui", self)
         self.ui.visualize_surfaceButton.clicked.connect(self.toggle_surfaces)
         self.ui.isoSpinBox.valueChanged.connect(self.change_iso_value)
         self.ui.colorPlusButton.clicked.connect(self.show_color_dialog_1)

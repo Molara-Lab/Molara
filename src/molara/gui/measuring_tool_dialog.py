@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
 from PySide6.QtWidgets import QDialog, QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
 
-from molara.gui.layouts.ui_measuring_tool import Ui_measuring_tool
+from molara.gui.layouts.loader import load_ui
 
 if TYPE_CHECKING:
     from molara.structure.structure import Structure
@@ -30,8 +30,7 @@ class MeasurementDialog(QDialog):
         )
         self.main_window = parent
 
-        self.ui = Ui_measuring_tool()
-        self.ui.setupUi(self)
+        self.ui = load_ui("measuring_tool.ui", self)
 
         self.ui.info_text.setText("Select / unselect atoms: SHIFT + Left Click on atoms.")
         self.ui.info_text_2.setText("Unselect all atoms: SHIFT + CTRL + Left Click on empty area.")

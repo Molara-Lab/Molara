@@ -6,7 +6,7 @@ import numpy as np
 from PySide6.QtCore import SIGNAL
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
 
-from molara.gui.layouts.ui_crystalstructure_dialog import Ui_CrystalDialog
+from molara.gui.layouts.loader import load_ui
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.crystal import Crystal
 
@@ -31,8 +31,7 @@ class CrystalDialog(QDialog):
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
-        self.ui = Ui_CrystalDialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("crystalstructure_dialog.ui", self)
         self.list_of_coordinates: list = []
         self.list_of_atomic_numbers: list[int] = []
         self.change_crystal_system("Cubic")

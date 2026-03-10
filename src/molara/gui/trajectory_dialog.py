@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from molara.gui.layouts.ui_trajectory import Ui_traj_dialog
+from molara.gui.layouts.loader import load_ui
 
 if TYPE_CHECKING:
     from molara.gui.main_window import MainWindow
@@ -60,8 +60,7 @@ class TrajectoryDialog(QDialog):
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
 
-        self.ui = Ui_traj_dialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("trajectory.ui", self)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.get_next_mol)

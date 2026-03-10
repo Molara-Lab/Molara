@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Concatenate, ParamSpec
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
 
-from molara.gui.layouts.ui_builder import Ui_builder
+from molara.gui.layouts.loader import load_ui
 from molara.structure.atom import element_symbol_to_atomic_number
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
@@ -54,8 +54,7 @@ class BuilderDialog(QDialog):
         super().__init__(
             parent,
         )  # structure widget is passed as a parent
-        self.ui = Ui_builder()
-        self.ui.setupUi(self)
+        self.ui = load_ui("builder.ui", self)
         self.ui.AddAtomButton.clicked.connect(self.select_add)
         self.ui.DeleteAtomButton.clicked.connect(self.delete_atom)
         self.ui.tableWidget.itemChanged.connect(self.adapt_z_matrix)
