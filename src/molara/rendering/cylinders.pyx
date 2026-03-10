@@ -63,27 +63,20 @@ def generate_cylinder(
     for i in range(subdivisions):
         # vertices
         theta = 2 * np.pi * i / subdivisions
-        x = radius * np.cos(theta)
-        y = -height / 2
-        z = radius * np.sin(theta)
+        x = float(radius * np.cos(theta))
+        y = float(-height / 2)
+        z = float(radius * np.sin(theta))
         normal = np.array([x, 0, z],dtype=np.float32)
         normal /= norm_float(normal)
-        vertices.extend([x, y, z, 0, -1, 0])
-        vertices.extend(
-            [x, y, z, normal[0], normal[1], normal[2]],
-        )
+        vertices.extend([float(x), float(y), float(z), 0.0, -1.0, 0.0])
+        vertices.extend([
+            float(x), float(y), float(z), float(normal[0]), float(normal[1]), float(normal[2])
+        ])
 
-        vertices.extend([x, y + height, z, 0, 1, 0])
-        vertices.extend(
-            [
-                x,
-                y + height,
-                z,
-                normal[0],
-                normal[1],
-                normal[2],
-            ],
-        )
+        vertices.extend([float(x), float(y + height), float(z), 0.0, 1.0, 0.0])
+        vertices.extend([
+            float(x), float(y + height), float(z), float(normal[0]), float(normal[1]), float(normal[2])
+        ])
 
         # indices
         if i == subdivisions - 1:
