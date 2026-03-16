@@ -171,7 +171,7 @@ class StructureWidget(QOpenGLWidget):
 
     def initializeGL(self) -> None:  # noqa: N802
         """Initialize the widget."""
-        if self.renderer._shaders_ready:
+        if self.renderer.shaders_ready:
             return
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
@@ -198,7 +198,7 @@ class StructureWidget(QOpenGLWidget):
             return
         self.renderer.default_framebuffer = self.defaultFramebufferObject()
         self.makeCurrent()
-        if not self.renderer._shaders_ready:
+        if not self.renderer.shaders_ready:
             glClearColor(1, 1, 1, 1.0)
             glEnable(GL_DEPTH_TEST)
             glEnable(GL_MULTISAMPLE)
