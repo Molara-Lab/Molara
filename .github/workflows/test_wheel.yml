@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: 3.13
+          python-version: 3.14
           cache: pip
           # cache-dependency-path: cython_build.py
       - name: Build wheel and install
@@ -33,10 +33,7 @@ jobs:
           python -m build
           python -m pip install dist/*.whl "numpy<2"
       - name: Install Linux dependencies
-        run: |
-          sudo apt update && sudo apt install -y libegl1-mesa-dev
-          sudo apt install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
-          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+        uses: ./.github/actions/install_linux_dependencies
       - name: Run tests
         run: |
           pytest tests

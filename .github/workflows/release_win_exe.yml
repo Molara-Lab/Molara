@@ -1,0 +1,85 @@
+name: Build Windows executable on release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build .exe on Windows
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install cython
+          pip install .
+
+      - name: Build Cython extensions in-place
+        run: python setup.py build_ext --inplace
+
+      - name: Build Windows executable with PyInstaller (include data files and compiled extensions)
+        shell: pwsh
+        run: |
+          $addData = @(
+            '--add-data','src\molara\rendering\shadercode;molara\rendering\shadercode',
+            '--add-data','src\molara\MolaraLogo.png;.',
+            '--add-data','src\molara\structure\periodic_table.json;molara\structure',
+            '--add-data','src\molara\structure\atom_colors.json;molara\structure'
+          )
+
+          # Explicitly declare all Cython extension modules as hidden imports
+          # so PyInstaller bundles them even if not detected statically
+          $hiddenImports = @(
+            '--hidden-import','molara.eval.aos',
+            '--hidden-import','molara.eval.mos',
+            '--hidden-import','molara.eval.generate_voxel_grid',
+            '--hidden-import','molara.eval.marchingcubes',
+            '--hidden-import','molara.eval.marchingsquares',
+            '--hidden-import','molara.rendering.cylinders',
+            '--hidden-import','molara.rendering.spheres',
+            '--hidden-import','molara.rendering.billboards',
+            '--hidden-import','molara.rendering.matrices',
+            '--hidden-import','molara.tools.mathtools',
+            '--hidden-import','molara.tools.raycasting'
+          )
+
+          $args = @('--noconfirm','--onedir','--name','Molara') + $addData + $hiddenImports + @('src\molara\__main__.py')
+          Write-Host 'Running pyinstaller with arguments:'
+          Write-Host ($args -join ' ')
+          pyinstaller @args
+
+      - name: List dist
+        run: dir dist\Molara
+
+      - name: Zip dist folder
+        shell: pwsh
+        run: Compress-Archive -Path dist\Molara -DestinationPath Molara.zip -Force
+
+      - name: Upload ZIP to GitHub release
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: Molara.zip
+          asset_name: Molara.zip
+          asset_content_type: application/zip
+
+      - name: Upload ZIP as workflow artifact for manual testing
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Molara-${{ github.run_id }}
+          path: Molara.zip
