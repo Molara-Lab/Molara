@@ -26,10 +26,6 @@ class WorkaroundTestRenderer:
         self.qtbot = qtbot
         self.main_window = main_window
         self.openGLWidget = self.main_window.structure_widget
-        self.openGLWidget.renderer.shaders_ready = False
-        self.openGLWidget.initializeGL()
-        self.openGLWidget.renderer.shaders_ready = True
-        self.openGLWidget.initializeGL()
         self.renderer = self.openGLWidget.renderer
         self.openGLWidget.show()
 
