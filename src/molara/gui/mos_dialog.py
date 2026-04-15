@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from pyrr.matrix33 import create_from_axis_rotation
@@ -69,7 +69,7 @@ class MOsDialog(Surface3DDialog):
         self.display_spin = 0
 
         # Ui connections
-        self.ui = load_ui("mos_dialog.ui", self)
+        self.ui: Any = load_ui("mos_dialog.ui", self)
         self.ui.displayMos.clicked.connect(self.toggle_surfaces)
         self.ui.orbitalSelector.cellClicked.connect(self.select_row)
         self.ui.toggleDisplayBoxButton.clicked.connect(self.toggle_box)

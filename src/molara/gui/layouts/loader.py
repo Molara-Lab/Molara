@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from PySide6.QtCore import QFile, QIODevice, QMetaObject
+from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject
 from PySide6.QtUiTools import QUiLoader
 
 if TYPE_CHECKING:
@@ -50,7 +50,7 @@ class _UiLoader(QUiLoader):
             setattr(self._base_instance, name, widget)
         return widget
 
-    def createAction(self, parent: QWidget | None = None, name: str = "") -> QAction:  # noqa: N802
+    def createAction(self, parent: QObject | None = None, name: str = "") -> QAction:  # noqa: N802
         """Create an action during .ui loading and store it on the base instance.
 
         :param parent: Parent object of the action.
@@ -62,7 +62,7 @@ class _UiLoader(QUiLoader):
         return action
 
 
-def load_ui(ui_name: str, base_instance: QWidget) -> QWidget:
+def load_ui(ui_name: str, base_instance: QWidget) -> Any:  # noqa: ANN401
     """Load a .ui file into an existing widget instance.
 
     Replaces the ``Ui_*`` / ``setupUi`` pattern from generated ui_*.py files.
@@ -73,7 +73,10 @@ def load_ui(ui_name: str, base_instance: QWidget) -> QWidget:
 
     :param ui_name: Filename of the .ui file (e.g. ``"form.ui"``).
     :param base_instance: The widget instance to load the UI into.
-    :returns: *base_instance* with child widgets attached as attributes.
+    :returns: *base_instance* with child widgets attached as dynamic attributes.
+        The return type is ``Any`` because attribute names are defined in the
+        loaded ``.ui`` file at runtime, so static typing cannot fully describe
+        the resulting object shape.
     :raises RuntimeError: If the .ui file cannot be opened.
     """
     # avoid circular import (StructureWidget imports load_ui on module level)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 from PySide6.QtCore import SIGNAL
 from PySide6.QtWidgets import QDialog, QMainWindow, QTableWidgetItem
@@ -31,7 +33,7 @@ class CrystalDialog(QDialog):
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
-        self.ui = load_ui("crystalstructure_dialog.ui", self)
+        self.ui: Any = load_ui("crystalstructure_dialog.ui", self)
         self.list_of_coordinates: list = []
         self.list_of_atomic_numbers: list[int] = []
         self.change_crystal_system("Cubic")

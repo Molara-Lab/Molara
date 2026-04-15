@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         :param parent: parent widget
         """
         super().__init__(parent)
-        self.ui = load_ui("form.ui", self)
+        self.ui: Any = load_ui("form.ui", self)
 
         self.export_image_dialog = ExportImageDialog(self)
 

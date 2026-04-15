@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from PySide6.QtWidgets import QDialog, QMainWindow
 
@@ -30,7 +30,7 @@ class SupercellDialog(QDialog):
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
-        self.ui = load_ui("supercell_dialog.ui", self)
+        self.ui: Any = load_ui("supercell_dialog.ui", self)
         self.main_window = parent
         # the supercell_dims attribute's purpose is to be overwritten
         # by a list that is passed by a Crystal object. The entries of this

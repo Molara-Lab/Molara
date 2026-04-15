@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import TYPE_CHECKING, Concatenate, ParamSpec
+from typing import TYPE_CHECKING, Any, Concatenate, ParamSpec, cast
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
@@ -21,8 +21,6 @@ if TYPE_CHECKING:
     from PySide6.QtWidgets import QMainWindow
 
     from molara.gui.main_window import MainWindow
-    from molara.gui.structure_widget import StructureWidget
-
 P = ParamSpec("P")
 
 __copyright__ = "Copyright 2024, Molara"
@@ -54,15 +52,15 @@ class BuilderDialog(QDialog):
         super().__init__(
             parent,
         )  # structure widget is passed as a parent
-        self.ui = load_ui("builder.ui", self)
+        self.ui: Any = load_ui("builder.ui", self)
         self.ui.AddAtomButton.clicked.connect(self.select_add)
         self.ui.DeleteAtomButton.clicked.connect(self.delete_atom)
         self.ui.tableWidget.itemChanged.connect(self.adapt_z_matrix)
 
         self.ui.tableWidget.acceptDrops()
 
-        self.main_window: MainWindow = self.parent()
-        self.structure_widget: StructureWidget = self.parent().structure_widget
+        self.main_window = cast("MainWindow", self.parent())
+        self.structure_widget = self.main_window.structure_widget
 
         self.main_window.mols = Molecules()
         self.z_matrix: list[dict] = []
@@ -257,6 +255,7 @@ class BuilderDialog(QDialog):
         mol = self.main_window.mols.mols[0]
         # add third atom
         if count_atoms == 2:  # noqa: PLR2004
+            assert angle is not None, "Angle must be provided when adding the third atom."
             coord = np.array([dist * np.sin(angle), 0, dist * np.cos(angle)])
             coord[2] = (
                 mol.atoms[atom_ids[0]].position[2] - coord[2]
@@ -266,6 +265,8 @@ class BuilderDialog(QDialog):
             return coord
 
         # add nth atom
+        assert angle is not None, "Angle must be provided when adding atoms."
+        assert dihedral is not None, "Dihedral angle must be provided when adding atoms."
         at1_id, at2_id, at3_id = atom_ids
         vec1 = mol.atoms[at2_id].position - mol.atoms[at1_id].position
         length = np.linalg.norm(vec1)
