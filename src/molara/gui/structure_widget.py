@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal
 import numpy as np
 from numpy.typing import NDArray
 from OpenGL.GL import GL_DEPTH_TEST, GL_MULTISAMPLE, glClearColor, glEnable
-from PySide6.QtCore import QEvent, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
@@ -17,7 +17,7 @@ from molara.structure.crystal import Crystal
 from molara.tools.raycasting import select_sphere
 
 if TYPE_CHECKING:
-    from PySide6.QtGui import QMouseEvent
+    from PySide6.QtGui import QMouseEvent, QWheelEvent
     from PySide6.QtWidgets import QWidget
 
     from molara.structure.molecule import Molecule
@@ -171,6 +171,8 @@ class StructureWidget(QOpenGLWidget):
 
     def initializeGL(self) -> None:  # noqa: N802
         """Initialize the widget."""
+        if self.renderer.shaders_ready:
+            return
         glClearColor(1, 1, 1, 1.0)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
@@ -196,6 +198,14 @@ class StructureWidget(QOpenGLWidget):
             return
         self.renderer.default_framebuffer = self.defaultFramebufferObject()
         self.makeCurrent()
+        if not self.renderer.shaders_ready:
+            glClearColor(1, 1, 1, 1.0)
+            glEnable(GL_DEPTH_TEST)
+            glEnable(GL_MULTISAMPLE)
+            self.renderer.set_shaders()
+            self.renderer.device_pixel_ratio = self.devicePixelRatio()
+            self.renderer.create_framebuffers(self.width(), self.height())
+            self.renderer.create_screen_vao()
         self.renderer.draw_scene()
 
     def update_molecule_spheres_cylinders(self) -> None:
@@ -211,9 +221,9 @@ class StructureWidget(QOpenGLWidget):
             self.renderer.objects3d["Bonds"] = self.structures[0].drawer.cylinders
             self.renderer.objects3d["Bonds"].generate_buffers()
 
-    def wheelEvent(self, event: QEvent) -> None:  # noqa: N802
+    def wheelEvent(self, event: QWheelEvent) -> None:  # noqa: N802
         """Zooms in and out of the structure."""
-        num_degrees = event.angleDelta().y() / 8  # type: ignore[attr-defined]
+        num_degrees = event.angleDelta().y() / 8
         num_steps = num_degrees / 100  # Empirical value to control zoom speed
         self.camera.set_distance_from_target(num_steps)
         self.camera.update()
@@ -231,7 +241,7 @@ class StructureWidget(QOpenGLWidget):
 
         if event.button() == Qt.MouseButton.LeftButton:
             # first test if Shift key is pressed (for selecting atoms)
-            if bool(QGuiApplication.keyboardModifiers() & Qt.ShiftModifier):  # type: ignore[attr-defined]
+            if bool(QGuiApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier):
                 if self.main_window.measurement_dialog.isVisible():
                     self.update_selected_atoms(MEASUREMENT, event)
                 if self.main_window.builder_dialog.isVisible():
@@ -506,7 +516,7 @@ class StructureWidget(QOpenGLWidget):
                     self.exec_select_sphere(selected_sphere_id, selected_spheres_list, drawn_spheres_list)
             elif selected_sphere_id in selected_spheres_list:
                 self.exec_unselect_sphere(selected_sphere_id, selected_spheres_list, drawn_spheres_list)
-        elif bool(QGuiApplication.keyboardModifiers() & Qt.ControlModifier):  # type: ignore[attr-defined]
+        elif bool(QGuiApplication.keyboardModifiers() & Qt.KeyboardModifier.ControlModifier):
             for selected_sphere_i in selected_spheres_list:
                 self.exec_unselect_sphere(selected_sphere_i, selected_spheres_list, drawn_spheres_list)
 

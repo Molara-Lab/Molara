@@ -148,6 +148,16 @@ class MoldenImporter(MoleculesImporter):
         spherical_harmonics = ["[5D]", "[7F]", "[9G]"]
         spherical_order = "none"
         normalization_mode = "none"
+        atomic_numbers: list[int] = []
+        coordinates: list[list[float]] = []
+        shells: list[list[str]] = []
+        exponents: list[list[list[float]]] = []
+        coefficients: list[list[list[float]]] = []
+        labels: list[str] = []
+        energies: list[float] = []
+        spins: list[int] = []
+        occupations: list[float] = []
+        mo_coefficients: list[list[float]] = []
 
         with self.path.open(encoding="utf-8") as file:
             lines = file.readlines()
@@ -199,16 +209,16 @@ class MoldenImporter(MoleculesImporter):
             i += 1
 
         molecules.add_molecule(
-            Molecule(np.array(atomic_numbers), np.array(coordinates)),  # type: ignore[reportPossiblyUnboundVariable]
+            Molecule(np.array(atomic_numbers), np.array(coordinates)),
         )
-        molecules.mols[0].mos = MolecularOrbitals(labels, energies, spins, occupations)  # type: ignore[reportPossiblyUnboundVariable]
+        molecules.mols[0].mos = MolecularOrbitals(labels, energies, spins, occupations)
         orbital_labels = []
-        for i in range(len(shells)):  # type: ignore[reportPossiblyUnboundVariable]
+        for i in range(len(shells)):
             molecules.mols[0].atoms[i].basis_set.basis_type = "GTO"
             molecules.mols[0].atoms[i].basis_set.generate_basis_functions(
-                shells[i],  # type: ignore[reportPossiblyUnboundVariable]
-                exponents[i],  # type: ignore[reportPossiblyUnboundVariable]
-                coefficients[i],  # type: ignore[reportPossiblyUnboundVariable]
+                shells[i],
+                exponents[i],
+                coefficients[i],
                 molecules.mols[0].atoms[i].position,
                 normalization_mode,
             )
@@ -220,7 +230,7 @@ class MoldenImporter(MoleculesImporter):
             )
         molecules.mols[0].mos.basis_functions = orbital_labels
         molecules.mols[0].mos.set_mo_coefficients(
-            np.array(mo_coefficients).T,  # type: ignore[reportPossiblyUnboundVariable]
+            np.array(mo_coefficients).T,
             spherical_order=spherical_order,
         )
         if spherical_order == "molden":
