@@ -121,6 +121,7 @@ lint.ignore = [
   ]
 
 [tool.mypy]
+exclude = "^(tests|src/molara/gui)/"
 ignore_missing_imports = true
 no_implicit_optional = false
 

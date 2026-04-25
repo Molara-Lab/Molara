@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import Qt
@@ -30,7 +30,7 @@ class MeasurementDialog(QDialog):
         )
         self.main_window = parent
 
-        self.ui: Any = load_ui("measuring_tool.ui", self)
+        self.ui = load_ui("measuring_tool.ui", self)
 
         self.ui.info_text.setText("Select / unselect atoms: SHIFT + Left Click on atoms.")
         self.ui.info_text_2.setText("Unselect all atoms: SHIFT + CTRL + Left Click on empty area.")

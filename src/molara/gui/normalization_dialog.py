@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QDialog, QMainWindow
 
@@ -24,7 +24,7 @@ class NormalizationDialog(QDialog):
 
         self.molecule: Molecule | None = None
 
-        self.ui: Any = load_ui("normalization_dialog.ui", self)
+        self.ui = load_ui("normalization_dialog.ui", self)
 
         self.ui.normalizationButton.clicked.connect(self.run_population_analysis)
 

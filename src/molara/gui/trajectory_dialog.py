@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 import matplotlib as mpl
 import numpy as np
@@ -64,7 +64,7 @@ class TrajectoryDialog(QDialog):
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
 
-        self.ui: Any = load_ui("trajectory.ui", self)
+        self.ui = load_ui("trajectory.ui", self)
         self.main_window = cast("MainWindow", parent)
 
         self.timer = QTimer(self)

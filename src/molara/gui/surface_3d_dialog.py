@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from PySide6.QtWidgets import QMainWindow
@@ -29,7 +29,7 @@ class CubeFileDialog(Surface3DDialog):
         )
         self.molecule: None | Molecule = None
 
-        self.ui: Any = load_ui("surface_3d_dialog.ui", self)
+        self.ui = load_ui("surface_3d_dialog.ui", self)
         self.ui.visualize_surfaceButton.clicked.connect(self.toggle_surfaces)
         self.ui.isoSpinBox.valueChanged.connect(self.change_iso_value)
         self.ui.colorPlusButton.clicked.connect(self.show_color_dialog_1)

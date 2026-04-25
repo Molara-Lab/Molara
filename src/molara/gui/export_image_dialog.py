@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 from PIL import Image
@@ -19,7 +18,7 @@ class ExportImageDialog(QDialog):
     def __init__(self, parent: QMainWindow) -> None:
         """Instantiate the dialog object."""
         super().__init__(parent)
-        self.ui: Any = load_ui("export_image_dialog.ui", self)
+        self.ui = load_ui("export_image_dialog.ui", self)
         self.set_event_connections()
         self.transparent_background = False
 

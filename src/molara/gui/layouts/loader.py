@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, TypeVar
 
 from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject
 from PySide6.QtUiTools import QUiLoader
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from PySide6.QtWidgets import QWidget
 
 _UI_DIR = Path(__file__).parent
+_TWidget = TypeVar("_TWidget", bound="QWidget")
 
 
 class _UiLoader(QUiLoader):
@@ -62,7 +63,7 @@ class _UiLoader(QUiLoader):
         return action
 
 
-def load_ui(ui_name: str, base_instance: QWidget) -> Any:  # noqa: ANN401
+def load_ui(ui_name: str, base_instance: _TWidget) -> _TWidget:
     """Load a .ui file into an existing widget instance.
 
     Replaces the ``Ui_*`` / ``setupUi`` pattern from generated ui_*.py files.
@@ -74,9 +75,6 @@ def load_ui(ui_name: str, base_instance: QWidget) -> Any:  # noqa: ANN401
     :param ui_name: Filename of the .ui file (e.g. ``"form.ui"``).
     :param base_instance: The widget instance to load the UI into.
     :returns: *base_instance* with child widgets attached as dynamic attributes.
-        The return type is ``Any`` because attribute names are defined in the
-        loaded ``.ui`` file at runtime, so static typing cannot fully describe
-        the resulting object shape.
     :raises RuntimeError: If the .ui file cannot be opened.
     """
     # avoid circular import (StructureWidget imports load_ui on module level)

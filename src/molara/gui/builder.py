@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Concatenate, ParamSpec, cast
+from typing import TYPE_CHECKING, Concatenate, ParamSpec, cast
 
 import numpy as np
 from PySide6.QtWidgets import QDialog, QTableWidgetItem
@@ -52,7 +52,7 @@ class BuilderDialog(QDialog):
         super().__init__(
             parent,
         )  # structure widget is passed as a parent
-        self.ui: Any = load_ui("builder.ui", self)
+        self.ui = load_ui("builder.ui", self)
         self.ui.AddAtomButton.clicked.connect(self.select_add)
         self.ui.DeleteAtomButton.clicked.connect(self.delete_atom)
         self.ui.tableWidget.itemChanged.connect(self.adapt_z_matrix)

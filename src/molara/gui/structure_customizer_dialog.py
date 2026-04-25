@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import shutil
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtWidgets import (
@@ -37,7 +37,7 @@ class StructureCustomizerDialog(QDialog):
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
-        self.ui: Any = load_ui("structure_customizer.ui", self)
+        self.ui = load_ui("structure_customizer.ui", self)
 
         self.src_path = Path(__file__).parent.parent
         self.home_path = Path("~/.molara").expanduser()
