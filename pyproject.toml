@@ -2,9 +2,9 @@
 requires = ["setuptools>=65", "cython", "numpy>=2.0.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
+
 [tool.setuptools]
 package-dir = {"" = "src"}
-license-files = ["LICENSE", "src/molara/Structure/periodic_table_copyright"]
 
 [tool.setuptools.dynamic]
 version = {"attr" = "molara.__version__"}
@@ -40,12 +40,12 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "src/molara/Structure/periodic_table_copyright"]
 keywords = ["analysis, science, structure, visualisation"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",

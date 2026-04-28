@@ -32,12 +32,14 @@ cpdef generate_voxel_grid(
     :return: A 3D array of values
     """
     cdef int number_of_aos = len(aos)
-    cdef double[:, :, :] voxel_grid = npc.ndarray(shape=(voxel_count[0], voxel_count[1], voxel_count[2]), dtype=np.float64)
+    cdef double[:, :, :] voxel_grid = npc.ndarray(shape=(<int>voxel_count[0], <int>voxel_count[1], <int>voxel_count[2]), dtype=np.float64)
     cdef double[:, :] orbital_positions = npc.ndarray(shape=(number_of_aos, 3), dtype=np.float64)
     cdef int64_t[:,:] orbital_ijks = npc.ndarray(shape=(number_of_aos, 3), dtype=np.intp)
     cdef int max_length = 0, ao_index, len_ao
     cdef double[:] electron_position = npc.ndarray(shape=3)
-    cdef int voxel_count_i = voxel_count[0], voxel_count_j = voxel_count[1], voxel_count_k = voxel_count[2]
+    cdef int voxel_count_i = <int>voxel_count[0]
+    cdef int voxel_count_j = <int>voxel_count[1]
+    cdef int voxel_count_k = <int>voxel_count[2]
 
 
 
@@ -109,9 +111,9 @@ cpdef generate_voxel_grid(
         voxel_size_i,
         voxel_size_j,
         voxel_size_k,
-        voxel_count_i,
-        voxel_count_j,
-        voxel_count_k,
+        <int>voxel_count_i,
+        <int>voxel_count_j,
+        <int>voxel_count_k,
         origin,
         orbital_positions,
         orbital_coefficients,
@@ -124,10 +126,10 @@ cpdef generate_voxel_grid(
     )
     return voxel_grid
 
-@exceptval(check=False)
+@exceptval(-1)
 @boundscheck(False)
 @wraparound(False)
-cdef inline void voxel_grid_loops(
+cdef inline int voxel_grid_loops(
         double[:] electron_position,
         double[:, :, :] voxel_grid,
         double[:] voxel_size_i,
@@ -179,3 +181,4 @@ cdef inline void voxel_grid_loops(
                     aos_values,
                     cut_off_distances,
                 )
+    return 0
