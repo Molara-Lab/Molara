@@ -14,7 +14,7 @@ from molara.structure.io.importer import GeneralImporter
 __copyright__ = "Copyright 2024, Molara"
 
 
-@unittest.skipIf(sys.version_info <= (3, 11), "Test skipped for Python versions <= 3.11 due to compatibility issues.")
+@unittest.skipIf(sys.version_info < (3, 12), "Test skipped for Python versions <= 3.11 due to compatibility issues.")
 class TestMos(TestCase):
     """Test the Mos class."""
 
