@@ -46,6 +46,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} --system
+          uv pip instal pytest-timeout
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         uses: ./.github/actions/install_linux_dependencies
@@ -54,6 +55,7 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
+          pytest tests/molara/structure/test_mos.py -vv -s --timeout=30
           pytest --cov=src --cov-report=xml tests -vv -s
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7.0.0
