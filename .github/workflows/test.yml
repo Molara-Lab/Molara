@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} --system
-          uv pip instal pytest-timeout
+          uv pip install pytest-timeout
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         uses: ./.github/actions/install_linux_dependencies
