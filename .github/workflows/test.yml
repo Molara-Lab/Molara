@@ -45,7 +45,7 @@ jobs:
           cache-dependency-glob: "**/pyproject.toml"
       - name: Install dependencies
         run: |
-          uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} pytest-timeout --system
+          uv pip install -e .[${{ matrix.version.extra }}] --resolution=${{ matrix.version.resolution }} --system
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         uses: ./.github/actions/install_linux_dependencies
@@ -54,7 +54,7 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          pytest --cov=src --cov-report=xml tests -vv -s --timeout=30
+          timeout -s ABRT 60s pytest --cov=src --cov-report=xml tests -vv -s --durations=0
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7.0.0
         env:
