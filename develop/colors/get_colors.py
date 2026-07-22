@@ -16,13 +16,17 @@ from bs4 import BeautifulSoup
 
 from molara.structure.atom import atomic_number_to_symbol
 
-file_path = "../../src/molara/structure/"
+file_path = Path(__file__).parent.parent.parent / "src" / "molara" / "structure"
 
 
 def fetch_color_table() -> bs4.element.Tag:
     """Fetch the color table from the wikipedia page."""
     url = "https://en.wikipedia.org/wiki/CPK_coloring"
-    response = requests.get(url, timeout=5)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/91.0.4472.124 Safari/537.36",
+    }
+    response = requests.get(url, headers=headers, timeout=5)
     soup = BeautifulSoup(response.text, "html.parser")
 
     table = None
@@ -34,35 +38,51 @@ def fetch_color_table() -> bs4.element.Tag:
     return table
 
 
-def parse_color_table(table: bs4.element.Tag) -> dict[str, dict[str, str]]:
-    """Parse the color table."""
+def parse_color_table(table: bs4.element.Tag) -> dict[str, dict[str, str]]:  # noqa: C901, PLR0912
+    """Parse the color table from the wikipedia page."""
     data = []
+    # Process both header (th) and data cells (td)
     for tr in table.find_all("tr"):
         row = []
-        for td in tr.find_all("td"):
-            if td:
-                tag = td.find("span")
-                if tag:
-                    style_attribute = tag.get("style")
-                    if style_attribute:
-                        style_properties = style_attribute.split(";")
-                        for prop in style_properties:
-                            if "background-color" in prop:
-                                background_color_value = prop.split(":")[1].strip()
-                                row += [background_color_value]
-                                break
-                else:
-                    row += [td.get_text().strip()]
-        data += [row]
+        for cell in tr.find_all(["td", "th"]):
+            bg_color = None
+            # Search for style attributes in the cell itself OR in child tags (like span)
+            elements_to_check = [cell, *cell.find_all(name=True)]
+            for el in elements_to_check:
+                style = el.get("style", "")
+                if "background-color" in style:
+                    # Extrahiere die Farbe aus dem Style-String
+                    for prop in style.split(";"):
+                        if "background-color" in prop:
+                            bg_color = prop.split(":")[1].strip()
+                            break
+                if bg_color:
+                    break
+            if bg_color:
+                row.append(bg_color)
+            else:
+                text = cell.get_text().strip()
+                row.append(text if text != "" else None)
+        if row:
+            data.append(row)
 
     data = data[2:]
-    data = [[None if cell == "" else cell for cell in row] for row in data]
 
     colors_dict: dict[str, dict[str, str]] = {}
-    for idx, scheme in enumerate(data[0]):
-        colors_dict[str(scheme)] = {}
+
+    headers = data[0][3:]
+
+    for offset, scheme_name in enumerate(headers):
+        if not scheme_name:
+            continue
+
+        col_idx = offset + 3
+        colors_dict[scheme_name] = {}
         for row in data[1:]:
-            colors_dict[str(scheme)][str(row[1])] = str(row[idx + 3])
+            symbol = row[1]
+            color = row[col_idx]
+            if color is not None:
+                colors_dict[scheme_name][symbol] = color
 
     return colors_dict
 
