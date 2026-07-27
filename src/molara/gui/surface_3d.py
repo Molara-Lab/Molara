@@ -25,7 +25,7 @@ class Surface3DDialog(QDialog):
     def __init__(self, parent: QMainWindow = None) -> None:
         """Initialize the class."""
         super().__init__(parent)
-        self.molecule: None | Molecule = None
+        self.molecule: Molecule | None = None
         self.voxel_grid: VoxelGrid3D = VoxelGrid3D()
         self.iso_value = 0.0
         self.vertices_1: NDArray = np.array([])

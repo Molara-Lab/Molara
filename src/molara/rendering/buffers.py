@@ -82,7 +82,7 @@ def setup_vao(  # noqa: PLR0913
     indices: NDArray | None,
     num_instances: int,
     model_matrices: NDArray,
-    colors: None | NDArray,
+    colors: NDArray | None,
     texture: bool = False,
 ) -> tuple[int, list[int]]:
     """Set up a vertex attribute object and binds it to the GPU.
