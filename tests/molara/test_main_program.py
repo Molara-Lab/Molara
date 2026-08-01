@@ -8,6 +8,8 @@ import pytest
 
 from molara.__main__ import main
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 def test_main_program() -> None:

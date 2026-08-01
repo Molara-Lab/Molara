@@ -12,6 +12,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 
 from molara.rendering.shaders import Shader
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 class TestShaders(unittest.TestCase):

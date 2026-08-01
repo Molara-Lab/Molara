@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 
 from molara import __version__
 
-__copyright__ = f"Copyright {datetime.now(timezone.utc).year}, Molara"
+__copyright__ = "Copyright 2024, Molara"
 
 project = "Molara"
 project_copyright = f"2023\u2013{datetime.now(timezone.utc).year}, Molara Team"

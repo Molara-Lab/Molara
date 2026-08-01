@@ -8,6 +8,8 @@ from numpy.typing import NDArray
 
 from molara.rendering.object3d import Object3D
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Polygon(Object3D):
     """Creates a Polygon object, containing its vertices and colors."""

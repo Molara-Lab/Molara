@@ -16,6 +16,8 @@ from molara.util.exceptions import FileFormatError
 if TYPE_CHECKING:
     from molara.structure.crystal import Crystal
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def assert_crystals_equal(crystal1: Crystal, crystal2: Crystal) -> None:
     """Check whether two crystal objects have the same contents.

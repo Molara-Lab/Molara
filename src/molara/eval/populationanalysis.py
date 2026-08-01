@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 
     from molara.structure.molecule import Molecule
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class PopulationAnalysis:
     """PopulationAnalysis class to check the basisset and molecular orbital coefficients."""

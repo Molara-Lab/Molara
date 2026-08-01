@@ -10,6 +10,8 @@ import json
 import urllib.request
 from pathlib import Path
 
+__copyright__ = "Copyright 2024, Molara"
+
 MODULE_DIR = Path(__file__).parent
 PKG_DIR = Path(MODULE_DIR).parent
 ROOT = (PKG_DIR).parent

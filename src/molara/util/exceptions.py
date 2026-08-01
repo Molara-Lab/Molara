@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class FileImporterError(Exception):
     """base class for errors occurring when loading molecules from file."""

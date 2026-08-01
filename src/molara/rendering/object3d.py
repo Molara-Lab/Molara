@@ -11,6 +11,8 @@ from molara.rendering.matrices import (
     calculate_translation_matrices,
 )
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Object3D:
     """General class for object to be rendered."""

@@ -33,7 +33,7 @@ class Drawer:
         :param bonds: list ids of bonded atoms
         :param draw_bonds: bool that specifies whether bonds shall be drawn (as cylinders)
         """
-        self.atoms: None | list = atoms
+        self.atoms: list | None = atoms
 
         self.subdivisions_sphere = 20
         self.subdivisions_cylinder = 20
@@ -67,7 +67,7 @@ class Drawer:
         """Specifies whether drawer has been passed any bonds to draw."""
         return self.bonds[0][0] != -1
 
-    def set_spheres(self, atoms: None | list = None) -> None:
+    def set_spheres(self, atoms: list | None = None) -> None:
         """Update the bonds and/or bond matrices of the drawer."""
         if atoms is not None:
             self.atoms = atoms

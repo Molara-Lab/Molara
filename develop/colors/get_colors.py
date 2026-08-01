@@ -16,6 +16,8 @@ from bs4 import BeautifulSoup
 
 from molara.structure.atom import atomic_number_to_symbol
 
+__copyright__ = "Copyright 2024, Molara"
+
 file_path = "../../src/molara/structure/"
 
 

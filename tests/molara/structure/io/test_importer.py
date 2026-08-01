@@ -27,6 +27,8 @@ from molara.structure.io.importer import (
 from molara.structure.molecule import Molecule
 from molara.structure.molecules import Molecules
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class TestXyzImporter(TestCase):
     """Test the XyzImporter class."""
