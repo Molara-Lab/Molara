@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     import pyrr
     from numpy.typing import NDArray
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def assert_vectors_equal(
     vector1: pyrr.Vector3 | pyrr.Quaternion | NDArray | pyrr.Matrix33 | pyrr.Matrix44,

@@ -11,6 +11,8 @@ from PySide6.QtWidgets import QDialog, QFileDialog, QMainWindow
 
 from molara.gui.layouts.ui_export_image_dialog import Ui_Dialog
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class ExportImageDialog(QDialog):
     """Dialog for exporting a snapshot of the rendered structure."""

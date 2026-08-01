@@ -9,6 +9,8 @@ if TYPE_CHECKING:
 
 from molara.structure.structures import Structures
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Crystals(Structures):
     """A class to store and manipulate a list of Crystals."""

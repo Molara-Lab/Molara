@@ -13,6 +13,8 @@ import numpy as np
 from molara.rendering.billboards import Billboards
 from PIL import Image
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class WorkaroundTestBillboards:
     """Contains the tests for the buffers module."""

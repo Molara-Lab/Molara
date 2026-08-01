@@ -23,6 +23,8 @@ from rendering.test_spheres import WorkaroundTestSpheres
 if TYPE_CHECKING:
     from pytestqt.qtbot import QtBot
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 @pytest.mark.skipif(sys.platform == "win32", reason="Test is not compatible with Windows")
 def test_gui_and_rendering(qtbot: QtBot) -> None:

@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 
     from molara.structure.molecule import Molecule
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Surface3DDialog(QDialog):
     """Class for 3D surfaces, all dialogues plotting surface will inherit from this class."""

@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
     from molara.gui.main_window import MainWindow
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class WorkaroundTestStructureWidget:
     """Contains the tests for the StructureWidget class.

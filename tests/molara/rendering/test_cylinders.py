@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 import numpy as np
 from molara.rendering.cylinders import Cylinders
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class WorkaroundTestCylinders:
     """Contains the tests for the buffers module."""

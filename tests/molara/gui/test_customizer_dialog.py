@@ -9,6 +9,8 @@ if TYPE_CHECKING:
 
     from molara.gui.main_window import MainWindow
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class WorkaroundTestCustomizerDialog:
     """Contains the tests for the CustomizerDialog class.

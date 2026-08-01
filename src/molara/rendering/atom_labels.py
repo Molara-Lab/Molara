@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from molara.rendering.camera import Camera
     from molara.structure.structure import Structure
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def init_atom_number(structure: Structure) -> tuple[NDArray, NDArray]:
     """Initialize the labels for numbering atoms.

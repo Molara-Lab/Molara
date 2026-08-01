@@ -18,6 +18,8 @@ from molara.util.exceptions import FileFormatError
 if TYPE_CHECKING:
     from os import PathLike
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 def robust_split(text: str) -> list[str]:
     """Split a text into its components (separated by any kinds of space characters) with regular expressions.
