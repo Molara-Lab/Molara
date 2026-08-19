@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QDialog, QMainWindow
 
-from molara.gui.layouts.ui_supercell_dialog import Ui_Dialog
+from molara.gui.layouts.loader import load_ui
 from molara.structure.crystal import Crystal
 
 if TYPE_CHECKING:
@@ -30,8 +30,7 @@ class SupercellDialog(QDialog):
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
-        self.ui = Ui_Dialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("supercell_dialog.ui", self)
         self.main_window = parent
         # the supercell_dims attribute's purpose is to be overwritten
         # by a list that is passed by a Crystal object. The entries of this

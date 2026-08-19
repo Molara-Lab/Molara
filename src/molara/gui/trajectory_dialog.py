@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import matplotlib as mpl
 import numpy as np
@@ -13,12 +13,16 @@ from PySide6.QtWidgets import (
     QDialog,
     QMainWindow,
     QVBoxLayout,
+    QWidget,
 )
 
-from molara.gui.layouts.ui_trajectory import Ui_traj_dialog
+from molara.gui.layouts.loader import load_ui
 
 if TYPE_CHECKING:
     from molara.gui.main_window import MainWindow
+    from molara.structure.crystal import Crystal
+    from molara.structure.molecule import Molecule
+    from molara.structure.structure import Structure
 
 __copyright__ = "Copyright 2024, Molara"
 
@@ -30,8 +34,8 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def __init__(
         self,
-        # This argument is necessary to be surpassed.
-        parent: MainWindow | None = None,  # noqa: ARG002
+        # This argument is necessary to be passed.
+        parent: QWidget | None = None,  # noqa: ARG002
         width: int = 5,
         height: int = 4,
         dpi: int = 100,
@@ -60,8 +64,8 @@ class TrajectoryDialog(QDialog):
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
 
-        self.ui = Ui_traj_dialog()
-        self.ui.setupUi(self)
+        self.ui = load_ui("trajectory.ui", self)
+        self.main_window = cast("MainWindow", parent)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.get_next_mol)
@@ -85,7 +89,7 @@ class TrajectoryDialog(QDialog):
 
     def show_trajectory(self) -> None:
         """Show the all molecules in the current Molecules class automatically."""
-        if not self.parent().mols.num_mols > 1:
+        if not self.main_window.mols.num_mols > 1:
             return
 
         if self.timer.isActive():
@@ -97,57 +101,63 @@ class TrajectoryDialog(QDialog):
 
     def show_all_molecules(self) -> None:
         """Show all molecules in the current Molecules class automatically."""
-        if not self.parent().mols.num_mols > 1:
+        if not self.main_window.mols.num_mols > 1:
             return
         self.show_all = not self.show_all
         if self.show_all:
             self.ui.overlayButton.setText("Show current")
-            self.parent().structure_widget.set_structure(self.parent().mols.all_molecules, reset_view=False)
+            self.main_window.structure_widget.set_structure(
+                cast("list[Structure | Crystal | Molecule]", self.main_window.mols.all_molecules),
+                reset_view=False,
+            )
         else:
             self.ui.overlayButton.setText("Show all")
-            self.parent().structure_widget.set_structure([self.parent().mols.get_current_mol()], reset_view=False)
+            self.main_window.structure_widget.set_structure(
+                cast("list[Structure | Crystal | Molecule]", [self.main_window.mols.get_current_mol()]),
+                reset_view=False,
+            )
 
     def get_next_mol(self) -> None:
         """Call molecules object to get the next molecule and update it in the GUI."""
-        if not self.parent().mols.num_mols > 1:
+        if not self.main_window.mols.num_mols > 1:
             return
 
-        val = self.parent().mols.mol_index
+        val = self.main_window.mols.mol_index
         self.ui.verticalSlider.setValue(val + 1)
-        self.parent().mols.set_next_mol()
+        self.main_window.mols.set_next_mol()
         self.update_molecule()
-        if self.parent().mols.mol_index + 1 == self.parent().mols.num_mols:
+        if self.main_window.mols.mol_index + 1 == self.main_window.mols.num_mols:
             self.timer.stop()
             self.ui.playStopButton.setText("Play")
 
     def get_prev_mol(self) -> None:
         """Call molecules object to get the previous molecule and update it in the GUI."""
-        if not self.parent().mols.num_mols > 1:
+        if not self.main_window.mols.num_mols > 1:
             return
 
-        val = self.parent().mols.mol_index
+        val = self.main_window.mols.mol_index
         self.ui.verticalSlider.setValue(val - 1)
-        self.parent().mols.set_previous_mol()
+        self.main_window.mols.set_previous_mol()
         self.update_molecule()
 
     def set_slider_range(self) -> None:
         """Set the slider range to the max number of molecules."""
-        self.ui.verticalSlider.setRange(0, int(self.parent().mols.num_mols) - 1)
+        self.ui.verticalSlider.setRange(0, int(self.main_window.mols.num_mols) - 1)
 
     def slide_molecule(self) -> None:
         """Update the molecule and energy plot in dependence of the slider position."""
-        if not self.parent().mols.num_mols > 1:
+        if not self.main_window.mols.num_mols > 1:
             return
 
         index = self.ui.verticalSlider.sliderPosition()
-        self.parent().mols.set_mol_by_id(index)
+        self.main_window.mols.set_mol_by_id(index)
         self.update_molecule()
 
     def update_molecule(self) -> None:
         """Update molecule and delete old molecule."""
-        self.parent().structure_widget.delete_structure()
-        self.parent().structure_widget.set_structure(
-            [self.parent().mols.get_current_mol()],
+        self.main_window.structure_widget.delete_structure()
+        self.main_window.structure_widget.set_structure(
+            [self.main_window.mols.get_current_mol()],
             reset_view=False,
         )
         self.update_energy_plot()
@@ -168,13 +178,13 @@ class TrajectoryDialog(QDialog):
         """Plot the energies of the molecules in the molecules object."""
         self.sc.axes.cla()
         (self.energy_plot,) = self.sc.axes.plot(
-            np.arange(self.parent().mols.num_mols),
-            self.parent().mols.energies,
+            np.arange(self.main_window.mols.num_mols),
+            self.main_window.mols.energies,
             "x-",
         )
         (self.current_energy_plot,) = self.sc.axes.plot(
-            self.parent().mols.mol_index,
-            self.parent().mols.energies[self.parent().mols.mol_index],
+            self.main_window.mols.mol_index,
+            self.main_window.mols.energies[self.main_window.mols.mol_index],
             "o",
         )
         self.sc.axes.set_xlabel(r"steps")
@@ -185,7 +195,7 @@ class TrajectoryDialog(QDialog):
 
     def update_energy_plot(self) -> None:
         """Update the energy plot, where the current structure is shown in a different color."""
-        energies, mol_index = self.parent().mols.energies, self.parent().mols.mol_index
+        energies, mol_index = self.main_window.mols.energies, self.main_window.mols.mol_index
         self.current_energy_plot.set_xdata([mol_index])
         self.current_energy_plot.set_ydata([energies[mol_index]])
         self.sc.draw()

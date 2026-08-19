@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from molara.gui.builder import BuilderDialog
 from molara.gui.crystal_dialog import CrystalDialog
 from molara.gui.export_image_dialog import ExportImageDialog
-from molara.gui.layouts.ui_form import Ui_MainWindow
+from molara.gui.layouts.loader import load_ui
 from molara.gui.measuring_tool_dialog import MeasurementDialog
 from molara.gui.mos_dialog import MOsDialog
 from molara.gui.normalization_dialog import NormalizationDialog
@@ -46,8 +46,7 @@ class MainWindow(QMainWindow):
         :param parent: parent widget
         """
         super().__init__(parent)
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.ui = load_ui("form.ui", self)
 
         self.export_image_dialog = ExportImageDialog(self)
 

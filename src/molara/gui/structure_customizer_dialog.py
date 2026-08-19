@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
 )
 
-from molara.gui.layouts.ui_structure_customizer import Ui_structure_customizer
+from molara.gui.layouts.loader import load_ui
 from molara.rendering.atom_labels import init_atom_number
 
 if TYPE_CHECKING:
@@ -37,8 +37,7 @@ class StructureCustomizerDialog(QDialog):
         super().__init__(
             parent,
         )  # main window widget is passed as a parent, so dialog is closed if main window is closed.
-        self.ui = Ui_structure_customizer()
-        self.ui.setupUi(self)
+        self.ui = load_ui("structure_customizer.ui", self)
 
         self.src_path = Path(__file__).parent.parent
         self.home_path = Path("~/.molara").expanduser()

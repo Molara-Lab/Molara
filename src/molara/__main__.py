@@ -9,10 +9,6 @@ from pathlib import Path
 from PySide6.QtGui import QIcon, QSurfaceFormat
 from PySide6.QtWidgets import QApplication
 
-# Important:
-# You need to run the following command to generate the ui_form.py file
-#     pyside6-uic form.ui -o ui_form.py, or
-#     pyside2-uic form.ui -o ui_form.py
 from molara.gui.main_window import MainWindow
 
 __copyright__ = "Copyright 2024, Molara"
