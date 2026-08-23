@@ -40,14 +40,24 @@ class Atom:
             self.electronegativity = _pt_data[self.symbol]["X"]
         except KeyError:
             self.electronegativity = None
-        jmol_color = (
-            np.array(
-                tuple(int(_atom_colors["Jmol"][self.symbol].strip("#")[i : i + 2], 16) for i in (0, 2, 4)),
-                dtype=np.float64,
+        default_color = np.array([0.98, 0.75, 0.56], dtype=np.float64)
+        try:
+            jmol_color = (
+                np.array(
+                    tuple(int(_atom_colors["Jmol"][self.symbol].strip("#")[i : i + 2], 16) for i in (0, 2, 4)),
+                    dtype=np.float64,
+                )
+                / 255
             )
-            / 255
+        except KeyError:
+            # No color defined for this element (e.g. superheavy elements such as
+            # Cn, Ds, Fl, Lv, Mc, Nh, Og, Rg, Ts); fall back to a default color.
+            jmol_color = default_color
+        cpk_color = (
+            np.array(_atom_colors["CPK_ase"][self.symbol], dtype=np.float64)
+            if self.symbol in _atom_colors["CPK_ase"]
+            else default_color
         )
-        cpk_color = np.array(_atom_colors["CPK_ase"][self.symbol], dtype=np.float64)
         self.color = {
             "CPK": cpk_color,
             "Jmol": jmol_color,

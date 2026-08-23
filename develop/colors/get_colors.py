@@ -51,7 +51,7 @@ def parse_color_table(table: bs4.element.Tag) -> dict[str, dict[str, str]]:  # n
             for el in elements_to_check:
                 style = el.get("style", "")
                 if "background-color" in style:
-                    # Extrahiere die Farbe aus dem Style-String
+                    # Extract the background color from the style attribute
                     for prop in style.split(";"):
                         if "background-color" in prop:
                             bg_color = prop.split(":")[1].strip()
@@ -101,6 +101,8 @@ def get_ase_colors() -> dict[str, dict[str, tuple]]:
 
 if __name__ == "__main__":
     c_table = fetch_color_table()
+    ase_colors = get_ase_colors()
+    colors = parse_color_table(c_table)
 
     with (Path(file_path) / "atom_colors.json").open("w", encoding="utf-8") as file:
-        json.dump(parse_color_table(c_table) | get_ase_colors(), file)
+        json.dump(colors | ase_colors, file)
