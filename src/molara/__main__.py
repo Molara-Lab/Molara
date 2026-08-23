@@ -18,6 +18,29 @@ from molara.gui.main_window import MainWindow
 __copyright__ = "Copyright 2024, Molara"
 
 
+def _set_taskbar_icon() -> None:
+    """Set the taskbar icon on Windows.
+
+    On Windows, the taskbar icon is determined by the executable's icon
+    resource, not by ``app.setWindowIcon()``. When running via a console or
+    gui script entry point, the process runs under ``python.exe`` or
+    ``pythonw.exe``, so we need to set the ``AppUserModelID`` to make Windows
+    use the application's window icon for the taskbar.
+    """
+    if sys.platform == "win32":
+        try:
+            import ctypes  # noqa: PLC0415
+
+            # Set an explicit AppUserModelID so that Windows uses the
+            # application's window icon for the taskbar button instead of
+            # the icon of the hosting python(w).exe executable.
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                "Molara.Molara",
+            )
+        except (AttributeError, OSError):
+            pass
+
+
 def main(test: bool = False) -> None:
     """Run the application.
 
@@ -30,6 +53,7 @@ def main(test: bool = False) -> None:
     QSurfaceFormat.setDefaultFormat(_format)
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
+    _set_taskbar_icon()
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(f"{Path(__file__).resolve().parent}/MolaraLogo.png"))
 
