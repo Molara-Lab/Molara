@@ -35,7 +35,7 @@ class Atom:
         self.symbol = atomic_number_to_symbol(atomic_number)
         self.name = _pt_data[self.symbol]["Name"]
         self.atomic_number = atomic_number
-        self.atomic_mass = _pt_data[self.symbol]["Atomic mass"]
+        self.atomic_mass = _pt_data[self.symbol].get("Atomic mass")
         try:
             self.electronegativity = _pt_data[self.symbol]["X"]
         except KeyError:
@@ -62,7 +62,10 @@ class Atom:
             "CPK": cpk_color,
             "Jmol": jmol_color,
         }
-        self.vdw_radius = _pt_data[self.symbol]["Van der waals radius"]
+        # Properties such as the van der Waals radius are not available for all
+        # elements (e.g. superheavy ones like Cn, Ds, Fl, Lv, Mc, Nh, Og, Rg, Ts,
+        # where no measurements exist); fall back to a default radius.
+        self.vdw_radius = _pt_data[self.symbol].get("Van der waals radius", 2.0)
         self.basis_set = BasisSet()
         self.position = np.array([])
         self.set_position(position)
