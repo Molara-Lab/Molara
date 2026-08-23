@@ -1,4 +1,5 @@
 global-include *.pyx
 global-include *.json
 include ./src/molara/MolaraLogo.png
+include ./src/molara/MolaraLogo.ico
 include ./src/molara/rendering/shadercode/*.glsl
