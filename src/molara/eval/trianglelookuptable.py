@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
+__copyright__ = "Copyright 2024, Molara"
+
 # Source: https://gist.github.com/dwilliamson/c041e3454a713e58baf6e4f8e5fffecd
 #
 # Lookup Tables for Marching Cubes

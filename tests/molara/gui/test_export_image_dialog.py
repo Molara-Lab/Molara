@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 import time
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class WorkaroundTestExportImageDialog:
     """Contains the tests for the ExportImageDialog class.

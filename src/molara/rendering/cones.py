@@ -5,6 +5,8 @@ from numpy.typing import NDArray
 
 from molara.rendering.object3d import Object3D
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Cones(Object3D):
     """Creates a Cones object, containing its vertices, indices, and transformation matrices."""

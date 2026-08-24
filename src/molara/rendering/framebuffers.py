@@ -28,6 +28,8 @@ from OpenGL.GL import (
     glTexParameteri,
 )
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class Framebuffer:
     """Create a Framebuffer object."""

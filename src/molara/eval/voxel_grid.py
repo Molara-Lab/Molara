@@ -13,6 +13,8 @@ Example Usage:
 import numpy as np
 from numpy.typing import NDArray
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class VoxelGrid:
     """Class for voxel grid storage and manipulation.

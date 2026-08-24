@@ -15,16 +15,16 @@ number_of_basis_functions[4] = 15
 @exceptval(check=False)
 @boundscheck(False)
 cpdef double calculate_mo_cartesian(
-        double[:] electron_position,
-        double[:,:] orbital_position,
-        double[:,:] orbital_coefficients,
-        double[:,:] orbital_exponents,
-        double[:,:] orbital_norms,
-        int64_t[:] shells,
-        double[:] mo_coefficients,
-        double[:] aos_values,
-        double[:] cut_off_distances,
-) nogil:
+    double[:] electron_position,
+    double[:,:] orbital_position,
+    double[:,:] orbital_coefficients,
+    double[:,:] orbital_exponents,
+    double[:,:] orbital_norms,
+    int64_t[:] shells,
+    double[:] mo_coefficients,
+    double[:] aos_values,
+    double[:] cut_off_distances,
+) noexcept nogil:
 
     cdef double mo_value = 0.0, distance_sq
     cdef int i, shell_index, shell_start, shell_end, shell

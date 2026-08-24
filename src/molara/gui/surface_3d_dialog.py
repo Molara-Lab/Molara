@@ -27,7 +27,7 @@ class CubeFileDialog(Surface3DDialog):
         super().__init__(
             parent,
         )
-        self.molecule: None | Molecule = None
+        self.molecule: Molecule | None = None
 
         self.ui = Ui_Surface3D_dialog()
         self.ui.setupUi(self)

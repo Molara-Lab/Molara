@@ -26,6 +26,8 @@ if TYPE_CHECKING:
 import sys
 from unittest import mock
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class WorkaroundTestMainWindow:
     """Contains the tests for the MainWindow class.

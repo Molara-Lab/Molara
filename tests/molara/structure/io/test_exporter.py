@@ -13,6 +13,8 @@ from numpy.testing import assert_array_equal
 from molara.structure.io.exporter import GeneralExporter, XyzExporter
 from molara.structure.structure import Structure
 
+__copyright__ = "Copyright 2024, Molara"
+
 
 class TestXyzExporter(unittest.TestCase):
     """Contains the tests for the XyzExporter class."""

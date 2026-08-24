@@ -2,9 +2,9 @@
 requires = ["setuptools>=65", "cython", "numpy>=2.0.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
+
 [tool.setuptools]
 package-dir = {"" = "src"}
-license-files = ["LICENSE", "src/molara/Structure/periodic_table_copyright"]
 
 [tool.setuptools.dynamic]
 version = {"attr" = "molara.__version__"}
@@ -15,6 +15,8 @@ skip = ["*musllinux*"]
 [tool.setuptools.package-data]
 molara = ["py.typed",
           "rendering.shadercode/*.glsl",
+          "MolaraLogo.png",
+          "MolaraLogo.ico",
         ]
 
 [project]
@@ -40,12 +42,12 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "src/molara/Structure/periodic_table_copyright"]
 keywords = ["analysis, science, structure, visualisation"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -88,7 +90,7 @@ strict = [
     "numpy==2.3.2",
     "pyrr==0.10.3",
     "scipy==1.16.1",
-    "cython==3.2.8",
+    "cython==3.2.9",
 ]
 compchem = [
     "cclib>=1.7",
@@ -98,7 +100,7 @@ crystal = [
     "ase>=3.23",
 ]
 
-[project.scripts]
+[project.gui-scripts]
 molara = "molara.__main__:main"
 
 [tool.coverage.run]
@@ -116,6 +118,7 @@ lint.ignore = [
   "FBT001", # Boolean-typed positional argument in function definition
   "FBT002", # Boolean default positional argument in function definition
   "INP001", # File {name} is part or an implicit namespace package. Add an `__init__.py`.
+  "PLR0917", # Too many positional arguments
   "S101",   # Use of assert detected
   ]
 

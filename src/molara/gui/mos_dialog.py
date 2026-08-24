@@ -39,9 +39,9 @@ class MOsDialog(Surface3DDialog):
         super().__init__(
             parent,
         )
-        self.mos: None | MolecularOrbitals = None
-        self.aos: None | list[BasisFunction] = None
-        self.atoms: None | list[Atom] = None
+        self.mos: MolecularOrbitals | None = None
+        self.aos: list[BasisFunction] | None = None
+        self.atoms: list[Atom] | None = None
 
         # Voxel grid parameters
         self.size = np.zeros(3, dtype=np.float64)
