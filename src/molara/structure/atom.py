@@ -17,6 +17,7 @@ __copyright__ = "Copyright 2024, Molara"
 
 with Path(__file__).absolute().parent.joinpath("periodic_table.json").open(encoding="utf-8") as ptable_json:
     _pt_data = json.load(ptable_json)
+    _pt_data_unit = _pt_data.pop("_unit")
 
 with Path(__file__).absolute().parent.joinpath("atom_colors.json").open(encoding="utf-8") as atom_colors_json:
     _atom_colors = json.load(atom_colors_json)
@@ -34,24 +35,37 @@ class Atom:
         self.symbol = atomic_number_to_symbol(atomic_number)
         self.name = _pt_data[self.symbol]["Name"]
         self.atomic_number = atomic_number
-        self.atomic_mass = _pt_data[self.symbol]["Atomic mass"]
+        self.atomic_mass = _pt_data[self.symbol].get("Atomic mass")
         try:
             self.electronegativity = _pt_data[self.symbol]["X"]
         except KeyError:
             self.electronegativity = None
-        jmol_color = (
-            np.array(
-                tuple(int(_atom_colors["Jmol"][self.symbol].strip("#")[i : i + 2], 16) for i in (0, 2, 4)),
-                dtype=np.float64,
+        default_color = np.array([0.98, 0.75, 0.56], dtype=np.float64)
+        try:
+            jmol_color = (
+                np.array(
+                    tuple(int(_atom_colors["Jmol"][self.symbol].strip("#")[i : i + 2], 16) for i in (0, 2, 4)),
+                    dtype=np.float64,
+                )
+                / 255
             )
-            / 255
+        except KeyError:
+            # No color defined for this element (e.g. superheavy elements such as
+            # Cn, Ds, Fl, Lv, Mc, Nh, Og, Rg, Ts); fall back to a default color.
+            jmol_color = default_color
+        cpk_color = (
+            np.array(_atom_colors["CPK_ase"][self.symbol], dtype=np.float64)
+            if self.symbol in _atom_colors["CPK_ase"]
+            else default_color
         )
-        cpk_color = np.array(_atom_colors["CPK_ase"][self.symbol], dtype=np.float64)
         self.color = {
             "CPK": cpk_color,
             "Jmol": jmol_color,
         }
-        self.vdw_radius = _pt_data[self.symbol]["Van der waals radius"]
+        # Properties such as the van der Waals radius are not available for all
+        # elements (e.g. superheavy ones like Cn, Ds, Fl, Lv, Mc, Nh, Og, Rg, Ts,
+        # where no measurements exist); fall back to a default radius.
+        self.vdw_radius = _pt_data[self.symbol].get("Van der waals radius", 2.0)
         self.basis_set = BasisSet()
         self.position = np.array([])
         self.set_position(position)

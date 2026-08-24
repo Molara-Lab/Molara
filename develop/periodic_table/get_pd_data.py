@@ -6,6 +6,7 @@ The periodic table data is fetched from the pymatgen repository and saved to a f
 
 from __future__ import annotations
 
+import gzip
 import json
 import urllib.request
 from pathlib import Path
@@ -22,15 +23,15 @@ file_path = ROOT / "src/molara/structure/"
 def fetch_periodic_table() -> dict[str, dict[str, str]]:
     """Fetch the periodic table data from pymatgen."""
     with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/materialsproject/pymatgen/refs/heads/master/src/pymatgen/core/periodic_table.json",
+        "https://github.com/materialsproject/pymatgen-core/raw/refs/heads/main/src/pymatgen/core/periodic_table.json.gz",
     ) as url:
-        return json.load(url)
+        return json.load(gzip.open(url))
 
 
 def fetch_license() -> str:
     """Fetch the license text from the pymatgen repository."""
     with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/materialsproject/pymatgen/refs/heads/master/LICENSE",
+        "https://raw.githubusercontent.com/materialsproject/pymatgen/refs/heads/main/LICENSE",
     ) as url:
         return url.read().decode("utf-8")
 
