@@ -8,7 +8,7 @@ ci:
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.6
+    rev: v0.16.7
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -30,7 +30,7 @@ repos:
         additional_dependencies: ["types-requests"]
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.411
+    rev: v1.1.414
     hooks:
     - id: pyright
 
