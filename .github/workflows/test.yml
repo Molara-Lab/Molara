@@ -50,6 +50,7 @@ jobs:
         if: runner.os == 'Linux'
         uses: ./.github/actions/install_linux_dependencies
       - name: Run tests
+        timeout-minutes: 10
         run: |
           pytest --cov=src --cov-report=xml tests
       - name: Upload coverage reports to Codecov
